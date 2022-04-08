@@ -245,7 +245,11 @@ function handleEraseData(data, userID) {
     redrawCanvas();
   }
 }
-function erasePosData(posDataX, posDataY, userID, userPointsArr = Array.from(posUserCache.get(userID))) {
+function erasePosData(posDataX, posDataY, userID, userPointsArr) {
+  if (!userPointsArr) {
+    if (!posUserCache.has(userID)) return;
+    userPointsArr = Array.from(posUserCache.get(userID));
+  }
   for (let j = 0; j < userPointsArr.length; j++) {
     const posArr = userPointsArr[j].value;
 
