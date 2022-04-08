@@ -67,6 +67,7 @@ canvas.addEventListener('contextmenu', canvasContext);
 canvas.addEventListener('pointerdown', canvasDown);
 window.addEventListener('pointerup', pointerUp);
 canvas.addEventListener('mousemove', canvasDraw);
+window.addEventListener('wheel', mouseWheel);
 
 
 canvas.height = canvas.clientHeight;
@@ -81,6 +82,13 @@ setInterval(sendPositions, SEND_INTERVAL);
 
 
 // ---- Events ----
+function mouseWheel(e) {
+  if (!e.ctrlKey) {
+    const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
+    widthSlider.value += direction * 7;
+  }
+}
+
 function canvasContext(e) {
   if (e.button === 2) {
     e.preventDefault();
