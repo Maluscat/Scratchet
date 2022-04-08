@@ -227,7 +227,7 @@ function parseBufferData(data, userID) {
 }
 function handleBulkInitData(data, userID) {
   let index = 1;
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 1; i < data.length; i++) {
     if (data[i] === -1) {
       drawFromDataAndAddToBuffer(data.subarray(index, i), userID);
       index = i + 1;
