@@ -207,19 +207,22 @@ function resetPosBuffer() {
 
 // ---- Buffer functions ----
 function parseBufferData(data, userID) {
-    // Bulk init data
   if (data[0] === -1) {
-    let index = 1;
-    for (let i = 0; i < data.length; i++) {
-      if (data[i] === -1) {
-        drawFromDataAndAddToBuffer(data.subarray(index, i), userID);
-        index = i + 1;
-      }
-    }
-    drawFromDataAndAddToBuffer(data.subarray(index), userID);
+    // Bulk init data
+    handleBulkInitData(data, userID);
   } else {
     drawFromDataAndAddToBuffer(data, userID);
   }
+}
+function handleBulkInitData(data, userID) {
+  let index = 1;
+  for (let i = 0; i < data.length; i++) {
+    if (data[i] === -1) {
+      drawFromDataAndAddToBuffer(data.subarray(index, i), userID);
+      index = i + 1;
+    }
+  }
+  drawFromDataAndAddToBuffer(data.subarray(index), userID);
 }
 
 function addPosDataToBuffer(userID, posData) {
