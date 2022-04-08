@@ -1,0 +1,206 @@
+// out: ../main.css
+
+@background-color: hsl(0, 0%, 8%);
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  // For centering the notifications
+  display: flex;
+  justify-content: center;
+  background-color: @background-color;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  color: hsl(0, 0%, 95%);
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+}
+
+button {
+  display: block;
+  font-size: 1em;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  &:hover {
+    background-color: lighten(@overlay-bg, 4%) !important;
+  }
+  &:active {
+    background-color: lighten(@overlay-bg, 3%) !important;
+  }
+}
+
+@overlay-margin: 1em;
+@overlay-gap: .5em;
+@overlay-bg: hsl(0, 0%, 18%);
+@slider-dims: 1.75em;
+.overlay {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  &.bottom {
+    bottom: @overlay-margin;
+  }
+  &.left {
+    left: @overlay-margin;
+  }
+  &.top {
+    top: @overlay-margin;
+  }
+  &.right {
+    right: @overlay-margin;
+  }
+  > *:not(:last-child) {
+    margin-bottom: @overlay-gap;
+  }
+  .button,
+  .sl89-track {
+    border: 2px solid @background-color;
+    background-color: @overlay-bg;
+    box-sizing: content-box;
+  }
+  button,
+  .sl89-track {
+    pointer-events: auto;
+  }
+  .button,
+  .sl89-thumb,
+  .sl89-track,
+  .slider-hue-indicator {
+    border-radius: 100px;
+  }
+}
+
+.overlay-text {
+  font-size: 1.125em;
+  text-shadow:
+    1px 0 black,
+    -1px 0 black,
+    0 1px black,
+    0 -1px black,
+    1px 1px black,
+    -1px 1px black,
+    1px -1px black,
+    -1px -1px black,
+    1.25px 0 black,
+    -1.25px 0 black,
+    0 1.25px black,
+    0 -1.25px black,
+    1.25px 1.25px black,
+    -1.25px 1.25px black,
+    1.25px -1.25px black,
+    -1.25px -1.25px black;
+}
+
+.horizontal-group {
+  display: flex;
+  align-items: center;
+  > *:not(:last-child) {
+    margin-right: @overlay-gap;
+  }
+}
+
+.button-group {
+  .button {
+    width: 3em;
+    height: 3em;
+  }
+}
+
+.sl89-thumb {
+  background-color: hsl(0, 0%, 31%);
+  width: @slider-dims;
+  height: @slider-dims;
+  &:hover {
+    background-color: hsl(0, 0%, 34%);
+  }
+}
+
+#draw-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 100px;
+  border: 2px solid hsl(0, 0%, 90%);
+  pointer-events: none;
+  &.erase {
+    background-color: hsl(0, 0%, 90%);
+  }
+}
+
+#notification-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .notification {
+    text-align: center;
+    padding: .3em 1.5em;
+    overflow: hidden;
+    animation: shiftIn .2s ease;
+    transition:
+      all .2s ease,
+      color .1s ease,
+      opacity .15s ease;
+    &.remove {
+      color: transparent;
+      opacity: 0;
+      height: 0;
+      padding: 0;
+      border: none;
+      margin-bottom: 0;
+    }
+    @keyframes shiftIn {
+      from {
+        opacity: 0;
+        transform: translateY(-.5em);
+      }
+    }
+  }
+}
+
+#utility-overlay {
+  .button,
+  .sl89-track {
+    width: 13em;
+    height: @slider-dims;
+    box-sizing: content-box;
+    padding: .175em;
+  }
+}
+
+#hue-slider {
+  .slider-hue-indicator {
+    border: 4px solid @background-color;
+    height: 100%;
+  }
+  .sl89-track {
+    background-image: linear-gradient(to right,
+      hsl(0, 75%, 70%),
+      hsl(45, 75%, 70%),
+      hsl(90, 75%, 70%),
+      hsl(135, 75%, 70%),
+      hsl(180, 75%, 70%),
+      hsl(225, 75%, 70%),
+      hsl(270, 75%, 70%),
+      hsl(315, 75%, 70%),
+      hsl(360, 75%, 70%)
+    );
+  }
+}
+#width-slider {
+  .sl89-thumb {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .slider-width-value {
+    font-size: 1.125em;
+  }
+}
