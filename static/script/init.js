@@ -210,6 +210,9 @@ function parseBufferData(data, userID) {
   if (data[0] === -1) {
     // Bulk init data
     handleBulkInitData(data, userID);
+  } else if (data[0] === -2) {
+    // Erased data
+    handleEraseData(data, userID);
   } else {
     drawFromDataAndAddToBuffer(data, userID);
   }
@@ -223,6 +226,37 @@ function handleBulkInitData(data, userID) {
     }
   }
   drawFromDataAndAddToBuffer(data.subarray(index), userID);
+}
+function handleEraseData(data, userID) {
+  if (posUserCache.has(userID)) {
+    const userPointsArr = Array.from(posUserCache.get(userID));
+
+    for (let i = 1; i < data.length; i += 2) {
+      erasePosData(data[i], data[i + 1], userID, userPointsArr);
+    }
+    redrawCanvas();
+  }
+}
+function erasePosData(posDataX, posDataY, userID, userPointsArr = Array.from(posUserCache.get(userID))) {
+  for (let j = 0; j < userPointsArr.length; j++) {
+    const posArr = userPointsArr[j].value;
+
+    // NOTE: the first four items is the current metadata payload, this could change
+    const newPoints = new Array(posArr[0], posArr[1], posArr[2], posArr[3]);
+    for (let k = 4; k < posArr.length; k += 2) {
+      // Push only the points back into the array which are not in range of the erase pos
+      if (Math.abs(posArr[k] - posDataX) > ERASE_THRESHOLD || Math.abs(posArr[k + 1] - posDataY) > ERASE_THRESHOLD) {
+        newPoints.push(posArr[k], posArr[k + 1]);
+      }
+    }
+
+    if (newPoints.length > 4) {
+      userPointsArr[j].value = new Int32Array(newPoints);
+    } else {
+      globalPosBuffer.delete(userPointsArr[j]);
+      posUserCache.get(userID).delete(userPointsArr[j]);
+    }
+  }
 }
 
 function addPosDataToBuffer(userID, posData) {
