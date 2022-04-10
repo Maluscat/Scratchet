@@ -11,7 +11,6 @@ const drawIndicator = document.getElementById('draw-indicator');;
 
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
-const ERASE_THRESHOLD = 35;
 
 const ctx = canvas.getContext('2d');
 const posUserCache = new Map(); // Map<userID, Set<posDataForUser>>
@@ -114,14 +113,13 @@ function pointerUp() {
 function canvasDraw(e) {
   moveDrawIndicator(e.clientX, e.clientY);
   if (pressedMouseBtn >= 0) {
+    sendPositionsIfWidthHasChanged();
+
     if (pressedMouseBtn === 2) {
       erasePosData(e.clientX, e.clientY, CURRENT_USER_ID);
       redrawCanvas();
     } else {
-      // Overrule timer if hue or stroke width has changed
-      if (hueSlider.value !== posBuffer[0] || widthSlider.value !== posBuffer[1]) {
-        sendPositions();
-      }
+      sendPositionsIfHueHasChanged();
 
       ctx.beginPath();
       ctx.moveTo(...lastPos);
@@ -206,9 +204,9 @@ function setLastPos(posX, posY) {
 }
 function resetPosBuffer() {
   if (pressedMouseBtn === 2) {
-    posBuffer = [-2];
+    posBuffer = [-2, widthSlider.value];
   } else {
-    posBuffer = [hueSlider.value, ctx.lineWidth, ...lastPos];
+    posBuffer = [hueSlider.value, widthSlider.value, ...lastPos];
   }
 }
 
@@ -239,13 +237,13 @@ function handleEraseData(data, userID) {
   if (posUserCache.has(userID)) {
     const userPointsArr = Array.from(posUserCache.get(userID));
 
-    for (let i = 1; i < data.length; i += 2) {
-      erasePosData(data[i], data[i + 1], userID, userPointsArr);
+    for (let i = 2; i < data.length; i += 2) {
+      erasePosData(data[i], data[i + 1], userID, userPointsArr, data[1]);
     }
     redrawCanvas();
   }
 }
-function erasePosData(posDataX, posDataY, userID, userPointsArr) {
+function erasePosData(posDataX, posDataY, userID, userPointsArr, eraserWidth = widthSlider.value) {
   if (!userPointsArr) {
     if (!posUserCache.has(userID)) return;
     userPointsArr = Array.from(posUserCache.get(userID));
@@ -257,7 +255,7 @@ function erasePosData(posDataX, posDataY, userID, userPointsArr) {
     const newPoints = new Array(posArr[0], posArr[1], posArr[2], posArr[3]);
     for (let k = 4; k < posArr.length; k += 2) {
       // Push only the points back into the array which are not in range of the erase pos
-      if (Math.abs(posArr[k] - posDataX) > ERASE_THRESHOLD || Math.abs(posArr[k + 1] - posDataY) > ERASE_THRESHOLD) {
+      if (Math.abs(posArr[k] - posDataX) > eraserWidth || Math.abs(posArr[k + 1] - posDataY) > eraserWidth) {
         newPoints.push(posArr[k], posArr[k + 1]);
       }
     }
@@ -312,13 +310,25 @@ function createPosDataWrapper(posData) {
 
 // ---- Socket ----
 function sendPositions() {
-  if (posBuffer.length > 4) {
+  if (posBuffer[0] === -2 && posBuffer.length > 2 || posBuffer.length > 4) {
     const data = new Int32Array(posBuffer);
     sock.send(data.buffer);
-    if (pressedMouseBtn !== 2) {
+    if (posBuffer[0] >= 0) {
       addPosDataToBuffer(CURRENT_USER_ID, data);
     }
     resetPosBuffer();
+  }
+}
+// Overrule timer if hue or stroke width has changed
+function sendPositionsIfWidthHasChanged() {
+  // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
+  if (widthSlider.value !== posBuffer[1]) {
+    sendPositions();
+  }
+}
+function sendPositionsIfHueHasChanged() {
+  if (hueSlider.value !== posBuffer[2]) {
+    sendPositions();
   }
 }
 
