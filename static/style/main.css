@@ -1,6 +1,11 @@
 * {
   box-sizing: border-box;
 }
+:root {
+  --mouseX: -100%;
+  --mouseY: -100%;
+  --strokeWidth: 0;
+}
 body {
   display: flex;
   justify-content: center;
@@ -88,6 +93,9 @@ button:active {
   background-color: hsl(0, 0%, 34%);
 }
 #draw-indicator {
+  transform: translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2));
+  width: var(--strokeWidth);
+  height: var(--strokeWidth);
   position: absolute;
   left: 0;
   top: 0;

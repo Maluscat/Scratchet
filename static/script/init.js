@@ -175,8 +175,7 @@ function drawFromDataAndAddToBuffer(dataArr, userID) {
 function setLineWidth(width = widthSlider.value) {
   ctx.lineWidth = width;
   if (width === widthSlider.value) {
-    drawIndicator.style.width = (widthSlider.value) + 'px';
-    drawIndicator.style.height = (widthSlider.value) + 'px';
+    document.documentElement.style.setProperty('--strokeWidth', width + 'px');
   }
 }
 function setStrokeStyle(hue = hueSlider.value) {
@@ -186,9 +185,10 @@ function makeHSLString(hue = hueSlider.value) {
   return `hsl(${hue}, 75%, 70%)`
 }
 
+// -- Draw indicator --
 function moveDrawIndicator(posX, posY) {
-  drawIndicator.style.transform =
-    `translate(${posX - widthSlider.value / 2}px, ${posY - widthSlider.value / 2}px)`;
+  document.documentElement.style.setProperty('--mouseX', posX + 'px');
+  document.documentElement.style.setProperty('--mouseY', posY + 'px');
 }
 function toggleDrawIndicatorEraseMode(reset) {
   if (reset) {
@@ -198,6 +198,7 @@ function toggleDrawIndicatorEraseMode(reset) {
   }
 }
 
+// -- Pos buffer --
 function setLastPos(posX, posY) {
   lastPos[0] = posX;
   lastPos[1] = posY;
