@@ -328,7 +328,7 @@ function sendPositionsIfWidthHasChanged() {
   }
 }
 function sendPositionsIfHueHasChanged() {
-  if (hueSlider.value !== posBuffer[2]) {
+  if (hueSlider.value !== posBuffer[0]) {
     sendPositions();
   }
 }
