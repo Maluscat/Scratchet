@@ -142,8 +142,8 @@ function canvasDraw(e) {
 // ---- Canvas ----
 function redrawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (const { value: posData } of globalPosBuffer) {
-    drawFromData(posData);
+  for (const posDataWrapper of globalPosBuffer) {
+    drawFromData(posDataWrapper);
   }
 }
 
@@ -152,23 +152,26 @@ function clearCurrentUserCanvas() {
   clearUserBufferAndRedraw(CURRENT_USER_ID);
 }
 
-function drawFromData(data) {
-  setStrokeStyle(data[0]);
-  setLineWidth(data[1]);
+function drawFromData(posDataWrapper) {
+  const metadata = posDataWrapper[0];
+  setStrokeStyle(metadata[0]);
+  setLineWidth(metadata[1]);
 
   ctx.beginPath();
-  ctx.moveTo(data[2], data[3]);
-  for (let i = 4; i < data.length; i += 2) {
-    ctx.lineTo(data[i], data[i + 1]);
+  ctx.moveTo(metadata[2], metadata[3]);
+  for (let i = 1; i < posDataWrapper.length; i++) {
+    for (let j = 0; j < posDataWrapper[i].length; j += 2) {
+      ctx.lineTo(posDataWrapper[i][j], posDataWrapper[i][j + 1]);
+    }
   }
   ctx.stroke();
 
   setStrokeStyle();
   setLineWidth();
 }
-function drawFromDataAndAddToBuffer(dataArr, userID) {
-  drawFromData(dataArr);
-  addPosDataToBuffer(userID, dataArr);
+function addPosDataToBufferAndDraw(dataArr, userID) {
+  posDataWrapper = addPosDataToBuffer(userID, dataArr);
+  drawFromData(posDataWrapper);
 }
 
 // --- Canvas helper functions ---
@@ -221,18 +224,18 @@ function parseBufferData(data, userID) {
     // Erased data
     handleEraseData(data, userID);
   } else {
-    drawFromDataAndAddToBuffer(data, userID);
+    addPosDataToBufferAndDraw(data, userID);
   }
 }
 function handleBulkInitData(data, userID) {
   let index = 1;
   for (let i = 1; i < data.length; i++) {
     if (data[i] === -1) {
-      drawFromDataAndAddToBuffer(data.subarray(index, i), userID);
+      addPosDataToBufferAndDraw(data.subarray(index, i), userID);
       index = i + 1;
     }
   }
-  drawFromDataAndAddToBuffer(data.subarray(index), userID);
+  addPosDataToBufferAndDraw(data.subarray(index), userID);
 }
 function handleEraseData(data, userID) {
   if (posUserCache.has(userID)) {
@@ -247,35 +250,38 @@ function handleEraseData(data, userID) {
 function erasePosData(posDataX, posDataY, userID, eraserWidth = widthSlider.value) {
   if (!posUserCache.has(userID)) return;
   for (const posDataWrapper of posUserCache.get(userID)) {
-    const posData = posDataWrapper.value;
 
-    // NOTE: the first four items is the current metadata payload, this could change
-    const newPoints = new Array(posData[0], posData[1], posData[2], posData[3]);
-    for (let k = 4; k < posData.length; k += 2) {
-      // Push only the points back into the array which are not in range of the erase pos
-      if (Math.abs(posData[k] - posDataX) > eraserWidth || Math.abs(posData[k + 1] - posDataY) > eraserWidth) {
-        newPoints.push(posData[k], posData[k + 1]);
+    for (let i = 1; i < posDataWrapper.length; i++) {
+      const posData = posDataWrapper[i];
+
+      const newPoints = new Array();
+      for (let k = 0; k < posData.length; k += 2) {
+        // Push only the points back into the array which are not in range of the erase pos
+        if (Math.abs(posData[k] - posDataX) > eraserWidth || Math.abs(posData[k + 1] - posDataY) > eraserWidth) {
+          newPoints.push(posData[k], posData[k + 1]);
+        }
       }
-    }
 
-    if (newPoints.length > 4) {
-      posDataWrapper.value = new Int32Array(newPoints);
-    } else {
-      globalPosBuffer.delete(posDataWrapper);
-      posUserCache.get(userID).delete(posDataWrapper);
+      if (newPoints.length > 0) {
+        posDataWrapper[i] = new Int32Array(newPoints);
+      } else {
+        globalPosBuffer.delete(posDataWrapper);
+        posUserCache.get(userID).delete(posDataWrapper);
+      }
     }
   }
 }
 
 function addPosDataToBuffer(userID, posData) {
-  posData = createPosDataWrapper(posData);
-  globalPosBuffer.add(posData);
+  const posDataWrapper = createPosDataWrapper(posData);
+  globalPosBuffer.add(posDataWrapper);
   let cache = posUserCache.get(userID);
   if (!cache) {
     cache = new Set();
     posUserCache.set(userID, cache);
   }
-  cache.add(posData);
+  cache.add(posDataWrapper);
+  return posDataWrapper;
 }
 
 function clearUserBufferAndRedraw(userID) {
@@ -292,17 +298,19 @@ function clearUserBufferAndRedraw(userID) {
 function sendJoinedUserBuffer(targetUserID) {
   if (posUserCache.has(CURRENT_USER_ID)) {
     const joinedBuffer = new Array();
-    for (const { value: posData } of posUserCache.get(CURRENT_USER_ID)) {
-      joinedBuffer.push(-1, ...posData);
+    for (const posDataWrapper of posUserCache.get(CURRENT_USER_ID)) {
+      joinedBuffer.push(-1, ...posDataWrapper[0]);
+      for (let i = 1; i < posDataWrapper.length; i++) {
+        joinedBuffer.push(...posDataWrapper[i]);
+      }
     }
     sock.send(new Int32Array(joinedBuffer));
   }
 }
 
 function createPosDataWrapper(posData) {
-  return {
-    value: posData
-  };
+  // Split data packets into [ metadata, ...positionData ]
+  return [ posData.subarray(0, 4), posData.subarray(4) ];
 }
 
 
@@ -336,7 +344,7 @@ function socketOpen() {
 
 async function socketReceiveMessage(e) {
   if (e.data instanceof Blob) {
-    // Scratchet ArrayBuffer: [playerID, hue, lineWidth, lastPosX, lastPosY, ...positions]
+    // Scratchet ArrayBuffer: [playerID, metadata?, ...positions]
     const data = new Int32Array(await e.data.arrayBuffer());
     const userID = data[0];
 
