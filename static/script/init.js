@@ -239,33 +239,30 @@ function handleEraseData(data, userID) {
     const userPointsArr = Array.from(posUserCache.get(userID));
 
     for (let i = 2; i < data.length; i += 2) {
-      erasePosData(data[i], data[i + 1], userID, userPointsArr, data[1]);
+      erasePosData(data[i], data[i + 1], userID, data[1]);
     }
     redrawCanvas();
   }
 }
-function erasePosData(posDataX, posDataY, userID, userPointsArr, eraserWidth = widthSlider.value) {
-  if (!userPointsArr) {
-    if (!posUserCache.has(userID)) return;
-    userPointsArr = Array.from(posUserCache.get(userID));
-  }
-  for (let j = 0; j < userPointsArr.length; j++) {
-    const posArr = userPointsArr[j].value;
+function erasePosData(posDataX, posDataY, userID, eraserWidth = widthSlider.value) {
+  if (!posUserCache.has(userID)) return;
+  for (const posDataWrapper of posUserCache.get(userID)) {
+    const posData = posDataWrapper.value;
 
     // NOTE: the first four items is the current metadata payload, this could change
-    const newPoints = new Array(posArr[0], posArr[1], posArr[2], posArr[3]);
-    for (let k = 4; k < posArr.length; k += 2) {
+    const newPoints = new Array(posData[0], posData[1], posData[2], posData[3]);
+    for (let k = 4; k < posData.length; k += 2) {
       // Push only the points back into the array which are not in range of the erase pos
-      if (Math.abs(posArr[k] - posDataX) > eraserWidth || Math.abs(posArr[k + 1] - posDataY) > eraserWidth) {
-        newPoints.push(posArr[k], posArr[k + 1]);
+      if (Math.abs(posData[k] - posDataX) > eraserWidth || Math.abs(posData[k + 1] - posDataY) > eraserWidth) {
+        newPoints.push(posData[k], posData[k + 1]);
       }
     }
 
     if (newPoints.length > 4) {
-      userPointsArr[j].value = new Int32Array(newPoints);
+      posDataWrapper.value = new Int32Array(newPoints);
     } else {
-      globalPosBuffer.delete(userPointsArr[j]);
-      posUserCache.get(userID).delete(userPointsArr[j]);
+      globalPosBuffer.delete(posDataWrapper);
+      posUserCache.get(userID).delete(posDataWrapper);
     }
   }
 }
