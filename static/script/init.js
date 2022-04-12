@@ -259,20 +259,32 @@ function erasePos(posX, posY, userID, eraserWidth = widthSlider.value) {
     for (let i = 0; i < posDataWrapper.length; i++) {
       const posData = posDataWrapper[i];
 
-      const newPosData = [posData[0], posData[1], posData[2], posData[3]];
+      let newPosData = [posData[0], posData[1], posData[2], posData[3]];
       for (let j = 4; j < posData.length; j += 2) {
-        // Push only the positions back into the array which are not in range of the erase pos
+        // Push only the points back into the array which are not in range of the erase pos
         if (Math.abs(posData[j] - posX) > eraserWidth || Math.abs(posData[j + 1] - posY) > eraserWidth) {
           newPosData.push(posData[j], posData[j + 1]);
+        } else {
+          if (newPosData.length > 4) {
+            posDataWrapper.push(new Int32Array(newPosData));
+          }
+          if (j <= posData.length - 4) {
+            newPosData = [posData[0], posData[1], posData[j + 2], posData[j + 3]];
+          } else {
+            newPosData = [];
+          }
         }
       }
 
       if (newPosData.length > 4) {
         posDataWrapper[i] = new Int32Array(newPosData);
       } else {
-        globalPosBuffer.delete(posDataWrapper);
-        posUserCache.get(userID).delete(posDataWrapper);
+        posDataWrapper.splice(i, 1);
       }
+    }
+    if (posDataWrapper.length === 0) {
+      globalPosBuffer.delete(posDataWrapper);
+      posUserCache.get(userID).delete(posDataWrapper);
     }
   }
 }
