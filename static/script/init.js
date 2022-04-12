@@ -388,14 +388,10 @@ async function socketReceiveMessage(e) {
 }
 
 // --- Helper functions ---
-function sendMessage(event, value) {
-  const data = {
+function sendMessage(event) {
+  sock.send(JSON.stringify({
     evt: event
-  };
-  if (value != null) {
-    data.val = value;
-  }
-  sock.send(JSON.stringify(data));
+  }));
 }
 
 
