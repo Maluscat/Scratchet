@@ -21,10 +21,9 @@ let posBuffer = new Array();
 
 /*
  * data/socketData: bulk data received via socket
- * posDataPack: intermediate value, to be wrapped: [...metadata, ...posData]
- * posDataWrapper: wrapper for metadata and posData: [[metadata], ...[...posData]]
+ * posData: self-contained metadata & position packet: [...metadata, pos1X, pos1Y, pos2X, pos2Y, ...]
+ * posDataWrapper: wrapper for 1...n posData, used as pointer: [posData1, posData2, ...]
  * metadata: currently: [hue, width, lastPosX, lastPosY]
- * posData: position data X and Y (therefore multiples of 2)
  */
 
 const sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
@@ -150,7 +149,9 @@ function canvasDraw(e) {
 function redrawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const posDataWrapper of globalPosBuffer) {
-    drawFromData(posDataWrapper);
+    for (const posData of posDataWrapper) {
+      drawFromPosData(posData);
+    }
   }
 }
 
@@ -159,26 +160,23 @@ function clearCurrentUserCanvas() {
   clearUserBufferAndRedraw(CURRENT_USER_ID);
 }
 
-function drawFromData(posDataWrapper) {
-  const metadata = posDataWrapper[0];
-  setStrokeStyle(metadata[0]);
-  setLineWidth(metadata[1]);
+function drawFromPosData(posData) {
+  setStrokeStyle(posData[0]);
+  setLineWidth(posData[1]);
 
   ctx.beginPath();
-  ctx.moveTo(metadata[2], metadata[3]);
-  for (let i = 1; i < posDataWrapper.length; i++) {
-    for (let j = 0; j < posDataWrapper[i].length; j += 2) {
-      ctx.lineTo(posDataWrapper[i][j], posDataWrapper[i][j + 1]);
-    }
+  ctx.moveTo(posData[2], posData[3]);
+  for (let i = 4; i < posData.length; i += 2) {
+    ctx.lineTo(posData[i], posData[i + 1]);
   }
   ctx.stroke();
 
   setStrokeStyle();
   setLineWidth();
 }
-function addPosDataPackToBufferAndDraw(posDataPack, userID) {
-  posDataWrapper = addPosDataPackToBuffer(posDataPack, userID);
-  drawFromData(posDataWrapper);
+function addPosDataToBufferAndDraw(posData, userID) {
+  addPosDataToBuffer(posData, userID);
+  drawFromPosData(posData);
 }
 
 // --- Canvas helper functions ---
@@ -231,18 +229,18 @@ function parseSocketData(data, userID) {
     // Erased data
     handleEraseData(data, userID);
   } else {
-    addPosDataPackToBufferAndDraw(data, userID);
+    addPosDataToBufferAndDraw(data, userID);
   }
 }
 function handleBulkInitData(data, userID) {
   let index = 1;
   for (let i = 1; i < data.length; i++) {
     if (data[i] === -1) {
-      addPosDataPackToBufferAndDraw(data.subarray(index, i), userID);
+      addPosDataToBufferAndDraw(data.subarray(index, i), userID);
       index = i + 1;
     }
   }
-  addPosDataPackToBufferAndDraw(data.subarray(index), userID);
+  addPosDataToBufferAndDraw(data.subarray(index), userID);
 }
 function handleEraseData(data, userID) {
   if (posUserCache.has(userID)) {
@@ -258,19 +256,19 @@ function erasePos(posX, posY, userID, eraserWidth = widthSlider.value) {
   if (!posUserCache.has(userID)) return;
   for (const posDataWrapper of posUserCache.get(userID)) {
 
-    for (let i = 1; i < posDataWrapper.length; i++) {
+    for (let i = 0; i < posDataWrapper.length; i++) {
       const posData = posDataWrapper[i];
 
-      const newPoints = new Array();
-      for (let j = 0; j < posData.length; j += 2) {
-        // Push only the points back into the array which are not in range of the erase pos
+      const newPosData = [posData[0], posData[1], posData[2], posData[3]];
+      for (let j = 4; j < posData.length; j += 2) {
+        // Push only the positions back into the array which are not in range of the erase pos
         if (Math.abs(posData[j] - posX) > eraserWidth || Math.abs(posData[j + 1] - posY) > eraserWidth) {
-          newPoints.push(posData[j], posData[j + 1]);
+          newPosData.push(posData[j], posData[j + 1]);
         }
       }
 
-      if (newPoints.length > 0) {
-        posDataWrapper[i] = new Int32Array(newPoints);
+      if (newPosData.length > 4) {
+        posDataWrapper[i] = new Int32Array(newPosData);
       } else {
         globalPosBuffer.delete(posDataWrapper);
         posUserCache.get(userID).delete(posDataWrapper);
@@ -279,8 +277,8 @@ function erasePos(posX, posY, userID, eraserWidth = widthSlider.value) {
   }
 }
 
-function addPosDataPackToBuffer(posDataPack, userID) {
-  const posDataWrapper = createPosDataWrapper(posDataPack);
+function addPosDataToBuffer(posData, userID) {
+  const posDataWrapper = createPosDataWrapper(posData);
   globalPosBuffer.add(posDataWrapper);
   let cache = posUserCache.get(userID);
   if (!cache) {
@@ -288,7 +286,6 @@ function addPosDataPackToBuffer(posDataPack, userID) {
     posUserCache.set(userID, cache);
   }
   cache.add(posDataWrapper);
-  return posDataWrapper;
 }
 
 function clearUserBufferAndRedraw(userID) {
@@ -306,9 +303,8 @@ function sendJoinedUserBuffer(targetUserID) {
   if (posUserCache.has(CURRENT_USER_ID)) {
     const joinedBuffer = new Array();
     for (const posDataWrapper of posUserCache.get(CURRENT_USER_ID)) {
-      joinedBuffer.push(-1, ...posDataWrapper[0]);
-      for (let i = 1; i < posDataWrapper.length; i++) {
-        joinedBuffer.push(...posDataWrapper[i]);
+      for (const posData of posDataWrapper) {
+        joinedBuffer.push(-1, ...posData);
       }
     }
     sock.send(new Int32Array(joinedBuffer));
@@ -316,8 +312,7 @@ function sendJoinedUserBuffer(targetUserID) {
 }
 
 function createPosDataWrapper(posData) {
-  // Split data packets into [ metadata, ...positionData ]
-  return [ posData.subarray(0, 4), posData.subarray(4) ];
+  return [ posData ];
 }
 
 
@@ -327,7 +322,7 @@ function sendPositions() {
     const posData = new Int32Array(posBuffer);
     sock.send(posData.buffer);
     if (posBuffer[0] >= 0) {
-      addPosDataPackToBuffer(posData, CURRENT_USER_ID);
+      addPosDataToBuffer(posData, CURRENT_USER_ID);
     }
     resetPosBuffer();
   }
