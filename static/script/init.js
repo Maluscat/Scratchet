@@ -244,17 +244,19 @@ function handleBulkInitData(data, userID) {
 }
 function handleEraseData(data, userID) {
   if (posUserCache.has(userID)) {
-    const userPointsArr = Array.from(posUserCache.get(userID));
-
+    const userPosSet = posUserCache.get(userID);
     for (let i = 2; i < data.length; i += 2) {
-      erasePos(data[i], data[i + 1], userID, data[1]);
+      erasePos(data[i], data[i + 1], userID, userPosSet, data[1]);
     }
     redrawCanvas();
   }
 }
-function erasePos(posX, posY, userID, eraserWidth = widthSlider.value) {
-  if (!posUserCache.has(userID)) return;
-  for (const posDataWrapper of posUserCache.get(userID)) {
+function erasePos(posX, posY, userID, userPosSet, eraserWidth = widthSlider.value) {
+  if (!userPosSet) {
+    if (!posUserCache.has(userID)) return;
+    userPosSet = posUserCache.get(userID);
+  }
+  for (const posDataWrapper of userPosSet) {
 
     for (let i = 0; i < posDataWrapper.length; i++) {
       const posData = posDataWrapper[i];
