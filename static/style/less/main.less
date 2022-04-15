@@ -29,12 +29,16 @@ canvas {
   height: 100%;
 }
 
-button {
+button, input {
   display: block;
   font-size: 1em;
   color: inherit;
-  cursor: pointer;
   padding: 0;
+  border: none;
+  pointer-events: auto;
+}
+button {
+  cursor: pointer;
   &:hover {
     background-color: lighten(@overlay-bg, 4%) !important;
   }
@@ -71,8 +75,8 @@ button {
     border: 2px solid @background-color;
     background-color: @overlay-bg;
     box-sizing: content-box;
+    padding: .175em;
   }
-  button,
   .sl89-track {
     pointer-events: auto;
   }
@@ -84,7 +88,7 @@ button {
   }
 }
 
-.overlay-text {
+.overlay-input {
   font-size: 1.125em;
   text-shadow:
     1px 0 black,
@@ -103,6 +107,15 @@ button {
     -1.25px 1.25px black,
     1.25px -1.25px black,
     -1.25px -1.25px black;
+  input& {
+    background-color: transparent;
+    border-radius: 100px;
+    box-sizing: content-box;
+    &:focus {
+      padding: .175em .5em;
+      background-color: @overlay-bg;
+    }
+  }
 }
 
 .horizontal-group {
@@ -179,8 +192,6 @@ button {
   .sl89-track {
     width: 13em;
     height: @slider-dims;
-    box-sizing: content-box;
-    padding: .175em;
   }
 }
 

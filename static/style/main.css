@@ -20,12 +20,17 @@ canvas {
   width: 100%;
   height: 100%;
 }
-button {
+button,
+input {
   display: block;
   font-size: 1em;
   color: inherit;
-  cursor: pointer;
   padding: 0;
+  border: none;
+  pointer-events: auto;
+}
+button {
+  cursor: pointer;
 }
 button:hover {
   background-color: hsl(0, 0%, 22%) !important;
@@ -58,8 +63,8 @@ button:active {
   border: 2px solid hsl(0, 0%, 8%);
   background-color: hsl(0, 0%, 18%);
   box-sizing: content-box;
+  padding: 0.175em;
 }
-.overlay button,
 .overlay .sl89-track {
   pointer-events: auto;
 }
@@ -69,9 +74,18 @@ button:active {
 .overlay .slider-hue-indicator {
   border-radius: 100px;
 }
-.overlay-text {
+.overlay-input {
   font-size: 1.125em;
   text-shadow: 1px 0 black, -1px 0 black, 0 1px black, 0 -1px black, 1px 1px black, -1px 1px black, 1px -1px black, -1px -1px black, 1.25px 0 black, -1.25px 0 black, 0 1.25px black, 0 -1.25px black, 1.25px 1.25px black, -1.25px 1.25px black, 1.25px -1.25px black, -1.25px -1.25px black;
+}
+input.overlay-input {
+  background-color: transparent;
+  border-radius: 100px;
+  box-sizing: content-box;
+}
+input.overlay-input:focus {
+  padding: 0.175em 0.5em;
+  background-color: hsl(0, 0%, 18%);
 }
 .horizontal-group {
   display: flex;
@@ -136,8 +150,6 @@ button:active {
 #utility-overlay .sl89-track {
   width: 13em;
   height: 1.75em;
-  box-sizing: content-box;
-  padding: 0.175em;
 }
 #hue-slider .slider-hue-indicator {
   border: 4px solid hsl(0, 0%, 8%);
