@@ -10,7 +10,6 @@ body {
   display: flex;
   justify-content: center;
   background-color: hsl(0, 0%, 8%);
-  margin: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -23,6 +22,7 @@ canvas {
 button,
 input {
   display: block;
+  font-family: inherit;
   font-size: 1em;
   color: inherit;
   padding: 0;
@@ -63,7 +63,7 @@ button:active {
   border: 2px solid hsl(0, 0%, 8%);
   background-color: hsl(0, 0%, 18%);
   box-sizing: content-box;
-  padding: 0.175em;
+  padding: 0.155em;
 }
 .overlay .sl89-track {
   pointer-events: auto;
@@ -75,7 +75,6 @@ button:active {
   border-radius: 100px;
 }
 .overlay-input {
-  font-size: 1.125em;
   text-shadow: 1px 0 black, -1px 0 black, 0 1px black, 0 -1px black, 1px 1px black, -1px 1px black, 1px -1px black, -1px -1px black, 1.25px 0 black, -1.25px 0 black, 0 1.25px black, 0 -1.25px black, 1.25px 1.25px black, -1.25px 1.25px black, 1.25px -1.25px black, -1.25px -1.25px black;
 }
 input.overlay-input {
@@ -95,13 +94,14 @@ input.overlay-input:focus {
   margin-right: 0.5em;
 }
 .button-group .button {
-  width: 3em;
-  height: 3em;
+  font-size: 1.1rem;
+  width: 2.5em;
+  height: 2.5em;
 }
 .sl89-thumb {
   background-color: hsl(0, 0%, 31%);
-  width: 1.75em;
-  height: 1.75em;
+  width: 1.6em;
+  height: 1.6em;
 }
 .sl89-thumb:hover {
   background-color: hsl(0, 0%, 34%);
@@ -148,8 +148,8 @@ input.overlay-input:focus {
 }
 #utility-overlay .button,
 #utility-overlay .sl89-track {
-  width: 13em;
-  height: 1.75em;
+  width: 12em;
+  height: 1.6em;
 }
 #hue-slider .slider-hue-indicator {
   border: 4px solid hsl(0, 0%, 8%);
@@ -162,7 +162,4 @@ input.overlay-input:focus {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-#width-slider .slider-width-value {
-  font-size: 1.125em;
 }

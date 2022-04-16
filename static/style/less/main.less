@@ -17,7 +17,6 @@ body {
   display: flex;
   justify-content: center;
   background-color: @background-color;
-  margin: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -31,6 +30,7 @@ canvas {
 
 button, input {
   display: block;
+  font-family: inherit;
   font-size: 1em;
   color: inherit;
   padding: 0;
@@ -50,7 +50,7 @@ button {
 @overlay-margin: 1em;
 @overlay-gap: .5em;
 @overlay-bg: hsl(0, 0%, 18%);
-@slider-dims: 1.75em;
+@slider-dims: 1.6em;
 .overlay {
   position: absolute;
   pointer-events: none;
@@ -75,7 +75,7 @@ button {
     border: 2px solid @background-color;
     background-color: @overlay-bg;
     box-sizing: content-box;
-    padding: .175em;
+    padding: .155em;
   }
   .sl89-track {
     pointer-events: auto;
@@ -89,7 +89,6 @@ button {
 }
 
 .overlay-input {
-  font-size: 1.125em;
   text-shadow:
     1px 0 black,
     -1px 0 black,
@@ -128,8 +127,9 @@ button {
 
 .button-group {
   .button {
-    width: 3em;
-    height: 3em;
+    font-size: 1.1rem;
+    width: 2.5em;
+    height: 2.5em;
   }
 }
 
@@ -190,7 +190,7 @@ button {
 #utility-overlay {
   .button,
   .sl89-track {
-    width: 13em;
+    width: 12em;
     height: @slider-dims;
   }
 }
@@ -219,8 +219,5 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  .slider-width-value {
-    font-size: 1.125em;
   }
 }
