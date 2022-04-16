@@ -75,7 +75,7 @@ button:active {
   border-radius: 100px;
 }
 .overlay-input {
-  text-shadow: 1px 0 black, -1px 0 black, 0 1px black, 0 -1px black, 1px 1px black, -1px 1px black, 1px -1px black, -1px -1px black, 1.25px 0 black, -1.25px 0 black, 0 1.25px black, 0 -1.25px black, 1.25px 1.25px black, -1.25px 1.25px black, 1.25px -1.25px black, -1.25px -1.25px black;
+  text-shadow: 1px 0 hsl(0, 0%, 8%), -1px 0 hsl(0, 0%, 8%), 0 1px hsl(0, 0%, 8%), 0 -1px hsl(0, 0%, 8%), 1px 1px hsl(0, 0%, 8%), -1px 1px hsl(0, 0%, 8%), 1px -1px hsl(0, 0%, 8%), -1px -1px hsl(0, 0%, 8%), 1.25px 0 hsl(0, 0%, 8%), -1.25px 0 hsl(0, 0%, 8%), 0 1.25px hsl(0, 0%, 8%), 0 -1.25px hsl(0, 0%, 8%), 1.25px 1.25px hsl(0, 0%, 8%), -1.25px 1.25px hsl(0, 0%, 8%), 1.25px -1.25px hsl(0, 0%, 8%), -1.25px -1.25px hsl(0, 0%, 8%);
 }
 input.overlay-input {
   background-color: transparent;
