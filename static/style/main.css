@@ -27,7 +27,6 @@ input {
   color: inherit;
   padding: 0;
   border: none;
-  pointer-events: auto;
 }
 button {
   cursor: pointer;
@@ -59,32 +58,28 @@ button:active {
   margin-bottom: 0.5em;
 }
 .overlay .button,
+.overlay .overlay-input:focus,
 .overlay .sl89-track {
   border: 2px solid hsl(0, 0%, 8%);
   background-color: hsl(0, 0%, 18%);
   box-sizing: content-box;
   padding: 0.155em;
 }
-.overlay .sl89-track {
-  pointer-events: auto;
-}
 .overlay .button,
+.overlay .overlay-input,
 .overlay .sl89-thumb,
 .overlay .sl89-track,
 .overlay .slider-hue-indicator {
   border-radius: 100px;
+  pointer-events: auto;
 }
 .overlay-input {
+  background-color: transparent;
   text-shadow: 1px 0 hsl(0, 0%, 8%), -1px 0 hsl(0, 0%, 8%), 0 1px hsl(0, 0%, 8%), 0 -1px hsl(0, 0%, 8%), 1px 1px hsl(0, 0%, 8%), -1px 1px hsl(0, 0%, 8%), 1px -1px hsl(0, 0%, 8%), -1px -1px hsl(0, 0%, 8%), 1.25px 0 hsl(0, 0%, 8%), -1.25px 0 hsl(0, 0%, 8%), 0 1.25px hsl(0, 0%, 8%), 0 -1.25px hsl(0, 0%, 8%), 1.25px 1.25px hsl(0, 0%, 8%), -1.25px 1.25px hsl(0, 0%, 8%), 1.25px -1.25px hsl(0, 0%, 8%), -1.25px -1.25px hsl(0, 0%, 8%);
 }
-input.overlay-input {
-  background-color: transparent;
-  border-radius: 100px;
-  box-sizing: content-box;
-}
-input.overlay-input:focus {
-  padding: 0.175em 0.5em;
-  background-color: hsl(0, 0%, 18%);
+.overlay-input:focus {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 .horizontal-group {
   display: flex;

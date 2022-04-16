@@ -35,7 +35,6 @@ button, input {
   color: inherit;
   padding: 0;
   border: none;
-  pointer-events: auto;
 }
 button {
   cursor: pointer;
@@ -71,24 +70,25 @@ button {
     margin-bottom: @overlay-gap;
   }
   .button,
+  .overlay-input:focus,
   .sl89-track {
     border: 2px solid @background-color;
     background-color: @overlay-bg;
     box-sizing: content-box;
     padding: .155em;
   }
-  .sl89-track {
-    pointer-events: auto;
-  }
   .button,
+  .overlay-input,
   .sl89-thumb,
   .sl89-track,
   .slider-hue-indicator {
     border-radius: 100px;
+    pointer-events: auto;
   }
 }
 
 .overlay-input {
+  background-color: transparent;
   text-shadow:
     1px 0 @background-color,
     -1px 0 @background-color,
@@ -106,14 +106,9 @@ button {
     -1.25px 1.25px @background-color,
     1.25px -1.25px @background-color,
     -1.25px -1.25px @background-color;
-  input& {
-    background-color: transparent;
-    border-radius: 100px;
-    box-sizing: content-box;
-    &:focus {
-      padding: .175em .5em;
-      background-color: @overlay-bg;
-    }
+  &:focus {
+    padding-left: .5em;
+    padding-right: .5em;
   }
 }
 
