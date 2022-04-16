@@ -75,11 +75,14 @@ button:active {
 }
 .overlay-input {
   background-color: transparent;
+  padding-left: 0.4em !important;
+  padding-right: 0.4em !important;
+  white-space: nowrap;
+  margin: 0 -0.4em;
   text-shadow: 1px 0 hsl(0, 0%, 8%), -1px 0 hsl(0, 0%, 8%), 0 1px hsl(0, 0%, 8%), 0 -1px hsl(0, 0%, 8%), 1px 1px hsl(0, 0%, 8%), -1px 1px hsl(0, 0%, 8%), 1px -1px hsl(0, 0%, 8%), -1px -1px hsl(0, 0%, 8%), 1.25px 0 hsl(0, 0%, 8%), -1.25px 0 hsl(0, 0%, 8%), 0 1.25px hsl(0, 0%, 8%), 0 -1.25px hsl(0, 0%, 8%), 1.25px 1.25px hsl(0, 0%, 8%), -1.25px 1.25px hsl(0, 0%, 8%), 1.25px -1.25px hsl(0, 0%, 8%), -1.25px -1.25px hsl(0, 0%, 8%);
 }
-.overlay-input:focus {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+.overlay-input br {
+  display: none;
 }
 .horizontal-group {
   display: flex;

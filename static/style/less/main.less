@@ -88,7 +88,13 @@ button {
 }
 
 .overlay-input {
+  @extra-padding: .4em;
   background-color: transparent;
+  padding-left: @extra-padding !important;
+  padding-right: @extra-padding !important;
+  white-space: nowrap;
+  // Reverting the changed position caused by the extra padding
+  margin: 0 -@extra-padding;
   text-shadow:
     1px 0 @background-color,
     -1px 0 @background-color,
@@ -106,9 +112,8 @@ button {
     -1.25px 1.25px @background-color,
     1.25px -1.25px @background-color,
     -1.25px -1.25px @background-color;
-  &:focus {
-    padding-left: .5em;
-    padding-right: .5em;
+  br {
+    display: none;
   }
 }
 
