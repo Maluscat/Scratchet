@@ -139,6 +139,7 @@ button:active {
 #show-users-wrapper .hover-overlay .user {
   display: block;
   margin: 0.375em;
+  white-space: nowrap;
 }
 #show-users-wrapper .hover-overlay > ul {
   margin: 0;
