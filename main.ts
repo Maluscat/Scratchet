@@ -61,7 +61,8 @@ router
         const data = JSON.parse(e.data);
         switch (data.evt) {
           case 'clearUser':
-            sendJSONToAllSockets(sock, sockID, data.evt);
+          case 'changeName':
+            sendJSONToAllSockets(sock, sockID, data.evt, data.val);
             break;
           default:
             console.error('error! Wrong message!');
@@ -102,11 +103,14 @@ function sendJSONToOneSocket(receivingSock: WebSocket, event: string, value: str
   receivingSock.send(data);
 }
 
-function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: string) {
+function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: string, value?: string) {
   const dataObj: SocketData = {
     evt: event,
     usr: userID
   };
+  if (value != null) {
+    dataObj.val = value;
+  }
   const data = JSON.stringify(dataObj);
 
   for (const socket of activeSockets) {
