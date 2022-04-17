@@ -25,11 +25,12 @@ router
       sockID = userIDCounter++
       activeSockets.add(sock);
       addSocketToInitQueue(sock);
-      sendDataToAllSockets(sock, sockID, 'connect');
+      sendJSONToAllSockets(sock, sockID, 'connect');
+      sendJSONToOneSocket(sock, 'assignUserID', sockID.toString());
     });
 
     sock.addEventListener('close', () => {
-      sendDataToAllSockets(sock, sockID, 'disconnect');
+      sendJSONToAllSockets(sock, sockID, 'disconnect');
       removeSocketFromInitQueue(sock);
       activeSockets.delete(sock);
     });
@@ -60,7 +61,7 @@ router
         const data = JSON.parse(e.data);
         switch (data.evt) {
           case 'clearUser':
-            sendDataToAllSockets(sock, sockID, data.evt);
+            sendJSONToAllSockets(sock, sockID, data.evt);
             break;
           default:
             console.error('error! Wrong message!');
@@ -77,7 +78,7 @@ function bufferPrependUser(dataArr: Int32Array, sockID: number): ArrayBuffer {
   return newData.buffer;
 }
 
-// ---- Socket handling ----
+// ---- Initial data queue state handling ----
 function addSocketToInitQueue(sock: WebSocket) {
   if (activeSockets.size > 1) {
     socketRequireInitQueue.set(sock, new WeakSet([sock]));
@@ -91,16 +92,23 @@ function removeSocketFromInitQueue(sock: WebSocket) {
   socketRequireInitQueue.delete(sock);
 }
 
-function sendDataToAllSockets(callingSock: WebSocket, userID: number, event: string, value?: string) {
+// ---- Socket handling ----
+function sendJSONToOneSocket(receivingSock: WebSocket, event: string, value: string) {
+  const dataObj: SocketData = {
+    evt: event,
+    val: value
+  };
+  const data = JSON.stringify(dataObj);
+  receivingSock.send(data);
+}
+
+function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: string) {
   const dataObj: SocketData = {
     evt: event,
     usr: userID
   };
-  if (value != null) {
-    dataObj.val = value;
-  }
-
   const data = JSON.stringify(dataObj);
+
   for (const socket of activeSockets) {
     if (socket != callingSock && socket.readyState === 1) {
       socket.send(data);

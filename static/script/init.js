@@ -8,6 +8,7 @@ const notificationTemplate = (function() {
 const canvas = document.getElementById('canvas');
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
+const usernameInput = document.getElementById('username-input');
 
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
@@ -16,6 +17,7 @@ const ctx = canvas.getContext('2d');
 const posUserCache = new Map(); // Map<userID, Set<posDataWrapperForUser>>
 const globalPosBuffer = new Set(); // Set<posDataWrapperInDrawOrder>
 const lastPos = new Array(2);
+let defaultUsername;
 let pressedMouseBtn = -1;
 let posBuffer = new Array();
 
@@ -62,7 +64,7 @@ widthSlider.addEvent('change:value', () => setLineWidth());
 // });
 
 
-document.getElementById('username-input').addEventListener('blur', e => {
+usernameInput.addEventListener('blur', e => {
   handleOverlayInput(e, changeUsername);
 });
 for (const l of document.querySelectorAll('.overlay-input')) {
@@ -404,11 +406,20 @@ async function socketReceiveMessage(e) {
         console.info(data.usr + ' cleared their drawing');
         clearUserBufferAndRedraw(data.usr);
         break;
+      case 'assignUserID':
+        // For async reasons, this user ID is solely used for the username
+        defaultUsername = 'User #' + data.val;
+        setDefaultUsername();
+        break;
     }
   }
 }
 
 // --- Helper functions ---
+function setDefaultUsername() {
+  usernameInput.textContent = defaultUsername;
+}
+
 function sendMessage(event) {
   sock.send(JSON.stringify({
     evt: event
