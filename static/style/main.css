@@ -58,6 +58,7 @@ button:active {
   margin-bottom: 0.5em;
 }
 .overlay .button,
+.overlay .hover-overlay,
 .overlay .overlay-input:focus,
 .overlay .sl89-track {
   border: 2px solid hsl(0, 0%, 8%);
@@ -93,8 +94,22 @@ button:active {
 }
 .button-group .button {
   font-size: 1.1rem;
-  width: 2.5em;
-  height: 2.5em;
+  width: 2.4em;
+  height: 2.4em;
+}
+.button-wrapper {
+  position: relative;
+}
+.button-wrapper:hover .hover-overlay {
+  display: block;
+}
+.button-wrapper .hover-overlay {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  border-radius: 1.3em;
+  z-index: 1;
 }
 .sl89-thumb {
   background-color: hsl(0, 0%, 31%);
@@ -117,6 +132,18 @@ button:active {
 }
 #draw-indicator.erase {
   background-color: hsl(0, 0%, 90%);
+}
+#show-users-wrapper .hover-overlay {
+  padding: 0.375em 0.8em;
+}
+#show-users-wrapper .hover-overlay .user {
+  display: block;
+  margin: 0.375em;
+}
+#show-users-wrapper .hover-overlay > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 #notification-overlay {
   display: flex;

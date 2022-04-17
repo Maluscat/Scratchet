@@ -13,7 +13,15 @@
     <div id="draw-indicator"></div>
 
     <div id="social-overlay" class="overlay top left button-group">
-      <span id="username-input" class="overlay-input" contenteditable="true" spellcheck="false">User #...</span>
+      <div class="horizontal-group">
+        <div id="show-users-wrapper" class="button-wrapper">
+          <button id="show-users-button" class="button" type="button">0</button>
+          <div class="hover-overlay">
+            <ul id="show-users-list"></ul>
+          </div>
+        </div>
+        <span id="username-input" class="overlay-input" contenteditable="true" spellcheck="false">User #...</span>
+      </div>
     </div>
     <div id="room-overlay" class="overlay top right button-group">
       <div class="horizontal-group">
