@@ -8,12 +8,16 @@ const notificationTemplate = (function() {
 const canvas = document.getElementById('canvas');
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
+
 const usernameInput = document.getElementById('username-input');
+const userList = document.getElementById('show-users-list');
+const userListButton = document.getElementById('show-users-button');
 
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
 
 const ctx = canvas.getContext('2d');
+const userListNodes = new Map();
 const posUserCache = new Map(); // Map<userID, Set<posDataWrapperForUser>>
 const globalPosBuffer = new Set(); // Set<posDataWrapperInDrawOrder>
 const lastPos = new Array(2);
@@ -65,7 +69,7 @@ widthSlider.addEvent('change:value', () => setLineWidth());
 
 
 usernameInput.addEventListener('blur', e => {
-  handleOverlayInput(e, changeUsername);
+  handleOverlayInput(e, changeOwnUsername);
 });
 for (const l of document.querySelectorAll('.overlay-input')) {
   l.addEventListener('keydown', handleOverlayInputKeys);
@@ -396,34 +400,88 @@ async function socketReceiveMessage(e) {
         dispatchNotification(`User #${data.usr} has left the room`)
         clearUserBufferAndRedraw(data.usr);
         posUserCache.delete(data.usr);
+        removeUserFromUsernameList(data.usr);
         break;
       case 'connect':
         console.info(data.usr + ' connected, sending my data');
         dispatchNotification(`User #${data.usr} has entered the room`)
         sendJoinedUserBuffer();
+        addUserToUsernameList(data.usr, 'User #' + data.usr);
         break;
       case 'clearUser':
         console.info(data.usr + ' cleared their drawing');
         clearUserBufferAndRedraw(data.usr);
         break;
+      case 'changeName':
+        changeUsername(data.usr, data.val);
+        break;
       case 'assignUserID':
         // For async reasons, this user ID is solely used for the username
         defaultUsername = 'User #' + data.val;
-        setDefaultUsername();
+        addUserToUsernameList(CURRENT_USER_ID, defaultUsername);
+        setOwnDefaultUsername();
         break;
     }
   }
 }
 
 // --- Helper functions ---
-function setDefaultUsername() {
-  usernameInput.textContent = defaultUsername;
+function changeOwnUsername(newUsername) {
+  if (/^[Uu]ser #\d+$/.test(newUsername)) {
+    setOwnDefaultUsername();
+  } else {
+    changeUsername(CURRENT_USER_ID, newUsername);
+    sendMessage('changeName', newUsername);
+  }
 }
 
-function sendMessage(event) {
-  sock.send(JSON.stringify({
+function setOwnDefaultUsername() {
+  usernameInput.textContent = defaultUsername;
+  changeUsername(CURRENT_USER_ID, defaultUsername);
+}
+
+function changeUsername(userID, newUsername, listNode = userListNodes.get(userID)) {
+  if (userID === CURRENT_USER_ID) {
+    newUsername += ' (You)';
+  }
+  if (listNode.textContent !== newUsername) {
+    listNode.textContent = newUsername;
+  }
+}
+
+function addUserToUsernameList(userID, username) {
+  const listNode = createUserListNode();
+  changeUsername(userID, username, listNode);
+  userListNodes.set(userID, listNode);
+  userList.appendChild(listNode);
+  updateUserListButtonIndicator();
+}
+function removeUserFromUsernameList(userID) {
+  if (userListNodes.has(userID)) {
+    userListNodes.get(userID).remove();
+    userListNodes.delete(userID);
+    updateUserListButtonIndicator();
+  }
+}
+
+function updateUserListButtonIndicator() {
+  userListButton.textContent = userListNodes.size;
+}
+
+function createUserListNode(username) {
+  const node = document.createElement('span');
+  node.classList.add('user');
+  return node;
+}
+
+function sendMessage(event, value) {
+  const dataObj = {
     evt: event
-  }));
+  };
+  if (value != null) {
+    dataObj.val = value;
+  }
+  sock.send(JSON.stringify(dataObj));
 }
 
 
