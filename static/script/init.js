@@ -7,7 +7,7 @@ const notificationTemplate = (function() {
 
 const canvas = document.getElementById('canvas');
 const notificationWrapper = document.getElementById('notification-overlay');
-const drawIndicator = document.getElementById('draw-indicator');;
+const drawIndicator = document.getElementById('draw-indicator');
 
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
@@ -62,6 +62,13 @@ widthSlider.addEvent('change:value', () => setLineWidth());
 // });
 
 
+document.getElementById('username-input').addEventListener('blur', e => {
+  handleOverlayInput(e, changeUsername);
+});
+for (const l of document.querySelectorAll('.overlay-input')) {
+  l.addEventListener('keydown', handleOverlayInputKeys);
+}
+
 document.getElementById('clear-button').addEventListener('click', clearCurrentUserCanvas);
 
 sock.addEventListener('open', socketOpen);
@@ -87,6 +94,20 @@ setInterval(sendPositions, SEND_INTERVAL);
 
 
 // ---- Events ----
+function handleOverlayInputKeys(e) {
+  if (e.key === 'Enter' || e.key === 'Escape') {
+    e.currentTarget.blur();
+  }
+}
+function handleOverlayInput(e, callback) {
+  // From https://stackoverflow.com/a/30520997
+  for (const brNode of e.currentTarget.getElementsByTagName('br')) {
+    brNode.remove();
+  }
+  window.getSelection().removeAllRanges();
+  callback(e.currentTarget.textContent);
+}
+
 function mouseWheel(e) {
   if (!e.ctrlKey && e.deltaY !== 0) {
     const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
