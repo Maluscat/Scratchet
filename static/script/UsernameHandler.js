@@ -4,7 +4,6 @@ class UsernameHandler {
   userListButton;
 
   userListNodes = new Map();
-  defaultUsername;
 
   constructor(usernameInput, userList, userListButton) {
     this.usernameInput = usernameInput;
@@ -12,45 +11,59 @@ class UsernameHandler {
     this.userListButton = userListButton;
   }
 
+  // ---- Events ----
   changeOwnUsername(newUsername) {
     if (/^[Uu]ser #\d+$/.test(newUsername)) {
-      this.setOwnDefaultUsername();
+      this.resetUsernameInput();
     } else {
       this.changeUsername(CURRENT_USER_ID, newUsername);
       sendMessage('changeName', newUsername);
     }
   }
 
-  setOwnDefaultUsername() {
-    this.usernameInput.textContent = this.defaultUsername;
-    this.changeUsername(CURRENT_USER_ID, this.defaultUsername);
+  // ---- Own user handling ----
+  initOwnUsernameFromRealID(realUserID) {
+    const defaultName = UsernameHandler.createDefaultName(realUserID);
+    this.addUserToUserList(CURRENT_USER_ID, defaultName);
+    this.resetUsernameInput(defaultName);
   }
 
+  resetUsernameInput(defaultUsername) {
+    if (!defaultUsername) {
+      defaultUsername = this.userListNodes.get(CURRENT_USER_ID).textContent;
+    }
+    this.usernameInput.textContent = defaultUsername;
+    this.changeUsername(CURRENT_USER_ID, defaultUsername);
+  }
+
+  // ---- Generic user handling ----
   changeUsername(userID, newUsername, listNode = this.userListNodes.get(userID)) {
-    if (userID === CURRENT_USER_ID) {
-      newUsername += ' (You)';
-    }
-    if (listNode.textContent !== newUsername) {
-      listNode.textContent = newUsername;
+    if (listNode) {
+      if (userID === CURRENT_USER_ID) {
+        newUsername += ' (You)';
+      }
+      if (listNode.textContent !== newUsername) {
+        listNode.textContent = newUsername;
+      }
     }
   }
 
-  addUserToUsernameList(userID, username) {
+  addUserToUserList(userID, username = UsernameHandler.createDefaultName(userID)) {
     const listNode = UsernameHandler.createUserListNode();
     this.changeUsername(userID, username, listNode);
     this.userListNodes.set(userID, listNode);
     this.userList.appendChild(listNode);
-    this.updateUserListButtonIndicator();
+    this.updateUserIndicator();
   }
-  removeUserFromUsernameList(userID) {
+  removeUserFromUserList(userID) {
     if (this.userListNodes.has(userID)) {
       this.userListNodes.get(userID).remove();
       this.userListNodes.delete(userID);
-      this.updateUserListButtonIndicator();
+      this.updateUserIndicator();
     }
   }
 
-  updateUserListButtonIndicator() {
+  updateUserIndicator() {
     this.userListButton.textContent = this.userListNodes.size;
   }
 
@@ -59,5 +72,9 @@ class UsernameHandler {
     const listNode = document.createElement('span');
     listNode.classList.add('user');
     return listNode;
+  }
+
+  static createDefaultName(userID) {
+    return 'User #' + userID;
   }
 }

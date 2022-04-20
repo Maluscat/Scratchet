@@ -162,15 +162,19 @@ async function socketReceiveMessage(e) {
       case 'disconnect':
         console.info(data.usr + ' disconnected');
         dispatchNotification(`User #${data.usr} has left the room`)
+
         mainCanvas.clearUserBufferAndRedraw(data.usr);
         mainCanvas.posUserCache.delete(data.usr);
-        nameHandler.removeUserFromUsernameList(data.usr);
+
+        nameHandler.removeUserFromUserList(data.usr);
         break;
       case 'connect':
         console.info(data.usr + ' connected, sending my data');
         dispatchNotification(`User #${data.usr} has entered the room`)
+
         mainCanvas.sendJoinedUserBuffer();
-        nameHandler.addUserToUsernameList(data.usr, 'User #' + data.usr);
+
+        nameHandler.addUserToUserList(data.usr);
         break;
       case 'clearUser':
         console.info(data.usr + ' cleared their drawing');
@@ -181,9 +185,7 @@ async function socketReceiveMessage(e) {
         break;
       case 'assignUserID':
         // For async reasons, this user ID is solely used for the username
-        nameHandler.defaultUsername = 'User #' + data.val;
-        nameHandler.addUserToUsernameList(CURRENT_USER_ID, nameHandler.defaultUsername);
-        nameHandler.setOwnDefaultUsername();
+        nameHandler.initOwnUsernameFromRealID(data.val);
         break;
     }
   }
