@@ -58,7 +58,7 @@ for (const l of document.querySelectorAll('.overlay-input')) {
 
 hueSlider.addEvent('change:value', () => mainCanvas.setStrokeStyle());
 widthSlider.addEvent('change:value', () => mainCanvas.setLineWidth());
-document.getElementById('clear-button').addEventListener('click', mainCanvas.clearCurrentUserCanvas);
+document.getElementById('clear-button').addEventListener('click', mainCanvas.clearCurrentUserCanvas.bind(mainCanvas));
 
 sock.addEventListener('open', socketOpen);
 sock.addEventListener('message', socketReceiveMessage);
