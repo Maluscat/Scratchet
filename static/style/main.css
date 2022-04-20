@@ -133,15 +133,15 @@ button:active {
 #draw-indicator.erase {
   background-color: hsl(0, 0%, 90%);
 }
-#show-users-wrapper .hover-overlay {
+#user-list-overlay {
   padding: 0.375em 0.8em;
 }
-#show-users-wrapper .hover-overlay .user {
+#user-list-overlay .user {
   display: block;
   margin: 0.375em;
   white-space: nowrap;
 }
-#show-users-wrapper .hover-overlay > ul {
+#user-list-overlay > ul {
   margin: 0;
   padding: 0;
   list-style: none;

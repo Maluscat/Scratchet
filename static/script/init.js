@@ -9,8 +9,9 @@ const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 
 const usernameInput = document.getElementById('username-input');
-const userList = document.getElementById('show-users-list');
-const userListButton = document.getElementById('show-users-button');
+const userList = document.getElementById('user-list');
+const userListOverlay = document.getElementById('user-list-overlay');
+const userListButton = document.getElementById('user-list-button');
 
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
