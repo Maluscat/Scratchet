@@ -158,23 +158,24 @@ async function socketReceiveMessage(e) {
     parseSocketData(data.subarray(1), userID);
   } else {
     const data = JSON.parse(e.data);
+    let username; // Switches aren't scoped
     switch (data.evt) {
       case 'disconnect':
         console.info(data.usr + ' disconnected');
-        dispatchNotification(`User #${data.usr} has left the room`)
+
+        username = nameHandler.removeUserFromUserList(data.usr);
+        dispatchNotification(`${username} has left the room`);
 
         mainCanvas.clearUserBufferAndRedraw(data.usr);
         mainCanvas.posUserCache.delete(data.usr);
-
-        nameHandler.removeUserFromUserList(data.usr);
         break;
       case 'connect':
         console.info(data.usr + ' connected, sending my data');
-        dispatchNotification(`User #${data.usr} has entered the room`)
+
+        username = nameHandler.addUserToUserList(data.usr);
+        dispatchNotification(`${username} has entered the room`);
 
         mainCanvas.sendJoinedUserBuffer();
-
-        nameHandler.addUserToUserList(data.usr);
         break;
       case 'clearUser':
         console.info(data.usr + ' cleared their drawing');
