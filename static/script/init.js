@@ -15,9 +15,6 @@ const userListButton = document.getElementById('show-users-button');
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
 
-const userListNodes = new Map();
-let defaultUsername;
-
 /*
  * data/socketData: bulk data received via socket
  * posData: self-contained metadata & position packet: [...metadata, pos1X, pos1Y, pos2X, pos2Y, ...]
@@ -49,10 +46,11 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
 }, true);
 
 const mainCanvas = new ScratchetCanvas(document.getElementById('canvas'));
+const nameHandler = new UsernameHandler(usernameInput, userList, userListButton);
 
 
 usernameInput.addEventListener('blur', e => {
-  handleOverlayInput(e, changeOwnUsername);
+  handleOverlayInput(e, nameHandler.changeOwnUsername.bind(nameHandler));
 });
 for (const l of document.querySelectorAll('.overlay-input')) {
   l.addEventListener('keydown', handleOverlayInputKeys);
@@ -166,78 +164,29 @@ async function socketReceiveMessage(e) {
         dispatchNotification(`User #${data.usr} has left the room`)
         mainCanvas.clearUserBufferAndRedraw(data.usr);
         mainCanvas.posUserCache.delete(data.usr);
-        removeUserFromUsernameList(data.usr);
+        nameHandler.removeUserFromUsernameList(data.usr);
         break;
       case 'connect':
         console.info(data.usr + ' connected, sending my data');
         dispatchNotification(`User #${data.usr} has entered the room`)
         mainCanvas.sendJoinedUserBuffer();
-        addUserToUsernameList(data.usr, 'User #' + data.usr);
+        nameHandler.addUserToUsernameList(data.usr, 'User #' + data.usr);
         break;
       case 'clearUser':
         console.info(data.usr + ' cleared their drawing');
         mainCanvas.clearUserBufferAndRedraw(data.usr);
         break;
       case 'changeName':
-        changeUsername(data.usr, data.val);
+        nameHandler.changeUsername(data.usr, data.val);
         break;
       case 'assignUserID':
         // For async reasons, this user ID is solely used for the username
-        defaultUsername = 'User #' + data.val;
-        addUserToUsernameList(CURRENT_USER_ID, defaultUsername);
-        setOwnDefaultUsername();
+        nameHandler.defaultUsername = 'User #' + data.val;
+        nameHandler.addUserToUsernameList(CURRENT_USER_ID, nameHandler.defaultUsername);
+        nameHandler.setOwnDefaultUsername();
         break;
     }
   }
-}
-
-// ---- Username handling ----
-function changeOwnUsername(newUsername) {
-  if (/^[Uu]ser #\d+$/.test(newUsername)) {
-    setOwnDefaultUsername();
-  } else {
-    changeUsername(CURRENT_USER_ID, newUsername);
-    sendMessage('changeName', newUsername);
-  }
-}
-
-function setOwnDefaultUsername() {
-  usernameInput.textContent = defaultUsername;
-  changeUsername(CURRENT_USER_ID, defaultUsername);
-}
-
-function changeUsername(userID, newUsername, listNode = userListNodes.get(userID)) {
-  if (userID === CURRENT_USER_ID) {
-    newUsername += ' (You)';
-  }
-  if (listNode.textContent !== newUsername) {
-    listNode.textContent = newUsername;
-  }
-}
-
-function addUserToUsernameList(userID, username) {
-  const listNode = createUserListNode();
-  changeUsername(userID, username, listNode);
-  userListNodes.set(userID, listNode);
-  userList.appendChild(listNode);
-  updateUserListButtonIndicator();
-}
-function removeUserFromUsernameList(userID) {
-  if (userListNodes.has(userID)) {
-    userListNodes.get(userID).remove();
-    userListNodes.delete(userID);
-    updateUserListButtonIndicator();
-  }
-}
-
-function updateUserListButtonIndicator() {
-  userListButton.textContent = userListNodes.size;
-}
-
-function createUserListNode(username) {
-  const node = document.createElement('span');
-  node.classList.add('user');
-  return node;
 }
 
 // ---- Notifications ----
