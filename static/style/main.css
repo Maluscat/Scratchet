@@ -109,7 +109,8 @@ button:active {
   position: absolute;
   left: 100%;
   top: 0;
-  border-radius: 1.3em;
+  margin: 0 0.15em;
+  border-radius: 1.4em;
   z-index: 1;
 }
 .sl89-thumb {
