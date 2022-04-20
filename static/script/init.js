@@ -57,6 +57,8 @@ for (const l of document.querySelectorAll('.overlay-input')) {
   l.addEventListener('keydown', handleOverlayInputKeys);
 }
 
+userListButton.addEventListener('click', toggleUserList);
+
 hueSlider.addEvent('change:value', () => mainCanvas.setStrokeStyle());
 widthSlider.addEvent('change:value', () => mainCanvas.setLineWidth());
 document.getElementById('clear-button').addEventListener('click', mainCanvas.clearCurrentUserCanvas.bind(mainCanvas));
@@ -82,6 +84,10 @@ function handleOverlayInput(e, callback) {
   }
   window.getSelection().removeAllRanges();
   callback(e.currentTarget.textContent);
+}
+
+function toggleUserList(e) {
+  userListOverlay.classList.toggle('active');
 }
 
 function mouseWheel(e) {

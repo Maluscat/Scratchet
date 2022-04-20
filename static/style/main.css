@@ -100,7 +100,8 @@ button:active {
 .button-wrapper {
   position: relative;
 }
-.button-wrapper:hover .hover-overlay {
+.button-wrapper:hover .hover-overlay,
+.button-wrapper .hover-overlay.active {
   display: block;
 }
 .button-wrapper .hover-overlay {
