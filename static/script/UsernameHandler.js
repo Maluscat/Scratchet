@@ -62,6 +62,7 @@ class UsernameHandler {
     this.usernameData.delete(userID);
     nameData.listNode.remove();
     this.updateUserIndicator();
+    return nameData.name;
   }
 
   updateUserIndicator() {
