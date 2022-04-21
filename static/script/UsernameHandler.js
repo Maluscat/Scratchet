@@ -23,15 +23,16 @@ class UsernameHandler {
 
   // ---- Own user handling ----
   initOwnUsernameFromRealID(realUserID) {
-    const defaultName = UsernameHandler.createDefaultName(realUserID);
-    this.addUserToUserList(CURRENT_USER_ID, defaultName, true);
-    this.usernameInput.textContent = defaultName;
+    this.initOwnUsername(UsernameHandler.createDefaultName(realUserID));
+  }
+
+  initOwnUsername(username) {
+    this.addUserToUserList(CURRENT_USER_ID, username, true);
+    this.usernameInput.textContent = username;
   }
 
   resetUsernameInput() {
-    const prevUsername = this.usernameData.get(CURRENT_USER_ID).name;
-    this.usernameInput.textContent = prevUsername;
-    this.changeUsername(CURRENT_USER_ID, prevUsername);
+    this.usernameInput.textContent = this.usernameData.get(CURRENT_USER_ID).name;
   }
 
   // ---- Generic user handling ----
