@@ -24,16 +24,14 @@ class UsernameHandler {
   // ---- Own user handling ----
   initOwnUsernameFromRealID(realUserID) {
     const defaultName = UsernameHandler.createDefaultName(realUserID);
-    this.addUserToUserList(CURRENT_USER_ID, defaultName);
-    this.resetUsernameInput(defaultName);
+    this.addUserToUserList(CURRENT_USER_ID, defaultName, true);
+    this.usernameInput.textContent = defaultName;
   }
 
-  resetUsernameInput(defaultUsername) {
-    if (!defaultUsername) {
-      defaultUsername = this.usernameData.get(CURRENT_USER_ID).name;
-    }
-    this.usernameInput.textContent = defaultUsername;
-    this.changeUsername(CURRENT_USER_ID, defaultUsername);
+  resetUsernameInput() {
+    const prevUsername = this.usernameData.get(CURRENT_USER_ID).name;
+    this.usernameInput.textContent = prevUsername;
+    this.changeUsername(CURRENT_USER_ID, prevUsername);
   }
 
   // ---- Generic user handling ----
@@ -43,11 +41,11 @@ class UsernameHandler {
     }
     const nameData = this.usernameData.get(userID);
     nameData.name = newUsername;
-    nameData.listNode.textContent = (userID === CURRENT_USER_ID ? newUsername + ' (You)' : newUsername);
+    UsernameHandler.setListNodeContent(nameData.listNode, newUsername, userID === CURRENT_USER_ID);
   }
 
-  addUserToUserList(userID, username = UsernameHandler.createDefaultName(userID)) {
-    const listNode = UsernameHandler.createUserListNode(username);
+  addUserToUserList(userID, username = UsernameHandler.createDefaultName(userID), isOwnUser) {
+    const listNode = UsernameHandler.createUserListNode(username, isOwnUser);
     this.usernameData.set(userID, {
       name: username,
       listNode: listNode
@@ -71,11 +69,15 @@ class UsernameHandler {
   }
 
   // ---- Static helper functions ----
-  static createUserListNode(username) {
+  static createUserListNode(username, isOwnUser) {
     const listNode = document.createElement('span');
     listNode.classList.add('user');
-    listNode.textContent = username;
+    UsernameHandler.setListNodeContent(listNode, username, isOwnUser);
     return listNode;
+  }
+
+  static setListNodeContent(listNode, username, isOwnUser) {
+    listNode.textContent = (isOwnUser ? username + ' (You)' : username);
   }
 
   static createDefaultName(userID, isUnknown) {
