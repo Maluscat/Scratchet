@@ -5,14 +5,18 @@ import * as path from 'https://deno.land/std@0.132.0/path/mod.ts';
 const app = new Application();
 const router = new Router();
 
-interface SocketData {
+interface MessageData {
   evt: string,
   usr?: number,
   val?: string
 }
+interface SocketData {
+  id: number,
+  name: string
+}
 
 let userIDCounter = 0;
-const activeSockets: Set<WebSocket> = new Set();
+const activeSockets: Map<WebSocket, SocketData> = new Map();
 // The Set tracks the socket which still need to send their data to the init sock
 const socketRequireInitQueue: Map<WebSocket, WeakSet<WebSocket>> = new Map();
 
@@ -22,11 +26,15 @@ router
     let sockID: number;
 
     sock.addEventListener('open', () => {
-      sockID = userIDCounter++
-      activeSockets.add(sock);
+      sockID = userIDCounter++;
+      sendInitialConnectionData(sock, sockID);
       addSocketToInitQueue(sock);
       sendJSONToAllSockets(sock, sockID, 'connect');
-      sendJSONToOneSocket(sock, 'assignUserID', sockID.toString());
+      activeSockets.set(sock, {
+        id: sockID,
+        // TODO this can be taken from UsernameHandler
+        name: 'User #' + sockID
+      });
     });
 
     sock.addEventListener('close', () => {
@@ -51,7 +59,7 @@ router
           }
         } else {
           const newBuffer = bufferPrependUser(dataArr, sockID);
-          for (const socket of activeSockets) {
+          for (const socket of activeSockets.keys()) {
             if (socket != sock && socket.readyState === 1) {
               socket.send(newBuffer);
             }
@@ -60,12 +68,15 @@ router
       } else {
         const data = JSON.parse(e.data);
         switch (data.evt) {
-          case 'clearUser':
           case 'changeName':
+            renameSocket(sock, data.val);
+            /* No break! */
+          case 'clearUser':
+            // Pass the message on to every peer
             sendJSONToAllSockets(sock, sockID, data.evt, data.val);
             break;
           default:
-            console.error('error! Wrong message!');
+            console.error(`error! Wrong message from Socket ${sockID}!`);
         }
       }
     });
@@ -81,7 +92,7 @@ function bufferPrependUser(dataArr: Int32Array, sockID: number): ArrayBuffer {
 
 // ---- Initial data queue state handling ----
 function addSocketToInitQueue(sock: WebSocket) {
-  if (activeSockets.size > 1) {
+  if (activeSockets.size > 0) {
     socketRequireInitQueue.set(sock, new WeakSet([sock]));
 
     setTimeout(function() {
@@ -94,17 +105,8 @@ function removeSocketFromInitQueue(sock: WebSocket) {
 }
 
 // ---- Socket handling ----
-function sendJSONToOneSocket(receivingSock: WebSocket, event: string, value: string) {
-  const dataObj: SocketData = {
-    evt: event,
-    val: value
-  };
-  const data = JSON.stringify(dataObj);
-  receivingSock.send(data);
-}
-
 function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: string, value?: string) {
-  const dataObj: SocketData = {
+  const dataObj: MessageData = {
     evt: event,
     usr: userID
   };
@@ -113,11 +115,31 @@ function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: str
   }
   const data = JSON.stringify(dataObj);
 
-  for (const socket of activeSockets) {
+  for (const socket of activeSockets.keys()) {
     if (socket != callingSock && socket.readyState === 1) {
       socket.send(data);
     }
   }
+}
+
+function sendInitialConnectionData(receivingSock: WebSocket, userID: number) {
+  const peerArr = new Array();
+  for (const {id, name} of activeSockets.values()) {
+    peerArr.push([id, name]);
+  }
+  const data = JSON.stringify({
+    evt: 'connectData',
+    val: {
+      id: userID,
+      peers: peerArr
+    }
+  });
+  receivingSock.send(data);
+}
+
+function renameSocket(sock: WebSocket, newUsername: string) {
+  // The `!` is a TypeScript non-null assertion
+  activeSockets.get(sock)!.name = newUsername;
 }
 
 
