@@ -13,6 +13,7 @@ const userList = document.getElementById('user-list');
 const userListOverlay = document.getElementById('user-list-overlay');
 const userListButton = document.getElementById('user-list-button');
 
+const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
 
@@ -154,6 +155,10 @@ function sendPositionsIfHueHasChanged() {
 
 function socketOpen() {
   console.info('connected!');
+  const ownUsername = nameHandler.getOwnUsername();
+  if (ownUsername) {
+    sendMessage('changeName', ownUsername);
+  }
 }
 
 async function socketReceiveMessage(e) {

@@ -9,6 +9,11 @@ class UsernameHandler {
     this.usernameInput = usernameInput;
     this.userList = userList;
     this.userListButton = userListButton;
+
+    const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
+    if (persistentUsername) {
+      this.initOwnUsername(persistentUsername);
+    }
   }
 
   // ---- Events ----
@@ -17,6 +22,7 @@ class UsernameHandler {
       this.resetUsernameInput();
     } else if (newUsername !== this.usernameData.get(CURRENT_USER_ID).name) {
       this.changeUsername(CURRENT_USER_ID, newUsername);
+      localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, newUsername);
       sendMessage('changeName', newUsername);
     }
   }
@@ -28,7 +34,14 @@ class UsernameHandler {
   }
 
   resetUsernameInput() {
+    localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
     this.usernameInput.textContent = this.usernameData.get(CURRENT_USER_ID).name;
+  }
+
+  getOwnUsername() {
+    if (this.usernameData.has(CURRENT_USER_ID)) {
+      return this.usernameData.get(CURRENT_USER_ID).name;
+    }
   }
 
   // ---- Generic user handling ----
