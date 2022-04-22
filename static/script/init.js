@@ -170,12 +170,11 @@ async function socketReceiveMessage(e) {
     parseSocketData(data.subarray(1), userID);
   } else {
     const data = JSON.parse(e.data);
-    let usrname; // Switches aren't scoped
     switch (data.evt) {
       case 'disconnect':
         console.info(data.usr + ' disconnected');
 
-        usrname = nameHandler.removeUserFromUserList(data.usr);
+        var usrname = nameHandler.removeUserFromUserList(data.usr);
         dispatchNotification(`${usrname} has left the room`);
 
         mainCanvas.clearUserBufferAndRedraw(data.usr);
@@ -184,7 +183,7 @@ async function socketReceiveMessage(e) {
       case 'connect':
         console.info(data.usr + ' connected, sending my data');
 
-        usrname = nameHandler.addUserToUserList(data.usr);
+        var usrname = nameHandler.addUserToUserList(data.usr);
         dispatchNotification(`${usrname} has entered the room`);
 
         mainCanvas.sendJoinedUserBuffer();
@@ -194,11 +193,15 @@ async function socketReceiveMessage(e) {
         mainCanvas.clearUserBufferAndRedraw(data.usr);
         break;
       case 'changeName':
-        nameHandler.changeUsername(data.usr, data.val);
+        var prevUsrname = nameHandler.getUsername(data.usr);
+        var usrname = nameHandler.changeUsername(data.usr, data.val);
+        dispatchNotification(`${prevUsrname} --> ${usrname}`);
         break;
       case 'connectData':
         // For async reasons, the real user ID is solely used for the username
-        nameHandler.initOwnUsername(data.val.name);
+        if (!nameHandler.getOwnUsername()) {
+          nameHandler.initOwnUsername(data.val.name);
+        }
         for (const [userID, username] of data.val.peers) {
           nameHandler.addUserToUserList(userID, username);
         }
