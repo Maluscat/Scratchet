@@ -193,7 +193,7 @@ async function socketReceiveMessage(e) {
         break;
       case 'connectData':
         // For async reasons, the real user ID is solely used for the username
-        nameHandler.initOwnUsernameFromRealID(data.val.id);
+        nameHandler.initOwnUsername(data.val.name);
         for (const [userID, username] of data.val.peers) {
           nameHandler.addUserToUserList(userID, username);
         }

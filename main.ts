@@ -27,13 +27,16 @@ router
 
     sock.addEventListener('open', () => {
       sockID = userIDCounter++;
-      sendInitialConnectionData(sock, sockID);
+      // TODO this can be taken from UsernameHandler
+      const username = 'User #' + sockID;
+
+      sendInitialConnectionData(sock, username);
       addSocketToInitQueue(sock);
       sendJSONToAllSockets(sock, sockID, 'connect');
+
       activeSockets.set(sock, {
         id: sockID,
-        // TODO this can be taken from UsernameHandler
-        name: 'User #' + sockID
+        name: username
       });
     });
 
@@ -122,7 +125,7 @@ function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: str
   }
 }
 
-function sendInitialConnectionData(receivingSock: WebSocket, userID: number) {
+function sendInitialConnectionData(receivingSock: WebSocket, initialUsername: string) {
   const peerArr = new Array();
   for (const {id, name} of activeSockets.values()) {
     peerArr.push([id, name]);
@@ -130,7 +133,7 @@ function sendInitialConnectionData(receivingSock: WebSocket, userID: number) {
   const data = JSON.stringify({
     evt: 'connectData',
     val: {
-      id: userID,
+      name: initialUsername,
       peers: peerArr
     }
   });

@@ -22,10 +22,6 @@ class UsernameHandler {
   }
 
   // ---- Own user handling ----
-  initOwnUsernameFromRealID(realUserID) {
-    this.initOwnUsername(UsernameHandler.createDefaultName(realUserID));
-  }
-
   initOwnUsername(username) {
     this.addUserToUserList(CURRENT_USER_ID, username, true);
     this.usernameInput.textContent = username;
