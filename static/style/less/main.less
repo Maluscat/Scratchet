@@ -127,14 +127,32 @@ button {
 }
 
 .button-group {
+  &.right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
   .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.1rem;
     width: 2.4em;
     height: 2.4em;
+    > svg {
+      width: 1.15em;
+      height: 1.15em;
+      &.plus-icon {
+        width: .825em;
+        height: .825em;
+      }
+    }
   }
 }
 
 .button-wrapper {
+  display: flex;
+  align-items: center;
   position: relative;
   &:hover .hover-overlay,
   .hover-overlay.active {

@@ -92,12 +92,30 @@ button:active {
 .horizontal-group > *:not(:last-child) {
   margin-right: 0.5em;
 }
+.button-group.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
 .button-group .button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.1rem;
   width: 2.4em;
   height: 2.4em;
 }
+.button-group .button > svg {
+  width: 1.15em;
+  height: 1.15em;
+}
+.button-group .button > svg.plus-icon {
+  width: 0.825em;
+  height: 0.825em;
+}
 .button-wrapper {
+  display: flex;
+  align-items: center;
   position: relative;
 }
 .button-wrapper:hover .hover-overlay,
