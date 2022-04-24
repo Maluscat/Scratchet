@@ -94,7 +94,11 @@ function toggleUserList(e) {
 function mouseWheel(e) {
   if (!e.ctrlKey && e.deltaY !== 0) {
     const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
-    widthSlider.value += direction * 7;
+    if (e.shiftKey) {
+      hueSlider.value += direction * 24;
+    } else {
+      widthSlider.value += direction * 7;
+    }
   }
 }
 
