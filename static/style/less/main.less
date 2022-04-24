@@ -160,12 +160,21 @@ button {
   }
   .hover-overlay {
     display: none;
-    position: absolute;
-    left: 100%;
-    top: 0;
+    padding: .375em .8em;
     margin: 0 .15em;
     border-radius: 1.4em;
+    white-space: nowrap;
     z-index: 1;
+  }
+  &.absolute .hover-overlay {
+    position: absolute;
+    top: 0;
+    .overlay.left & {
+      left: 100%;
+    }
+    .overlay.right & {
+      right: 100%
+    }
   }
 }
 
@@ -194,11 +203,9 @@ button {
 }
 
 #user-list-overlay {
-  padding: .375em .8em;
   .user {
     display: block;
     margin: .375em;
-    white-space: nowrap;
   }
   > ul {
     margin: 0;
