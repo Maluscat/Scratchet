@@ -68,6 +68,7 @@ button:active {
 }
 .overlay .button,
 .overlay .overlay-input,
+.overlay .has-pointer-events,
 .overlay .sl89-thumb,
 .overlay .sl89-track,
 .overlay .slider-hue-indicator {
