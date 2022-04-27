@@ -26,8 +26,6 @@ const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
 
-let activeRoom;
-
 /*
  * data/socketData: bulk data received via socket
  * posData: self-contained metadata & position packet: [...metadata, pos1X, pos1Y, pos2X, pos2Y, ...]
@@ -58,6 +56,7 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
   `
 }, true);
 
+const controller = new ScratchetController(canvas);
 const nameHandler = new UsernameHandler(usernameInput, userList, userListButton);
 
 
@@ -211,24 +210,15 @@ async function socketReceiveMessage(e) {
         if (!nameHandler.getOwnUsername()) {
           nameHandler.initOwnUsername(data.val.name);
         }
-        createNewRoom(data.val.room, nameHandler.getOwnUsername());
         for (const [userID, username] of data.val.peers) {
           nameHandler.addUserToUserList(userID, username);
         }
+
+        controller.addNewRoom(data.val.room, nameHandler.getOwnUsername(), true);
+        controller.init();
         break;
     }
   }
-}
-
-// ---- Room handling ----
-function createNewRoom(roomCode, ownUsername) {
-  activeRoom = new ScratchetRoom(canvas, roomCode, ownUsername);
-
-  hueSlider.addEvent('change:value', () => activeRoom.setStrokeStyle());
-  widthSlider.addEvent('change:value', () => activeRoom.setLineWidth());
-  document.getElementById('clear-button').addEventListener('click', activeRoom.clearCurrentUserCanvas.bind(activeRoom));
-
-  setInterval(sendPositions, SEND_INTERVAL);
 }
 
 // ---- Notifications ----
