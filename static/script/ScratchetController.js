@@ -9,13 +9,14 @@ class ScratchetController {
   }
 
   init() {
-    hueSlider.addEvent('change:value', () => activeRoom.setStrokeStyle());
-    widthSlider.addEvent('change:value', () => activeRoom.setLineWidth());
-    document.getElementById('clear-button').addEventListener('click', activeRoom.clearCurrentUserCanvas.bind(activeRoom));
+    hueSlider.addEvent('change:value', () => this.activeRoom.setStrokeStyle());
+    widthSlider.addEvent('change:value', () => this.activeRoom.setLineWidth());
+    document.getElementById('clear-button').addEventListener('click', this.activeRoom.clearCurrentUserCanvas.bind(this.activeRoom));
 
     setInterval(sendPositions, SEND_INTERVAL);
   }
 
+  // ---- Room handling ----
   addNewRoom(roomCode, ownUsername, activate) {
     const newRoom = new ScratchetRoom(this.canvas, roomCode, ownUsername);
     this.rooms.add(newRoom);
@@ -26,7 +27,7 @@ class ScratchetController {
   }
 
   switchActiveRoom(room) {
-    activeRoom = room;
+    this.activeRoom = room;
   }
 
   updateRoomIndicator() {

@@ -123,12 +123,12 @@ function moveDrawIndicator(posX, posY) {
 function parseSocketData(data, userID) {
   if (data[0] === -1) {
     // Bulk init data
-    activeRoom.handleBulkInitData(data, userID);
+    controller.activeRoom.handleBulkInitData(data, userID);
   } else if (data[0] === -2) {
     // Erased data
-    activeRoom.handleEraseData(data, userID);
+    controller.activeRoom.handleEraseData(data, userID);
   } else {
-    activeRoom.addPosDataToBufferAndDraw(data, userID);
+    controller.activeRoom.addPosDataToBufferAndDraw(data, userID);
   }
 }
 
@@ -139,24 +139,24 @@ function createPosDataWrapper(posData) {
 
 // ---- Socket ----
 function sendPositions() {
-  if (activeRoom.posBuffer[0] === -2 && activeRoom.posBuffer.length > 2 || activeRoom.posBuffer.length > 4) {
-    const posData = new Int32Array(activeRoom.posBuffer);
+  if (controller.activeRoom.posBuffer[0] === -2 && controller.activeRoom.posBuffer.length > 2 || controller.activeRoom.posBuffer.length > 4) {
+    const posData = new Int32Array(controller.activeRoom.posBuffer);
     sock.send(posData.buffer);
-    if (activeRoom.posBuffer[0] >= 0) {
-      activeRoom.addPosDataToBuffer(posData, CURRENT_USER_ID);
+    if (controller.activeRoom.posBuffer[0] >= 0) {
+      controller.activeRoom.addPosDataToBuffer(posData, CURRENT_USER_ID);
     }
-    activeRoom.resetPosBuffer();
+    controller.activeRoom.resetPosBuffer();
   }
 }
 // Overrule timer if hue or stroke width has changed
 function sendPositionsIfWidthHasChanged() {
   // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
-  if (widthSlider.value !== activeRoom.posBuffer[1]) {
+  if (widthSlider.value !== controller.activeRoom.posBuffer[1]) {
     sendPositions();
   }
 }
 function sendPositionsIfHueHasChanged() {
-  if (hueSlider.value !== activeRoom.posBuffer[0]) {
+  if (hueSlider.value !== controller.activeRoom.posBuffer[0]) {
     sendPositions();
   }
 }
@@ -185,8 +185,8 @@ async function socketReceiveMessage(e) {
         var usrname = nameHandler.removeUserFromUserList(data.usr);
         dispatchNotification(`${usrname} has left the room`);
 
-        activeRoom.clearUserBufferAndRedraw(data.usr);
-        activeRoom.posUserCache.delete(data.usr);
+        controller.activeRoom.clearUserBufferAndRedraw(data.usr);
+        controller.activeRoom.posUserCache.delete(data.usr);
         break;
       case 'connect':
         console.info(data.usr + ' connected, sending my data');
@@ -194,11 +194,11 @@ async function socketReceiveMessage(e) {
         var usrname = nameHandler.addUserToUserList(data.usr);
         dispatchNotification(`${usrname} has entered the room`);
 
-        activeRoom.sendJoinedUserBuffer();
+        controller.activeRoom.sendJoinedUserBuffer();
         break;
       case 'clearUser':
         console.info(data.usr + ' cleared their drawing');
-        activeRoom.clearUserBufferAndRedraw(data.usr);
+        controller.activeRoom.clearUserBufferAndRedraw(data.usr);
         break;
       case 'changeName':
         var prevUsrname = nameHandler.getUsername(data.usr);
