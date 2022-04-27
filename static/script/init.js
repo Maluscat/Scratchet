@@ -16,6 +16,10 @@ const roomcodeInput = document.getElementById('roomcode-input');
 const roomListButton = document.getElementById('room-list-button');
 const roomList = document.getElementById('room-list');
 
+const newRoomButton = document.getElementById('new-room-button');
+const copyRoomLinkButton = document.getElementById('copy-room-link-button');
+const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
+
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
