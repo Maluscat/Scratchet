@@ -17,6 +17,7 @@ interface SocketData {
 
 let userIDCounter = 0;
 const activeSockets: Map<WebSocket, SocketData> = new Map();
+const activeRooms: Map<number, WeakSet<WebSocket>> = new Map();
 // The Set tracks the socket which still need to send their data to the init sock
 const socketRequireInitQueue: Map<WebSocket, WeakSet<WebSocket>> = new Map();
 
@@ -24,13 +25,15 @@ router
   .get('/socket', (ctx: Context) => {
     const sock = ctx.upgrade();
     let sockID: number;
+    let roomCode: number;
 
     sock.addEventListener('open', () => {
       sockID = userIDCounter++;
+      roomCode = createNewRoomCode();
       // TODO this can be taken from UsernameHandler
       const username = 'User #' + sockID;
 
-      sendInitialConnectionData(sock, username);
+      sendInitialConnectionData(sock, username, roomCode);
       addSocketToInitQueue(sock);
       sendJSONToAllSockets(sock, sockID, 'connect');
 
@@ -107,6 +110,16 @@ function removeSocketFromInitQueue(sock: WebSocket) {
   socketRequireInitQueue.delete(sock);
 }
 
+// ---- Room handling ----
+function createNewRoomCode() {
+  let roomcode;
+  do {
+    roomcode = Math.floor(Math.random() * 9000 + 1000);
+  } while (activeRooms.has(roomcode));
+  activeRooms.set(roomcode, new WeakSet());
+  return roomcode;
+}
+
 // ---- Socket handling ----
 function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: string, value?: string) {
   const dataObj: MessageData = {
@@ -125,7 +138,7 @@ function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: str
   }
 }
 
-function sendInitialConnectionData(receivingSock: WebSocket, initialUsername: string) {
+function sendInitialConnectionData(receivingSock: WebSocket, initialUsername: string, roomCode: number) {
   const peerArr = new Array();
   for (const {id, name} of activeSockets.values()) {
     peerArr.push([id, name]);
@@ -133,6 +146,7 @@ function sendInitialConnectionData(receivingSock: WebSocket, initialUsername: st
   const data = JSON.stringify({
     evt: 'connectData',
     val: {
+      room: roomCode,
       name: initialUsername,
       peers: peerArr
     }
