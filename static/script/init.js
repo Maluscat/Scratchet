@@ -9,12 +9,10 @@ const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 
 const usernameInput = document.getElementById('username-input');
-const userListOverlay = document.getElementById('user-list-overlay');
 const userListButton = document.getElementById('user-list-button');
 const userList = document.getElementById('user-list');
 
 const roomcodeInput = document.getElementById('roomcode-input');
-const roomListOverlay = document.getElementById('room-list-overlay');
 const roomListButton = document.getElementById('room-list-button');
 const roomList = document.getElementById('room-list');
 
@@ -63,7 +61,8 @@ for (const l of document.querySelectorAll('.overlay-input')) {
   l.addEventListener('keydown', handleOverlayInputKeys);
 }
 
-userListButton.addEventListener('click', toggleUserList);
+userListButton.addEventListener('click', toggleHoverOverlay);
+roomListButton.addEventListener('click', toggleHoverOverlay);
 
 hueSlider.addEvent('change:value', () => mainCanvas.setStrokeStyle());
 widthSlider.addEvent('change:value', () => mainCanvas.setLineWidth());
@@ -92,8 +91,8 @@ function handleOverlayInput(e, callback) {
   callback(e.currentTarget.textContent);
 }
 
-function toggleUserList(e) {
-  userListOverlay.classList.toggle('active');
+function toggleHoverOverlay(e) {
+  e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
 }
 
 function mouseWheel(e) {
