@@ -130,6 +130,15 @@ button:active {
   white-space: nowrap;
   z-index: 1;
 }
+.button-wrapper .hover-overlay > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.button-wrapper .hover-overlay > ul .item {
+  display: block;
+  margin: 0.375em;
+}
 .button-wrapper.absolute .hover-overlay {
   position: absolute;
   top: 0;
@@ -161,15 +170,6 @@ button:active {
 }
 #draw-indicator.erase {
   background-color: hsl(0, 0%, 90%);
-}
-#user-list-overlay .user {
-  display: block;
-  margin: 0.375em;
-}
-#user-list-overlay > ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 #notification-overlay {
   display: flex;

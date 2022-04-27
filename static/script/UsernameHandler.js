@@ -87,7 +87,7 @@ class UsernameHandler {
   // ---- Static helper functions ----
   static createUserListNode(username, isOwnUser) {
     const listNode = document.createElement('span');
-    listNode.classList.add('user');
+    listNode.classList.add('item');
     UsernameHandler.setListNodeContent(listNode, username, isOwnUser);
     return listNode;
   }

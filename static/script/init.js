@@ -9,9 +9,14 @@ const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 
 const usernameInput = document.getElementById('username-input');
-const userList = document.getElementById('user-list');
 const userListOverlay = document.getElementById('user-list-overlay');
 const userListButton = document.getElementById('user-list-button');
+const userList = document.getElementById('user-list');
+
+const roomcodeInput = document.getElementById('roomcode-input');
+const roomListOverlay = document.getElementById('room-list-overlay');
+const roomListButton = document.getElementById('room-list-button');
+const roomList = document.getElementById('room-list');
 
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;

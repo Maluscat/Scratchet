@@ -165,6 +165,15 @@ button {
     border-radius: 1.4em;
     white-space: nowrap;
     z-index: 1;
+    > ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      .item {
+        display: block;
+        margin: .375em;
+      }
+    }
   }
   &.absolute .hover-overlay {
     position: absolute;
@@ -199,18 +208,6 @@ button {
   pointer-events: none;
   &.erase {
     background-color: hsl(0, 0%, 90%);
-  }
-}
-
-#user-list-overlay {
-  .user {
-    display: block;
-    margin: .375em;
-  }
-  > ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
   }
 }
 

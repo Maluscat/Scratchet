@@ -26,7 +26,12 @@
     <div id="room-overlay" class="overlay top right button-group">
       <div class="horizontal-group">
         <span id="roomcode-input" class="overlay-input" contenteditable="true" spellcheck="false"></span>
-        <button id="room-list-button" class="button" type="button">0</button>
+        <div class="button-wrapper absolute">
+          <div id="room-list-overlay" class="hover-overlay">
+            <ul id="room-list"></ul>
+          </div>
+          <button id="room-list-button" class="button" type="button">0</button>
+        </div>
       </div>
       <button id="new-room-button" class="button" type="button">
         <!-- Plus-2 by Iconmonstr @ https://iconmonstr.com/plus-2-svg/ -->
