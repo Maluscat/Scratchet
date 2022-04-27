@@ -5,6 +5,8 @@ const notificationTemplate = (function() {
   return node;
 }());
 
+const canvas = document.getElementById('canvas');
+
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 
@@ -23,6 +25,8 @@ const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 100;
+
+let activeRoom;
 
 /*
  * data/socketData: bulk data received via socket
@@ -54,7 +58,6 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
   `
 }, true);
 
-const mainCanvas = new ScratchetCanvas(document.getElementById('canvas'));
 const nameHandler = new UsernameHandler(usernameInput, userList, userListButton);
 
 
@@ -68,16 +71,10 @@ for (const l of document.querySelectorAll('.overlay-input')) {
 userListButton.addEventListener('click', toggleHoverOverlay);
 roomListButton.addEventListener('click', toggleHoverOverlay);
 
-hueSlider.addEvent('change:value', () => mainCanvas.setStrokeStyle());
-widthSlider.addEvent('change:value', () => mainCanvas.setLineWidth());
-document.getElementById('clear-button').addEventListener('click', mainCanvas.clearCurrentUserCanvas.bind(mainCanvas));
-
 sock.addEventListener('open', socketOpen);
 sock.addEventListener('message', socketReceiveMessage);
 
 window.addEventListener('wheel', mouseWheel);
-
-setInterval(sendPositions, SEND_INTERVAL);
 
 
 // ---- Events ----
@@ -127,12 +124,12 @@ function moveDrawIndicator(posX, posY) {
 function parseSocketData(data, userID) {
   if (data[0] === -1) {
     // Bulk init data
-    mainCanvas.handleBulkInitData(data, userID);
+    activeRoom.handleBulkInitData(data, userID);
   } else if (data[0] === -2) {
     // Erased data
-    mainCanvas.handleEraseData(data, userID);
+    activeRoom.handleEraseData(data, userID);
   } else {
-    mainCanvas.addPosDataToBufferAndDraw(data, userID);
+    activeRoom.addPosDataToBufferAndDraw(data, userID);
   }
 }
 
@@ -143,24 +140,24 @@ function createPosDataWrapper(posData) {
 
 // ---- Socket ----
 function sendPositions() {
-  if (mainCanvas.posBuffer[0] === -2 && mainCanvas.posBuffer.length > 2 || mainCanvas.posBuffer.length > 4) {
-    const posData = new Int32Array(mainCanvas.posBuffer);
+  if (activeRoom.posBuffer[0] === -2 && activeRoom.posBuffer.length > 2 || activeRoom.posBuffer.length > 4) {
+    const posData = new Int32Array(activeRoom.posBuffer);
     sock.send(posData.buffer);
-    if (mainCanvas.posBuffer[0] >= 0) {
-      mainCanvas.addPosDataToBuffer(posData, CURRENT_USER_ID);
+    if (activeRoom.posBuffer[0] >= 0) {
+      activeRoom.addPosDataToBuffer(posData, CURRENT_USER_ID);
     }
-    mainCanvas.resetPosBuffer();
+    activeRoom.resetPosBuffer();
   }
 }
 // Overrule timer if hue or stroke width has changed
 function sendPositionsIfWidthHasChanged() {
   // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
-  if (widthSlider.value !== mainCanvas.posBuffer[1]) {
+  if (widthSlider.value !== activeRoom.posBuffer[1]) {
     sendPositions();
   }
 }
 function sendPositionsIfHueHasChanged() {
-  if (hueSlider.value !== mainCanvas.posBuffer[0]) {
+  if (hueSlider.value !== activeRoom.posBuffer[0]) {
     sendPositions();
   }
 }
@@ -189,8 +186,8 @@ async function socketReceiveMessage(e) {
         var usrname = nameHandler.removeUserFromUserList(data.usr);
         dispatchNotification(`${usrname} has left the room`);
 
-        mainCanvas.clearUserBufferAndRedraw(data.usr);
-        mainCanvas.posUserCache.delete(data.usr);
+        activeRoom.clearUserBufferAndRedraw(data.usr);
+        activeRoom.posUserCache.delete(data.usr);
         break;
       case 'connect':
         console.info(data.usr + ' connected, sending my data');
@@ -198,11 +195,11 @@ async function socketReceiveMessage(e) {
         var usrname = nameHandler.addUserToUserList(data.usr);
         dispatchNotification(`${usrname} has entered the room`);
 
-        mainCanvas.sendJoinedUserBuffer();
+        activeRoom.sendJoinedUserBuffer();
         break;
       case 'clearUser':
         console.info(data.usr + ' cleared their drawing');
-        mainCanvas.clearUserBufferAndRedraw(data.usr);
+        activeRoom.clearUserBufferAndRedraw(data.usr);
         break;
       case 'changeName':
         var prevUsrname = nameHandler.getUsername(data.usr);
@@ -214,12 +211,24 @@ async function socketReceiveMessage(e) {
         if (!nameHandler.getOwnUsername()) {
           nameHandler.initOwnUsername(data.val.name);
         }
+        createNewRoom(data.val.room, nameHandler.getOwnUsername());
         for (const [userID, username] of data.val.peers) {
           nameHandler.addUserToUserList(userID, username);
         }
         break;
     }
   }
+}
+
+// ---- Room handling ----
+function createNewRoom(roomCode, ownUsername) {
+  activeRoom = new ScratchetRoom(canvas, roomCode, ownUsername);
+
+  hueSlider.addEvent('change:value', () => activeRoom.setStrokeStyle());
+  widthSlider.addEvent('change:value', () => activeRoom.setLineWidth());
+  document.getElementById('clear-button').addEventListener('click', activeRoom.clearCurrentUserCanvas.bind(activeRoom));
+
+  setInterval(sendPositions, SEND_INTERVAL);
 }
 
 // ---- Notifications ----
