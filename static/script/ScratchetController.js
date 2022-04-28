@@ -37,6 +37,7 @@ class ScratchetController {
 
   switchActiveRoom(room) {
     this.activeRoom = room;
+    copyRoomLinkOverlay.textContent = room.roomCodeLink;
   }
 
   updateRoomIndicator() {
