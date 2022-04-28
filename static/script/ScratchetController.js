@@ -18,12 +18,13 @@ class ScratchetController {
 
   // ---- Event handling ----
   roomListNodeClick(room) {
-    switchActiveRoom(room);
+    this.switchActiveRoom(room);
   }
 
   // ---- Room handling ----
   addNewRoom(roomCode, ownUsername, activate) {
     const newRoom = new ScratchetRoom(this.canvas, roomCode, ownUsername);
+    roomNameInput.textContent = newRoom.roomName;
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
     roomList.appendChild(newRoom.roomListNode);

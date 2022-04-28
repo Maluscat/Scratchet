@@ -15,9 +15,6 @@ class ScratchetRoom extends ScratchetCanvas {
   changeRoomName(roomName) {
     this.roomName = roomName;
     this.roomListNode.textContent = roomName;
-    if (controller.activeRoom === this) {
-      roomcodeInput.textContent = roomName;
-    }
   }
 
   // ---- Static helper functions ----
