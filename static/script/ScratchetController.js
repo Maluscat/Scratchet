@@ -16,9 +16,18 @@ class ScratchetController {
     setInterval(sendPositions, SEND_INTERVAL);
   }
 
+  // ---- Event handling ----
+  roomListNodeClick(room) {
+    switchActiveRoom(room);
+  }
+
   // ---- Room handling ----
   addNewRoom(roomCode, ownUsername, activate) {
     const newRoom = new ScratchetRoom(this.canvas, roomCode, ownUsername);
+
+    newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
+    roomList.appendChild(newRoom.roomListNode);
+
     this.rooms.add(newRoom);
     this.updateRoomIndicator();
     if (activate) {

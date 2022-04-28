@@ -1,28 +1,25 @@
 class ScratchetRoom extends ScratchetCanvas {
-  roomListNode = ScratchetRoom.createRoomListNode();
-  roomName;
+  roomListNode;
+  roomCodeLink;
+  romName;
 
   constructor(canvas, roomCode, ownUsername) {
     super(canvas);
-    this.initRoom(roomCode, ownUsername);
-  }
 
-  // ---- Event handling ----
-  roomListNodeClick() {
-    console.log(this.roomName);
+    this.roomListNode = ScratchetRoom.createRoomListNode();
+    this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
+    this.roomName = ScratchetRoom.createDefaultName(ownUsername);
+
+    this.changeRoomName(this.roomName);
   }
 
   // ---- Generic room handling ----
-  initRoom(roomCode, ownUsername) {
-    this.changeRoomName(ScratchetRoom.createDefaultName(ownUsername));
-    this.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this));
-    roomList.appendChild(this.roomListNode);
-  }
-
   changeRoomName(roomName) {
     this.roomName = roomName;
     this.roomListNode.textContent = roomName;
-    roomcodeInput.textContent = roomName;
+    if (controller.activeRoom === this) {
+      roomcodeInput.textContent = roomName;
+    }
   }
 
   // ---- Static helper functions ----
@@ -34,5 +31,9 @@ class ScratchetRoom extends ScratchetCanvas {
 
   static createDefaultName(username) {
     return username + "'s room";
+  }
+
+  static createRoomCodeLink(roomCode) {
+    return `${location.href}#${roomCode}`;
   }
 }
