@@ -1,7 +1,7 @@
 class ScratchetController {
   canvas;
 
-  rooms = new Set();
+  rooms = new Map();
   activeRoom;
 
   constructor(canvas) {
@@ -28,7 +28,7 @@ class ScratchetController {
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
     roomList.appendChild(newRoom.roomListNode);
 
-    this.rooms.add(newRoom);
+    this.rooms.set(roomCode, newRoom);
     this.updateRoomIndicator();
     if (activate) {
       this.switchActiveRoom(newRoom);
