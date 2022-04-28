@@ -14,7 +14,7 @@ const usernameInput = document.getElementById('username-input');
 const userListButton = document.getElementById('user-list-button');
 const userList = document.getElementById('user-list');
 
-const roomcodeInput = document.getElementById('roomcode-input');
+const roomNameInput = document.getElementById('roomcode-input');
 const roomListButton = document.getElementById('room-list-button');
 const roomList = document.getElementById('room-list');
 
@@ -62,6 +62,9 @@ const nameHandler = new UsernameHandler(usernameInput, userList, userListButton)
 
 usernameInput.addEventListener('blur', e => {
   handleOverlayInput(e, nameHandler.changeOwnUsername.bind(nameHandler));
+});
+roomNameInput.addEventListener('blur', e => {
+  handleOverlayInput(e, controller.changeCurrentRoomName.bind(controller));
 });
 for (const l of document.querySelectorAll('.overlay-input')) {
   l.addEventListener('keydown', handleOverlayInputKeys);

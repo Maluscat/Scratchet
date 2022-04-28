@@ -17,6 +17,10 @@ class ScratchetController {
   }
 
   // ---- Event handling ----
+  changeCurrentRoomName(newRoomName) {
+    this.activeRoom.changeRoomName(newRoomName);
+  }
+
   roomListNodeClick(room) {
     this.switchActiveRoom(room);
   }
