@@ -276,3 +276,37 @@ button {
     align-items: center;
   }
 }
+
+#copy-room-link-overlay {
+  position: relative;
+  overflow: hidden;
+  .copied-indicator {
+    visibility: hidden;
+    opacity: 0;
+    transform: scale(1.11);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: @overlay-bg;
+    border-radius: inherit;
+    transition:
+      opacity .07s ease-in-out,
+      all .14s ease;
+    > svg {
+      margin-left: .1em;
+      width: 1.5em;
+      height: 1.5em;
+    }
+  }
+  &.copied .copied-indicator {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+}

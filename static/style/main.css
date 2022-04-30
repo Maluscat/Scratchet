@@ -215,3 +215,33 @@ button:active {
   justify-content: center;
   align-items: center;
 }
+#copy-room-link-overlay {
+  position: relative;
+  overflow: hidden;
+}
+#copy-room-link-overlay .copied-indicator {
+  visibility: hidden;
+  opacity: 0;
+  transform: scale(1.11);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: hsl(0, 0%, 18%);
+  border-radius: inherit;
+  transition: opacity 0.07s ease-in-out, all 0.14s ease;
+}
+#copy-room-link-overlay .copied-indicator > svg {
+  margin-left: 0.1em;
+  width: 1.5em;
+  height: 1.5em;
+}
+#copy-room-link-overlay.copied .copied-indicator {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}

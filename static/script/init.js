@@ -21,6 +21,7 @@ const roomList = document.getElementById('room-list');
 const newRoomButton = document.getElementById('new-room-button');
 const copyRoomLinkButton = document.getElementById('copy-room-link-button');
 const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
+const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;

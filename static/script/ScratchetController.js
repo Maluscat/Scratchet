@@ -19,6 +19,10 @@ class ScratchetController {
   // ---- Event handling ----
   async copyRoomLink() {
     navigator.clipboard.writeText(this.activeRoom.roomCodeLink);
+    copyRoomLinkOverlay.classList.add('copied');
+    setTimeout(function() {
+      copyRoomLinkOverlay.classList.remove('copied');
+    }, 750);
   }
 
   changeCurrentRoomName(newRoomName) {
@@ -46,7 +50,7 @@ class ScratchetController {
 
   switchActiveRoom(room) {
     this.activeRoom = room;
-    copyRoomLinkOverlay.textContent = room.roomCodeLink;
+    copyRoomLinkContent.textContent = room.roomCodeLink;
   }
 
   updateRoomIndicator() {
