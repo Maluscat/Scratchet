@@ -72,6 +72,7 @@ for (const l of document.querySelectorAll('.overlay-input')) {
 
 userListButton.addEventListener('click', toggleHoverOverlay);
 roomListButton.addEventListener('click', toggleHoverOverlay);
+copyRoomLinkButton.addEventListener('click', controller.copyRoomLink.bind(controller));
 
 sock.addEventListener('open', socketOpen);
 sock.addEventListener('message', socketReceiveMessage);

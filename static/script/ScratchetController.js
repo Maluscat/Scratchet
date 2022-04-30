@@ -17,6 +17,10 @@ class ScratchetController {
   }
 
   // ---- Event handling ----
+  async copyRoomLink() {
+    navigator.clipboard.writeText(this.activeRoom.roomCodeLink);
+  }
+
   changeCurrentRoomName(newRoomName) {
     this.activeRoom.changeRoomName(newRoomName);
   }
