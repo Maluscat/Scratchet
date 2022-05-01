@@ -101,10 +101,6 @@ class ScratchetCanvas {
     this.setStrokeStyle();
     this.setLineWidth();
   }
-  addPosDataToBufferAndDraw(posData, userID) {
-    this.addPosDataToBuffer(posData, userID);
-    this.drawFromPosData(posData);
-  }
 
   // ---- Pos buffer ----
   setLastPos(posX, posY) {
@@ -124,11 +120,12 @@ class ScratchetCanvas {
     let index = 1;
     for (let i = 1; i < data.length; i++) {
       if (data[i] === -1) {
-        this.addPosDataToBufferAndDraw(data.subarray(index, i), userID);
+        this.addPosDataToBuffer(data.subarray(index, i), userID);
         index = i + 1;
       }
     }
-    this.addPosDataToBufferAndDraw(data.subarray(index), userID);
+    this.addPosDataToBuffer(data.subarray(index), userID);
+    this.redrawCanvas();
   }
   handleEraseData(data, userID) {
     if (this.posUserCache.has(userID)) {
