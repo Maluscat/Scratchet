@@ -75,9 +75,40 @@ class ScratchetCanvas {
   // ---- Canvas handling ----
   redrawCanvas() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    for (const posDataWrapper of this.globalPosBuffer) {
-      for (const posData of posDataWrapper) {
-        this.drawFromPosData(posData);
+
+    const globalPosBufferArr = Array.from(this.globalPosBuffer);
+    let hasChanged = true;
+    for (var i = 0; i < globalPosBufferArr.length; i++) {
+      const posDataWrapper = globalPosBufferArr[i];
+      const nextWrapper = globalPosBufferArr[i + 1];
+      if (hasChanged) {
+        // ASSUMPTION: all posData in posDataWrapper have the same width and hue
+        // because only the eraser can form multiple posData inside one wrapper
+        this.setStrokeStyle(posDataWrapper[0][0]);
+        this.setLineWidth(posDataWrapper[0][1]);
+
+        this.ctx.beginPath();
+        hasChanged = false;
+      }
+
+      this.drawFromPosDataWrapper(posDataWrapper);
+
+      if (!nextWrapper
+          || nextWrapper[0][0] !== posDataWrapper[0][0]
+          || nextWrapper[0][1] !== posDataWrapper[0][1]) {
+        this.ctx.stroke();
+        hasChanged = true;
+      }
+    }
+    this.setStrokeStyle();
+    this.setLineWidth();
+  }
+
+  drawFromPosDataWrapper(posDataWrapper) {
+    for (const posData of posDataWrapper) {
+      this.ctx.moveTo(posData[2], posData[3]);
+      for (var i = 4; i < posData.length; i += 2) {
+        this.ctx.lineTo(posData[i], posData[i + 1]);
       }
     }
   }
@@ -85,21 +116,6 @@ class ScratchetCanvas {
   clearCurrentUserCanvas() {
     sendMessage('clearUser');
     this.clearUserBufferAndRedraw(CURRENT_USER_ID);
-  }
-
-  drawFromPosData(posData) {
-    this.setStrokeStyle(posData[0]);
-    this.setLineWidth(posData[1]);
-
-    this.ctx.beginPath();
-    this.ctx.moveTo(posData[2], posData[3]);
-    for (let i = 4; i < posData.length; i += 2) {
-      this.ctx.lineTo(posData[i], posData[i + 1]);
-    }
-    this.ctx.stroke();
-
-    this.setStrokeStyle();
-    this.setLineWidth();
   }
 
   // ---- Pos buffer ----
