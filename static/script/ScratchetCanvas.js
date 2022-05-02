@@ -73,7 +73,7 @@ class ScratchetCanvas {
   }
 
   // ---- Canvas handling ----
-  redrawCanvas() {
+  redrawCanvas(userPosSetHighlight) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     const globalPosBufferArr = Array.from(this.globalPosBuffer);
@@ -82,9 +82,10 @@ class ScratchetCanvas {
       const posDataWrapper = globalPosBufferArr[i];
       const nextWrapper = globalPosBufferArr[i + 1];
       if (hasChanged) {
+        const hasReducedAlpha = userPosSetHighlight && !userPosSetHighlight.has(posDataWrapper);
         // ASSUMPTION: all posData in posDataWrapper have the same width and hue
         // because only the eraser can form multiple posData inside one wrapper
-        this.setStrokeStyle(posDataWrapper[0][0]);
+        this.setStrokeStyle(posDataWrapper[0][0], hasReducedAlpha);
         this.setLineWidth(posDataWrapper[0][1]);
 
         this.ctx.beginPath();
@@ -233,7 +234,7 @@ class ScratchetCanvas {
       document.documentElement.style.setProperty('--strokeWidth', width + 'px');
     }
   }
-  setStrokeStyle(hue = hueSlider.value) {
-    this.ctx.strokeStyle = makeHSLString(hue);
+  setStrokeStyle(hue = hueSlider.value, hasReducedAlpha) {
+    this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
   }
 }

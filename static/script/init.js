@@ -241,8 +241,12 @@ function dispatchNotification(content) {
 }
 
 // ---- Helper functions ----
-function makeHSLString(hue = hueSlider.value) {
-  return `hsl(${hue}, 75%, 70%)`
+function makeHSLString(hue = hueSlider.value, hasReducedAlpha) {
+  if (hasReducedAlpha) {
+    return `hsla(${hue}, 75%, 70%, .1)`;
+  } else {
+    return `hsl(${hue}, 75%, 70%)`;
+  }
 }
 
 function sendMessage(event, value) {
