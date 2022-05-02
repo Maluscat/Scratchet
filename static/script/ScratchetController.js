@@ -56,4 +56,9 @@ class ScratchetController {
   updateRoomIndicator() {
     roomListButton.textContent = this.rooms.size;
   }
+
+  // ---- Canvas handling ----
+  highlightUser(userID) {
+    this.activeRoom.redrawCanvas(this.activeRoom.posUserCache.get(userID));
+  }
 }

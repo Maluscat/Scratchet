@@ -17,6 +17,13 @@ class UsernameHandler {
   }
 
   // ---- Events ----
+  userListNodeHover(userID) {
+    controller.highlightUser(userID);
+  }
+  userListNodeHoverLeave() {
+    controller.activeRoom.redrawCanvas();
+  }
+
   changeOwnUsername(newUsername) {
     if (/^[Uu]ser #\d+$/.test(newUsername)) {
       this.resetUsernameInput();
@@ -65,6 +72,8 @@ class UsernameHandler {
       name: username,
       listNode: listNode
     });
+    listNode.addEventListener('mouseenter', this.userListNodeHover.bind(this, userID));
+    listNode.addEventListener('mouseleave', this.userListNodeHoverLeave.bind(this));
     this.userList.appendChild(listNode);
     this.updateUserIndicator();
     return username;
