@@ -133,12 +133,15 @@ button:active {
 }
 .button-wrapper .hover-overlay > ul {
   margin: 0;
-  padding: 0;
   list-style: none;
+  padding: 0.1875em;
 }
 .button-wrapper .hover-overlay > ul .item {
   display: block;
-  margin: 0.375em;
+  padding: 0.1875em;
+}
+.button-wrapper .hover-overlay > ul .item:hover {
+  font-weight: bold;
 }
 .button-wrapper.absolute .hover-overlay {
   position: absolute;
