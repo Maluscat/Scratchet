@@ -133,7 +133,8 @@ function parseSocketData(data, userID) {
     // Erased data
     controller.activeRoom.handleEraseData(data, userID);
   } else {
-    controller.activeRoom.addPosDataToBufferAndDraw(data, userID);
+    controller.activeRoom.addPosDataToBuffer(data, userID);
+    controller.activeRoom.redrawCanvas();
   }
 }
 
