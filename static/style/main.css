@@ -218,6 +218,9 @@ button:active {
   justify-content: center;
   align-items: center;
 }
+#user-list .item {
+  transition: color 0.1s ease-in-out;
+}
 #copy-room-link-overlay {
   position: relative;
   overflow: hidden;

@@ -89,6 +89,19 @@ class UsernameHandler {
     return nameData.name;
   }
 
+  setUserColorIndicator(userID, hue) {
+    const nameData = this.usernameData.get(userID);
+    nameData.listNode.style.color = makeHSLString(hue);
+
+    if (nameData.activeTimeout != null) {
+      clearTimeout(nameData.activeTimeout);
+    }
+    nameData.activeTimeout = setTimeout(() => {
+      nameData.listNode.style.removeProperty('color');
+      nameData.activeTimeout = null;
+    }, SEND_INTERVAL * 1.5);
+  }
+
   updateUserIndicator() {
     this.userListButton.textContent = this.usernameData.size;
   }
