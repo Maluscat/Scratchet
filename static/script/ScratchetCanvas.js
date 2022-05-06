@@ -44,7 +44,7 @@ class ScratchetCanvas {
   }
 
   pointerUp() {
-    sendPositions();
+    controller.sendPositions();
     this.pressedMouseBtn = -1;
     toggleDrawIndicatorEraseMode(true);
   }
@@ -52,13 +52,13 @@ class ScratchetCanvas {
   canvasDraw(e) {
     moveDrawIndicator(e.clientX, e.clientY);
     if (this.pressedMouseBtn >= 0) {
-      sendPositionsIfWidthHasChanged();
+      controller.sendPositionsIfWidthHasChanged();
 
       if (this.pressedMouseBtn === 2) {
         this.erasePos(e.clientX, e.clientY, CURRENT_USER_ID);
         this.redrawCanvas();
       } else {
-        sendPositionsIfHueHasChanged();
+        controller.sendPositionsIfHueHasChanged();
 
         this.ctx.beginPath();
         this.ctx.moveTo(...this.lastPos);

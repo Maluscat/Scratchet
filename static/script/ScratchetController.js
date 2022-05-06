@@ -15,7 +15,7 @@ class ScratchetController {
     widthSlider.addEvent('change:value', () => this.activeRoom.setLineWidth());
     document.getElementById('clear-button').addEventListener('click', this.activeRoom.clearCurrentUserCanvas.bind(this.activeRoom));
 
-    setInterval(sendPositions, SEND_INTERVAL);
+    setInterval(this.sendPositions.bind(this), SEND_INTERVAL);
   }
 
   // ---- Event handling ----
@@ -82,5 +82,30 @@ class ScratchetController {
       this.posBuffer[this.posBuffer.length - 2],
       this.posBuffer[this.posBuffer.length - 1]
     );
+  }
+
+  // ---- Socket handling ----
+  sendPositions() {
+    if (this.posBuffer[0] === -2 && this.posBuffer.length > 2 || this.posBuffer.length > 4) {
+      const posData = new Int32Array(this.posBuffer);
+      sock.send(posData.buffer);
+      if (this.posBuffer[0] >= 0) {
+        this.activeRoom.addPosDataToBuffer(posData, CURRENT_USER_ID);
+      }
+      this.resetPosBuffer();
+    }
+  }
+
+  // Overrule timer if hue or stroke width has changed
+  sendPositionsIfWidthHasChanged() {
+    // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
+    if (widthSlider.value !== this.posBuffer[1]) {
+      this.sendPositions();
+    }
+  }
+  sendPositionsIfHueHasChanged() {
+    if (hueSlider.value !== this.posBuffer[0]) {
+      this.sendPositions();
+    }
   }
 }
