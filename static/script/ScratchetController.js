@@ -4,6 +4,8 @@ class ScratchetController {
   rooms = new Map();
   activeRoom;
 
+  posBuffer = new Array();
+
   constructor(canvas) {
     this.canvas = canvas;
   }
@@ -60,5 +62,25 @@ class ScratchetController {
   // ---- Canvas handling ----
   highlightUser(userID) {
     this.activeRoom.redrawCanvas(this.activeRoom.posUserCache.get(userID));
+  }
+
+  addToPosBuffer(posX, posY) {
+    this.posBuffer.push(posX, posY);
+  }
+
+  initializePosBuffer(eraseMode, lastPosX, lastPosY) {
+    if (eraseMode) {
+      this.posBuffer = [-2, widthSlider.value];
+    } else {
+      this.posBuffer = [hueSlider.value, widthSlider.value, lastPosX, lastPosY];
+    }
+  }
+
+  resetPosBuffer() {
+    this.initializePosBuffer(
+      this.posBuffer[0] === -2,
+      this.posBuffer[this.posBuffer.length - 2],
+      this.posBuffer[this.posBuffer.length - 1]
+    );
   }
 }

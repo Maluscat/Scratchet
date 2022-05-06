@@ -146,24 +146,24 @@ function createPosDataWrapper(posData) {
 
 // ---- Socket ----
 function sendPositions() {
-  if (controller.activeRoom.posBuffer[0] === -2 && controller.activeRoom.posBuffer.length > 2 || controller.activeRoom.posBuffer.length > 4) {
-    const posData = new Int32Array(controller.activeRoom.posBuffer);
+  if (controller.posBuffer[0] === -2 && controller.posBuffer.length > 2 || controller.posBuffer.length > 4) {
+    const posData = new Int32Array(controller.posBuffer);
     sock.send(posData.buffer);
-    if (controller.activeRoom.posBuffer[0] >= 0) {
+    if (controller.posBuffer[0] >= 0) {
       controller.activeRoom.addPosDataToBuffer(posData, CURRENT_USER_ID);
     }
-    controller.activeRoom.resetPosBuffer();
+    controller.resetPosBuffer();
   }
 }
 // Overrule timer if hue or stroke width has changed
 function sendPositionsIfWidthHasChanged() {
   // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
-  if (widthSlider.value !== controller.activeRoom.posBuffer[1]) {
+  if (widthSlider.value !== controller.posBuffer[1]) {
     sendPositions();
   }
 }
 function sendPositionsIfHueHasChanged() {
-  if (hueSlider.value !== controller.activeRoom.posBuffer[0]) {
+  if (hueSlider.value !== controller.posBuffer[0]) {
     sendPositions();
   }
 }

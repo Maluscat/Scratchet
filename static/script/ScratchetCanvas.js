@@ -6,7 +6,6 @@ class ScratchetCanvas {
   globalPosBuffer = new Set(); // Set<posDataWrapperInDrawOrder>
   posUserCache = new Map(); // Map<userID, Set<posDataWrapperForUser>>
   lastPos = new Array(2);
-  posBuffer = new Array();
 
   constructor(canvas) {
     this.canvas = canvas;
@@ -40,7 +39,7 @@ class ScratchetCanvas {
       toggleDrawIndicatorEraseMode();
     }
     this.setLastPos(e.clientX, e.clientY);
-    this.resetPosBuffer();
+    controller.initializePosBuffer(this.pressedMouseBtn === 2, ...this.lastPos);
     this.canvasDraw(e);
   }
 
@@ -68,7 +67,7 @@ class ScratchetCanvas {
 
         this.setLastPos(e.clientX, e.clientY);
       }
-      this.posBuffer.push(e.clientX, e.clientY);
+      controller.addToPosBuffer(e.clientX, e.clientY);
     }
   }
 
@@ -123,13 +122,6 @@ class ScratchetCanvas {
   setLastPos(posX, posY) {
     this.lastPos[0] = posX;
     this.lastPos[1] = posY;
-  }
-  resetPosBuffer() {
-    if (this.pressedMouseBtn === 2) {
-      this.posBuffer = [-2, widthSlider.value];
-    } else {
-      this.posBuffer = [hueSlider.value, widthSlider.value, ...this.lastPos];
-    }
   }
 
   // ---- Buffer functions ----
