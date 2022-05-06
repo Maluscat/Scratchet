@@ -25,7 +25,7 @@ const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
-const SEND_INTERVAL = 100;
+const SEND_INTERVAL = 40;
 
 /*
  * data/socketData: bulk data received via socket
