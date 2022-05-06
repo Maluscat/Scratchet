@@ -84,8 +84,8 @@ class ScratchetCanvas {
         const hasReducedAlpha = userPosSetHighlight && !userPosSetHighlight.has(posDataWrapper);
         // ASSUMPTION: all posData in posDataWrapper have the same width and hue
         // because only the eraser can form multiple posData inside one wrapper
-        this.setStrokeStyle(posDataWrapper[0][0], hasReducedAlpha);
-        this.setLineWidth(posDataWrapper[0][1]);
+        this.setStrokeStyle(getMetaHue(posDataWrapper[0]), hasReducedAlpha);
+        this.setLineWidth(getMetaWidth(posDataWrapper[0]));
 
         this.ctx.beginPath();
         hasChanged = false;
@@ -94,8 +94,8 @@ class ScratchetCanvas {
       this.drawFromPosDataWrapper(posDataWrapper);
 
       if (!nextWrapper
-          || nextWrapper[0][0] !== posDataWrapper[0][0]
-          || nextWrapper[0][1] !== posDataWrapper[0][1]) {
+          || getMetaHue(nextWrapper[0]) !== getMetaHue(posDataWrapper[0])
+          || getMetaWidth(nextWrapper[0]) !== getMetaWidth(posDataWrapper[0])) {
         this.ctx.stroke();
         hasChanged = true;
       }
@@ -107,7 +107,7 @@ class ScratchetCanvas {
   drawFromPosDataWrapper(posDataWrapper) {
     for (const posData of posDataWrapper) {
       this.ctx.moveTo(posData[2], posData[3]);
-      for (var i = 4; i < posData.length; i += 2) {
+      for (var i = META_LEN.NORMAL; i < posData.length; i += 2) {
         this.ctx.lineTo(posData[i], posData[i + 1]);
       }
     }
@@ -128,7 +128,7 @@ class ScratchetCanvas {
   handleBulkInitData(data, userID) {
     let index = 1;
     for (let i = 1; i < data.length; i++) {
-      if (data[i] === -1) {
+      if (data[i] === MODE.BULK_INIT) {
         this.addPosDataToBuffer(data.subarray(index, i), userID);
         index = i + 1;
       }
@@ -139,8 +139,8 @@ class ScratchetCanvas {
   handleEraseData(data, userID) {
     if (this.posUserCache.has(userID)) {
       const userPosSet = this.posUserCache.get(userID);
-      for (let i = 2; i < data.length; i += 2) {
-        this.erasePos(data[i], data[i + 1], userID, userPosSet, data[1]);
+      for (let i = META_LEN.ERASE; i < data.length; i += 2) {
+        this.erasePos(data[i], data[i + 1], userID, userPosSet, getMetaWidth(data));
       }
       this.redrawCanvas();
     }
@@ -156,15 +156,15 @@ class ScratchetCanvas {
         const posData = posDataWrapper[i];
 
         let newPosData = [posData[0], posData[1], posData[2], posData[3]];
-        for (let j = 4; j < posData.length; j += 2) {
+        for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
           // Push only the points back into the array which are not in range of the erase pos
           if (Math.abs(posData[j] - posX) > eraserWidth || Math.abs(posData[j + 1] - posY) > eraserWidth) {
             newPosData.push(posData[j], posData[j + 1]);
           } else {
-            if (newPosData.length > 4) {
+            if (newPosData.length > META_LEN.NORMAL) {
               posDataWrapper.push(new Int32Array(newPosData));
             }
-            if (j <= posData.length - 4) {
+            if (j <= posData.length - META_LEN.NORMAL) {
               newPosData = [posData[0], posData[1], posData[j + 2], posData[j + 3]];
             } else {
               newPosData = [];
@@ -172,7 +172,7 @@ class ScratchetCanvas {
           }
         }
 
-        if (newPosData.length > 4) {
+        if (newPosData.length > META_LEN.NORMAL) {
           posDataWrapper[i] = new Int32Array(newPosData);
         } else {
           posDataWrapper.splice(i, 1);
@@ -201,7 +201,7 @@ class ScratchetCanvas {
       const joinedBuffer = new Array();
       for (const posDataWrapper of this.posUserCache.get(CURRENT_USER_ID)) {
         for (const posData of posDataWrapper) {
-          joinedBuffer.push(-1, ...posData);
+          joinedBuffer.push(MODE.BULK_INIT, ...posData);
         }
       }
       sock.send(new Int32Array(joinedBuffer));

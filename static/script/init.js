@@ -26,6 +26,15 @@ const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 40;
+const MODE = {
+  BULK_INIT: -1,
+  ERASE: -2,
+};
+// Metadata length in a payload of the specified mode
+const META_LEN = {
+  NORMAL: 4,
+  ERASE: 2,
+}
 
 /*
  * data/socketData: bulk data received via socket
@@ -126,16 +135,17 @@ function moveDrawIndicator(posX, posY) {
 
 // ---- Buffer functions ----
 function parseSocketData(data, userID) {
-  if (data[0] === -1) {
-    // Bulk init data
-    controller.activeRoom.handleBulkInitData(data, userID);
-  } else if (data[0] === -2) {
-    // Erased data
-    controller.activeRoom.handleEraseData(data, userID);
-  } else {
-    nameHandler.setUserColorIndicator(userID, data[0]);
-    controller.activeRoom.addPosDataToBuffer(data, userID);
-    controller.activeRoom.redrawCanvas();
+  switch (getMetaMode(data)) {
+    case MODE.BULK_INIT:
+      controller.activeRoom.handleBulkInitData(data, userID);
+      break;
+    case MODE.ERASE:
+      controller.activeRoom.handleEraseData(data, userID);
+      break;
+    default:
+      nameHandler.setUserColorIndicator(userID, getMetaHue(data));
+      controller.activeRoom.addPosDataToBuffer(data, userID);
+      controller.activeRoom.redrawCanvas();
   }
 }
 
@@ -218,7 +228,28 @@ function dispatchNotification(content) {
   }, 1600);
 }
 
-// ---- Helper functions ----
+
+// ---- Metadata helper functions ----
+function getMetaMode(dataWithMetadata) {
+  if (dataWithMetadata[0] < 0) {
+    return dataWithMetadata[0];
+  }
+  return false;
+}
+
+function getMetaHue(dataWithMetadata) {
+  if (dataWithMetadata[0] >= 0) {
+    return dataWithMetadata[0];
+  }
+  return false;
+}
+
+function getMetaWidth(dataWithMetadata) {
+  // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
+  return dataWithMetadata[1];
+}
+
+// ---- Generic helper functions ----
 function makeHSLString(hue = hueSlider.value, hasReducedAlpha) {
   if (hasReducedAlpha) {
     return `hsla(${hue}, 75%, 70%, .1)`;

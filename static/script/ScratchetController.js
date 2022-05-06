@@ -68,9 +68,9 @@ class ScratchetController {
     this.posBuffer.push(posX, posY);
   }
 
-  initializePosBuffer(eraseMode, lastPosX, lastPosY) {
-    if (eraseMode) {
-      this.posBuffer = [-2, widthSlider.value];
+  initializePosBuffer(useEraseMode, lastPosX, lastPosY) {
+    if (useEraseMode) {
+      this.posBuffer = [MODE.ERASE, widthSlider.value];
     } else {
       this.posBuffer = [hueSlider.value, widthSlider.value, lastPosX, lastPosY];
     }
@@ -78,7 +78,7 @@ class ScratchetController {
 
   resetPosBuffer() {
     this.initializePosBuffer(
-      this.posBuffer[0] === -2,
+      getMetaMode(this.posBuffer) === MODE.ERASE,
       this.posBuffer[this.posBuffer.length - 2],
       this.posBuffer[this.posBuffer.length - 1]
     );
@@ -86,10 +86,11 @@ class ScratchetController {
 
   // ---- Socket handling ----
   sendPositions() {
-    if (this.posBuffer[0] === -2 && this.posBuffer.length > 2 || this.posBuffer.length > 4) {
+    if (getMetaMode(this.posBuffer) === MODE.ERASE && this.posBuffer.length > META_LEN.ERASE
+        || this.posBuffer.length > META_LEN.NORMAL) {
       const posData = new Int32Array(this.posBuffer);
       sock.send(posData.buffer);
-      if (this.posBuffer[0] >= 0) {
+      if (!getMetaMode(this.posBuffer)) {
         this.activeRoom.addPosDataToBuffer(posData, CURRENT_USER_ID);
       }
       this.resetPosBuffer();
@@ -98,13 +99,12 @@ class ScratchetController {
 
   // Overrule timer if hue or stroke width has changed
   sendPositionsIfWidthHasChanged() {
-    // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
-    if (widthSlider.value !== this.posBuffer[1]) {
+    if (widthSlider.value !== getMetaWidth(this.posBuffer)) {
       this.sendPositions();
     }
   }
   sendPositionsIfHueHasChanged() {
-    if (hueSlider.value !== this.posBuffer[0]) {
+    if (hueSlider.value !== getMetaHue(this.posBuffer)) {
       this.sendPositions();
     }
   }
