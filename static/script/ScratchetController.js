@@ -19,6 +19,13 @@ class ScratchetController {
   }
 
   // ---- Event handling ----
+  windowResized() {
+    for (const room of this.rooms.values()) {
+      room.setDimensions();
+      room.redrawCanvas();
+    }
+  }
+
   async copyRoomLink() {
     navigator.clipboard.writeText(this.activeRoom.roomCodeLink);
     copyRoomLinkOverlay.classList.add('copied');

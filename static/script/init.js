@@ -88,6 +88,7 @@ sock.addEventListener('open', controller.socketOpen.bind(controller))
 sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
 
 window.addEventListener('wheel', mouseWheel);
+window.addEventListener('resize', controller.windowResized.bind(controller));
 
 
 // ---- Events ----

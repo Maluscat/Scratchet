@@ -16,11 +16,7 @@ class ScratchetCanvas {
     window.addEventListener('pointerup', this.pointerUp.bind(this));
     canvas.addEventListener('mousemove', this.canvasDraw.bind(this));
 
-    canvas.height = canvas.clientHeight;
-    canvas.width = canvas.clientWidth;
-
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
+    this.setDimensions();
 
     this.setStrokeStyle();
     this.setLineWidth();
@@ -220,6 +216,14 @@ class ScratchetCanvas {
   }
 
   // ---- Helper functions ----
+  setDimensions() {
+    canvas.height = canvas.clientHeight;
+    canvas.width = canvas.clientWidth;
+
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+  }
+
   setLineWidth(width = widthSlider.value) {
     this.ctx.lineWidth = width;
     if (width === widthSlider.value) {
