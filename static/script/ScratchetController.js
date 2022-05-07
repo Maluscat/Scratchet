@@ -144,33 +144,37 @@ class ScratchetController {
     } else {
       const data = JSON.parse(e.data);
       switch (data.evt) {
-        case 'disconnect':
+        case 'disconnect': {
           console.info(data.usr + ' disconnected');
 
-          var usrname = nameHandler.removeUserFromUserList(data.usr);
-          dispatchNotification(`${usrname} has left the room`);
+          const username = nameHandler.removeUserFromUserList(data.usr);
+          dispatchNotification(`${username} has left the room`);
 
           this.activeRoom.clearUserBufferAndRedraw(data.usr);
           this.activeRoom.posUserCache.delete(data.usr);
           break;
-        case 'connect':
+        }
+        case 'connect': {
           console.info(data.usr + ' connected, sending my data');
 
-          var usrname = nameHandler.addUserToUserList(data.usr);
-          dispatchNotification(`${usrname} has entered the room`);
+          const username = nameHandler.addUserToUserList(data.usr);
+          dispatchNotification(`${username} has entered the room`);
 
           this.activeRoom.sendJoinedUserBuffer();
           break;
-        case 'clearUser':
+        }
+        case 'clearUser': {
           console.info(data.usr + ' cleared their drawing');
           this.activeRoom.clearUserBufferAndRedraw(data.usr);
           break;
-        case 'changeName':
-          var prevUsrname = nameHandler.getUsername(data.usr);
-          var usrname = nameHandler.changeUsername(data.usr, data.val);
-          dispatchNotification(`${prevUsrname} --> ${usrname}`);
+        }
+        case 'changeName': {
+          const prevUsername = nameHandler.getUsername(data.usr);
+          const username = nameHandler.changeUsername(data.usr, data.val);
+          dispatchNotification(`${prevUsername} --> ${username}`);
           break;
-        case 'connectData':
+        }
+        case 'connectData': {
           // For async reasons, the real user ID is solely used for the username
           if (!nameHandler.getOwnUsername()) {
             nameHandler.initOwnUsername(data.val.name);
@@ -182,6 +186,7 @@ class ScratchetController {
           this.addNewRoom(data.val.room, nameHandler.getOwnUsername(), true);
           this.init();
           break;
+        }
       }
     }
   }
