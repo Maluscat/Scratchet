@@ -108,4 +108,81 @@ class ScratchetController {
       this.sendPositions();
     }
   }
+
+  // ---- Socket receiving ----
+  parseSocketData(data, userID) {
+    switch (getMetaMode(data)) {
+      case MODE.BULK_INIT:
+        this.activeRoom.handleBulkInitData(data, userID);
+        break;
+      case MODE.ERASE:
+        this.activeRoom.handleEraseData(data, userID);
+        break;
+      default:
+        nameHandler.setUserColorIndicator(userID, getMetaHue(data));
+        this.activeRoom.addPosDataToBuffer(data, userID);
+        this.activeRoom.redrawCanvas();
+    }
+  }
+
+  // ---- Socket events ----
+  socketOpen() {
+    console.info('connected!');
+    const ownUsername = nameHandler.getOwnUsername();
+    if (ownUsername) {
+      sendMessage('changeName', ownUsername);
+    }
+  }
+
+  async socketReceiveMessage(e) {
+    if (e.data instanceof Blob) {
+      // Scratchet ArrayBuffer: [playerID, metadata?, ...positions]
+      const data = new Int32Array(await e.data.arrayBuffer());
+      const userID = data[0];
+
+      this.parseSocketData(data.subarray(1), userID);
+    } else {
+      const data = JSON.parse(e.data);
+      switch (data.evt) {
+        case 'disconnect':
+          console.info(data.usr + ' disconnected');
+
+          var usrname = nameHandler.removeUserFromUserList(data.usr);
+          dispatchNotification(`${usrname} has left the room`);
+
+          this.activeRoom.clearUserBufferAndRedraw(data.usr);
+          this.activeRoom.posUserCache.delete(data.usr);
+          break;
+        case 'connect':
+          console.info(data.usr + ' connected, sending my data');
+
+          var usrname = nameHandler.addUserToUserList(data.usr);
+          dispatchNotification(`${usrname} has entered the room`);
+
+          this.activeRoom.sendJoinedUserBuffer();
+          break;
+        case 'clearUser':
+          console.info(data.usr + ' cleared their drawing');
+          this.activeRoom.clearUserBufferAndRedraw(data.usr);
+          break;
+        case 'changeName':
+          var prevUsrname = nameHandler.getUsername(data.usr);
+          var usrname = nameHandler.changeUsername(data.usr, data.val);
+          dispatchNotification(`${prevUsrname} --> ${usrname}`);
+          break;
+        case 'connectData':
+          // For async reasons, the real user ID is solely used for the username
+          if (!nameHandler.getOwnUsername()) {
+            nameHandler.initOwnUsername(data.val.name);
+          }
+          for (const [userID, username] of data.val.peers) {
+            nameHandler.addUserToUserList(userID, username);
+          }
+
+          this.addNewRoom(data.val.room, nameHandler.getOwnUsername(), true);
+          this.init();
+          break;
+      }
+    }
+  }
 }

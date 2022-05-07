@@ -84,8 +84,8 @@ userListButton.addEventListener('click', toggleHoverOverlay);
 roomListButton.addEventListener('click', toggleHoverOverlay);
 copyRoomLinkButton.addEventListener('click', controller.copyRoomLink.bind(controller));
 
-sock.addEventListener('open', socketOpen);
-sock.addEventListener('message', socketReceiveMessage);
+sock.addEventListener('open', controller.socketOpen.bind(controller))
+sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
 
 window.addEventListener('wheel', mouseWheel);
 
@@ -133,88 +133,6 @@ function moveDrawIndicator(posX, posY) {
   document.documentElement.style.setProperty('--mouseY', posY + 'px');
 }
 
-// ---- Buffer functions ----
-function parseSocketData(data, userID) {
-  switch (getMetaMode(data)) {
-    case MODE.BULK_INIT:
-      controller.activeRoom.handleBulkInitData(data, userID);
-      break;
-    case MODE.ERASE:
-      controller.activeRoom.handleEraseData(data, userID);
-      break;
-    default:
-      nameHandler.setUserColorIndicator(userID, getMetaHue(data));
-      controller.activeRoom.addPosDataToBuffer(data, userID);
-      controller.activeRoom.redrawCanvas();
-  }
-}
-
-function createPosDataWrapper(posData) {
-  return [ posData ];
-}
-
-
-// ---- Socket events ----
-function socketOpen() {
-  console.info('connected!');
-  const ownUsername = nameHandler.getOwnUsername();
-  if (ownUsername) {
-    sendMessage('changeName', ownUsername);
-  }
-}
-
-async function socketReceiveMessage(e) {
-  if (e.data instanceof Blob) {
-    // Scratchet ArrayBuffer: [playerID, metadata?, ...positions]
-    const data = new Int32Array(await e.data.arrayBuffer());
-    const userID = data[0];
-
-    parseSocketData(data.subarray(1), userID);
-  } else {
-    const data = JSON.parse(e.data);
-    switch (data.evt) {
-      case 'disconnect':
-        console.info(data.usr + ' disconnected');
-
-        var usrname = nameHandler.removeUserFromUserList(data.usr);
-        dispatchNotification(`${usrname} has left the room`);
-
-        controller.activeRoom.clearUserBufferAndRedraw(data.usr);
-        controller.activeRoom.posUserCache.delete(data.usr);
-        break;
-      case 'connect':
-        console.info(data.usr + ' connected, sending my data');
-
-        var usrname = nameHandler.addUserToUserList(data.usr);
-        dispatchNotification(`${usrname} has entered the room`);
-
-        controller.activeRoom.sendJoinedUserBuffer();
-        break;
-      case 'clearUser':
-        console.info(data.usr + ' cleared their drawing');
-        controller.activeRoom.clearUserBufferAndRedraw(data.usr);
-        break;
-      case 'changeName':
-        var prevUsrname = nameHandler.getUsername(data.usr);
-        var usrname = nameHandler.changeUsername(data.usr, data.val);
-        dispatchNotification(`${prevUsrname} --> ${usrname}`);
-        break;
-      case 'connectData':
-        // For async reasons, the real user ID is solely used for the username
-        if (!nameHandler.getOwnUsername()) {
-          nameHandler.initOwnUsername(data.val.name);
-        }
-        for (const [userID, username] of data.val.peers) {
-          nameHandler.addUserToUserList(userID, username);
-        }
-
-        controller.addNewRoom(data.val.room, nameHandler.getOwnUsername(), true);
-        controller.init();
-        break;
-    }
-  }
-}
-
 // ---- Notifications ----
 function dispatchNotification(content) {
   const notification = notificationTemplate.cloneNode(true);
@@ -250,6 +168,10 @@ function getMetaWidth(dataWithMetadata) {
 }
 
 // ---- Generic helper functions ----
+function createPosDataWrapper(posData) {
+  return [ posData ];
+}
+
 function makeHSLString(hue = hueSlider.value, hasReducedAlpha) {
   if (hasReducedAlpha) {
     return `hsla(${hue}, 75%, 70%, .1)`;
