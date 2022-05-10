@@ -15,17 +15,28 @@ class ScratchetController {
     if (persistentUsername) {
       this.setDefaultUsername(persistentUsername, true);
     }
+
+    hueSlider.addEvent('change:value', this.changeHue.bind(this));
+    widthSlider.addEvent('change:value', this.changeWidth.bind(this));
   }
 
   init() {
-    hueSlider.addEvent('change:value', () => this.activeRoom.setStrokeStyle());
-    widthSlider.addEvent('change:value', () => this.activeRoom.setLineWidth());
     document.getElementById('clear-button').addEventListener('click', this.activeRoom.clearCurrentUserCanvas.bind(this.activeRoom));
 
     setInterval(this.sendPositions.bind(this), SEND_INTERVAL);
   }
 
   // ---- Event handling ----
+  changeHue(slider) {
+    this.activeRoom.setStrokeStyle(slider.value);
+    this.activeRoom.hue = slider.value;
+  }
+  changeWidth(slider) {
+    this.activeRoom.setLineWidth(slider.value);
+    this.activeRoom.width = slider.value
+    document.documentElement.style.setProperty('--strokeWidth', slider.value + 'px');
+  }
+
   windowResized() {
     for (const room of this.rooms.values()) {
       room.setDimensions();
@@ -110,9 +121,9 @@ class ScratchetController {
 
   initializePosBuffer(useEraseMode, lastPosX, lastPosY) {
     if (useEraseMode) {
-      this.posBuffer = [MODE.ERASE, widthSlider.value];
+      this.posBuffer = [MODE.ERASE, this.activeRoom.width];
     } else {
-      this.posBuffer = [hueSlider.value, widthSlider.value, lastPosX, lastPosY];
+      this.posBuffer = [this.activeRoom.hue, this.activeRoom.width, lastPosX, lastPosY];
     }
   }
 
@@ -139,12 +150,12 @@ class ScratchetController {
 
   // Overrule timer if hue or stroke width has changed
   sendPositionsIfWidthHasChanged() {
-    if (widthSlider.value !== getMetaWidth(this.posBuffer)) {
+    if (this.activeRoom.width !== getMetaWidth(this.posBuffer)) {
       this.sendPositions();
     }
   }
   sendPositionsIfHueHasChanged() {
-    if (hueSlider.value !== getMetaHue(this.posBuffer)) {
+    if (this.activeRoom.hue !== getMetaHue(this.posBuffer)) {
       this.sendPositions();
     }
   }

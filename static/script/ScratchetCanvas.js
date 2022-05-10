@@ -7,6 +7,9 @@ class ScratchetCanvas {
   posUserCache = new Map(); // Map<userID, Set<posDataWrapperForUser>>
   lastPos = new Array(2);
 
+  width = 25;
+  hue = 0;
+
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -224,13 +227,12 @@ class ScratchetCanvas {
     this.ctx.lineJoin = 'round';
   }
 
-  setLineWidth(width = widthSlider.value) {
+  setLineWidth(width = this.width) {
     this.ctx.lineWidth = width;
-    if (width === widthSlider.value) {
-      document.documentElement.style.setProperty('--strokeWidth', width + 'px');
+    if (width !== this.width) {
     }
   }
-  setStrokeStyle(hue = hueSlider.value, hasReducedAlpha) {
+  setStrokeStyle(hue = this.hue, hasReducedAlpha) {
     this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
   }
 }

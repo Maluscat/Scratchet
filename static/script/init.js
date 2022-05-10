@@ -172,7 +172,7 @@ function createPosDataWrapper(posData) {
   return [ posData ];
 }
 
-function makeHSLString(hue = hueSlider.value, hasReducedAlpha) {
+function makeHSLString(hue, hasReducedAlpha) {
   if (hasReducedAlpha) {
     return `hsla(${hue}, 75%, 70%, .1)`;
   } else {
