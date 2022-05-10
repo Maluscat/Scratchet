@@ -5,14 +5,14 @@ class UsernameHandler {
 
   usernameData = new Map();
 
-  constructor(usernameInput, userList, userListButton) {
+  constructor(usernameInput, userList, userListButton, ownUsername, peers) {
     this.usernameInput = usernameInput;
     this.userList = userList;
     this.userListButton = userListButton;
 
-    const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
-    if (persistentUsername) {
-      this.initOwnUsername(persistentUsername);
+    this.initOwnUsername(ownUsername);
+    for (const [userID, username] of peers) {
+      this.addUserToUserList(userID, username);
     }
   }
 
@@ -24,29 +24,10 @@ class UsernameHandler {
     controller.activeRoom.redrawCanvas();
   }
 
-  changeOwnUsername(newUsername) {
-    if (/^[Uu]ser #\d+$/.test(newUsername)) {
-      this.resetUsernameInput();
-    } else if (newUsername !== this.usernameData.get(CURRENT_USER_ID).name) {
-      this.changeUsername(CURRENT_USER_ID, newUsername);
-      localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, newUsername);
-      sendMessage('changeName', newUsername);
-    }
-  }
-
   // ---- Own user handling ----
   initOwnUsername(username) {
     this.addUserToUserList(CURRENT_USER_ID, username, true);
     this.usernameInput.textContent = username;
-  }
-
-  resetUsernameInput() {
-    localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
-    this.usernameInput.textContent = this.usernameData.get(CURRENT_USER_ID).name;
-  }
-
-  getOwnUsername() {
-    return this.getUsername(CURRENT_USER_ID);
   }
 
   // ---- Generic user handling ----

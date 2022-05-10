@@ -1,6 +1,8 @@
 class ScratchetController {
   canvas;
 
+  defaultOwnUsername;
+
   rooms = new Map();
   activeRoom;
 
@@ -8,6 +10,11 @@ class ScratchetController {
 
   constructor(canvas) {
     this.canvas = canvas;
+
+    const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
+    if (persistentUsername) {
+      this.setDefaultUsername(persistentUsername, true);
+    }
   }
 
   init() {
@@ -42,9 +49,35 @@ class ScratchetController {
     this.switchActiveRoom(room);
   }
 
+  changeOwnUsername(newUsername) {
+    if (/^[Uu]ser #\d+$/.test(newUsername)) {
+      this.resetUsernameInput();
+    } else if (newUsername !== this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID)) {
+      this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, newUsername);
+      this.setDefaultUsername(newUsername);
+      sendMessage('changeName', newUsername);
+    }
+  }
+
+  // ---- Username handling ----
+  resetUsernameInput() {
+    localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
+    usernameInput.textContent = this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID);
+  }
+  setDefaultUsername(username, skipLocalStorage) {
+    this.defaultOwnUsername = username;
+    if (!skipLocalStorage) {
+      localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
+    }
+  }
+
   // ---- Room handling ----
-  addNewRoom(roomCode, ownUsername, activate) {
-    const newRoom = new ScratchetRoom(this.canvas, roomCode, ownUsername);
+  addNewRoom(roomCode, peers, activate) {
+    if (!this.defaultOwnUsername) {
+      throw new Error('@ addNewRoom: No default username has been set');
+    }
+
+    const newRoom = new ScratchetRoom(this.canvas, roomCode, this.defaultOwnUsername, peers);
     roomNameInput.textContent = newRoom.roomName;
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
@@ -126,7 +159,7 @@ class ScratchetController {
         this.activeRoom.handleEraseData(data, userID);
         break;
       default:
-        nameHandler.setUserColorIndicator(userID, getMetaHue(data));
+        this.activeRoom.nameHandler.setUserColorIndicator(userID, getMetaHue(data));
         this.activeRoom.addPosDataToBuffer(data, userID);
         this.activeRoom.redrawCanvas();
     }
@@ -135,9 +168,8 @@ class ScratchetController {
   // ---- Socket events ----
   socketOpen() {
     console.info('connected!');
-    const ownUsername = nameHandler.getOwnUsername();
-    if (ownUsername) {
-      sendMessage('changeName', ownUsername);
+    if (this.defaultOwnUsername) {
+      sendMessage('changeName', this.defaultOwnUsername);
     }
   }
 
@@ -154,7 +186,7 @@ class ScratchetController {
         case 'disconnect': {
           console.info(data.usr + ' disconnected');
 
-          const username = nameHandler.removeUserFromUserList(data.usr);
+          const username = this.activeRoom.nameHandler.removeUserFromUserList(data.usr);
           dispatchNotification(`${username} has left the room`);
 
           this.activeRoom.clearUserBufferAndRedraw(data.usr);
@@ -164,7 +196,7 @@ class ScratchetController {
         case 'connect': {
           console.info(data.usr + ' connected, sending my data');
 
-          const username = nameHandler.addUserToUserList(data.usr);
+          const username = this.activeRoom.nameHandler.addUserToUserList(data.usr);
           dispatchNotification(`${username} has entered the room`);
 
           this.activeRoom.sendJoinedUserBuffer();
@@ -176,21 +208,17 @@ class ScratchetController {
           break;
         }
         case 'changeName': {
-          const prevUsername = nameHandler.getUsername(data.usr);
-          const username = nameHandler.changeUsername(data.usr, data.val);
+          const prevUsername = this.activeRoom.nameHandler.getUsername(data.usr);
+          const username = this.activeRoom.nameHandler.changeUsername(data.usr, data.val);
           dispatchNotification(`${prevUsername} --> ${username}`);
           break;
         }
         case 'connectData': {
           // For async reasons, the real user ID is solely used for the username
-          if (!nameHandler.getOwnUsername()) {
-            nameHandler.initOwnUsername(data.val.name);
+          if (!this.defaultOwnUsername) {
+            this.setDefaultUsername(data.val.name);
           }
-          for (const [userID, username] of data.val.peers) {
-            nameHandler.addUserToUserList(userID, username);
-          }
-
-          this.addNewRoom(data.val.room, nameHandler.getOwnUsername(), true);
+          this.addNewRoom(data.val.room, data.val.peers, true);
           this.init();
           break;
         }

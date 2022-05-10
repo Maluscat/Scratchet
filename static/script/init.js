@@ -67,11 +67,10 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
 }, true);
 
 const controller = new ScratchetController(canvas);
-const nameHandler = new UsernameHandler(usernameInput, userList, userListButton);
 
 
 usernameInput.addEventListener('blur', e => {
-  handleOverlayInput(e, nameHandler.changeOwnUsername.bind(nameHandler));
+  handleOverlayInput(e, controller.changeOwnUsername.bind(controller));
 });
 roomNameInput.addEventListener('blur', e => {
   handleOverlayInput(e, controller.changeCurrentRoomName.bind(controller));
