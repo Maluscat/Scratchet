@@ -5,7 +5,7 @@ const notificationTemplate = (function() {
   return node;
 }());
 
-const canvas = document.getElementById('canvas');
+const canvasContainer = document.getElementById('canvas-container');
 
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
@@ -66,7 +66,7 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
   `
 }, true);
 
-const controller = new ScratchetController(canvas);
+const controller = new ScratchetController();
 
 
 usernameInput.addEventListener('blur', e => {

@@ -1,6 +1,4 @@
 class ScratchetController {
-  canvas;
-
   defaultOwnUsername;
 
   rooms = new Map();
@@ -8,9 +6,7 @@ class ScratchetController {
 
   posBuffer = new Array();
 
-  constructor(canvas) {
-    this.canvas = canvas;
-
+  constructor() {
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
       this.setDefaultUsername(persistentUsername, true);
@@ -88,7 +84,7 @@ class ScratchetController {
       throw new Error('@ addNewRoom: No default username has been set');
     }
 
-    const newRoom = new ScratchetRoom(this.canvas, roomCode, this.defaultOwnUsername, peers);
+    const newRoom = new ScratchetRoom(roomCode, this.defaultOwnUsername, peers);
     roomNameInput.textContent = newRoom.roomName;
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));

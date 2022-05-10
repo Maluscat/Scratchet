@@ -220,8 +220,8 @@ class ScratchetCanvas {
 
   // ---- Helper functions ----
   setDimensions() {
-    canvas.height = canvas.clientHeight;
-    canvas.width = canvas.clientWidth;
+    this.canvas.height = this.canvas.clientHeight;
+    this.canvas.width = this.canvas.clientWidth;
 
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';

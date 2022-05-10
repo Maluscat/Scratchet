@@ -4,8 +4,8 @@ class ScratchetRoom extends ScratchetCanvas {
   roomCodeLink;
   roomName;
 
-  constructor(canvas, roomCode, ownUsername, peers) {
-    super(canvas);
+  constructor(roomCode, ownUsername, peers) {
+    super(ScratchetRoom.createCanvas());
 
     this.nameHandler = new UsernameHandler(usernameInput, userList, userListButton, ownUsername, peers);
     this.roomListNode = ScratchetRoom.createRoomListNode();
@@ -32,5 +32,11 @@ class ScratchetRoom extends ScratchetCanvas {
 
   static createRoomCodeLink(roomCode) {
     return `${location.href}#${roomCode}`;
+  }
+
+  static createCanvas() {
+    const canvas = document.createElement('canvas');
+    canvasContainer.appendChild(canvas);
+    return canvas;
   }
 }
