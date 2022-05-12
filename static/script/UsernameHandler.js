@@ -49,13 +49,11 @@ class UsernameHandler {
   }
 
   addUserToUserList(userID, username = UsernameHandler.createDefaultName(userID), isOwnUser) {
-    const listNode = UsernameHandler.createUserListNode(username, isOwnUser);
+    const listNode = this.createUserListNode(username, isOwnUser, userID);
     this.usernameData.set(userID, {
       name: username,
       listNode: listNode
     });
-    listNode.addEventListener('mouseenter', this.userListNodeHover.bind(this, userID));
-    listNode.addEventListener('mouseleave', this.userListNodeHoverLeave.bind(this));
     this.userList.appendChild(listNode);
     this.updateUserIndicator();
     return username;
@@ -88,17 +86,20 @@ class UsernameHandler {
     this.userListButton.textContent = this.usernameData.size;
   }
 
-  // ---- Static helper functions ----
-  static createUserListNode(username, isOwnUser) {
+  // ---- Helper functions ----
+  createUserListNode(username, isOwnUser, userID) {
     const listNode = document.createElement('span');
     listNode.classList.add('item');
     if (isOwnUser) {
       listNode.classList.add('current');
     }
     listNode.textContent = username;
+    listNode.addEventListener('mouseenter', this.userListNodeHover.bind(this, userID));
+    listNode.addEventListener('mouseleave', this.userListNodeHoverLeave.bind(this));
     return listNode;
   }
 
+  // ---- Static helper functions ----
   static createDefaultName(userID, isUnknown) {
     return (isUnknown ? 'Unknown ' : '') + 'User #' + userID;
   }
