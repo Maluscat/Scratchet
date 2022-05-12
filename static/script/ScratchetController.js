@@ -161,8 +161,10 @@ class ScratchetController {
     }
   }
 
-  // ---- Socket receiving ----
-  parseSocketData(data, userID) {
+  parseSocketData(data) {
+    const userID = data[0];
+    data = data.subarray(1);
+
     switch (getMetaMode(data)) {
       case MODE.BULK_INIT:
         this.activeRoom.handleBulkInitData(data, userID);
@@ -224,9 +226,7 @@ class ScratchetController {
     if (e.data instanceof Blob) {
       // Scratchet ArrayBuffer: [playerID, metadata?, ...positions]
       const data = new Int32Array(await e.data.arrayBuffer());
-      const userID = data[0];
-
-      this.parseSocketData(data.subarray(1), userID);
+      this.parseSocketData(data);
     } else {
       const data = JSON.parse(e.data);
       switch (data.evt) {
