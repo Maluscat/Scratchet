@@ -1,12 +1,10 @@
 class UsernameHandler {
-  usernameInput;
   userList;
   userListButton;
 
   usernameData = new Map();
 
-  constructor(usernameInput, userList, userListButton, ownUsername, peers) {
-    this.usernameInput = usernameInput;
+  constructor(userList, userListButton, ownUsername, peers) {
     this.userList = userList;
     this.userListButton = userListButton;
 
@@ -27,7 +25,10 @@ class UsernameHandler {
   // ---- Own user handling ----
   initOwnUsername(username) {
     this.addUserToUserList(CURRENT_USER_ID, username, true);
-    this.usernameInput.textContent = username;
+  }
+
+  getOwnUsername() {
+    return this.usernameData.get(CURRENT_USER_ID).name;
   }
 
   // ---- Generic user handling ----

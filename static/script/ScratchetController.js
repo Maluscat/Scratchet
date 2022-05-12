@@ -99,6 +99,7 @@ class ScratchetController {
 
   switchActiveRoom(room) {
     this.activeRoom = room;
+    usernameInput.textContent = room.nameHandler.getOwnUsername();
     copyRoomLinkContent.textContent = room.roomCodeLink;
   }
 
