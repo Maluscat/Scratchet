@@ -188,12 +188,12 @@ class ScratchetController {
 
     dispatchNotification(`${username} has left the room`);
   }
-  userConnect(userID) {
-    const username = this.activeRoom.nameHandler.addUserToUserList(userID);
+  userConnect(userID, value) {
+    this.activeRoom.nameHandler.addUserToUserList(userID, value.name);
 
     this.activeRoom.sendJoinedUserBuffer();
 
-    dispatchNotification(`${username} has entered the room`);
+    dispatchNotification(`${value.name} has entered the room`);
   }
   userClearData(userID) {
     this.activeRoom.clearUserBufferAndRedraw(userID);
@@ -238,7 +238,7 @@ class ScratchetController {
           break;
         }
         case 'connect': {
-          this.userConnect(data.usr);
+          this.userConnect(data.usr, data.val);
           break;
         }
         case 'clearUser': {

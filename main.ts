@@ -8,9 +8,9 @@ const router = new Router();
 interface MessageData {
   evt: string,
   usr?: number,
-  val?: string
+  val?: string | ConnectionData
 }
-interface InitialConnectionData {
+interface ConnectionData {
   roomCode?: number,
   name?: string
 }
@@ -86,7 +86,7 @@ router
   });
 
 // ---- Message event handling ----
-function initializeUserConnection(sock: WebSocket, sockID: number, properties?: InitialConnectionData) {
+function initializeUserConnection(sock: WebSocket, sockID: number, properties?: ConnectionData) {
   let username = properties?.name;
   let roomCode = properties?.roomCode;
 
@@ -99,7 +99,10 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
   }
 
   sendInitialConnectionData(sock, username, roomCode);
-  sendJSONToAllSockets(sock, sockID, 'connect');
+  sendJSONToAllSockets(sock, sockID, 'connect', {
+    name: username,
+    roomCode: roomCode
+  });
 
   activeSockets.set(sock, {
     id: sockID,
@@ -144,7 +147,7 @@ function addUserToRoom(sock: WebSocket, roomCode: number) {
 }
 
 // ---- Socket handling ----
-function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: string, value?: string) {
+function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: string, value?: string | ConnectionData) {
   const dataObj: MessageData = {
     evt: event,
     usr: userID

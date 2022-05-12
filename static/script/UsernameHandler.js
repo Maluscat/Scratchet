@@ -52,7 +52,6 @@ class UsernameHandler {
       listNode: listNode
     });
     this.updateUserIndicator();
-    return username;
   }
   removeUserFromUserList(userID) {
     if (!this.usernameData.has(userID)) {
