@@ -222,6 +222,10 @@ button:active {
 #user-list .item {
   transition: color 0.1s ease-in-out;
 }
+#user-list .item.current::after {
+  content: '(You)';
+  margin-left: 0.28em;
+}
 #copy-room-link-overlay {
   position: relative;
   overflow: hidden;

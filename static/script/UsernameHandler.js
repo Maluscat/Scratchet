@@ -43,7 +43,7 @@ class UsernameHandler {
     }
     const nameData = this.usernameData.get(userID);
     nameData.name = newUsername;
-    UsernameHandler.setListNodeContent(nameData.listNode, newUsername, userID === CURRENT_USER_ID);
+    nameData.listNode.textContent = newUsername;
     return newUsername;
   }
 
@@ -91,12 +91,11 @@ class UsernameHandler {
   static createUserListNode(username, isOwnUser) {
     const listNode = document.createElement('span');
     listNode.classList.add('item');
-    UsernameHandler.setListNodeContent(listNode, username, isOwnUser);
+    if (isOwnUser) {
+      listNode.classList.add('current');
+    }
+    listNode.textContent = username;
     return listNode;
-  }
-
-  static setListNodeContent(listNode, username, isOwnUser) {
-    listNode.textContent = (isOwnUser ? username + ' (You)' : username);
   }
 
   static createDefaultName(userID, isUnknown) {
