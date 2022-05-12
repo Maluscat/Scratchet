@@ -219,10 +219,10 @@ button:active {
   justify-content: center;
   align-items: center;
 }
-#user-list .item {
+#user-list-wrapper .item {
   transition: color 0.1s ease-in-out;
 }
-#user-list .item.current::after {
+#user-list-wrapper .item.current::after {
   content: '(You)';
   margin-left: 0.28em;
 }

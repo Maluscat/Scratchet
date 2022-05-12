@@ -1,7 +1,10 @@
 class UsernameHandler {
+  userList;
   usernameData = new Map();
 
   constructor(ownUsername, peers) {
+    this.userList = UsernameHandler.createEmptyUserList();
+
     this.initOwnUsername(ownUsername);
     for (const [userID, username] of peers) {
       this.addUserToUserList(userID, username);
@@ -87,8 +90,11 @@ class UsernameHandler {
       listNode.classList.add('current');
     }
     listNode.textContent = username;
+
     listNode.addEventListener('mouseenter', this.userListNodeHover.bind(this, userID));
     listNode.addEventListener('mouseleave', this.userListNodeHoverLeave.bind(this));
+
+    this.userList.appendChild(listNode);
     return listNode;
   }
 
@@ -96,14 +102,20 @@ class UsernameHandler {
     usernameInput.textContent = this.getOwnUsername();
   }
 
-  populateUserList() {
-    userList.textContent = '';
-    for (const userData of room.nameHandler.usernameData.values()) {
-      userList.appendChild(userData.listNode);
+  appendUserList() {
+    if (userListWrapper.childElementCount > 0) {
+      userListWrapper.firstElementChild.remove();
     }
+    userListWrapper.appendChild(this.userList);
   }
 
   // ---- Static helper functions ----
+  static createEmptyUserList() {
+    const userList = document.createElement('ul');
+    userList.classList.add('user-list');
+    return userList;
+  }
+
   static createDefaultName(userID, isUnknown) {
     return (isUnknown ? 'Unknown ' : '') + 'User #' + userID;
   }

@@ -12,7 +12,7 @@ const drawIndicator = document.getElementById('draw-indicator');
 
 const usernameInput = document.getElementById('username-input');
 const userListButton = document.getElementById('user-list-button');
-const userList = document.getElementById('user-list');
+const userListWrapper = document.getElementById('user-list-wrapper');
 
 const roomNameInput = document.getElementById('roomcode-input');
 const roomListButton = document.getElementById('room-list-button');
@@ -189,4 +189,3 @@ function sendMessage(event, value) {
   }
   sock.send(JSON.stringify(dataObj));
 }
-

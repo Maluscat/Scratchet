@@ -101,7 +101,7 @@ class ScratchetController {
     this.activeRoom = room;
 
     room.nameHandler.setUsernameInput();
-    room.nameHandler.populateUserList();
+    room.nameHandler.appendUserList();
     room.nameHandler.updateUserIndicator();
 
     copyRoomLinkContent.textContent = room.roomCodeLink;
