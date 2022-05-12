@@ -34,7 +34,6 @@ router
 
     sock.addEventListener('open', () => {
       sockID = userIDCounter++;
-      addSocketToInitQueue(sock);
     });
 
     sock.addEventListener('close', () => {
@@ -98,6 +97,7 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
     username = 'User #' + sockID;
   }
 
+  addSocketToInitQueue(sock);
   sendInitialConnectionData(sock, username, roomCode);
   sendJSONToAllSockets(sock, sockID, 'connect', {
     name: username,
