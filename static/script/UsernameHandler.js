@@ -92,6 +92,10 @@ class UsernameHandler {
     return listNode;
   }
 
+  setUsernameInput() {
+    usernameInput.textContent = this.getOwnUsername();
+  }
+
   populateUserList() {
     userList.textContent = '';
     for (const userData of room.nameHandler.usernameData.values()) {

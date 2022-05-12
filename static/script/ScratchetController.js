@@ -69,7 +69,7 @@ class ScratchetController {
   // ---- Username handling ----
   resetUsernameInput() {
     localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
-    usernameInput.textContent = this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID);
+    this.activeRoom.nameHandler.setUsernameInput();
   }
   setDefaultUsername(username, skipLocalStorage) {
     this.defaultOwnUsername = username;
@@ -100,7 +100,7 @@ class ScratchetController {
   switchActiveRoom(room) {
     this.activeRoom = room;
 
-    usernameInput.textContent = room.nameHandler.getOwnUsername();
+    room.nameHandler.setUsernameInput();
     room.nameHandler.populateUserList();
     room.nameHandler.updateUserIndicator();
 
