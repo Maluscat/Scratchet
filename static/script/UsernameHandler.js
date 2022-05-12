@@ -1,11 +1,9 @@
 class UsernameHandler {
-  userList;
   userListButton;
 
   usernameData = new Map();
 
-  constructor(userList, userListButton, ownUsername, peers) {
-    this.userList = userList;
+  constructor(userListButton, ownUsername, peers) {
     this.userListButton = userListButton;
 
     this.initOwnUsername(ownUsername);
@@ -54,7 +52,6 @@ class UsernameHandler {
       name: username,
       listNode: listNode
     });
-    this.userList.appendChild(listNode);
     this.updateUserIndicator();
     return username;
   }
@@ -97,6 +94,13 @@ class UsernameHandler {
     listNode.addEventListener('mouseenter', this.userListNodeHover.bind(this, userID));
     listNode.addEventListener('mouseleave', this.userListNodeHoverLeave.bind(this));
     return listNode;
+  }
+
+  populateUserList() {
+    userList.textContent = '';
+    for (const userData of room.nameHandler.usernameData.values()) {
+      userList.appendChild(userData.listNode);
+    }
   }
 
   // ---- Static helper functions ----
