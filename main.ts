@@ -10,6 +10,11 @@ interface MessageData {
   usr?: number,
   val?: string
 }
+interface InitialConnectionData {
+  roomCode?: number,
+  name?: string
+}
+
 interface SocketData {
   id: number,
   name: string
@@ -29,18 +34,7 @@ router
 
     sock.addEventListener('open', () => {
       sockID = userIDCounter++;
-      roomCode = createNewRoomCode();
-      // TODO this can be taken from UsernameHandler
-      const username = 'User #' + sockID;
-
-      sendInitialConnectionData(sock, username, roomCode);
       addSocketToInitQueue(sock);
-      sendJSONToAllSockets(sock, sockID, 'connect');
-
-      activeSockets.set(sock, {
-        id: sockID,
-        name: username
-      });
     });
 
     sock.addEventListener('close', () => {
@@ -74,6 +68,9 @@ router
       } else {
         const data = JSON.parse(e.data);
         switch (data.evt) {
+          case 'connectInit':
+            initializeUserConnection(sock, sockID, data.val);
+            break;
           case 'changeName':
             renameSocket(sock, data.val);
             /* No break! */
@@ -87,6 +84,28 @@ router
       }
     });
   });
+
+// ---- Message event handling ----
+function initializeUserConnection(sock: WebSocket, sockID: number, properties?: InitialConnectionData) {
+  let username = properties?.name;
+  let roomCode = properties?.roomCode;
+
+  if (!roomCode || !activeRooms.has(roomCode)) {
+    roomCode = createNewRoomCode();
+  }
+  if (!username) {
+    // TODO this can be taken from UsernameHandler
+    username = 'User #' + sockID;
+  }
+
+  sendInitialConnectionData(sock, username, roomCode);
+  sendJSONToAllSockets(sock, sockID, 'connect');
+
+  activeSockets.set(sock, {
+    id: sockID,
+    name: username
+  });
+}
 
 // ---- ArrayBuffer handling ----
 function bufferPrependUser(dataArr: Int32Array, sockID: number): ArrayBuffer {
@@ -118,6 +137,10 @@ function createNewRoomCode() {
   } while (activeRooms.has(roomcode));
   activeRooms.set(roomcode, new WeakSet());
   return roomcode;
+}
+
+function addUserToRoom(sock: WebSocket, roomCode: number) {
+  activeRooms.get(roomCode)!.add(sock);
 }
 
 // ---- Socket handling ----

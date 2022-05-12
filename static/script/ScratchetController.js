@@ -217,9 +217,12 @@ class ScratchetController {
   // ---- Socket events ----
   socketOpen() {
     console.info('connected!');
+
+    const initValue = {};
     if (this.defaultOwnUsername) {
-      sendMessage('changeName', this.defaultOwnUsername);
+      initValue.name = this.defaultOwnUsername;
     }
+    sendMessage('connectInit', initValue);
   }
 
   async socketReceiveMessage(e) {
