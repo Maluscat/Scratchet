@@ -102,6 +102,7 @@ class ScratchetController {
 
     usernameInput.textContent = room.nameHandler.getOwnUsername();
     room.nameHandler.populateUserList();
+    room.nameHandler.updateUserIndicator();
 
     copyRoomLinkContent.textContent = room.roomCodeLink;
   }

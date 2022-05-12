@@ -1,11 +1,7 @@
 class UsernameHandler {
-  userListButton;
-
   usernameData = new Map();
 
-  constructor(userListButton, ownUsername, peers) {
-    this.userListButton = userListButton;
-
+  constructor(ownUsername, peers) {
     this.initOwnUsername(ownUsername);
     for (const [userID, username] of peers) {
       this.addUserToUserList(userID, username);
@@ -80,7 +76,7 @@ class UsernameHandler {
   }
 
   updateUserIndicator() {
-    this.userListButton.textContent = this.usernameData.size;
+    userListButton.textContent = this.usernameData.size;
   }
 
   // ---- Helper functions ----
