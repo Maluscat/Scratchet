@@ -46,6 +46,11 @@ button {
   }
 }
 
+input:invalid {
+  border-color: hsl(4, 60%, 48%) !important;
+  background-color: saturate(@overlay-bg, 20%) !important;
+}
+
 @overlay-margin: 1em;
 @overlay-gap: .5em;
 @overlay-bg: hsl(0, 0%, 18%);
@@ -146,6 +151,10 @@ button {
       &.plus-icon {
         width: .825em;
         height: .825em;
+      }
+      &.arrow-icon {
+        width: 1.3em;
+        height: 1.3em;
       }
     }
   }
@@ -288,6 +297,11 @@ button {
       margin-left: .28em;
     }
   }
+}
+
+#join-room-overlay-input {
+  max-width: 8em;
+  text-align: center;
 }
 
 #copy-room-link-overlay {

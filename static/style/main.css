@@ -38,6 +38,10 @@ button:hover {
 button:active {
   background-color: hsl(0, 0%, 21%) !important;
 }
+input:invalid {
+  border-color: hsl(4, 60%, 48%) !important;
+  background-color: hsl(0, 20%, 18%) !important;
+}
 .overlay {
   position: absolute;
   pointer-events: none;
@@ -114,6 +118,10 @@ button:active {
 .button-group .button > svg.plus-icon {
   width: 0.825em;
   height: 0.825em;
+}
+.button-group .button > svg.arrow-icon {
+  width: 1.3em;
+  height: 1.3em;
 }
 .button-wrapper {
   display: flex;
@@ -225,6 +233,10 @@ button:active {
 #user-list-wrapper .item.current::after {
   content: '(You)';
   margin-left: 0.28em;
+}
+#join-room-overlay-input {
+  max-width: 8em;
+  text-align: center;
 }
 #copy-room-link-overlay {
   position: relative;
