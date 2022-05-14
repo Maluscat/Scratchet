@@ -19,6 +19,12 @@ class ScratchetController {
   init() {
     document.getElementById('clear-button').addEventListener('click', this.activeRoom.clearCurrentUserCanvas.bind(this.activeRoom));
 
+    // Set the join room input to the same width as the copy room link overlay
+    copyRoomLinkOverlay.classList.add('active');
+    joinRoomOverlayInput.style.maxWidth =
+      (copyRoomLinkContent.offsetWidth / parseFloat(getComputedStyle(copyRoomLinkContent).fontSize)) + 'em';
+    copyRoomLinkOverlay.classList.remove('active');
+
     setInterval(this.sendPositions.bind(this), SEND_INTERVAL);
   }
 
