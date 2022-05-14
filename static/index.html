@@ -38,7 +38,9 @@
         </svg>
       </button>
       <div class="button-wrapper">
-        <input type="text" id="join-room-overlay-input" class="hover-overlay has-pointer-events no-hover" pattern="\d+" spellcheck="false" autocomplete="off" autocorrect="off"/>
+        <input
+          type="text" id="join-room-overlay-input" class="hover-overlay has-pointer-events no-hover"
+          minlength="4" maxlength="4" pattern="\d{4}" spellcheck="false" autocomplete="off" autocorrect="off"/>
         <button id="join-room-button" class="button" type="button" aria-label="Join a room">
           <!-- arrow-right-lined by Iconmonstr @ https://iconmonstr.com/arrow-right-lined-svg/ -->
           <svg class="arrow-icon" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
