@@ -83,6 +83,7 @@ for (const l of document.querySelectorAll('.overlay-input')) {
 }
 
 joinRoomOverlayInput.addEventListener('keydown', handleJoinRoomInputKeys);
+joinRoomOverlayInput.addEventListener('paste', handleJoinRoomInputPaste);
 
 userListButton.addEventListener('click', toggleHoverOverlay);
 roomListButton.addEventListener('click', toggleHoverOverlay);
@@ -141,9 +142,20 @@ function handleJoinRoomInputKeys(e) {
     collapseJoinRoomOverlay();
   }
   if (e.key === 'Enter') {
-    controller.joinRoom(joinRoomOverlayInput.value);
-    joinRoomOverlayInput.value = '';
+    submitJoinRoomInput();
   }
+}
+function handleJoinRoomInputPaste(e) {
+  const value = (e.clipboardData || window.clipboardData).getData('text');
+  // submitJoinRoomInput happens before the paste is applied to the input
+  if (submitJoinRoomInput(value)) {
+    e.preventDefault();
+  }
+}
+
+function submitJoinRoomInput(value = joinRoomOverlayInput.value) {
+  joinRoomOverlayInput.value = '';
+  return controller.joinRoom(value);
 }
 
 // ---- Draw indicator ----

@@ -51,6 +51,7 @@ class ScratchetController {
     if (roomcode) {
       collapseJoinRoomOverlay();
     }
+    return !!roomcode;
   }
 
   async copyRoomLink() {
