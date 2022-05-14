@@ -39,4 +39,8 @@ class ScratchetRoom extends ScratchetCanvas {
     canvasContainer.appendChild(canvas);
     return canvas;
   }
+
+  static validateRoomCode(roomcode) {
+    return /\d{4}/.test(roomcode);
+  }
 }

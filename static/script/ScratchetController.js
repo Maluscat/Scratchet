@@ -40,6 +40,12 @@ class ScratchetController {
     }
   }
 
+  joinRoom(roomcode) {
+    if (ScratchetRoom.validateRoomCode(roomcode)) {
+      collapseJoinRoomOverlay();
+    }
+  }
+
   async copyRoomLink() {
     navigator.clipboard.writeText(this.activeRoom.roomCodeLink);
     copyRoomLinkOverlay.classList.add('copied');

@@ -19,6 +19,8 @@ const roomListButton = document.getElementById('room-list-button');
 const roomList = document.getElementById('room-list');
 
 const newRoomButton = document.getElementById('new-room-button');
+const joinRoomButton = document.getElementById('join-room-button');
+const joinRoomOverlayInput = document.getElementById('join-room-overlay-input');
 const copyRoomLinkButton = document.getElementById('copy-room-link-button');
 const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
 const copyRoomLinkContent = document.getElementById('copy-room-link-content');
@@ -79,8 +81,11 @@ for (const l of document.querySelectorAll('.overlay-input')) {
   l.addEventListener('keydown', handleOverlayInputKeys);
 }
 
+joinRoomOverlayInput.addEventListener('keydown', handleJoinRoomInputKeys);
+
 userListButton.addEventListener('click', toggleHoverOverlay);
 roomListButton.addEventListener('click', toggleHoverOverlay);
+joinRoomButton.addEventListener('click', joinRoomButtonClick);
 copyRoomLinkButton.addEventListener('click', controller.copyRoomLink.bind(controller));
 
 sock.addEventListener('open', controller.socketOpen.bind(controller))
@@ -117,6 +122,24 @@ function mouseWheel(e) {
     } else {
       widthSlider.value += direction * 7;
     }
+  }
+}
+
+function joinRoomButtonClick() {
+  joinRoomOverlayInput.classList.toggle('active');
+  joinRoomOverlayInput.focus();
+}
+function collapseJoinRoomOverlay() {
+  joinRoomOverlayInput.blur();
+  joinRoomOverlayInput.classList.remove('active');
+}
+function handleJoinRoomInputKeys(e) {
+  if (e.key === 'Escape' || e.key === 'Enter' && joinRoomOverlayInput.value === '') {
+    collapseJoinRoomOverlay();
+  }
+  if (e.key === 'Enter') {
+    controller.joinRoom(joinRoomOverlayInput.value);
+    joinRoomOverlayInput.value = '';
   }
 }
 
