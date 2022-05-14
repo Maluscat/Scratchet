@@ -128,7 +128,7 @@ input:invalid {
   align-items: center;
   position: relative;
 }
-.button-wrapper:hover .hover-overlay,
+.button-wrapper:hover .hover-overlay:not(.no-hover),
 .button-wrapper .hover-overlay.active {
   display: block;
 }
