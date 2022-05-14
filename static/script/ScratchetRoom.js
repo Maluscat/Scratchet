@@ -40,7 +40,10 @@ class ScratchetRoom extends ScratchetCanvas {
     return canvas;
   }
 
-  static validateRoomCode(roomcode) {
-    return /\d{4}/.test(roomcode);
+  static validateValueToRoomCode(value) {
+    if (!JOINROOM_VALIDATE_REGEX.test(value)) {
+      return false;
+    }
+    return value.match(JOINROOM_VALIDATE_REGEX)[1];
   }
 }

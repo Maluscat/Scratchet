@@ -41,7 +41,8 @@ class ScratchetController {
   }
 
   joinRoom(roomcode) {
-    if (ScratchetRoom.validateRoomCode(roomcode)) {
+    roomcode = ScratchetRoom.validateValueToRoomCode(roomcode);
+    if (roomcode) {
       collapseJoinRoomOverlay();
     }
   }
