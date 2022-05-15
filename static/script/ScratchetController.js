@@ -154,7 +154,7 @@ class ScratchetController {
   sendPositions() {
     if (getMetaMode(this.posBuffer) === MODE.ERASE && this.posBuffer.length > META_LEN.ERASE
         || this.posBuffer.length > META_LEN.NORMAL) {
-      const posData = new Int32Array(this.posBuffer);
+      const posData = new Int16Array(this.posBuffer);
       sock.send(posData.buffer);
       if (!getMetaMode(this.posBuffer)) {
         this.activeRoom.addPosDataToBuffer(posData, CURRENT_USER_ID);
@@ -242,7 +242,7 @@ class ScratchetController {
   async socketReceiveMessage(e) {
     if (e.data instanceof Blob) {
       // Scratchet ArrayBuffer: [playerID, metadata?, ...positions]
-      const data = new Int32Array(await e.data.arrayBuffer());
+      const data = new Int16Array(await e.data.arrayBuffer());
       this.parseSocketData(data);
     } else {
       const data = JSON.parse(e.data);

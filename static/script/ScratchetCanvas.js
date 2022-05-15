@@ -166,7 +166,7 @@ class ScratchetCanvas {
           } else {
             hasErased = true;
             if (newPosData.length > META_LEN.NORMAL) {
-              posDataWrapper.push(new Int32Array(newPosData));
+              posDataWrapper.push(new Int16Array(newPosData));
             }
             if (j <= posData.length - META_LEN.NORMAL) {
               newPosData = [posData[0], posData[1], posData[j + 2], posData[j + 3]];
@@ -177,7 +177,7 @@ class ScratchetCanvas {
         }
 
         if (newPosData.length > META_LEN.NORMAL) {
-          posDataWrapper[i] = new Int32Array(newPosData);
+          posDataWrapper[i] = new Int16Array(newPosData);
         } else {
           posDataWrapper.splice(i, 1);
         }
@@ -209,7 +209,7 @@ class ScratchetCanvas {
           joinedBuffer.push(MODE.BULK_INIT, ...posData);
         }
       }
-      sock.send(new Int32Array(joinedBuffer));
+      sock.send(new Int16Array(joinedBuffer));
     }
   }
 

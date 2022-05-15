@@ -44,7 +44,7 @@ router
 
     sock.addEventListener('message', (e: MessageEvent) => {
       if (e.data instanceof ArrayBuffer) {
-        const dataArr = new Int32Array(e.data);
+        const dataArr = new Int16Array(e.data);
         // Send initial bulk data
         if (dataArr[0] === -1) {
           // Go through the queue until finding a socket which this one hasn't served yet
@@ -111,8 +111,8 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
 }
 
 // ---- ArrayBuffer handling ----
-function bufferPrependUser(dataArr: Int32Array, sockID: number): ArrayBuffer {
-  const newData = new Int32Array(dataArr.length + 1);
+function bufferPrependUser(dataArr: Int16Array, sockID: number): ArrayBuffer {
+  const newData = new Int16Array(dataArr.length + 1);
   newData.set(dataArr, 1);
   newData[0] = sockID;
   return newData.buffer;
