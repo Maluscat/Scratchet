@@ -17,7 +17,7 @@ class ScratchetCanvas {
     canvas.addEventListener('contextmenu', this.canvasContext.bind(this));
     canvas.addEventListener('pointerdown', this.canvasDown.bind(this));
     window.addEventListener('pointerup', this.pointerUp.bind(this));
-    canvas.addEventListener('mousemove', this.canvasDraw.bind(this));
+    canvas.addEventListener('pointermove', this.canvasDraw.bind(this));
 
     this.setDimensions();
 
