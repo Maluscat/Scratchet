@@ -54,8 +54,10 @@ class ScratchetCanvas {
       controller.sendPositionsIfWidthHasChanged();
 
       if (this.pressedMouseBtn === 2) {
-        this.erasePos(e.clientX, e.clientY, CURRENT_USER_ID);
-        this.redrawCanvas();
+        if (this.erasePos(e.clientX, e.clientY, CURRENT_USER_ID)) {
+          this.redrawCanvas();
+          controller.addToPosBuffer(e.clientX, e.clientY);
+        }
       } else {
         controller.sendPositionsIfHueHasChanged();
 
@@ -65,8 +67,9 @@ class ScratchetCanvas {
         this.ctx.stroke();
 
         this.setLastPos(e.clientX, e.clientY);
+
+        controller.addToPosBuffer(e.clientX, e.clientY);
       }
-      controller.addToPosBuffer(e.clientX, e.clientY);
     }
   }
 
@@ -149,6 +152,7 @@ class ScratchetCanvas {
       if (!this.posUserCache.has(userID)) return;
       userPosSet = this.posUserCache.get(userID);
     }
+    let hasErased = false;
     for (const posDataWrapper of userPosSet) {
 
       for (let i = 0; i < posDataWrapper.length; i++) {
@@ -160,6 +164,7 @@ class ScratchetCanvas {
           if (Math.abs(posData[j] - posX) > eraserWidth || Math.abs(posData[j + 1] - posY) > eraserWidth) {
             newPosData.push(posData[j], posData[j + 1]);
           } else {
+            hasErased = true;
             if (newPosData.length > META_LEN.NORMAL) {
               posDataWrapper.push(new Int32Array(newPosData));
             }
@@ -182,6 +187,7 @@ class ScratchetCanvas {
         this.posUserCache.get(userID).delete(posDataWrapper);
       }
     }
+    return hasErased;
   }
 
   addPosDataToBuffer(posData, userID) {
