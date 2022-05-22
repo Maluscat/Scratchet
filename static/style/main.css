@@ -119,10 +119,6 @@ input:invalid {
   width: 0.825em;
   height: 0.825em;
 }
-.button-group .button > svg.arrow-icon {
-  width: 1.3em;
-  height: 1.3em;
-}
 .button-wrapper {
   display: flex;
   align-items: center;
