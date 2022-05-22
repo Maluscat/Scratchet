@@ -160,7 +160,11 @@ class ScratchetCanvas {
       for (let i = 0; i < posDataWrapper.length; i++) {
         const posData = posDataWrapper[i];
 
-        let newPosData = [posData[0], posData[1], posData[2], posData[3]];
+        let newPosData = new Array(META_LEN.NORMAL);
+        for (let i = 0; i < newPosData.length; i++) {
+          newPosData[i] = posData[i];
+        }
+
         for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
           // Push only the points back into the array which are not in range of the erase pos
           if (Math.abs(posData[j] - posX) > eraserWidth || Math.abs(posData[j + 1] - posY) > eraserWidth) {
@@ -171,7 +175,7 @@ class ScratchetCanvas {
               posDataWrapper.push(new Int16Array(newPosData));
             }
             if (j <= posData.length - META_LEN.NORMAL) {
-              newPosData = [posData[0], posData[1], posData[j + 2], posData[j + 3]];
+              newPosData = [posData[0], posData[1], posData[j + 2], posData[j + 3], posData[4]];
             } else {
               newPosData = [];
             }
