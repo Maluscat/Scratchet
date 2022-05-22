@@ -56,11 +56,31 @@ class ScratchetController {
   }
 
   async copyRoomLink() {
-    navigator.clipboard.writeText(this.activeRoom.roomCodeLink);
-    copyRoomLinkOverlay.classList.add('copied');
-    setTimeout(function() {
-      copyRoomLinkOverlay.classList.remove('copied');
-    }, 750);
+    if (!navigator.clipboard) {
+      copyRoomLinkOverlay.classList.toggle('active');
+      return;
+    }
+
+    await navigator.clipboard.writeText(this.activeRoom.roomCodeLink);
+
+    if (matchMedia('(hover: hover)').matches) {
+      copyRoomLinkOverlay.classList.add('copied');
+      dispatchTimeout();
+    } else {
+      copyRoomLinkOverlay.classList.toggle('active');
+      if (copyRoomLinkOverlay.classList.contains('active')) {
+        setTimeout(function() {
+          copyRoomLinkOverlay.classList.add('copied');
+          dispatchTimeout();
+        }, 175);
+      }
+    }
+
+    function dispatchTimeout() {
+      setTimeout(function() {
+        copyRoomLinkOverlay.classList.remove('copied');
+      }, 750);
+    }
   }
 
   changeCurrentRoomName(newRoomName) {
