@@ -4,7 +4,8 @@ class ScratchetController {
   rooms = new Map();
   activeRoom;
 
-  posBuffer = new Array();
+  posBufferServer = new Array();
+  posBufferClient = new Array();
 
   constructor() {
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
@@ -131,33 +132,60 @@ class ScratchetController {
   }
 
   addToPosBuffer(posX, posY) {
-    this.posBuffer.push(posX, posY);
+    this.posBufferClient.push(posX, posY);
+    this.posBufferServer.push(posX, posY);
   }
 
-  initializePosBuffer(useEraseMode, lastPosX, lastPosY) {
-    if (useEraseMode) {
-      this.posBuffer = [MODE.ERASE, this.activeRoom.width];
+  initializePosBufferNormal(lastPosX, lastPosY) {
+    const hue = this.activeRoom.hue;
+    const width = this.activeRoom.width;
+    let flag = 0;
+
+    this.posBufferServer = new Array(1);
+
+    if (getMetaHue(this.posBufferClient) === hue) {
+      flag |= 0b0010;
     } else {
-      this.posBuffer = [this.activeRoom.hue, this.activeRoom.width, lastPosX, lastPosY];
+      this.lastHue = hue;
+      this.posBufferServer.push(this.lastHue);
     }
+    if (getMetaWidth(this.posBufferClient) === width) {
+      flag |= 0b0001;
+    } else {
+      this.lastWidth = width;
+      this.posBufferServer.push(this.lastWidth);
+    }
+
+    this.posBufferServer.push(lastPosX, lastPosY);
+    this.posBufferServer[0] = flag;
+
+    this.posBufferClient = [hue, width, lastPosX, lastPosY, flag];
+  }
+  initializePosBufferErase() {
+    this.posBufferServer = [MODE.ERASE, this.activeRoom.width];
+    this.posBufferClient = [];
   }
 
+  // TODO this can probably be made less redundant
   resetPosBuffer() {
-    this.initializePosBuffer(
-      getMetaMode(this.posBuffer) === MODE.ERASE,
-      this.posBuffer[this.posBuffer.length - 2],
-      this.posBuffer[this.posBuffer.length - 1]
-    );
+    if (getMetaMode(this.posBufferServer) === MODE.ERASE) {
+      this.initializePosBufferErase();
+    } else {
+      this.initializePosBufferNormal(
+        this.posBufferClient[this.posBufferClient.length - 2],
+        this.posBufferClient[this.posBufferClient.length - 1],
+      );
+    }
   }
 
   // ---- Socket handling ----
   sendPositions() {
-    if (getMetaMode(this.posBuffer) === MODE.ERASE && this.posBuffer.length > META_LEN.ERASE
-        || this.posBuffer.length > META_LEN.NORMAL) {
-      const posData = new Int16Array(this.posBuffer);
+    if (getMetaMode(this.posBufferServer) === MODE.ERASE && this.posBufferServer.length > META_LEN.ERASE
+        || this.posBufferClient.length > META_LEN.NORMAL) {
+      const posData = new Int16Array(this.posBufferServer);
       sock.send(posData.buffer);
-      if (!getMetaMode(this.posBuffer)) {
-        this.activeRoom.addPosDataToBuffer(posData, CURRENT_USER_ID);
+      if (this.posBufferClient.length > 0) {
+        this.activeRoom.addClientDataToBuffer(new Int16Array(this.posBufferClient), CURRENT_USER_ID);
       }
       this.resetPosBuffer();
     }
@@ -165,12 +193,12 @@ class ScratchetController {
 
   // Overrule timer if hue or stroke width has changed
   sendPositionsIfWidthHasChanged() {
-    if (this.activeRoom.width !== getMetaWidth(this.posBuffer)) {
+    if (this.activeRoom.width !== getMetaWidth(this.posBufferClient)) {
       this.sendPositions();
     }
   }
   sendPositionsIfHueHasChanged() {
-    if (this.activeRoom.hue !== getMetaHue(this.posBuffer)) {
+    if (this.activeRoom.hue !== getMetaHue(this.posBufferClient)) {
       this.sendPositions();
     }
   }
