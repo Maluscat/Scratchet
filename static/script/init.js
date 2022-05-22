@@ -35,7 +35,7 @@ const MODE = {
 };
 // Metadata length in a payload of the specified mode
 const META_LEN = {
-  NORMAL: 4,
+  NORMAL: 5,
   ERASE: 2,
 }
 
@@ -206,6 +206,13 @@ function getMetaWidth(dataWithMetadata) {
 }
 
 // ---- Generic helper functions ----
+function getExtraMetaLengthFromFlag(flag) {
+  let extraLen = 0;
+  if (flag & 0b0001) extraLen++;
+  if (flag & 0b0010) extraLen++;
+  return extraLen;
+}
+
 function createPosDataWrapper(posData) {
   return [ posData ];
 }

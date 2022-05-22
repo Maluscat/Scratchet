@@ -131,11 +131,11 @@ class ScratchetCanvas {
     let index = 1;
     for (let i = 1; i < data.length; i++) {
       if (data[i] === MODE.BULK_INIT) {
-        this.addPosDataToBuffer(data.subarray(index, i), userID);
+        this.addServerDataToBuffer(data.subarray(index, i), userID);
         index = i + 1;
       }
     }
-    this.addPosDataToBuffer(data.subarray(index), userID);
+    this.addServerDataToBuffer(data.subarray(index), userID);
     this.redrawCanvas();
   }
   handleEraseData(data, userID) {
@@ -190,23 +190,12 @@ class ScratchetCanvas {
     return hasErased;
   }
 
-  addPosDataToBuffer(posData, userID) {
-    const posDataWrapper = createPosDataWrapper(posData);
-    this.globalPosBuffer.add(posDataWrapper);
-    let cache = this.posUserCache.get(userID);
-    if (!cache) {
-      cache = new Set();
-      this.posUserCache.set(userID, cache);
-    }
-    cache.add(posDataWrapper);
-  }
-
   sendJoinedUserBuffer(targetUserID) {
     if (this.posUserCache.has(CURRENT_USER_ID)) {
       const joinedBuffer = new Array();
       for (const posDataWrapper of this.posUserCache.get(CURRENT_USER_ID)) {
         for (const posData of posDataWrapper) {
-          joinedBuffer.push(MODE.BULK_INIT, ...posData);
+          joinedBuffer.push(MODE.BULK_INIT, ...this.convertClientDataToServerData(posData));
         }
       }
       sock.send(new Int16Array(joinedBuffer));
@@ -222,6 +211,73 @@ class ScratchetCanvas {
       userCache.clear();
     }
     this.redrawCanvas();
+  }
+
+  addServerDataToBuffer(posData, userID) {
+    posData = this.convertServerDataToClientData(posData, userID);
+    this.nameHandler.setUserColorIndicator(userID, getMetaHue(posData));
+    this.addClientDataToBuffer(posData, userID);
+  }
+  addClientDataToBuffer(posData, userID) {
+    const posDataWrapper = createPosDataWrapper(posData);
+    this.globalPosBuffer.add(posDataWrapper);
+    let cache = this.posUserCache.get(userID);
+    if (!cache) {
+      cache = new Set();
+      this.posUserCache.set(userID, cache);
+    }
+    cache.add(posDataWrapper);
+  }
+
+  // ---- Protocol converter ----
+  convertServerDataToClientData(posData, userID) {
+    const flag = posData[0];
+    const extraLen = getExtraMetaLengthFromFlag(flag);
+
+    const clientPosData = new Int16Array(posData.length + extraLen);
+    clientPosData.set(posData, extraLen);
+    // Shift items to the left
+    for (let i = extraLen; i < META_LEN.NORMAL - 1; i++) {
+      clientPosData[i] = clientPosData[i + 1];
+    }
+
+    if (extraLen > 0) {
+      const userPosSet = Array.from(this.posUserCache.get(userID));
+      // Get width/hue of the last package
+      if (flag & 0b0001) {
+        clientPosData[0] = clientPosData[1];
+        clientPosData[1] = getMetaWidth(userPosSet[userPosSet.length - 1][0]);
+      }
+      if (flag & 0b0010) {
+        clientPosData[0] = getMetaHue(userPosSet[userPosSet.length - 1][0]);
+      }
+    }
+
+    clientPosData[4] = flag;
+
+    return clientPosData;
+  }
+  convertClientDataToServerData(posData, userID) {
+    const flag = posData[4];
+    const extraLen = getExtraMetaLengthFromFlag(flag);
+
+    const serverPosData = new Int16Array(posData.length - extraLen);
+    serverPosData.set(posData.subarray(extraLen));
+    // Shift items to the right
+    for (let i = META_LEN.NORMAL - extraLen - 1 - 1; i >= 0; i--) {
+      serverPosData[i + 1] = serverPosData[i];
+    }
+
+    if ((flag & 0b0001) === 0) {
+      serverPosData[extraLen--] = getMetaWidth(posData);
+    }
+    if ((flag & 0b0010) === 0) {
+      serverPosData[extraLen--] = getMetaHue(posData);
+    }
+
+    serverPosData[0] = flag;
+
+    return serverPosData;
   }
 
   // ---- Helper functions ----

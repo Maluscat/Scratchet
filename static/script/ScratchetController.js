@@ -215,8 +215,7 @@ class ScratchetController {
         this.activeRoom.handleEraseData(data, userID);
         break;
       default:
-        this.activeRoom.nameHandler.setUserColorIndicator(userID, getMetaHue(data));
-        this.activeRoom.addPosDataToBuffer(data, userID);
+        this.activeRoom.addServerDataToBuffer(data, userID);
         this.activeRoom.redrawCanvas();
     }
   }
