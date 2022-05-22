@@ -265,7 +265,7 @@ class ScratchetCanvas {
   }
   convertClientDataToServerData(posData, userID) {
     const flag = posData[4];
-    const extraLen = getExtraMetaLengthFromFlag(flag);
+    let extraLen = getExtraMetaLengthFromFlag(flag);
 
     const serverPosData = new Int16Array(posData.length - extraLen);
     serverPosData.set(posData.subarray(extraLen));
