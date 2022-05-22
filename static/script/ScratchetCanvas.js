@@ -288,17 +288,19 @@ class ScratchetCanvas {
 
   // ---- Helper functions ----
   setDimensions() {
-    this.canvas.height = this.canvas.clientHeight;
-    this.canvas.width = this.canvas.clientWidth;
+    const dpr = Math.round(window.devicePixelRatio);
+
+    this.canvas.height = this.canvas.clientHeight * dpr;
+    this.canvas.width = this.canvas.clientWidth * dpr;
 
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
+
+    this.ctx.scale(dpr, dpr);
   }
 
   setLineWidth(width = this.width) {
     this.ctx.lineWidth = width;
-    if (width !== this.width) {
-    }
   }
   setStrokeStyle(hue = this.hue, hasReducedAlpha) {
     this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
