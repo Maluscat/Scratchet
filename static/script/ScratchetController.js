@@ -177,6 +177,17 @@ class ScratchetController {
       );
     }
   }
+  // Only update width and hue
+  updatePosBuffer() {
+    if (getMetaMode(this.posBufferServer) === MODE.ERASE) {
+      this.initializePosBufferErase();
+    } else if (this.posBufferClient.length > 0) {
+      this.initializePosBufferNormal(
+        this.posBufferClient[2],
+        this.posBufferClient[3],
+      );
+    }
+  }
 
   // ---- Socket handling ----
   sendPositions() {
@@ -188,6 +199,8 @@ class ScratchetController {
         this.activeRoom.addClientDataToBuffer(new Int16Array(this.posBufferClient), CURRENT_USER_ID);
       }
       this.resetPosBuffer();
+    } else {
+      this.updatePosBuffer();
     }
   }
 
