@@ -164,7 +164,11 @@ input:invalid {
   display: flex;
   align-items: center;
   position: relative;
-  &:hover .hover-overlay:not(.no-hover),
+  @media (hover: hover) {
+    &:hover .hover-overlay:not(.no-hover) {
+      display: block;
+    }
+  }
   .hover-overlay.active {
     display: block;
   }
