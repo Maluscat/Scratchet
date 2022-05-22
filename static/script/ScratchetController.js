@@ -143,13 +143,13 @@ class ScratchetController {
 
     this.posBufferServer = new Array(1);
 
-    if (getMetaHue(this.posBufferClient) === hue) {
+    if (getClientMetaHue(this.posBufferClient) === hue) {
       flag |= 0b0010;
     } else {
       this.lastHue = hue;
       this.posBufferServer.push(this.lastHue);
     }
-    if (getMetaWidth(this.posBufferClient) === width) {
+    if (getClientMetaWidth(this.posBufferClient) === width) {
       flag |= 0b0001;
     } else {
       this.lastWidth = width;
@@ -168,7 +168,7 @@ class ScratchetController {
 
   // TODO this can probably be made less redundant
   resetPosBuffer() {
-    if (getMetaMode(this.posBufferServer) === MODE.ERASE) {
+    if (getServerMetaMode(this.posBufferServer) === MODE.ERASE) {
       this.initializePosBufferErase();
     } else {
       this.initializePosBufferNormal(
@@ -179,7 +179,7 @@ class ScratchetController {
   }
   // Only update width and hue
   updatePosBuffer() {
-    if (getMetaMode(this.posBufferServer) === MODE.ERASE) {
+    if (getServerMetaMode(this.posBufferServer) === MODE.ERASE) {
       this.initializePosBufferErase();
     } else if (this.posBufferClient.length > 0) {
       this.initializePosBufferNormal(
@@ -191,7 +191,7 @@ class ScratchetController {
 
   // ---- Socket handling ----
   sendPositions() {
-    if (getMetaMode(this.posBufferServer) === MODE.ERASE && this.posBufferServer.length > META_LEN.ERASE
+    if (getServerMetaMode(this.posBufferServer) === MODE.ERASE && this.posBufferServer.length > META_LEN.ERASE
         || this.posBufferClient.length > META_LEN.NORMAL) {
       const posData = new Int16Array(this.posBufferServer);
       sock.send(posData.buffer);
@@ -206,12 +206,12 @@ class ScratchetController {
 
   // Overrule timer if hue or stroke width has changed
   sendPositionsIfWidthHasChanged() {
-    if (this.activeRoom.width !== getMetaWidth(this.posBufferClient)) {
+    if (this.activeRoom.width !== getClientMetaWidth(this.posBufferClient)) {
       this.sendPositions();
     }
   }
   sendPositionsIfHueHasChanged() {
-    if (this.activeRoom.hue !== getMetaHue(this.posBufferClient)) {
+    if (this.activeRoom.hue !== getClientMetaHue(this.posBufferClient)) {
       this.sendPositions();
     }
   }
@@ -220,7 +220,7 @@ class ScratchetController {
     const userID = data[0];
     data = data.subarray(1);
 
-    switch (getMetaMode(data)) {
+    switch (getServerMetaMode(data)) {
       case MODE.BULK_INIT:
         this.activeRoom.handleBulkInitData(data, userID);
         break;

@@ -186,23 +186,22 @@ function dispatchNotification(content) {
 
 
 // ---- Metadata helper functions ----
-function getMetaMode(dataWithMetadata) {
-  if (dataWithMetadata[0] < 0) {
-    return dataWithMetadata[0];
+function getServerMetaMode(serverDataWithMetadata) {
+  if (serverDataWithMetadata[0] < 0) {
+    return serverDataWithMetadata[0];
+  }
+  return 0;
+}
+
+function getClientMetaHue(clientDataWithMetadata) {
+  if (clientDataWithMetadata[0] >= 0) {
+    return clientDataWithMetadata[0];
   }
   return false;
 }
-
-function getMetaHue(dataWithMetadata) {
-  if (dataWithMetadata[0] >= 0) {
-    return dataWithMetadata[0];
-  }
-  return false;
-}
-
-function getMetaWidth(dataWithMetadata) {
+function getClientMetaWidth(clientDataWithMetadata) {
   // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
-  return dataWithMetadata[1];
+  return clientDataWithMetadata[1];
 }
 
 // ---- Generic helper functions ----

@@ -88,8 +88,8 @@ class ScratchetCanvas {
         const hasReducedAlpha = userPosSetHighlight && !userPosSetHighlight.has(posDataWrapper);
         // ASSUMPTION: all posData in posDataWrapper have the same width and hue
         // because only the eraser can form multiple posData inside one wrapper
-        this.setStrokeStyle(getMetaHue(posDataWrapper[0]), hasReducedAlpha);
-        this.setLineWidth(getMetaWidth(posDataWrapper[0]));
+        this.setStrokeStyle(getClientMetaHue(posDataWrapper[0]), hasReducedAlpha);
+        this.setLineWidth(getClientMetaWidth(posDataWrapper[0]));
 
         this.ctx.beginPath();
         hasChanged = false;
@@ -98,8 +98,8 @@ class ScratchetCanvas {
       this.drawFromPosDataWrapper(posDataWrapper);
 
       if (!nextWrapper
-          || getMetaHue(nextWrapper[0]) !== getMetaHue(posDataWrapper[0])
-          || getMetaWidth(nextWrapper[0]) !== getMetaWidth(posDataWrapper[0])) {
+          || getClientMetaHue(nextWrapper[0]) !== getClientMetaHue(posDataWrapper[0])
+          || getClientMetaWidth(nextWrapper[0]) !== getClientMetaWidth(posDataWrapper[0])) {
         this.ctx.stroke();
         hasChanged = true;
       }
@@ -144,7 +144,7 @@ class ScratchetCanvas {
     if (this.posUserCache.has(userID)) {
       const userPosSet = this.posUserCache.get(userID);
       for (let i = META_LEN.ERASE; i < data.length; i += 2) {
-        this.erasePos(data[i], data[i + 1], userID, userPosSet, getMetaWidth(data));
+        this.erasePos(data[i], data[i + 1], userID, userPosSet, getClientMetaWidth(data));
       }
       this.redrawCanvas();
     }
@@ -221,7 +221,7 @@ class ScratchetCanvas {
 
   addServerDataToBuffer(posData, userID) {
     posData = this.convertServerDataToClientData(posData, userID);
-    this.nameHandler.setUserColorIndicator(userID, getMetaHue(posData));
+    this.nameHandler.setUserColorIndicator(userID, getClientMetaHue(posData));
     this.addClientDataToBuffer(posData, userID);
   }
   addClientDataToBuffer(posData, userID) {
@@ -252,10 +252,10 @@ class ScratchetCanvas {
       // Get width/hue of the last package
       if (flag & 0b0001) {
         clientPosData[0] = clientPosData[1];
-        clientPosData[1] = getMetaWidth(userPosSet[userPosSet.length - 1][0]);
+        clientPosData[1] = getClientMetaWidth(userPosSet[userPosSet.length - 1][0]);
       }
       if (flag & 0b0010) {
-        clientPosData[0] = getMetaHue(userPosSet[userPosSet.length - 1][0]);
+        clientPosData[0] = getClientMetaHue(userPosSet[userPosSet.length - 1][0]);
       }
     }
 
@@ -275,10 +275,10 @@ class ScratchetCanvas {
     }
 
     if ((flag & 0b0001) === 0) {
-      serverPosData[extraLen--] = getMetaWidth(posData);
+      serverPosData[extraLen--] = getClientMetaWidth(posData);
     }
     if ((flag & 0b0010) === 0) {
-      serverPosData[extraLen--] = getMetaHue(posData);
+      serverPosData[extraLen--] = getClientMetaHue(posData);
     }
 
     serverPosData[0] = flag;
