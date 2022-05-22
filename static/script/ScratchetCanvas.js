@@ -36,9 +36,11 @@ class ScratchetCanvas {
     this.pressedMouseBtn = e.button;
     if (this.pressedMouseBtn === 2) {
       toggleDrawIndicatorEraseMode();
+      controller.initializePosBufferErase(this.width);
+    } else {
+      this.setLastPos(e.clientX, e.clientY);
+      controller.initializePosBufferNormal(...this.lastPos);
     }
-    this.setLastPos(e.clientX, e.clientY);
-    controller.initializePosBuffer(this.pressedMouseBtn === 2, ...this.lastPos);
     this.canvasDraw(e);
   }
 
