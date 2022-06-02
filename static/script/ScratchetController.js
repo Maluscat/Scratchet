@@ -225,7 +225,8 @@ class ScratchetController {
 
   // ---- Socket handling ----
   sendPositions() {
-    if (getServerMetaMode(this.posBufferServer) === MODE.ERASE && this.posBufferServer.length > META_LEN.ERASE
+    if (getServerMetaMode(this.posBufferServer) === MODE.ERASE
+        && this.posBufferServer.length > (META_LEN.ERASE + EXTRA_SERVER_META_LEN)
         || this.posBufferClient.length > META_LEN.NORMAL) {
       const posData = new Int16Array(this.posBufferServer);
       sock.send(posData.buffer);
