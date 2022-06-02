@@ -98,16 +98,18 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
     username = 'User #' + sockID;
   }
 
-  addSocketToInitQueue(sock);
-  sendInitialConnectionData(sock, username, roomCode);
-  sendJSONToAllSockets(sock, sockID, 'connect', {
-    name: username,
-    roomCode: roomCode
-  });
-
   activeSockets.set(sock, {
     id: sockID,
     name: username
+  });
+
+  addUserToRoom(sock, roomCode);
+
+  addSocketToInitQueue(sock);
+  sendInitialConnectionData(roomCode, sock, username);
+  sendJSONToAllSockets(roomCode, sock, sockID, 'connect', {
+    name: username,
+    roomCode: roomCode
   });
 }
 
@@ -120,6 +122,7 @@ function bufferPrependUser(dataArr: Int16Array, sockID: number): ArrayBuffer {
 }
 
 // ---- Initial data queue state handling ----
+// TODO: track this per room
 function addSocketToInitQueue(sock: WebSocket) {
   if (activeSockets.size > 0) {
     socketRequireInitQueue.set(sock, new WeakSet([sock]));
