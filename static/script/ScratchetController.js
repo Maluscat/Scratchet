@@ -97,7 +97,7 @@ class ScratchetController {
     } else if (newUsername !== this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID)) {
       this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, newUsername);
       this.setDefaultUsername(newUsername);
-      sendMessage('changeName', newUsername);
+      sendMessage('changeName', newUsername, this.activeRoom.roomCode);
     }
   }
 

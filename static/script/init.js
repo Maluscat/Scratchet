@@ -224,10 +224,13 @@ function makeHSLString(hue, hasReducedAlpha) {
   }
 }
 
-function sendMessage(event, value) {
+function sendMessage(event, value, roomCode) {
   const dataObj = {
     evt: event
   };
+  if (roomCode != null) {
+    dataObj.room = roomCode;
+  }
   if (value != null) {
     dataObj.val = value;
   }

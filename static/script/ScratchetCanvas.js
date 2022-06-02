@@ -118,7 +118,7 @@ class ScratchetCanvas {
   }
 
   clearCurrentUserCanvas() {
-    sendMessage('clearUser');
+    sendMessage('clearUser', null, this.roomCode);
     this.clearUserBufferAndRedraw(CURRENT_USER_ID);
   }
 

@@ -8,6 +8,7 @@ const router = new Router();
 interface MessageData {
   evt: string,
   usr?: number,
+  room?: number,
   val?: string | ConnectionData
 }
 interface ConnectionData {
