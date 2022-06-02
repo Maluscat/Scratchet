@@ -190,10 +190,6 @@ class ScratchetController {
     this.posBufferServer[1] = flag;
 
     this.posBufferClient = [hue, width, lastPosX, lastPosY, flag];
-
-    if (this.willSendCompleteMetaData) {
-      this.willSendCompleteMetaData = false;
-    }
   }
   initializePosBufferErase() {
     this.posBufferServer = [this.activeRoom.roomCode, MODE.ERASE, this.activeRoom.width];
@@ -235,6 +231,12 @@ class ScratchetController {
       sock.send(posData.buffer);
       if (this.posBufferClient.length > 0) {
         this.activeRoom.addClientDataToBuffer(new Int16Array(this.posBufferClient), CURRENT_USER_ID);
+        // posBufferServer needs to be checked due to asynchronities
+        // between willSendCompleteMetaData and sendPositions
+        // And to ensure that it only resets on normal mode
+        if (this.willSendCompleteMetaData && getServerMetaMode(this.posBufferServer) === 0) {
+          this.willSendCompleteMetaData = false;
+        }
       }
       this.resetPosBuffer();
     } else {
