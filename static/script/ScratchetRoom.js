@@ -44,6 +44,6 @@ class ScratchetRoom extends ScratchetCanvas {
     if (!JOINROOM_VALIDATE_REGEX.test(value)) {
       return false;
     }
-    return value.match(JOINROOM_VALIDATE_REGEX)[1];
+    return parseInt(value.match(JOINROOM_VALIDATE_REGEX)[1]);
   }
 }
