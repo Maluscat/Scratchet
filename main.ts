@@ -45,8 +45,13 @@ router
     sock.addEventListener('message', (e: MessageEvent) => {
       if (e.data instanceof ArrayBuffer) {
         const dataArr = new Int16Array(e.data);
+        const roomCode = dataArr[0];
+        if (!activeRooms.has(roomCode)) {
+          return;
+        }
+
         // Send initial bulk data
-        if (dataArr[0] === -1) {
+        if (dataArr[1] === -1) {
           // Go through the queue until finding a socket which this one hasn't served yet
           for (const [servedSock, handledSocks] of socketRequireInitQueue) {
             if (!handledSocks.has(sock)) {

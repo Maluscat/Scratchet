@@ -161,7 +161,7 @@ class ScratchetController {
     const width = this.activeRoom.width;
     let flag = 0;
 
-    this.posBufferServer = new Array(1);
+    this.posBufferServer = new Array(2);
 
     if (getClientMetaHue(this.posBufferClient) === hue) {
       flag |= 0b0010;
@@ -177,12 +177,13 @@ class ScratchetController {
     }
 
     this.posBufferServer.push(lastPosX, lastPosY);
-    this.posBufferServer[0] = flag;
+    this.posBufferServer[0] = this.activeRoom.roomCode;
+    this.posBufferServer[1] = flag;
 
     this.posBufferClient = [hue, width, lastPosX, lastPosY, flag];
   }
   initializePosBufferErase() {
-    this.posBufferServer = [MODE.ERASE, this.activeRoom.width];
+    this.posBufferServer = [this.activeRoom.roomCode, MODE.ERASE, this.activeRoom.width];
     this.posBufferClient = [];
   }
 
@@ -238,18 +239,21 @@ class ScratchetController {
 
   parseSocketData(data) {
     const userID = data[0];
-    data = data.subarray(1);
+    const roomCode = data[1];
+    data = data.subarray(2);
+
+    const targetRoom = this.rooms.get(roomCode);
 
     switch (getServerMetaMode(data)) {
       case MODE.BULK_INIT:
-        this.activeRoom.handleBulkInitData(data, userID);
+        targetRoom.handleBulkInitData(data, userID);
         break;
       case MODE.ERASE:
-        this.activeRoom.handleEraseData(data, userID);
+        targetRoom.handleEraseData(data, userID);
         break;
       default:
-        this.activeRoom.addServerDataToBuffer(data, userID);
-        this.activeRoom.redrawCanvas();
+        targetRoom.addServerDataToBuffer(data, userID);
+        targetRoom.redrawCanvas();
     }
   }
 
