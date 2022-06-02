@@ -2,10 +2,14 @@ class ScratchetRoom extends ScratchetCanvas {
   nameHandler;
   roomListNode;
   roomCodeLink;
+
+  roomCode;
   roomName;
 
   constructor(roomCode, ownUsername, peers) {
     super(ScratchetRoom.createCanvas());
+
+    this.roomCode = roomCode;
 
     this.nameHandler = new UsernameHandler(ownUsername, peers);
     this.roomListNode = ScratchetRoom.createRoomListNode();
