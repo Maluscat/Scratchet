@@ -135,6 +135,8 @@ class ScratchetController {
   switchActiveRoom(room) {
     this.activeRoom = room;
 
+    room.focusCanvas();
+
     room.nameHandler.setUsernameInput();
     room.nameHandler.appendUserList();
     room.nameHandler.updateUserIndicator();

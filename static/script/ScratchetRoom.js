@@ -1,4 +1,6 @@
 class ScratchetRoom extends ScratchetCanvas {
+  static canvasZIndex = 1;
+
   nameHandler;
   roomListNode;
   roomCodeLink;
@@ -21,6 +23,10 @@ class ScratchetRoom extends ScratchetCanvas {
   changeRoomName(roomName) {
     this.roomName = roomName;
     this.roomListNode.textContent = roomName;
+  }
+
+  focusCanvas() {
+    this.canvas.style.zIndex = ScratchetRoom.canvasZIndex++;
   }
 
   // ---- Static helper functions ----
