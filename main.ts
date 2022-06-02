@@ -31,7 +31,6 @@ router
   .get('/socket', (ctx: Context) => {
     const sock = ctx.upgrade();
     let sockID: number;
-    let roomCode: number;
 
     sock.addEventListener('open', () => {
       sockID = userIDCounter++;
