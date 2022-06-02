@@ -20,6 +20,9 @@ canvas,
   width: 100%;
   height: 100%;
 }
+canvas {
+  position: absolute;
+}
 button,
 input {
   display: block;
