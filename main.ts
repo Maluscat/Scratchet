@@ -78,13 +78,17 @@ router
             break;
           case 'changeName':
             renameSocket(sock, data.val);
-            /* No break! */
+            passMessageOn();
+            break;
           case 'clearUser':
-            // Pass the message on to every peer
-            sendJSONToAllSockets(sock, sockID, data.evt, data.val);
+            passMessageOn();
             break;
           default:
             console.error(`error! Wrong message from Socket ${sockID}!`);
+        }
+
+        function passMessageOn() {
+          sendJSONToAllSockets(data.room, sock, sockID, data.evt, data.val);
         }
       }
     });
