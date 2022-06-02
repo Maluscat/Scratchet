@@ -12,13 +12,12 @@ class ScratchetController {
     if (persistentUsername) {
       this.setDefaultUsername(persistentUsername, true);
     }
-
-    hueSlider.addEvent('change:value', this.changeHue.bind(this));
-    widthSlider.addEvent('change:value', this.changeWidth.bind(this));
   }
 
   init() {
-    document.getElementById('clear-button').addEventListener('click', this.activeRoom.clearCurrentUserCanvas.bind(this.activeRoom));
+    hueSlider.addEvent('change:value', this.changeHue.bind(this));
+    widthSlider.addEvent('change:value', this.changeWidth.bind(this));
+    clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
 
     // Set the join room input to the same width as the copy room link overlay
     copyRoomLinkOverlay.classList.add('active');
@@ -38,6 +37,11 @@ class ScratchetController {
     this.activeRoom.setLineWidth(slider.value);
     this.activeRoom.width = slider.value
     document.documentElement.style.setProperty('--strokeWidth', slider.value + 'px');
+  }
+
+  clearDrawing() {
+    this.activeRoom.clearCurrentUserCanvas();
+    sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
 
   windowResized() {
