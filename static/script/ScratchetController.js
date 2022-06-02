@@ -255,7 +255,6 @@ class ScratchetController {
         break;
       default:
         targetRoom.addServerDataToBuffer(data, userID);
-        targetRoom.redrawCanvas();
     }
   }
 

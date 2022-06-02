@@ -220,9 +220,16 @@ class ScratchetCanvas {
   }
 
   addServerDataToBuffer(posData, userID) {
+    if (!this.posUserCache.has(userID)) {
+      throw new Error(`User #${userID} unknown!`);
+    }
+
     posData = this.convertServerDataToClientData(posData, userID);
-    this.nameHandler.setUserColorIndicator(userID, getClientMetaHue(posData));
-    this.addClientDataToBuffer(posData, userID);
+    if (posData) {
+      this.nameHandler.setUserColorIndicator(userID, getClientMetaHue(posData));
+      this.addClientDataToBuffer(posData, userID);
+      this.redrawCanvas();
+    }
   }
   addClientDataToBuffer(posData, userID) {
     const posDataWrapper = createPosDataWrapper(posData);
@@ -248,14 +255,21 @@ class ScratchetCanvas {
     }
 
     if (extraLen > 0) {
-      const userPosSet = Array.from(this.posUserCache.get(userID));
+      let userPosSet = this.posUserCache.get(userID);
+      if (userPosSet.size === 0) {
+        return false;
+      }
+
+      userPosSet = Array.from(userPosSet);
+      const lastPosData = userPosSet[userPosSet.length - 1][0];
+
       // Get width/hue of the last package
       if (flag & 0b0001) {
         clientPosData[0] = clientPosData[1];
-        clientPosData[1] = getClientMetaWidth(userPosSet[userPosSet.length - 1][0]);
+        clientPosData[1] = getClientMetaWidth(lastPosData);
       }
       if (flag & 0b0010) {
-        clientPosData[0] = getClientMetaHue(userPosSet[userPosSet.length - 1][0]);
+        clientPosData[0] = getClientMetaHue(lastPosData);
       }
     }
 
