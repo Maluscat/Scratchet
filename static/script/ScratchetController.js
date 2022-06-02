@@ -6,6 +6,7 @@ class ScratchetController {
 
   posBufferServer = new Array();
   posBufferClient = new Array();
+  willSendCompleteMetaData = true;
 
   constructor() {
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
@@ -26,6 +27,7 @@ class ScratchetController {
     copyRoomLinkOverlay.classList.remove('active');
 
     setInterval(this.sendPositions.bind(this), SEND_INTERVAL);
+    setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL);
   }
 
   // ---- Event handling ----
@@ -41,6 +43,7 @@ class ScratchetController {
 
   clearDrawing() {
     this.activeRoom.clearCurrentUserCanvas();
+    this.sendCompleteMetaDataNextTime();
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
 
@@ -169,13 +172,13 @@ class ScratchetController {
 
     this.posBufferServer = new Array(2);
 
-    if (getClientMetaHue(this.posBufferClient) === hue) {
+    if (!this.willSendCompleteMetaData && getClientMetaHue(this.posBufferClient) === hue) {
       flag |= 0b0010;
     } else {
       this.lastHue = hue;
       this.posBufferServer.push(this.lastHue);
     }
-    if (getClientMetaWidth(this.posBufferClient) === width) {
+    if (!this.willSendCompleteMetaData && getClientMetaWidth(this.posBufferClient) === width) {
       flag |= 0b0001;
     } else {
       this.lastWidth = width;
@@ -187,6 +190,10 @@ class ScratchetController {
     this.posBufferServer[1] = flag;
 
     this.posBufferClient = [hue, width, lastPosX, lastPosY, flag];
+
+    if (this.willSendCompleteMetaData) {
+      this.willSendCompleteMetaData = false;
+    }
   }
   initializePosBufferErase() {
     this.posBufferServer = [this.activeRoom.roomCode, MODE.ERASE, this.activeRoom.width];
@@ -214,6 +221,10 @@ class ScratchetController {
         this.posBufferClient[3],
       );
     }
+  }
+
+  sendCompleteMetaDataNextTime() {
+    this.willSendCompleteMetaData = true;
   }
 
   // ---- Socket handling ----

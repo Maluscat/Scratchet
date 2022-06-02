@@ -31,6 +31,7 @@ const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const JOINROOM_VALIDATE_REGEX = /^(?:(?:https?:\/\/)?\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w*?)*#)?(\d{4})$/;
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 40;
+const SEND_FULL_METADATA_INTERVAL = 1000;
 const MODE = {
   BULK_INIT: -1,
   ERASE: -2,
@@ -189,10 +190,7 @@ function dispatchNotification(content) {
 
 // ---- Metadata helper functions ----
 function getServerMetaMode(serverDataWithMetadata) {
-  if (serverDataWithMetadata[0] < 0) {
-    return serverDataWithMetadata[0];
-  }
-  return 0;
+  return serverDataWithMetadata[1];
 }
 
 function getClientMetaHue(clientDataWithMetadata) {

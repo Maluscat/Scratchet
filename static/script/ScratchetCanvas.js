@@ -58,6 +58,7 @@ class ScratchetCanvas {
       if (this.pressedMouseBtn === 2) {
         if (this.erasePos(e.clientX, e.clientY, CURRENT_USER_ID)) {
           this.redrawCanvas();
+          controller.sendCompleteMetaDataNextTime();
           controller.addToPosBuffer(e.clientX, e.clientY);
         }
       } else {
