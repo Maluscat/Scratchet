@@ -23,7 +23,7 @@ interface SocketData {
 
 let userIDCounter = 0;
 const activeSockets: Map<WebSocket, SocketData> = new Map();
-const activeRooms: Map<number, WeakSet<WebSocket>> = new Map();
+const activeRooms: Map<number, Set<WebSocket>> = new Map();
 // The Set tracks the socket which still need to send their data to the init sock
 const socketRequireInitQueue: Map<WebSocket, WeakSet<WebSocket>> = new Map();
 
@@ -58,7 +58,8 @@ router
           }
         } else {
           const newBuffer = bufferPrependUser(dataArr, sockID);
-          for (const socket of activeSockets.keys()) {
+
+          for (const socket of activeRooms.get(roomCode)!) {
             if (socket != sock && socket.readyState === 1) {
               socket.send(newBuffer);
             }
@@ -136,9 +137,10 @@ function removeSocketFromInitQueue(sock: WebSocket) {
 function createNewRoomCode() {
   let roomcode;
   do {
+    // Generate random number of interval [1000, 9999]
     roomcode = Math.floor(Math.random() * 9000 + 1000);
   } while (activeRooms.has(roomcode));
-  activeRooms.set(roomcode, new WeakSet());
+  activeRooms.set(roomcode, new Set());
   return roomcode;
 }
 
@@ -147,7 +149,16 @@ function addUserToRoom(sock: WebSocket, roomCode: number) {
 }
 
 // ---- Socket handling ----
-function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: string, value?: string | ConnectionData) {
+function sendJSONToAllSockets(roomCode: number | null, callingSock: WebSocket, userID: number, event: string, value?: string | ConnectionData) {
+  let targetSockets;
+
+  // TODO: validate room code
+  if (roomCode != null) {
+    targetSockets = activeRooms.get(roomCode);
+  } else {
+    targetSockets = activeSockets.keys();
+  }
+
   const dataObj: MessageData = {
     evt: event,
     usr: userID
@@ -157,18 +168,20 @@ function sendJSONToAllSockets(callingSock: WebSocket, userID: number, event: str
   }
   const data = JSON.stringify(dataObj);
 
-  for (const socket of activeSockets.keys()) {
+  for (const socket of targetSockets!) {
     if (socket != callingSock && socket.readyState === 1) {
       socket.send(data);
     }
   }
 }
 
-function sendInitialConnectionData(receivingSock: WebSocket, initialUsername: string, roomCode: number) {
+function sendInitialConnectionData(roomCode: number, receivingSock: WebSocket, initialUsername: string) {
   const peerArr = new Array();
-  for (const {id, name} of activeSockets.values()) {
+  for (const socket of activeRooms.get(roomCode)!) {
+    const {id, name} = activeSockets.get(socket)!;
     peerArr.push([id, name]);
   }
+
   const data = JSON.stringify({
     evt: 'connectData',
     val: {
