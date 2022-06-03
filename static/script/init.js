@@ -39,10 +39,10 @@ const MODE = {
 // Metadata length in a payload of the specified mode, excluding the extra server metadata
 const META_LEN = {
   NORMAL: 5,
-  ERASE: 1,
+  ERASE: 2,
 }
-// Length of the additional metadata for the server, namely roomCode and userID
-const EXTRA_SERVER_META_LEN = 2;
+// Length of the additional metadata for the server, currently the userID
+const EXTRA_SERVER_META_LEN = 1;
 
 /*
  * data/socketData: bulk data received via socket
