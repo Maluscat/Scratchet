@@ -191,8 +191,12 @@ function dispatchNotification(content) {
 
 
 // ---- Metadata helper functions ----
-function getServerMetaMode(serverDataWithMetadata) {
-  return serverDataWithMetadata[1];
+function getReceivedServerMetaMode(receivedServerDataWithMetadata) {
+  return receivedServerDataWithMetadata[1 + EXTRA_SERVER_META_LEN];
+}
+// Server data without extra server metadata
+function getPendingServerMetaMode(pendingServerDataWithMetadata) {
+  return pendingServerDataWithMetadata[1];
 }
 
 function getClientMetaHue(clientDataWithMetadata) {

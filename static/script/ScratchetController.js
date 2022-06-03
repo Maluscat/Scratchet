@@ -198,7 +198,7 @@ class ScratchetController {
 
   // TODO this can probably be made less redundant
   resetPosBuffer() {
-    if (getServerMetaMode(this.posBufferServer) === MODE.ERASE) {
+    if (getPendingServerMetaMode(this.posBufferServer) === MODE.ERASE) {
       this.initializePosBufferErase();
     } else {
       this.initializePosBufferNormal(
@@ -209,7 +209,7 @@ class ScratchetController {
   }
   // Only update width and hue
   updatePosBuffer() {
-    if (getServerMetaMode(this.posBufferServer) === MODE.ERASE) {
+    if (getPendingServerMetaMode(this.posBufferServer) === MODE.ERASE) {
       this.initializePosBufferErase();
     } else if (this.posBufferClient.length > 0) {
       this.initializePosBufferNormal(
@@ -225,8 +225,9 @@ class ScratchetController {
 
   // ---- Socket handling ----
   sendPositions() {
-    if (getServerMetaMode(this.posBufferServer) === MODE.ERASE
-        && this.posBufferServer.length > (META_LEN.ERASE + EXTRA_SERVER_META_LEN)
+    const mode = getPendingServerMetaMode(this.posBufferServer);
+
+    if (mode === MODE.ERASE && this.posBufferServer.length > (META_LEN.ERASE + EXTRA_SERVER_META_LEN)
         || this.posBufferClient.length > META_LEN.NORMAL) {
       const posData = new Int16Array(this.posBufferServer);
       sock.send(posData.buffer);
@@ -235,7 +236,7 @@ class ScratchetController {
         // posBufferServer needs to be checked due to asynchronities
         // between willSendCompleteMetaData and sendPositions
         // And to ensure that it only resets on normal mode
-        if (this.willSendCompleteMetaData && getServerMetaMode(this.posBufferServer) === 0) {
+        if (this.willSendCompleteMetaData && mode === 0) {
           this.willSendCompleteMetaData = false;
         }
       }
@@ -258,13 +259,14 @@ class ScratchetController {
   }
 
   parseSocketData(data) {
+    const mode = getReceivedServerMetaMode(data);
     const userID = data[0];
     const roomCode = data[1];
     data = data.subarray(2);
 
     const targetRoom = this.rooms.get(roomCode);
 
-    switch (getServerMetaMode(data)) {
+    switch (mode) {
       case MODE.BULK_INIT:
         targetRoom.handleBulkInitData(data, userID);
         break;
