@@ -116,7 +116,7 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
 
   addSocketToInitQueue(sock);
   sendInitialConnectionData(roomCode, sock, username);
-  sendJSONToAllSockets(roomCode, sock, sockID, 'connect', {
+  sendJSONToAllSockets(roomCode, sock, sockID, 'join', {
     name: username,
     roomCode: roomCode
   });
