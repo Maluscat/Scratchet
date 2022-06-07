@@ -279,18 +279,20 @@ class ScratchetController {
   }
 
   // ---- Socket message events ----
-  userDisconnect(userID) {
-    const username = this.activeRoom.nameHandler.removeUserFromUserList(userID);
+  userDisconnect(userID, roomCode) {
+    const room = this.rooms.get(roomCode);
+    const username = room.nameHandler.removeUserFromUserList(userID);
 
-    this.activeRoom.clearUserBufferAndRedraw(userID);
-    this.activeRoom.posUserCache.delete(userID);
+    room.clearUserBufferAndRedraw(userID);
+    room.posUserCache.delete(userID);
 
     dispatchNotification(`${username} has left the room`);
   }
-  userConnect(userID, value) {
-    this.activeRoom.nameHandler.addUserToUserList(userID, value.name);
+  userConnect(userID, roomCode, value) {
+    const room = this.rooms.get(roomCode);
 
-    this.activeRoom.sendJoinedUserBuffer();
+    room.nameHandler.addUserToUserList(userID, value.name);
+    room.sendJoinedUserBuffer();
 
     dispatchNotification(`${value.name} has entered the room`);
   }
@@ -333,11 +335,11 @@ class ScratchetController {
       const data = JSON.parse(e.data);
       switch (data.evt) {
         case 'disconnect': {
-          this.userDisconnect(data.usr);
+          this.userDisconnect(data.usr, data.room);
           break;
         }
         case 'connect': {
-          this.userConnect(data.usr, data.val);
+          this.userConnect(data.usr, data.room, data.val);
           break;
         }
         case 'clearUser': {
