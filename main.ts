@@ -37,7 +37,7 @@ router
     });
 
     sock.addEventListener('close', () => {
-      sendJSONToAllSockets(sock, sockID, 'disconnect');
+      sendJSONToAllSockets(null, sock, sockID, 'disconnect');
       removeSocketFromInitQueue(sock);
       activeSockets.delete(sock);
     });
