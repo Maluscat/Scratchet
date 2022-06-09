@@ -299,13 +299,13 @@ class ScratchetController {
       dispatchNotification(`${username} has left the room`);
     }
   }
-  userJoin(userID, roomCode, value) {
+  userJoin(userID, roomCode, username) {
     const room = this.rooms.get(roomCode);
     if (room) {
-      room.nameHandler.addUserToUserList(userID, value.name);
+      room.nameHandler.addUserToUserList(userID, username);
       room.sendJoinedUserBuffer();
 
-      dispatchNotification(`${value.name} has entered the room`);
+      dispatchNotification(`${username} has entered the room`);
     }
   }
   userClearData(userID) {

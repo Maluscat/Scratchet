@@ -163,15 +163,12 @@ function createNewRoomCode() {
 function addUserToRoom(sock: WebSocket, sockID: number, roomCode: number, username: string = activeSockets.get(sock)!.name) {
   if (activeRooms.has(roomCode)) {
     activeRooms.get(roomCode)!.add(sock);
-    sendJSONToAllSockets(roomCode, sock, sockID, 'join', {
-      name: username,
-      roomCode: roomCode
-    });
+    sendJSONToAllSockets(roomCode, sock, sockID, 'join', username);
   }
 }
 
 // ---- Socket handling ----
-function sendJSONToAllSockets(roomCode: number | null, callingSock: WebSocket, userID: number, event: string, value?: string | ConnectionData) {
+function sendJSONToAllSockets(roomCode: number | null, callingSock: WebSocket, userID: number, event: string, value?: string) {
   let targetSockets;
 
   // TODO: validate room code
@@ -187,6 +184,9 @@ function sendJSONToAllSockets(roomCode: number | null, callingSock: WebSocket, u
   };
   if (value != null) {
     dataObj.val = value;
+  }
+  if (roomCode != null) {
+    dataObj.room = roomCode;
   }
   const data = JSON.stringify(dataObj);
 
