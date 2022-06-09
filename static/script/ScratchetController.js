@@ -289,20 +289,23 @@ class ScratchetController {
   }
   userLeave(userID, roomCode) {
     const room = this.rooms.get(roomCode);
-    const username = room.nameHandler.removeUserFromUserList(userID);
+    if (room) {
+      const username = room.nameHandler.removeUserFromUserList(userID);
 
-    room.clearUserBufferAndRedraw(userID);
-    room.posUserCache.delete(userID);
+      room.clearUserBufferAndRedraw(userID);
+      room.posUserCache.delete(userID);
 
-    dispatchNotification(`${username} has left the room`);
+      dispatchNotification(`${username} has left the room`);
+    }
   }
   userJoin(userID, roomCode, value) {
     const room = this.rooms.get(roomCode);
+    if (room) {
+      room.nameHandler.addUserToUserList(userID, value.name);
+      room.sendJoinedUserBuffer();
 
-    room.nameHandler.addUserToUserList(userID, value.name);
-    room.sendJoinedUserBuffer();
-
-    dispatchNotification(`${value.name} has entered the room`);
+      dispatchNotification(`${value.name} has entered the room`);
+    }
   }
   userClearData(userID) {
     this.activeRoom.clearUserBufferAndRedraw(userID);
