@@ -76,6 +76,9 @@ router
           case 'connectInit':
             initializeUserConnection(sock, sockID, data.val);
             break;
+          case 'joinRoom':
+            initializeUserJoin(sock, sockID, parseInt(data.val));
+            break;
           case 'changeName':
             renameSocket(sock, data.val);
             passMessageOn();
@@ -116,6 +119,11 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
 
   addSocketToInitQueue(sock);
   sendInitialJoinData(sock, roomCode, username);
+}
+
+function initializeUserJoin(sock: WebSocket, sockID: number, roomCode: number) {
+  addUserToRoom(sock, sockID, roomCode);
+  sendInitialJoinData(sock, roomCode);
 }
 
 // ---- ArrayBuffer handling ----
