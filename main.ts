@@ -122,8 +122,10 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
 }
 
 function initializeUserJoin(sock: WebSocket, sockID: number, roomCode: number) {
-  addUserToRoom(sock, sockID, roomCode);
-  sendInitialJoinData(sock, roomCode);
+  if (activeRooms.has(roomCode)) {
+    addUserToRoom(sock, sockID, roomCode);
+    sendInitialJoinData(sock, roomCode);
+  }
 }
 
 // ---- ArrayBuffer handling ----
