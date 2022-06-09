@@ -284,7 +284,7 @@ class ScratchetController {
       // TODO Better notification handling:
       // - "{user of current room} has disconnected"
       // - "{user} has left room {room}"
-      this.userLeave(roomCode);
+      this.userLeave(userID, roomCode);
     }
   }
   userLeave(userID, roomCode) {
