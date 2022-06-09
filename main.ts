@@ -169,6 +169,17 @@ function addUserToRoom(sock: WebSocket, sockID: number, roomCode: number, userna
   sendJSONToAllSockets(roomCode, sock, sockID, 'join', username);
 }
 
+function removeUserFromRoom(sock: WebSocket, sockID: number, roomCode: number) {
+  const socketRoomCodes = activeSockets.get(sock)!.rooms;
+
+  // NOTE: The user is NOT deleted, but is kept with 0 rooms
+  deleteSocketFromRoomSet(sock, roomCode);
+  socketRoomCodes.delete(roomCode);
+  removeSocketFromInitQueue(sock);
+
+  sendJSONToAllSockets(roomCode, sock, sockID, 'leave');
+}
+
 function deleteUser(sock: WebSocket, sockID: number) {
   const socketRoomCodes = activeSockets.get(sock)!.rooms;
 
