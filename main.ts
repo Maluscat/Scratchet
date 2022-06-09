@@ -18,7 +18,8 @@ interface ConnectionData {
 
 interface SocketData {
   id: number,
-  name: string
+  name: string,
+  rooms: Set<number>
 }
 
 let userIDCounter = 0;
@@ -37,9 +38,7 @@ router
     });
 
     sock.addEventListener('close', () => {
-      sendJSONToAllSockets(null, sock, sockID, 'disconnect');
-      removeSocketFromInitQueue(sock);
-      activeSockets.delete(sock);
+      deleteUser(sock, sockID);
     });
 
     sock.addEventListener('message', (e: MessageEvent) => {
@@ -112,7 +111,8 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
 
   activeSockets.set(sock, {
     id: sockID,
-    name: username
+    name: username,
+    rooms: new Set()
   });
 
   addUserToRoom(sock, sockID, roomCode, username);
@@ -161,10 +161,24 @@ function createNewRoomCode() {
 }
 
 function addUserToRoom(sock: WebSocket, sockID: number, roomCode: number, username: string = activeSockets.get(sock)!.name) {
-  if (activeRooms.has(roomCode)) {
-    activeRooms.get(roomCode)!.add(sock);
-    sendJSONToAllSockets(roomCode, sock, sockID, 'join', username);
+  const roomSockets = activeRooms.get(roomCode)!;
+
+  roomSockets.add(sock);
+  activeSockets.get(sock)!.rooms.add(roomCode);
+
+  sendJSONToAllSockets(roomCode, sock, sockID, 'join', username);
+}
+
+function deleteUser(sock: WebSocket, sockID: number) {
+  const socketRoomCodes = activeSockets.get(sock)!.rooms;
+
+  for (const roomCode of socketRoomCodes) {
+    deleteSocketFromRoomSet(sock, roomCode)
   }
+  // socketRoomCodes should be getting garbage collected
+  activeSockets.delete(sock);
+
+  sendJSONToAllSockets(null, sock, sockID, 'disconnect');
 }
 
 // ---- Socket handling ----
@@ -216,6 +230,16 @@ function sendInitialJoinData(receivingSock: WebSocket, roomCode: number, initial
     }
   });
   receivingSock.send(data);
+}
+
+// ---- Helper functions ----
+function deleteSocketFromRoomSet(sock: WebSocket, roomCode: number) {
+  const roomSockets = activeRooms.get(roomCode)!;
+
+  roomSockets.delete(sock);
+  if (roomSockets.size === 0) {
+    activeRooms.delete(roomCode);
+  }
 }
 
 function renameSocket(sock: WebSocket, newUsername: string) {
