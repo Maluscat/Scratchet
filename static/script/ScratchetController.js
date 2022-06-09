@@ -279,6 +279,14 @@ class ScratchetController {
   }
 
   // ---- Socket message events ----
+  userDisconnect(userID) {
+    for (const roomCode of this.rooms.keys()) {
+      // TODO Better notification handling:
+      // - "{user of current room} has disconnected"
+      // - "{user} has left room {room}"
+      this.userLeave(roomCode);
+    }
+  }
   userLeave(userID, roomCode) {
     const room = this.rooms.get(roomCode);
     const username = room.nameHandler.removeUserFromUserList(userID);
@@ -334,6 +342,9 @@ class ScratchetController {
     } else {
       const data = JSON.parse(e.data);
       switch (data.evt) {
+        case 'disconnect':
+          this.userDisconnect(data.usr);
+          break;
         case 'leave': {
           this.userLeave(data.usr, data.room);
           break;
