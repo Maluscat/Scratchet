@@ -317,13 +317,16 @@ class ScratchetController {
     dispatchNotification(`${prevUsername} --> ${username}`);
   }
 
-  ownUserGetConnectData(value) {
+  ownUserGetJoinData(value) {
     // For async reasons, the real user ID is solely used for the username
     if (!this.defaultOwnUsername) {
       this.setDefaultUsername(value.name);
     }
     this.addNewRoom(value.room, value.peers, true);
-    this.init();
+
+    if (this.rooms.size === 0) {
+      this.init();
+    }
   }
 
   // ---- Socket events ----
@@ -364,8 +367,8 @@ class ScratchetController {
           this.userChangeName(data.usr, data.val);
           break;
         }
-        case 'connectData': {
-          this.ownUserGetConnectData(data.val);
+        case 'joinData': {
+          this.ownUserGetJoinData(data.val);
           break;
         }
       }

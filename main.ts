@@ -115,7 +115,7 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
   addUserToRoom(sock, sockID, roomCode, username);
 
   addSocketToInitQueue(sock);
-  sendInitialConnectionData(roomCode, sock, username);
+  sendInitialJoinData(sock, roomCode, username);
 }
 
 // ---- ArrayBuffer handling ----
@@ -189,15 +189,18 @@ function sendJSONToAllSockets(roomCode: number | null, callingSock: WebSocket, u
   }
 }
 
-function sendInitialConnectionData(roomCode: number, receivingSock: WebSocket, initialUsername: string) {
+// ---- Initial data ----
+function sendInitialJoinData(receivingSock: WebSocket, roomCode: number, initialUsername: string = activeSockets.get(receivingSock)!.name) {
   const peerArr = new Array();
   for (const socket of activeRooms.get(roomCode)!) {
-    const {id, name} = activeSockets.get(socket)!;
-    peerArr.push([id, name]);
+    if (socket !== receivingSock) {
+      const {id, name} = activeSockets.get(socket)!;
+      peerArr.push([id, name]);
+    }
   }
 
   const data = JSON.stringify({
-    evt: 'connectData',
+    evt: 'joinData',
     val: {
       room: roomCode,
       name: initialUsername,
