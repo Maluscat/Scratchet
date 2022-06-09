@@ -112,14 +112,10 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
     name: username
   });
 
-  addUserToRoom(sock, roomCode);
+  addUserToRoom(sock, sockID, roomCode, username);
 
   addSocketToInitQueue(sock);
   sendInitialConnectionData(roomCode, sock, username);
-  sendJSONToAllSockets(roomCode, sock, sockID, 'join', {
-    name: username,
-    roomCode: roomCode
-  });
 }
 
 // ---- ArrayBuffer handling ----
@@ -156,8 +152,14 @@ function createNewRoomCode() {
   return roomcode;
 }
 
-function addUserToRoom(sock: WebSocket, roomCode: number) {
-  activeRooms.get(roomCode)!.add(sock);
+function addUserToRoom(sock: WebSocket, sockID: number, roomCode: number, username: string = activeSockets.get(sock)!.name) {
+  if (activeRooms.has(roomCode)) {
+    activeRooms.get(roomCode)!.add(sock);
+    sendJSONToAllSockets(roomCode, sock, sockID, 'join', {
+      name: username,
+      roomCode: roomCode
+    });
+  }
 }
 
 // ---- Socket handling ----
