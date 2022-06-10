@@ -7,31 +7,34 @@ const router = new Router();
 
 interface MessageData {
   evt: string,
-  usr?: number,
-  room?: number,
+  usr?: SocketID,
+  room?: RoomCode,
   val?: string | ConnectionData
 }
 interface ConnectionData {
-  roomCode?: number,
+  roomCode?: RoomCode,
   name?: string
 }
 
 interface SocketData {
-  id: number,
+  id: SocketID,
   name: string,
   rooms: Set<number>
 }
 
+type SocketID = number;
+type RoomCode = number;
+
 let userIDCounter = 0;
 const activeSockets: Map<WebSocket, SocketData> = new Map();
-const activeRooms: Map<number, Set<WebSocket>> = new Map();
+const activeRooms: Map<RoomCode, Set<WebSocket>> = new Map();
 // The Set tracks the socket which still need to send their data to the init sock
 const socketRequireInitQueue: Map<WebSocket, WeakSet<WebSocket>> = new Map();
 
 router
   .get('/socket', (ctx: Context) => {
     const sock = ctx.upgrade();
-    let sockID: number;
+    let sockID: SocketID;
 
     sock.addEventListener('open', () => {
       sockID = userIDCounter++;
@@ -97,7 +100,7 @@ router
   });
 
 // ---- Message event handling ----
-function initializeUserConnection(sock: WebSocket, sockID: number, properties?: ConnectionData) {
+function initializeUserConnection(sock: WebSocket, sockID: SocketID, properties?: ConnectionData) {
   let username = properties?.name;
   let roomCode = properties?.roomCode;
 
@@ -121,7 +124,7 @@ function initializeUserConnection(sock: WebSocket, sockID: number, properties?: 
   sendInitialJoinData(sock, roomCode, username);
 }
 
-function initializeUserJoin(sock: WebSocket, sockID: number, roomCode: number) {
+function initializeUserJoin(sock: WebSocket, sockID: SocketID, roomCode: RoomCode) {
   if (activeRooms.has(roomCode)) {
     addUserToRoom(sock, sockID, roomCode);
     sendInitialJoinData(sock, roomCode);
@@ -129,7 +132,7 @@ function initializeUserJoin(sock: WebSocket, sockID: number, roomCode: number) {
 }
 
 // ---- ArrayBuffer handling ----
-function bufferPrependUser(dataArr: Int16Array, sockID: number): ArrayBuffer {
+function bufferPrependUser(dataArr: Int16Array, sockID: SocketID): ArrayBuffer {
   const newData = new Int16Array(dataArr.length + 1);
   newData.set(dataArr, 1);
   newData[0] = sockID;
@@ -162,7 +165,7 @@ function createNewRoomCode() {
   return roomcode;
 }
 
-function addUserToRoom(sock: WebSocket, sockID: number, roomCode: number, username: string = activeSockets.get(sock)!.name) {
+function addUserToRoom(sock: WebSocket, sockID: SocketID, roomCode: RoomCode, username: string = activeSockets.get(sock)!.name) {
   const roomSockets = activeRooms.get(roomCode)!;
 
   roomSockets.add(sock);
@@ -171,7 +174,7 @@ function addUserToRoom(sock: WebSocket, sockID: number, roomCode: number, userna
   sendJSONToAllSockets(roomCode, sock, sockID, 'join', username);
 }
 
-function removeUserFromRoom(sock: WebSocket, sockID: number, roomCode: number) {
+function removeUserFromRoom(sock: WebSocket, sockID: SocketID, roomCode: RoomCode) {
   const socketRoomCodes = activeSockets.get(sock)!.rooms;
 
   // NOTE: The user is NOT deleted, but is kept with 0 rooms
@@ -182,7 +185,7 @@ function removeUserFromRoom(sock: WebSocket, sockID: number, roomCode: number) {
   sendJSONToAllSockets(roomCode, sock, sockID, 'leave');
 }
 
-function deleteUser(sock: WebSocket, sockID: number) {
+function deleteUser(sock: WebSocket, sockID: SocketID) {
   const socketRoomCodes = activeSockets.get(sock)!.rooms;
 
   for (const roomCode of socketRoomCodes) {
@@ -195,7 +198,7 @@ function deleteUser(sock: WebSocket, sockID: number) {
 }
 
 // ---- Socket handling ----
-function sendJSONToAllSockets(roomCode: number | null, callingSock: WebSocket, userID: number, event: string, value?: string) {
+function sendJSONToAllSockets(roomCode: RoomCode | null, callingSock: WebSocket, userID: SocketID, event: string, value?: string) {
   let targetSockets;
 
   // TODO: validate room code
@@ -225,10 +228,11 @@ function sendJSONToAllSockets(roomCode: number | null, callingSock: WebSocket, u
 }
 
 // ---- Initial data ----
-function sendInitialJoinData(receivingSock: WebSocket, roomCode: number, initialUsername: string = activeSockets.get(receivingSock)!.name) {
+function sendInitialJoinData(receivingSock: WebSocket, roomCode: RoomCode, initialUsername: string = activeSockets.get(receivingSock)!.name) {
   const peerArr = new Array();
   for (const socket of activeRooms.get(roomCode)!) {
     if (socket !== receivingSock) {
+      // TODO
       const {id, name} = activeSockets.get(socket)!;
       peerArr.push([id, name]);
     }
@@ -246,7 +250,7 @@ function sendInitialJoinData(receivingSock: WebSocket, roomCode: number, initial
 }
 
 // ---- Helper functions ----
-function deleteSocketFromRoomSet(sock: WebSocket, roomCode: number) {
+function deleteSocketFromRoomSet(sock: WebSocket, roomCode: RoomCode) {
   const roomSockets = activeRooms.get(roomCode)!;
 
   roomSockets.delete(sock);
