@@ -6,6 +6,8 @@ const app = new Application();
 const router = new Router();
 
 interface MessageData {
+  [key: string]: any;
+
   evt: string,
   usr?: SocketID,
   room?: RoomCode,
@@ -22,6 +24,16 @@ interface SocketData {
   rooms: Set<number>
 }
 
+interface ReceivedEventInterfaceStructure {
+  [key: string]: {
+    required: {
+      [key: string]: string;
+    };
+    fn?: (sock: WebSocket, sockID: SocketID, val: any, room?: RoomCode) => void;
+    passOn?: boolean;
+  }
+};
+
 type SocketID = number;
 type RoomCode = number;
 
@@ -30,6 +42,43 @@ const activeSockets: Map<WebSocket, SocketData> = new Map();
 const activeRooms: Map<RoomCode, Set<WebSocket>> = new Map();
 // The Set tracks the socket which still need to send their data to the init sock
 const socketRequireInitQueue: Map<WebSocket, WeakSet<WebSocket>> = new Map();
+
+const receivedEventsInterface: ReceivedEventInterfaceStructure = {
+  connectInit: {
+    required: {
+      val: 'object'
+    },
+    fn: initializeUserConnection
+  },
+  joinRoom: {
+    required: {
+      val: 'number'
+    },
+    fn: initializeUserJoin
+  },
+  leave: {
+    required: {
+      room: 'number'
+    },
+    fn: (sock, sockID, val, room) => removeUserFromRoom(sock, sockID, room!),
+    passOn: true
+  },
+  changeName: {
+    required: {
+      val: 'string',
+      room: 'number'
+    },
+    fn: (sock, sockID, val, room) => renameSocket(sock, val),
+    passOn: true
+  },
+  clearUser: {
+    required: {
+      room: 'number'
+    },
+    passOn: true
+  },
+};
+
 
 router
   .get('/socket', (ctx: Context) => {
@@ -72,34 +121,50 @@ router
             }
           }
         }
+      } else if (typeof e.data === 'string') {
+        handleReceivedEvent(sock, sockID, JSON.parse(e.data));
       } else {
-        const data = JSON.parse(e.data);
-        switch (data.evt) {
-          case 'connectInit':
-            initializeUserConnection(sock, sockID, data.val);
-            break;
-          case 'joinRoom':
-            initializeUserJoin(sock, sockID, parseInt(data.val));
-            break;
-          case 'changeName':
-            renameSocket(sock, data.val);
-            passMessageOn();
-            break;
-          case 'clearUser':
-            passMessageOn();
-            break;
-          default:
-            console.error(`error! Wrong message from Socket ${sockID}!`);
-        }
-
-        function passMessageOn() {
-          sendJSONToAllSockets(data.room, sock, sockID, data.evt, data.val);
-        }
+        console.warn(`Warning! Received an unknown socket response:\n${e.data}`);
       }
     });
   });
 
 // ---- Message event handling ----
+function handleReceivedEvent(sock: WebSocket, sockID: SocketID, data: MessageData) {
+  if (!data) {
+    console.warn(`Warning: couldn't parse socket event`);
+    return;
+  }
+
+  if (!Object.hasOwn(receivedEventsInterface, data.evt)) {
+    console.warn(`Warning! Unrecognized event from Socket ${sockID}:\n${data}`);
+    return;
+  }
+  const eventInterface = receivedEventsInterface[data.evt];
+
+  // Check if all required fields are present and are of their required types
+  for (const [ requiredField, requiredType ] of Object.entries(eventInterface.required)) {
+    if (!Object.hasOwn(data, requiredField)) {
+      console.warn(`Warning! Event omitted required field ${requiredField}:\n${data}`);
+      return;
+    }
+    if (typeof data[requiredField] !== requiredType) {
+      console.warn(`Warning! Event field ${requiredField} is not of type ${requiredType}:\n${data}`);
+      return;
+    }
+  }
+
+  if ('fn' in eventInterface) {
+    eventInterface.fn!(sock, sockID, data.val, data.room);
+  }
+
+  // NOTE: objects are excluded here, val can only be a string
+  if (eventInterface.passOn && typeof data.val !== 'object') {
+    sendJSONToAllSockets(data.room, sock, sockID, data.evt, data.val);
+  }
+}
+
+// ---- Message event response ----
 function initializeUserConnection(sock: WebSocket, sockID: SocketID, properties?: ConnectionData) {
   let username = properties?.name;
   let roomCode = properties?.roomCode;
@@ -194,11 +259,11 @@ function deleteUser(sock: WebSocket, sockID: SocketID) {
   // socketRoomCodes should be getting garbage collected
   activeSockets.delete(sock);
 
-  sendJSONToAllSockets(null, sock, sockID, 'disconnect');
+  sendJSONToAllSockets(undefined, sock, sockID, 'disconnect');
 }
 
 // ---- Socket handling ----
-function sendJSONToAllSockets(roomCode: RoomCode | null, callingSock: WebSocket, userID: SocketID, event: string, value?: string) {
+function sendJSONToAllSockets(roomCode: RoomCode | undefined, callingSock: WebSocket, userID: SocketID, event: string, value?: string) {
   let targetSockets;
 
   // TODO: validate room code
