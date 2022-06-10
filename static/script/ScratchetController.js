@@ -1,6 +1,8 @@
 class ScratchetController {
   defaultOwnUsername;
 
+  isInitialized = false;
+
   rooms = new Map();
   activeRoom;
 
@@ -28,9 +30,12 @@ class ScratchetController {
 
     setInterval(this.sendPositions.bind(this), SEND_INTERVAL);
     setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL);
+
+    this.isInitialized = true;
   }
 
   // ---- Event handling ----
+  // TODO fallback for an undefined `activeRoom` in case no rooms are active
   changeHue(slider) {
     this.activeRoom.setStrokeStyle(slider.value);
     this.activeRoom.hue = slider.value;
@@ -325,7 +330,7 @@ class ScratchetController {
     }
     this.addNewRoom(value.room, value.peers, true);
 
-    if (this.rooms.size === 0) {
+    if (!this.isInitialized) {
       this.init();
     }
   }
