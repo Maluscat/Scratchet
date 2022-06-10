@@ -155,6 +155,9 @@ class ScratchetController {
     room.nameHandler.updateUserIndicator();
 
     copyRoomLinkContent.textContent = room.roomCodeLink;
+
+    hueSlider.value = room.hue;
+    widthSlider.value = room.width;
   }
 
   updateRoomIndicator() {
