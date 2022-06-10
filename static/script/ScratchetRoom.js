@@ -19,6 +19,21 @@ class ScratchetRoom extends ScratchetCanvas {
     this.changeRoomName(ScratchetRoom.createDefaultName(ownUsername));
   }
 
+  // ---- Generic user handling ----
+  addUser(userID, username) {
+    this.addUserToUserCache(userID);
+    this.nameHandler.addUserToUserList(userID, username);
+    this.sendJoinedUserBuffer();
+  }
+  removeUser(userID) {
+    this.clearUserBufferAndRedraw(userID);
+    this.posUserCache.delete(userID);
+  }
+
+  addUserToUserCache(userID) {
+    this.posUserCache.set(userID, new Set());
+  }
+
   // ---- Generic room handling ----
   changeRoomName(roomName) {
     this.roomName = roomName;

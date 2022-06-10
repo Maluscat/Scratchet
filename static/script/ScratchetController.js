@@ -301,8 +301,7 @@ class ScratchetController {
     if (room) {
       const username = room.nameHandler.removeUserFromUserList(userID);
 
-      room.clearUserBufferAndRedraw(userID);
-      room.posUserCache.delete(userID);
+      room.removeUser(userID);
 
       dispatchNotification(`${username} has left the room`);
     }
@@ -310,8 +309,7 @@ class ScratchetController {
   userJoin(userID, roomCode, username) {
     const room = this.rooms.get(roomCode);
     if (room) {
-      room.nameHandler.addUserToUserList(userID, username);
-      room.sendJoinedUserBuffer();
+      room.addUser(userID, username);
 
       dispatchNotification(`${username} has entered the room`);
     }

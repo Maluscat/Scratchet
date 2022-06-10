@@ -234,12 +234,7 @@ class ScratchetCanvas {
   addClientDataToBuffer(posData, userID) {
     const posDataWrapper = createPosDataWrapper(posData);
     this.globalPosBuffer.add(posDataWrapper);
-    let cache = this.posUserCache.get(userID);
-    if (!cache) {
-      cache = new Set();
-      this.posUserCache.set(userID, cache);
-    }
-    cache.add(posDataWrapper);
+    this.posUserCache.get(userID).add(posDataWrapper);
   }
 
   // ---- Protocol converter ----
