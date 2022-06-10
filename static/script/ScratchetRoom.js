@@ -13,6 +13,11 @@ class ScratchetRoom extends ScratchetCanvas {
 
     this.roomCode = roomCode;
 
+    this.addUserToUserCache(CURRENT_USER_ID);
+    for (const [ userID ] of peers) {
+      this.addUserToUserCache(userID);
+    }
+
     this.nameHandler = new UsernameHandler(ownUsername, peers);
     this.roomListNode = ScratchetRoom.createRoomListNode();
     this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
