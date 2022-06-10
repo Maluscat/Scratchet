@@ -46,7 +46,13 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   focusCanvas() {
+    this.canvas.classList.remove('inactive');
+    // NOTE z-index is not strictly necessary, but might prove handy for future styling
+    // Remove if room switch styling is complete and z-index is not needed
     this.canvas.style.zIndex = ScratchetRoom.canvasZIndex++;
+  }
+  unfocusCanvas() {
+    this.canvas.classList.add('inactive');
   }
 
   // ---- Static helper functions ----

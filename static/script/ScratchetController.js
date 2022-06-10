@@ -146,6 +146,9 @@ class ScratchetController {
   }
 
   switchActiveRoom(room) {
+    if (this.activeRoom) {
+      this.activeRoom.unfocusCanvas();
+    }
     this.activeRoom = room;
 
     room.focusCanvas();

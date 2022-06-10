@@ -26,6 +26,9 @@ canvas,
 canvas {
   position: absolute;
 }
+canvas.inactive {
+  display: none;
+}
 button,
 input {
   display: block;
