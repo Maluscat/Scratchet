@@ -5,23 +5,24 @@ import * as path from 'https://deno.land/std@0.132.0/path/mod.ts';
 const app = new Application();
 const router = new Router();
 
+
 interface MessageData {
   [key: string]: any;
 
-  evt: string,
-  usr?: SocketID,
-  room?: RoomCode,
-  val?: string | ConnectionData
+  evt: string;
+  usr?: SocketID;
+  room?: RoomCode;
+  val?: string | ConnectionData;
 }
 interface ConnectionData {
-  roomCode?: RoomCode,
-  name?: string
+  roomCode?: RoomCode;
+  name?: string;
 }
 
 interface SocketData {
-  id: SocketID,
-  name: string,
-  rooms: Set<number>
+  id: SocketID;
+  name: string;
+  rooms: Set<RoomCode>;
 }
 
 interface ReceivedEventInterfaceStructure {
@@ -37,7 +38,9 @@ interface ReceivedEventInterfaceStructure {
 type SocketID = number;
 type RoomCode = number;
 
+
 let userIDCounter = 0;
+
 const activeSockets: Map<WebSocket, SocketData> = new Map();
 const activeRooms: Map<RoomCode, Set<WebSocket>> = new Map();
 // The Set tracks the socket which still need to send their data to the init sock
