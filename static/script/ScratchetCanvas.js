@@ -149,7 +149,7 @@ class ScratchetCanvas {
       this.redrawCanvas();
     }
   }
-  erasePos(posX, posY, userID, userPosSet, eraserWidth = widthSlider.value) {
+  erasePos(posX, posY, userID, userPosSet, eraserWidth = this.width) {
     if (!userPosSet) {
       if (!this.posUserCache.has(userID)) return;
       userPosSet = this.posUserCache.get(userID);
