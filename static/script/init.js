@@ -31,7 +31,6 @@ const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
 const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
-const JOINROOM_VALIDATE_REGEX = /^(?:(?:https?:\/\/)?\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w*?)*#)?(\d{4})$/;
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 40;
 const SEND_FULL_METADATA_INTERVAL = 1000;
@@ -105,7 +104,9 @@ window.addEventListener('wheel', mouseWheel);
 window.addEventListener('resize', controller.windowResized.bind(controller));
 
 
-joinRoomOverlayInput.pattern = JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
+Validator.then(({ default: module }) => {
+  joinRoomOverlayInput.pattern = module.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
+});
 
 // ---- Events ----
 function handleOverlayInputKeys(e) {
