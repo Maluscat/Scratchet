@@ -1,3 +1,6 @@
+'use strict';
+var Validator = import('/script/Validator.mjs');
+
 const notificationTemplate = (function() {
   const node = document.createElement('div');
   node.classList.add('notification');
