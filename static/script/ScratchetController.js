@@ -108,7 +108,7 @@ class ScratchetController {
   }
 
   changeOwnUsername(newUsername) {
-    if (/^[Uu]ser #\d+$/.test(newUsername)) {
+    if (!Validator.validateUsername(newUsername)) {
       this.resetUsernameInput();
     } else if (newUsername !== this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID)) {
       this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, newUsername);
