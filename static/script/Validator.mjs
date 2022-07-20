@@ -18,7 +18,7 @@ export default Validator = {
   },
 
   validateUsername(username) {
-    if (!username || /^[Uu]ser #\d+$/.test(newUsername)) {
+    if (!username || /^[Uu]ser #\d+$/.test(username)) {
       return false
     }
     return true;
