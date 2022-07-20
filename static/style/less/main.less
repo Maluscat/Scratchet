@@ -299,13 +299,23 @@ input:invalid {
   }
 }
 
+#user-list-wrapper,
+#room-list {
+  .item.current::after {
+    margin-left: .28em;
+  }
+}
 #user-list-wrapper {
   .item {
     transition: color .1s ease-in-out;
     &.current::after {
       content: '(You)';
-      margin-left: .28em;
     }
+  }
+}
+#room-list {
+  .item.current::after {
+    content: '(Current)';
   }
 }
 
