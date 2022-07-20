@@ -1,5 +1,5 @@
 class ScratchetController {
-  defaultOwnUsername;
+  ownUsername;
 
   isInitialized = false;
 
@@ -13,7 +13,7 @@ class ScratchetController {
   constructor() {
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
-      this.setDefaultUsername(persistentUsername, true);
+      this.setOwnUsername(persistentUsername, true);
     }
   }
 
@@ -108,34 +108,37 @@ class ScratchetController {
   }
 
   changeOwnUsername(newUsername) {
+    newUsername = newUsername.trim();
     if (!Validator.validateUsername(newUsername)) {
       this.resetUsernameInput();
     } else if (newUsername !== this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID)) {
       this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, newUsername);
-      this.setDefaultUsername(newUsername);
+      this.setOwnUsername(newUsername);
       sendMessage('changeName', newUsername, this.activeRoom.roomCode);
     }
   }
 
   // ---- Username handling ----
   resetUsernameInput() {
+    // TODO: Save a default username ('User #x') and set it here as input value
+    // This requires passing the default username with `joinData`
     localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
     this.activeRoom.nameHandler.setUsernameInput();
   }
-  setDefaultUsername(username, skipLocalStorage) {
-    this.defaultOwnUsername = username;
-    if (!skipLocalStorage) {
+  setOwnUsername(username, skipLocalStorage) {
+    this.ownUsername = username;
+    if (!skipLocalStorage && Validator.validateUsername(username)) {
       localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
     }
   }
 
   // ---- Room handling ----
   addNewRoom(roomCode, peers, activate) {
-    if (!this.defaultOwnUsername) {
+    if (!this.ownUsername) {
       throw new Error('@ addNewRoom: No default username has been set');
     }
 
-    const newRoom = new ScratchetRoom(roomCode, this.defaultOwnUsername, peers);
+    const newRoom = new ScratchetRoom(roomCode, this.ownUsername, peers);
     roomNameInput.textContent = newRoom.roomName;
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
@@ -332,8 +335,8 @@ class ScratchetController {
 
   ownUserGetJoinData(value) {
     // For async reasons, the real user ID is solely used for the username
-    if (!this.defaultOwnUsername) {
-      this.setDefaultUsername(value.name);
+    if (!this.ownUsername) {
+      this.setOwnUsername(value.name);
     }
     this.addNewRoom(value.room, value.peers, true);
 
@@ -347,8 +350,8 @@ class ScratchetController {
     console.info('connected!');
 
     const initValue = {};
-    if (this.defaultOwnUsername) {
-      initValue.name = this.defaultOwnUsername;
+    if (this.ownUsername) {
+      initValue.name = this.ownUsername;
     }
     sendMessage('connectInit', initValue);
   }
