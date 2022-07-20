@@ -75,11 +75,4 @@ class ScratchetRoom extends ScratchetCanvas {
     canvasContainer.appendChild(canvas);
     return canvas;
   }
-
-  static validateValueToRoomCode(value) {
-    if (!JOINROOM_VALIDATE_REGEX.test(value)) {
-      return false;
-    }
-    return parseInt(value.match(JOINROOM_VALIDATE_REGEX)[1]);
-  }
 }

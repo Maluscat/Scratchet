@@ -62,13 +62,13 @@ class ScratchetController {
     }
   }
 
-  joinRoom(roomcode) {
-    roomcode = ScratchetRoom.validateValueToRoomCode(roomcode);
-    if (roomcode) {
-      sendMessage('joinRoom', roomcode);
+  joinRoom(roomInputValue) {
+    const roomCode = Validator.validateRoomInputValueToRoomCode(roomInputValue);
+    if (roomCode) {
+      sendMessage('joinRoom', roomCode);
       collapseJoinRoomOverlay();
     }
-    return !!roomcode;
+    return !!roomCode;
   }
 
   async copyRoomLink() {
