@@ -48,6 +48,7 @@ class ScratchetCanvas {
     controller.sendPositions();
     this.pressedMouseBtn = -1;
     toggleDrawIndicatorEraseMode(true);
+    this.redrawCanvas();
   }
 
   canvasDraw(e) {
