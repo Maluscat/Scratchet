@@ -13,7 +13,7 @@ class ScratchetController {
   constructor() {
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
-      this.setOwnUsername(persistentUsername, true);
+      this.ownUsername = persistentUsername;
     }
   }
 
