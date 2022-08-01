@@ -112,7 +112,14 @@ class ScratchetCanvas {
   drawFromPosDataWrapper(posDataWrapper) {
     for (const posData of posDataWrapper) {
       this.ctx.moveTo(posData[2], posData[3]);
-      for (var i = META_LEN.NORMAL; i < posData.length; i += 2) {
+      let i = META_LEN.NORMAL;
+      for (; i < posData.length - 4; i += 6) {
+        this.ctx.bezierCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3], posData[i + 4], posData[i + 5]);
+      }
+      // Draw the finishing points of the wrapper in case the wrapper hasn't fully been drawn above
+      if (i === posData.length - 4) {
+        this.ctx.quadraticCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3]);
+      } else if (i === posData.length - 2) {
         this.ctx.lineTo(posData[i], posData[i + 1]);
       }
     }
