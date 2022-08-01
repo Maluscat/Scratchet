@@ -254,15 +254,20 @@ function removeUserFromRoom(sock: WebSocket, sockID: SocketID, roomCode: RoomCod
 }
 
 function deleteUser(sock: WebSocket, sockID: SocketID) {
-  const socketRoomCodes = activeSockets.get(sock)!.rooms;
+  // This could for example fail if the Socket was closed before sending the initial message
+  if (activeSockets.has(sock)) {
+    const socketRoomCodes = activeSockets.get(sock)!.rooms;
 
-  for (const roomCode of socketRoomCodes) {
-    deleteSocketFromRoomSet(sock, roomCode)
+    for (const roomCode of socketRoomCodes) {
+      deleteSocketFromRoomSet(sock, roomCode)
+    }
+    // socketRoomCodes should be getting garbage collected
+    activeSockets.delete(sock);
+
+    // TODO currently, the sendJSONToAllSockets `undefined` broadcast sends a message to *all* sockets
+    // However, this should be room-specific
+    sendJSONToAllSockets(undefined, sock, sockID, 'disconnect');
   }
-  // socketRoomCodes should be getting garbage collected
-  activeSockets.delete(sock);
-
-  sendJSONToAllSockets(undefined, sock, sockID, 'disconnect');
 }
 
 // ---- Socket handling ----
