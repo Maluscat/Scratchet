@@ -127,7 +127,7 @@ class ScratchetController {
   }
   setOwnUsername(username, skipLocalStorage) {
     this.ownUsername = username;
-    if (!skipLocalStorage && Validator.validateUsername(username)) {
+    if (!skipLocalStorage) {
       localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
     }
   }
