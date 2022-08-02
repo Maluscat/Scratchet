@@ -145,7 +145,6 @@ class ScratchetController {
     }
 
     const newRoom = new ScratchetRoom(roomCode, this.ownUsername, peers);
-    roomNameInput.textContent = newRoom.roomName;
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
     roomList.appendChild(newRoom.roomListNode);
