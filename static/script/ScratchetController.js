@@ -1,5 +1,6 @@
 class ScratchetController {
   ownUsername;
+  defaultUsername;
 
   isInitialized = false;
 
@@ -339,6 +340,7 @@ class ScratchetController {
     }
 
     // For async reasons, the real user ID is solely used for the username
+    this.defaultUsername = value.defaultName;
     this.setOwnUsername(value.name);
     this.addNewRoom(value.room, value.peers, true);
   }
