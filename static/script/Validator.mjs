@@ -18,7 +18,7 @@ export default Validator = {
   },
 
   validateUsername(username) {
-    if (!username || /^[Uu]ser #\d+$/.test(username)) {
+    if (!username || /^[Uu]ser #\d+$/.test(username) || username.length > 20) {
       return false
     }
     return true;
