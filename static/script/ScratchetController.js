@@ -110,26 +110,31 @@ class ScratchetController {
 
   changeOwnUsername(newUsername) {
     newUsername = newUsername.trim();
-    if (!Validator.validateUsername(newUsername)) {
+    if (newUsername === '') {
+      this.resetUsernameToDefault();
+    } else if (!Validator.validateUsername(newUsername)) {
+      // TODO Clip the username at 20 characters instead of resetting it
       this.resetUsernameInput();
     } else if (newUsername !== this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID)) {
-      this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, newUsername);
       this.setOwnUsername(newUsername);
-      sendMessage('changeName', newUsername, this.activeRoom.roomCode);
     }
   }
 
   // ---- Username handling ----
-  resetUsernameInput() {
-    // TODO: Save a default username ('User #x') and set it here as input value
-    // This requires passing the default username with `joinData`
+  resetUsernameToDefault() {
     localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
+    this.setOwnUsername(this.defaultUsername);
+    this.activeRoom.nameHandler.setUsernameInput(this.defaultUsername);
+  }
+  resetUsernameInput() {
     this.activeRoom.nameHandler.setUsernameInput();
   }
-  setOwnUsername(username, skipLocalStorage) {
+  setOwnUsername(username, isInitial) {
     this.ownUsername = username;
-    if (!skipLocalStorage) {
-      localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
+    localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
+    if (!isInitial) {
+      this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, username);
+      sendMessage('changeName', username, this.activeRoom.roomCode);
     }
   }
 
@@ -341,7 +346,7 @@ class ScratchetController {
 
     // For async reasons, the real user ID is solely used for the username
     this.defaultUsername = value.defaultName;
-    this.setOwnUsername(value.name);
+    this.setOwnUsername(value.name, true);
     this.addNewRoom(value.room, value.peers, true);
   }
 
