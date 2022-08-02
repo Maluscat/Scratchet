@@ -22,6 +22,7 @@ interface ConnectionData {
 interface SocketData {
   id: SocketID;
   name: string;
+  defaultName: string;
   rooms: Set<RoomCode>;
 }
 
@@ -171,25 +172,29 @@ function handleReceivedEvent(sock: WebSocket, sockID: SocketID, data: MessageDat
 function initializeUserConnection(sock: WebSocket, sockID: SocketID, properties?: ConnectionData) {
   let username = properties?.name;
   let roomCode = properties?.roomCode;
+  // TODO this can be taken from UsernameHandler
+  const defaultUsername = username = 'User #' + sockID;
 
   if (!roomCode || !activeRooms.has(roomCode)) {
     roomCode = createNewRoomCode();
   }
   if (!username) {
-    // TODO this can be taken from UsernameHandler
-    username = 'User #' + sockID;
+    username = defaultUsername;
   }
 
-  activeSockets.set(sock, {
+  const socketData: SocketData = {
     id: sockID,
     name: username,
+    defaultName: defaultUsername,
     rooms: new Set()
-  });
+  };
+
+  activeSockets.set(sock, socketData);
 
   addUserToRoom(sock, sockID, roomCode, username);
 
   addSocketToInitQueue(sock);
-  sendInitialJoinData(sock, roomCode, username);
+  sendInitialJoinData(sock, roomCode, socketData);
 }
 
 function initializeUserJoin(sock: WebSocket, sockID: SocketID, roomCode: RoomCode) {
@@ -301,21 +306,27 @@ function sendJSONToAllSockets(roomCode: RoomCode | undefined, callingSock: WebSo
 }
 
 // ---- Initial data ----
-function sendInitialJoinData(receivingSock: WebSocket, roomCode: RoomCode, initialUsername: string = activeSockets.get(receivingSock)!.name) {
+function sendInitialJoinData(receivingSock: WebSocket, roomCode: RoomCode, socketData: SocketData = activeSockets.get(receivingSock)!) {
+  const initialUsername = socketData.name;
+  const defaultUsername = socketData.defaultName;
+
   const peerArr = new Array();
   for (const socket of activeRooms.get(roomCode)!) {
     if (socket !== receivingSock) {
       // TODO
-      const {id, name} = activeSockets.get(socket)!;
+      const { id, name } = activeSockets.get(socket)!;
       peerArr.push([id, name]);
     }
   }
 
+  // NOTE: `defaultName` is sent on every new join request redundantly
+  //   for simplicity purposes
   const data = JSON.stringify({
     evt: 'joinData',
     val: {
       room: roomCode,
       name: initialUsername,
+      defaultName: defaultUsername,
       peers: peerArr
     }
   });
