@@ -173,7 +173,7 @@ function initializeUserConnection(sock: WebSocket, sockID: SocketID, properties?
   let username = properties?.name;
   let roomCode = properties?.roomCode;
   // TODO this can be taken from UsernameHandler
-  const defaultUsername = username = 'User #' + sockID;
+  const defaultUsername = 'User #' + sockID;
 
   if (!roomCode || !activeRooms.has(roomCode)) {
     roomCode = createNewRoomCode();
