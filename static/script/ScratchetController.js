@@ -18,10 +18,7 @@ class ScratchetController {
     }
   }
 
-  async init() {
-    // Should be fulfilled by now
-    Validator = await Validator;
-
+  init() {
     hueSlider.addEvent('change:value', this.changeHue.bind(this));
     widthSlider.addEvent('change:value', this.changeWidth.bind(this));
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));

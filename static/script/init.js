@@ -53,8 +53,6 @@ const EXTRA_SERVER_META_LEN = 1;
  * metadata: currently: [hue, width, lastPosX, lastPosY]
  */
 
-const sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
-
 const hueSlider = new Slider89(document.getElementById('hue-slider'), {
   range: [0, 360],
   precision: 0,
@@ -77,36 +75,43 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
 }, true);
 
 const controller = new ScratchetController();
+let sock;
 
 
-usernameInput.addEventListener('blur', e => {
-  handleOverlayInput(e, controller.changeOwnUsername.bind(controller));
+// ---- Wait for modules ----
+Validator.then(module => {
+  Validator = module.default;
+
+  joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
+
+  sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
+
+
+  usernameInput.addEventListener('blur', e => {
+    handleOverlayInput(e, controller.changeOwnUsername.bind(controller));
+  });
+  roomNameInput.addEventListener('blur', e => {
+    handleOverlayInput(e, controller.changeCurrentRoomName.bind(controller));
+  });
+  for (const l of document.querySelectorAll('.overlay-input')) {
+    l.addEventListener('keydown', handleOverlayInputKeys);
+  }
+
+  joinRoomOverlayInput.addEventListener('keydown', handleJoinRoomInputKeys);
+  joinRoomOverlayInput.addEventListener('paste', handleJoinRoomInputPaste);
+
+  userListButton.addEventListener('click', toggleHoverOverlay);
+  roomListButton.addEventListener('click', toggleHoverOverlay);
+  joinRoomButton.addEventListener('click', joinRoomButtonClick);
+  copyRoomLinkButton.addEventListener('click', controller.copyRoomLink.bind(controller));
+
+  sock.addEventListener('open', controller.socketOpen.bind(controller))
+  sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
+
+  window.addEventListener('wheel', mouseWheel);
+  window.addEventListener('resize', controller.windowResized.bind(controller));
 });
-roomNameInput.addEventListener('blur', e => {
-  handleOverlayInput(e, controller.changeCurrentRoomName.bind(controller));
-});
-for (const l of document.querySelectorAll('.overlay-input')) {
-  l.addEventListener('keydown', handleOverlayInputKeys);
-}
 
-joinRoomOverlayInput.addEventListener('keydown', handleJoinRoomInputKeys);
-joinRoomOverlayInput.addEventListener('paste', handleJoinRoomInputPaste);
-
-userListButton.addEventListener('click', toggleHoverOverlay);
-roomListButton.addEventListener('click', toggleHoverOverlay);
-joinRoomButton.addEventListener('click', joinRoomButtonClick);
-copyRoomLinkButton.addEventListener('click', controller.copyRoomLink.bind(controller));
-
-sock.addEventListener('open', controller.socketOpen.bind(controller))
-sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
-
-window.addEventListener('wheel', mouseWheel);
-window.addEventListener('resize', controller.windowResized.bind(controller));
-
-
-Validator.then(({ default: module }) => {
-  joinRoomOverlayInput.pattern = module.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
-});
 
 // ---- Events ----
 function handleOverlayInputKeys(e) {
