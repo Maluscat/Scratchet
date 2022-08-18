@@ -205,9 +205,10 @@ class ScratchetCanvas {
   }
 
   sendJoinedUserBuffer(targetUserID) {
-    if (this.posUserCache.has(CURRENT_USER_ID)) {
+    const userCache = this.posUserCache.get(CURRENT_USER_ID);
+    if (userCache && userCache.size > 0) {
       const joinedBuffer = [this.roomCode];
-      for (const posDataWrapper of this.posUserCache.get(CURRENT_USER_ID)) {
+      for (const posDataWrapper of userCache) {
         for (const posData of posDataWrapper) {
           joinedBuffer.push(MODE.BULK_INIT, ...this.convertClientDataToServerData(posData));
         }
