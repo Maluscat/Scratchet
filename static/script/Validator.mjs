@@ -1,4 +1,4 @@
-export default Validator = {
+const Validator = {
   JOINROOM_VALIDATE_REGEX: /^(?:(?:https?:\/\/)?\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w*?)*#)?(\d{4})$/,
 
   validateRoomCode(roomCode) {
@@ -24,3 +24,4 @@ export default Validator = {
     return true;
   }
 };
+export default Validator;
