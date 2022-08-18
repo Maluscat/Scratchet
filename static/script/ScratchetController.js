@@ -335,15 +335,16 @@ class ScratchetController {
     dispatchNotification(`${prevUsername} --> ${username}`);
   }
 
-  async ownUserGetJoinData(value) {
-    if (!this.isInitialized) {
-      await this.init();
-    }
-
+  ownUserGetJoinData(value) {
     // For async reasons, the real user ID is solely used for the username
     this.defaultUsername = value.defaultName;
     this.setOwnUsername(value.name, true);
     this.addNewRoom(value.room, value.peers, true);
+
+    // NOTE: Needs to be called after `addNewRoom` for the room link content size
+    if (!this.isInitialized) {
+      this.init();
+    }
   }
 
   // ---- Socket events ----
