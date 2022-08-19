@@ -16,12 +16,10 @@ interface ReceivedEventInterfaceStructure {
   }
 }
 
-let userIDCounter = 0;
 
-const activeSockets: Map<WebSocket, SocketData> = new Map();
-const activeRooms: Map<RoomCode, Set<WebSocket>> = new Map();
+export const roomHandler = new SocketRoomHandler();
 // The Set tracks the socket which still need to send their data to the init sock
-const socketRequireInitQueue: Map<WebSocket, WeakSet<WebSocket>> = new Map();
+const socketRequireInitQueue: Map<SocketUser, WeakSet<SocketUser>> = new Map();
 
 // NOTE values with `passOn` MUST have a required room - This is not validated
 const receivedEventsInterface: ReceivedEventInterfaceStructure = {
