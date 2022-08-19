@@ -86,47 +86,38 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
 
 router
   .get('/socket', (ctx: Context) => {
-    const sock = ctx.upgrade();
-    let sockID: SocketID;
+    const sock: WebSocket = ctx.upgrade();
+    let socketUser: SocketUser;
 
     sock.addEventListener('open', () => {
-      sockID = userIDCounter++;
+      socketUser = new SocketUser(sock);
     });
 
     sock.addEventListener('close', () => {
-      deleteUser(sock, sockID);
+      destroyUser(socketUser);
     });
 
     sock.addEventListener('message', (e: MessageEvent) => {
       if (e.data instanceof ArrayBuffer) {
         const dataArr = new Int16Array(e.data);
-        const roomCode = dataArr[0];
-        if (!activeRooms.has(roomCode)) {
+        if (!roomHandler.hasRoom(dataArr[0])) {
+          console.warn(`${socketUser}: Room #${dataArr[0]} does not exist!`);
           return;
         }
+        const socketRoom = roomHandler.getRoom(dataArr[0]);
 
-        // Send initial bulk data
+        // TODO validate, whether the user actually is in the specified room
+        // -> We might need the SocketUser room handling for this again
+
+        const newBuffer = socketUser.prependIDToBuffer(dataArr);
+
         if (dataArr[1] === -1) {
-          // Go through the queue until finding a socket which this one hasn't served yet
-          for (const [servedSock, handledSocks] of socketRequireInitQueue) {
-            if (!handledSocks.has(sock)) {
-              const newBuffer = bufferPrependUser(dataArr, sockID);
-              servedSock.send(newBuffer);
-              handledSocks.add(sock);
-              break;
-            }
-          }
+          socketRoom.sendBulkInitData(socketUser, newBuffer);
         } else {
-          const newBuffer = bufferPrependUser(dataArr, sockID);
-
-          for (const socket of activeRooms.get(roomCode)!) {
-            if (socket != sock && socket.readyState === 1) {
-              socket.send(newBuffer);
-            }
-          }
+          socketRoom.sendAnyDataToUsers(socketUser, newBuffer);
         }
       } else if (typeof e.data === 'string') {
-        handleReceivedEvent(sock, sockID, JSON.parse(e.data));
+        handleReceivedEvent(socketUser, JSON.parse(e.data));
       } else {
         console.warn(`Warning! Received an unknown socket response:\n${e.data}`);
       }
