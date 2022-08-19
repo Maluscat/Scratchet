@@ -1,5 +1,10 @@
 import { Application, Router, Context } from 'https://deno.land/x/oak@v10.5.1/mod.ts';
 import * as path from 'https://deno.land/std@0.132.0/path/mod.ts';
+import type { SocketID, RoomCode } from './SocketUser.ts';
+import type { ConnectionData, MessageData } from './SocketRoom.ts';
+import { SocketRoom } from './SocketRoom.ts';
+import { SocketUser } from './SocketUser.ts';
+import { SocketRoomHandler } from './SocketRoomHandler.ts';
 
 // IN CASE OF 'INTERNAL SERVER ERROR': --allow-read IS MISSING
 const app = new Application();
