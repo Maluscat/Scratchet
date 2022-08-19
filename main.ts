@@ -6,26 +6,6 @@ const app = new Application();
 const router = new Router();
 
 
-interface MessageData {
-  [key: string]: any;
-
-  evt: string;
-  usr?: SocketID;
-  room?: RoomCode;
-  val?: string | ConnectionData;
-}
-interface ConnectionData {
-  roomCode?: RoomCode;
-  name?: string;
-}
-
-interface SocketData {
-  id: SocketID;
-  name: string;
-  defaultName: string;
-  rooms: Set<RoomCode>;
-}
-
 interface ReceivedEventInterfaceStructure {
   [key: string]: {
     required: {
@@ -34,11 +14,7 @@ interface ReceivedEventInterfaceStructure {
     fn?: (sock: WebSocket, sockID: SocketID, val: any, room?: RoomCode) => void;
     passOn?: boolean;
   }
-};
-
-type SocketID = number;
-type RoomCode = number;
-
+}
 
 let userIDCounter = 0;
 
