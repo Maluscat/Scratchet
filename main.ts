@@ -11,7 +11,7 @@ interface ReceivedEventInterfaceStructure {
     required: {
       [key: string]: string;
     };
-    fn?: (sock: WebSocket, sockID: SocketID, val: any, room?: RoomCode) => void;
+    fn?: (socketUser: SocketUser, val: any, socketRoom?: SocketRoom) => void;
     passOn?: boolean;
   }
 }
@@ -23,6 +23,7 @@ const activeRooms: Map<RoomCode, Set<WebSocket>> = new Map();
 // The Set tracks the socket which still need to send their data to the init sock
 const socketRequireInitQueue: Map<WebSocket, WeakSet<WebSocket>> = new Map();
 
+// NOTE values with `passOn` MUST have a required room - This is not validated
 const receivedEventsInterface: ReceivedEventInterfaceStructure = {
   connectInit: {
     required: {
@@ -34,13 +35,17 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
     required: {
       val: 'number'
     },
-    fn: initializeUserJoin
+    fn: (socketUser, val) => {
+      userJoinRoomFromRoomCode(socketUser, val!);
+    }
   },
   leave: {
     required: {
       room: 'number'
     },
-    fn: (sock, sockID, val, room) => removeUserFromRoom(sock, sockID, room!),
+    fn: (socketUser, val, socketRoom) => {
+      removeUserFromRoom(socketUser, socketRoom!)
+    },
     passOn: true
   },
   changeName: {
@@ -48,7 +53,9 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       val: 'string',
       room: 'number'
     },
-    fn: (sock, sockID, val, room) => renameSocket(sock, val),
+    fn: (socketUser, val, socketRoom) => {
+      socketUser.setName(val);
+    },
     passOn: true
   },
   clearUser: {
@@ -125,13 +132,20 @@ function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
     }
   }
 
+  // TODO also check if user is in room
+  if ('room' in data && !roomHandler.hasRoom(data.room)) {
+    console.warn(`${socketUser}: Room #${data.room} does not exist!`);
+    return;
+  }
+  const socketRoom = roomHandler.getRoom(data.room!);
+
   if ('fn' in eventInterface) {
-    eventInterface.fn!(sock, sockID, data.val, data.room);
+    eventInterface.fn!(socketUser, data.val, socketRoom);
   }
 
-  // NOTE: objects are excluded here, val can only be a string
-  if (eventInterface.passOn && typeof data.val !== 'object') {
-    sendJSONToAllSockets(data.room, sock, sockID, data.evt, data.val);
+  // NOTE: objects are excluded here, val may only be a string right now
+  if (eventInterface.passOn && typeof data.val !== 'object' && socketRoom != null) {
+    socketRoom.sendJSONToUsers(socketUser, data.evt, data.val);
   }
 }
 
