@@ -148,183 +148,40 @@ function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
 }
 
 // ---- Message event response ----
-function initializeUserConnection(sock: WebSocket, sockID: SocketID, properties?: ConnectionData) {
-  let username = properties?.name;
-  let roomCode = properties?.roomCode;
-  // TODO this can be taken from UsernameHandler
-  const defaultUsername = 'User #' + sockID;
+function initializeUserConnection(socketUser: SocketUser, properties?: ConnectionData) {
+  const username = properties?.name;
+  const roomCode = properties?.roomCode;
 
-  if (!roomCode || !activeRooms.has(roomCode)) {
-    roomCode = createNewRoomCode();
-  }
-  if (!username) {
-    username = defaultUsername;
-  }
+  const room = roomHandler.getRoomOrCreateNewRoom(roomCode);
+  const user = socketUser.init(username);
 
-  const socketData: SocketData = {
-    id: sockID,
-    name: username,
-    defaultName: defaultUsername,
-    rooms: new Set()
-  };
-
-  activeSockets.set(sock, socketData);
-
-  addUserToRoom(sock, sockID, roomCode, username);
-
-  addSocketToInitQueue(sock);
-  sendInitialJoinData(sock, roomCode, socketData);
+  room.addUser(user);
 }
 
-function initializeUserJoin(sock: WebSocket, sockID: SocketID, roomCode: RoomCode) {
-  if (activeRooms.has(roomCode)) {
-    addUserToRoom(sock, sockID, roomCode);
-    sendInitialJoinData(sock, roomCode);
+function userJoinRoomFromRoomCode(socketUser: SocketUser, roomCode: RoomCode) {
+  if (socketUser.isActive && roomHandler.hasRoom(roomCode)) {
+    const socketRoom = roomHandler.getRoom(roomCode);
+    socketRoom.addUser(socketUser);
   }
-}
-
-// ---- ArrayBuffer handling ----
-function bufferPrependUser(dataArr: Int16Array, sockID: SocketID): ArrayBuffer {
-  const newData = new Int16Array(dataArr.length + 1);
-  newData.set(dataArr, 1);
-  newData[0] = sockID;
-  return newData.buffer;
-}
-
-// ---- Initial data queue state handling ----
-// TODO: track this per room
-function addSocketToInitQueue(sock: WebSocket) {
-  if (activeSockets.size > 0) {
-    socketRequireInitQueue.set(sock, new WeakSet([sock]));
-
-    setTimeout(function() {
-      removeSocketFromInitQueue(sock);
-    }, 1000 * 10);
-  }
-}
-function removeSocketFromInitQueue(sock: WebSocket) {
-  socketRequireInitQueue.delete(sock);
 }
 
 // ---- Room handling ----
-function createNewRoomCode() {
-  let roomcode;
-  do {
-    // Generate random number of interval [1000, 9999]
-    roomcode = Math.floor(Math.random() * 9000 + 1000);
-  } while (activeRooms.has(roomcode));
-  activeRooms.set(roomcode, new Set());
-  return roomcode;
-}
-
-function addUserToRoom(sock: WebSocket, sockID: SocketID, roomCode: RoomCode, username: string = activeSockets.get(sock)!.name) {
-  const roomSockets = activeRooms.get(roomCode)!;
-
-  roomSockets.add(sock);
-  activeSockets.get(sock)!.rooms.add(roomCode);
-
-  sendJSONToAllSockets(roomCode, sock, sockID, 'join', username);
-}
-
-function removeUserFromRoom(sock: WebSocket, sockID: SocketID, roomCode: RoomCode) {
-  const socketRoomCodes = activeSockets.get(sock)!.rooms;
-
+function removeUserFromRoom(socketUser: SocketUser, socketRoom: SocketRoom) {
   // NOTE: The user is NOT deleted, but is kept with 0 rooms
-  deleteSocketFromRoomSet(sock, roomCode);
-  socketRoomCodes.delete(roomCode);
-  removeSocketFromInitQueue(sock);
-
-  sendJSONToAllSockets(roomCode, sock, sockID, 'leave');
+  socketRoom.removeUser(socketUser);
+  socketRoom.sendJSONToUsers(socketUser, 'leave');
 }
 
-function deleteUser(sock: WebSocket, sockID: SocketID) {
+function destroyUser(socketUser: SocketUser) {
   // This could for example fail if the Socket was closed before sending the initial message
-  if (activeSockets.has(sock)) {
-    const socketRoomCodes = activeSockets.get(sock)!.rooms;
-
-    for (const roomCode of socketRoomCodes) {
-      deleteSocketFromRoomSet(sock, roomCode)
-    }
-    // socketRoomCodes should be getting garbage collected
-    activeSockets.delete(sock);
-
-    // TODO currently, the sendJSONToAllSockets `undefined` broadcast sends a message to *all* sockets
-    // However, this should be room-specific
-    sendJSONToAllSockets(undefined, sock, sockID, 'disconnect');
-  }
-}
-
-// ---- Socket handling ----
-function sendJSONToAllSockets(roomCode: RoomCode | undefined, callingSock: WebSocket, userID: SocketID, event: string, value?: string) {
-  let targetSockets;
-
-  // TODO: validate room code
-  if (roomCode != null) {
-    targetSockets = activeRooms.get(roomCode);
-  } else {
-    targetSockets = activeSockets.keys();
-  }
-
-  const dataObj: MessageData = {
-    evt: event,
-    usr: userID
-  };
-  if (value != null) {
-    dataObj.val = value;
-  }
-  if (roomCode != null) {
-    dataObj.room = roomCode;
-  }
-  const data = JSON.stringify(dataObj);
-
-  for (const socket of targetSockets!) {
-    if (socket != callingSock && socket.readyState === 1) {
-      socket.send(data);
+  if (socketUser.isActive) {
+    // TODO do not loop over every existing room, but over every room of a user
+    for (const socketRoom of roomHandler.getAllRooms()) {
+      socketRoom.removeUser(socketUser);
+      socketRoom.sendJSONToUsers(socketUser, 'disconnect');
     }
   }
-}
-
-// ---- Initial data ----
-function sendInitialJoinData(receivingSock: WebSocket, roomCode: RoomCode, socketData: SocketData = activeSockets.get(receivingSock)!) {
-  const initialUsername = socketData.name;
-  const defaultUsername = socketData.defaultName;
-
-  const peerArr = new Array();
-  for (const socket of activeRooms.get(roomCode)!) {
-    if (socket !== receivingSock) {
-      // TODO
-      const { id, name } = activeSockets.get(socket)!;
-      peerArr.push([id, name]);
-    }
-  }
-
-  // NOTE: `defaultName` is sent on every new join request redundantly
-  //   for simplicity purposes
-  const data = JSON.stringify({
-    evt: 'joinData',
-    val: {
-      room: roomCode,
-      name: initialUsername,
-      defaultName: defaultUsername,
-      peers: peerArr
-    }
-  });
-  receivingSock.send(data);
-}
-
-// ---- Helper functions ----
-function deleteSocketFromRoomSet(sock: WebSocket, roomCode: RoomCode) {
-  const roomSockets = activeRooms.get(roomCode)!;
-
-  roomSockets.delete(sock);
-  if (roomSockets.size === 0) {
-    activeRooms.delete(roomCode);
-  }
-}
-
-function renameSocket(sock: WebSocket, newUsername: string) {
-  // The `!` is a TypeScript non-null assertion
-  activeSockets.get(sock)!.name = newUsername;
+  // TODO Garbage collect the user properly
 }
 
 
