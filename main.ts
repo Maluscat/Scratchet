@@ -134,20 +134,20 @@ router
   });
 
 // ---- Message event handling ----
-function handleReceivedEvent(sock: WebSocket, sockID: SocketID, data: MessageData) {
+function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
   if (!data) {
-    console.warn(`Warning: couldn't parse socket event`);
+    console.warn(`Warning: couldn't parse socket event: No data supplied`);
     return;
   }
 
   if (!Object.hasOwn(receivedEventsInterface, data.evt)) {
-    console.warn(`Warning! Unrecognized event from Socket ${sockID}:\n${data}`);
+    console.warn(`Warning! Unrecognized event from ${socketUser}:\n${data}`);
     return;
   }
   const eventInterface = receivedEventsInterface[data.evt];
 
   // Check if all required fields are present and are of their required types
-  for (const [ requiredField, requiredType ] of Object.entries(eventInterface.required)) {
+  for (const [requiredField, requiredType] of Object.entries(eventInterface.required)) {
     if (!Object.hasOwn(data, requiredField)) {
       console.warn(`Warning! Event omitted required field ${requiredField}:\n${data}`);
       return;
