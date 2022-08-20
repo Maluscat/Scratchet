@@ -5,7 +5,7 @@ class UsernameHandler {
   constructor(globalUsername, peers) {
     this.userList = UsernameHandler.createEmptyUserList();
 
-    this.initOwnUsername(globalUsername);
+    this.initGlobalUsername(globalUsername);
     for (const [userID, username] of peers) {
       this.addUserToUserList(userID, username);
     }
@@ -20,7 +20,7 @@ class UsernameHandler {
   }
 
   // ---- Own user handling ----
-  initOwnUsername(username) {
+  initGlobalUsername(username) {
     this.addUserToUserList(CURRENT_USER_ID, username, true);
   }
 
