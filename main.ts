@@ -86,11 +86,12 @@ router
     sock.addEventListener('message', (e: MessageEvent) => {
       if (e.data instanceof ArrayBuffer) {
         const dataArr = new Int16Array(e.data);
-        if (!roomHandler.hasRoom(dataArr[0])) {
-          console.warn(`${socketUser}: Room #${dataArr[0]} does not exist!`);
+        const roomCode = dataArr[0];
+        if (!roomHandler.hasRoom(roomCode)) {
+          console.warn(`${socketUser}: Room #${roomCode} does not exist!`);
           return;
         }
-        const socketRoom = roomHandler.getRoom(dataArr[0]);
+        const socketRoom = roomHandler.getRoom(roomCode);
 
         // TODO validate, whether the user actually is in the specified room
         // -> We might need the SocketUser room handling for this again
@@ -100,6 +101,7 @@ router
         if (dataArr[1] === -1) {
           socketRoom.sendBulkInitData(socketUser, newBuffer);
         } else {
+          // Pass data on
           socketRoom.sendAnyDataToUsers(socketUser, newBuffer);
         }
       } else if (typeof e.data === 'string') {
