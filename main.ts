@@ -39,7 +39,7 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       val: 'object'
     },
     fn: (socketUser, val) => {
-      userJoinRoomFromRoomCode(socketUser, val!);
+      userJoinRoomFromRoomCode(socketUser, val);
     }
   },
   leave: {
@@ -155,9 +155,10 @@ function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
 }
 
 // ---- Message event response ----
-function initializeUserConnection(socketUser: SocketUser, properties?: ConnectionData) {
-  const username = properties?.name;
-  const roomCode = properties?.roomCode;
+function initializeUserConnection(socketUser: SocketUser, properties: ConnectionData) {
+  // NOTE `properties` is guaranteed to be an object, but it could have no properties
+  const username = properties.name;
+  const roomCode = properties.roomCode;
 
   const room = roomHandler.getRoomOrCreateNewRoom(roomCode);
   const user = socketUser.init();
@@ -165,9 +166,9 @@ function initializeUserConnection(socketUser: SocketUser, properties?: Connectio
   room.addUser(user, username);
 }
 
-function userJoinRoomFromRoomCode(socketUser: SocketUser, properties?: ConnectionData) {
-  const username = properties?.name;
-  const roomCode = properties?.roomCode;
+function userJoinRoomFromRoomCode(socketUser: SocketUser, properties: ConnectionData) {
+  const username = properties.name;
+  const roomCode = properties.roomCode;
 
   if (socketUser.isActive && roomHandler.hasRoom(roomCode)) {
     const socketRoom = roomHandler.getRoom(roomCode);
