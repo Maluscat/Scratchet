@@ -185,8 +185,7 @@ function removeUserFromRoom(socketUser: SocketUser, socketRoom: SocketRoom) {
 function destroyUser(socketUser: SocketUser) {
   // This could for example fail if the Socket was closed before sending the initial message
   if (socketUser.isActive) {
-    // TODO do not loop over every existing room, but over every room of a user
-    for (const socketRoom of roomHandler.getAllRooms()) {
+    for (const socketRoom of socketUser.getRooms()) {
       socketRoom.removeUser(socketUser);
       socketRoom.sendJSONToUsers(socketUser, 'disconnect');
     }
