@@ -36,7 +36,7 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
   },
   joinRoom: {
     required: {
-      val: 'number'
+      val: 'object'
     },
     fn: (socketUser, val) => {
       userJoinRoomFromRoomCode(socketUser, val!);
@@ -165,10 +165,13 @@ function initializeUserConnection(socketUser: SocketUser, properties?: Connectio
   room.addUser(user, username);
 }
 
-function userJoinRoomFromRoomCode(socketUser: SocketUser, roomCode: RoomCode) {
+function userJoinRoomFromRoomCode(socketUser: SocketUser, properties?: ConnectionData) {
+  const username = properties?.name;
+  const roomCode = properties?.roomCode;
+
   if (socketUser.isActive && roomHandler.hasRoom(roomCode)) {
     const socketRoom = roomHandler.getRoom(roomCode);
-    socketRoom.addUser(socketUser);
+    socketRoom.addUser(socketUser, username);
   }
 }
 
