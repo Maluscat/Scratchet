@@ -41,6 +41,7 @@ export class SocketRoom {
     this.addUserToBulkInitQueue(socketUser);
     this.sendJSONToUsers(socketUser, 'join', socketUser.name);
 
+    socketUser.addToRoom(this);
     socketUser.sendInitialJoinData(this);
   }
   removeUser(socketUser: SocketUser) {
@@ -50,6 +51,7 @@ export class SocketRoom {
     if (this.#sockets.size === 0) {
       // Delete self
       roomHandler.deleteRoom(this.roomCode);
+      socketUser.removeFromRoom(this);
     }
   } 
   getUsers() {

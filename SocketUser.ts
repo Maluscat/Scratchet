@@ -14,37 +14,34 @@ export class SocketUser {
   defaultName: Username;
   isActive = false;
 
-  // #rooms: Set<SocketRoom>;
+  #rooms: Set<SocketRoom>;
 
   constructor(sock: WebSocket) {
     this.sock = sock;
     this.id = SocketUser.socketIDCounter++;
     this.defaultName = SocketUser.createDefaultName(this.id);
     this.name = this.defaultName;
+    this.#rooms = new Set();
   }
   
   init(username?: Username) {
     if (username) {
       this.setName(username);
     }
-
-    // this.#rooms = new Set();
     this.isActive = true;
-
     return this;
   }
 
   // ---- Room handling ----
-  // NEEDED?
-  // addToRoom(socketRoom: SocketRoom) {
-  //   this.#rooms.add(socketRoom);
-  // }
-  // removeFromRoom(socketRoom: SocketRoom) {
-  //   this.#rooms.delete(socketRoom);
-  // }
-  // getRooms() {
-  //   return this.#rooms;
-  // }
+  addToRoom(socketRoom: SocketRoom) {
+    this.#rooms.add(socketRoom);
+  }
+  removeFromRoom(socketRoom: SocketRoom) {
+    this.#rooms.delete(socketRoom);
+  }
+  getRooms() {
+    return this.#rooms;
+  }
 
   // ---- WebSocket handling ----
   send(data: string | ArrayBuffer) {
