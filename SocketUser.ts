@@ -3,14 +3,15 @@ import Validator from './static/script/Validator.mjs';
 
 export type SocketID = number;
 export type RoomCode = number;
+export type Username = string;
 
 export class SocketUser {
   static socketIDCounter: SocketID = 0;
 
   sock: WebSocket;
   id: SocketID;
-  name: string;
-  defaultName: string;
+  name: Username;
+  defaultName: Username;
   isActive = false;
 
   // #rooms: Set<SocketRoom>;
@@ -22,7 +23,7 @@ export class SocketUser {
     this.name = this.defaultName;
   }
   
-  init(username?: string) {
+  init(username?: Username) {
     if (username) {
       this.setName(username);
     }
@@ -79,7 +80,7 @@ export class SocketUser {
   }
 
   // ---- Helper functions ----
-  setName(newUsername: string) {
+  setName(newUsername: Username) {
     if (Validator.validateUsername(newUsername)) {
       this.name = newUsername;
     }
@@ -101,7 +102,7 @@ export class SocketUser {
 
   // ---- Static helper functions ----
   // TODO this can be taken from UsernameHandler
-  static createDefaultName(userID: SocketID) {
+  static createDefaultName(userID: SocketID): Username {
     return 'User #' + userID;
   }
 }

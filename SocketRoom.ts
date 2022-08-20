@@ -1,10 +1,10 @@
-import type { SocketID, RoomCode } from './SocketUser.ts';
+import type { SocketID, RoomCode, Username } from './SocketUser.ts';
 import { SocketUser } from './SocketUser.ts';
 import { roomHandler } from './main.ts';
 
 export interface ConnectionData {
   roomCode?: RoomCode;
-  name?: string;
+  name?: Username;
 }
 
 export interface MessageData {
