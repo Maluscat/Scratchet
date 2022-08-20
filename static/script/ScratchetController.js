@@ -1,5 +1,5 @@
 class ScratchetController {
-  ownUsername;
+  globalUsername;
   defaultUsername;
 
   isInitialized = false;
@@ -14,7 +14,7 @@ class ScratchetController {
   constructor() {
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
-      this.ownUsername = persistentUsername;
+      this.globalUsername = persistentUsername;
     }
   }
 
@@ -127,7 +127,7 @@ class ScratchetController {
     this.activeRoom.nameHandler.setUsernameInput();
   }
   setOwnUsername(username, isInitial) {
-    this.ownUsername = username;
+    this.globalUsername = username;
     localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
     if (!isInitial) {
       this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, username);
@@ -137,11 +137,11 @@ class ScratchetController {
 
   // ---- Room handling ----
   addNewRoom(roomCode, peers, activate) {
-    if (!this.ownUsername) {
-      throw new Error('@ addNewRoom: No default username has been set');
+    if (!this.globalUsername) {
+      throw new Error('@ addNewRoom: No global persistent username has been set');
     }
 
-    const newRoom = new ScratchetRoom(roomCode, this.ownUsername, peers);
+    const newRoom = new ScratchetRoom(roomCode, this.globalUsername, peers);
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
     roomList.appendChild(newRoom.roomListNode);
@@ -352,8 +352,8 @@ class ScratchetController {
     console.info('connected!');
 
     const initValue = {};
-    if (this.ownUsername) {
-      initValue.name = this.ownUsername;
+    if (this.globalUsername) {
+      initValue.name = this.globalUsername;
     }
     sendMessage('connectInit', initValue);
   }

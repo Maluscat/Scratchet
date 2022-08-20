@@ -2,10 +2,10 @@ class UsernameHandler {
   userList;
   usernameData = new Map();
 
-  constructor(ownUsername, peers) {
+  constructor(globalUsername, peers) {
     this.userList = UsernameHandler.createEmptyUserList();
 
-    this.initOwnUsername(ownUsername);
+    this.initOwnUsername(globalUsername);
     for (const [userID, username] of peers) {
       this.addUserToUserList(userID, username);
     }

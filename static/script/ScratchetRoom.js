@@ -8,7 +8,7 @@ class ScratchetRoom extends ScratchetCanvas {
   roomCode;
   roomName;
 
-  constructor(roomCode, ownUsername, peers) {
+  constructor(roomCode, globalUsername, peers) {
     super(ScratchetRoom.createCanvas());
 
     this.roomCode = roomCode;
@@ -18,10 +18,10 @@ class ScratchetRoom extends ScratchetCanvas {
       this.addUserToUserCache(userID);
     }
 
-    this.nameHandler = new UsernameHandler(ownUsername, peers);
+    this.nameHandler = new UsernameHandler(globalUsername, peers);
     this.roomListNode = ScratchetRoom.createRoomListNode();
     this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
-    this.changeRoomName(ScratchetRoom.createDefaultName(ownUsername));
+    this.changeRoomName(ScratchetRoom.createDefaultName(globalUsername));
   }
 
   // ---- Generic user handling ----
