@@ -57,7 +57,7 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       room: 'number'
     },
     fn: (socketUser, val, socketRoom) => {
-      socketUser.setName(val);
+      socketUser.setNameForRoom(socketRoom, val);
     },
     passOn: true
   },
@@ -160,9 +160,9 @@ function initializeUserConnection(socketUser: SocketUser, properties?: Connectio
   const roomCode = properties?.roomCode;
 
   const room = roomHandler.getRoomOrCreateNewRoom(roomCode);
-  const user = socketUser.init(username);
+  const user = socketUser.init();
 
-  room.addUser(user);
+  room.addUser(user, username);
 }
 
 function userJoinRoomFromRoomCode(socketUser: SocketUser, roomCode: RoomCode) {

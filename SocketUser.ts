@@ -10,37 +10,41 @@ export class SocketUser {
 
   sock: WebSocket;
   id: SocketID;
-  name: Username;
   defaultName: Username;
   isActive = false;
 
-  #rooms: Set<SocketRoom>;
+  #rooms: Map<SocketRoom, Username>;
 
   constructor(sock: WebSocket) {
     this.sock = sock;
     this.id = SocketUser.socketIDCounter++;
     this.defaultName = SocketUser.createDefaultName(this.id);
-    this.name = this.defaultName;
-    this.#rooms = new Set();
+    this.#rooms = new Map();
   }
   
-  init(username?: Username) {
-    if (username) {
-      this.setName(username);
-    }
+  init() {
     this.isActive = true;
     return this;
   }
 
   // ---- Room handling ----
-  addToRoom(socketRoom: SocketRoom) {
-    this.#rooms.add(socketRoom);
+  addToRoom(socketRoom: SocketRoom, username: Username) {
+    username = this.getUsernameFromValidation(username);
+    this.#rooms.set(socketRoom, username);
   }
   removeFromRoom(socketRoom: SocketRoom) {
     this.#rooms.delete(socketRoom);
   }
   getRooms() {
-    return this.#rooms;
+    return this.#rooms.keys();
+  }
+
+  getNameForRoom(socketRoom: SocketRoom) {
+    return this.#rooms.get(socketRoom);
+  }
+  setNameForRoom(socketRoom: SocketRoom, newUsername: string) {
+    newUsername = this.getUsernameFromValidation(newUsername);
+    this.#rooms.set(socketRoom, newUsername);
   }
 
   // ---- WebSocket handling ----
@@ -60,7 +64,7 @@ export class SocketUser {
       evt: 'joinData',
       val: {
         room: socketRoom.roomCode,
-        name: this.name,
+        name: this.getNameForRoom(socketRoom),
         defaultName: this.defaultName,
         peers: this.getTransmittablePeerArray(socketRoom)
       }
@@ -77,24 +81,26 @@ export class SocketUser {
   }
 
   // ---- Helper functions ----
-  setName(newUsername: Username) {
-    if (Validator.validateUsername(newUsername)) {
-      this.name = newUsername;
+  getUsernameFromValidation(username: Username) {
+    if (Validator.validateUsername(username)) {
+      return username;
     }
+    return this.defaultName;
   }
 
   getTransmittablePeerArray(socketRoom: SocketRoom) {
     const peerArr = new Array();
     for (const socketUser of socketRoom.getUsers()) {
       if (socketUser !== this) {
-        peerArr.push([ socketUser.id, socketUser.name ]);
+        const username: Username = socketUser.getNameForRoom(socketRoom);
+        peerArr.push([ socketUser.id, username ]);
       }
     }
     return peerArr;
   }
 
   toString() {
-    return `SocketUser #${this.id} (${this.isActive ? 'active' : 'inactive'}, username: ${this.name})`;
+    return `SocketUser #${this.id} (${this.isActive ? 'active' : 'inactive'}, default name: ${this.defaultName})`;
   }
 
   // ---- Static helper functions ----
