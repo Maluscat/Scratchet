@@ -19,8 +19,8 @@ export interface MessageData {
 export class SocketRoom {
   static INIT_QUEUE_TIMEOUT = 1000 * 10;
 
-  #sockets: Set<SocketUser> = new Set();
-  roomCode: RoomCode;
+  readonly #sockets: Set<SocketUser> = new Set();
+  readonly roomCode: RoomCode;
 
   // TODO: is this necessary? One can circumvent this by just sending a huge normal send
   /**

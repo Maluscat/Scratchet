@@ -8,9 +8,9 @@ export type Username = string;
 export class SocketUser {
   static socketIDCounter: SocketID = 0;
 
-  sock: WebSocket;
-  id: SocketID;
-  defaultName: Username;
+  readonly sock: WebSocket;
+  readonly id: SocketID;
+  readonly defaultName: Username;
   isActive = false;
 
   #rooms: Map<SocketRoom, Username>;
