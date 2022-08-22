@@ -33,6 +33,7 @@ class ScratchetRoom extends ScratchetCanvas {
   removeUser(userID) {
     this.clearUserBufferAndRedraw(userID);
     this.posUserCache.delete(userID);
+    return this.nameHandler.removeUserFromUserList(userID);
   }
 
   addUserToUserCache(userID) {
