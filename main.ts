@@ -16,7 +16,7 @@ interface ReceivedEventInterfaceStructure {
     required: {
       [key: string]: string;
     };
-    fn?: (socketUser: SocketUser, val: any, socketRoom?: SocketRoom) => void;
+    fn?: (socketUser: SocketUser, val?: any, socketRoom?: SocketRoom) => void;
     passOn?: boolean;
   }
 }
@@ -32,14 +32,16 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
     required: {
       val: 'object'
     },
-    fn: initializeUserConnection
+    fn: (socketUser, val) => {
+      initializeUserConnection(socketUser, val!);
+    }
   },
   joinRoom: {
     required: {
       val: 'object'
     },
     fn: (socketUser, val) => {
-      userJoinRoomFromRoomCode(socketUser, val);
+      userJoinRoomFromRoomCode(socketUser, val!);
     }
   },
   leave: {
@@ -47,7 +49,7 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       room: 'number'
     },
     fn: (socketUser, val, socketRoom) => {
-      removeUserFromRoom(socketUser, socketRoom!)
+      removeUserFromRoom(socketUser, socketRoom!);
     },
     passOn: true
   },
@@ -57,7 +59,7 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       room: 'number'
     },
     fn: (socketUser, val, socketRoom) => {
-      socketUser.setNameForRoom(socketRoom, val);
+      socketUser.setNameForRoom(socketRoom!, val!);
     },
     passOn: true
   },
