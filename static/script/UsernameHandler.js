@@ -30,13 +30,16 @@ class UsernameHandler {
 
   // ---- Generic user handling ----
   getUsername(userID) {
-    if (this.usernameData.has(userID)) {
+    if (this.hasUser(userID)) {
       return this.usernameData.get(userID).name;
     }
   }
+  hasUser(userID) {
+    return this.usernameData.has(userID);
+  }
 
   changeUsername(userID, newUsername) {
-    if (!this.usernameData.has(userID)) {
+    if (!this.hasUser(userID)) {
       this.addUserToUserList(userID, newUsername);
     }
     const nameData = this.usernameData.get(userID);
@@ -54,7 +57,7 @@ class UsernameHandler {
     this.updateUserIndicator();
   }
   removeUserFromUserList(userID) {
-    if (!this.usernameData.has(userID)) {
+    if (!this.hasUser(userID)) {
       return UsernameHandler.createDefaultName(userID, true);
     }
     const nameData = this.usernameData.get(userID);
