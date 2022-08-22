@@ -173,7 +173,7 @@ function userJoinRoomFromRoomCode(socketUser: SocketUser, properties: Connection
   const roomCode = properties.roomCode;
 
   if (socketUser.isActive && roomHandler.hasRoom(roomCode)) {
-    const socketRoom = roomHandler.getRoom(roomCode);
+    const socketRoom = roomHandler.getRoom(roomCode!);
     socketRoom.addUser(socketUser, username);
   }
 }

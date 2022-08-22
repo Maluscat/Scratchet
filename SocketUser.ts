@@ -28,7 +28,7 @@ export class SocketUser {
   }
 
   // ---- Room handling ----
-  addToRoom(socketRoom: SocketRoom, username: Username) {
+  addToRoom(socketRoom: SocketRoom, username?: Username) {
     username = this.getUsernameFromValidation(username);
     this.#rooms.set(socketRoom, username);
   }
@@ -39,8 +39,9 @@ export class SocketUser {
     return this.#rooms.keys();
   }
 
-  getNameForRoom(socketRoom: SocketRoom) {
-    return this.#rooms.get(socketRoom);
+  getNameForRoom(socketRoom: SocketRoom): Username {
+    // NOTE The entry is assumed to exist and not asserted!
+    return this.#rooms.get(socketRoom)!;
   }
   setNameForRoom(socketRoom: SocketRoom, newUsername: string) {
     newUsername = this.getUsernameFromValidation(newUsername);
@@ -81,9 +82,9 @@ export class SocketUser {
   }
 
   // ---- Helper functions ----
-  getUsernameFromValidation(username: Username) {
+  getUsernameFromValidation(username?: Username): Username {
     if (Validator.validateUsername(username)) {
-      return username;
+      return username!;
     }
     return this.defaultName;
   }
@@ -92,7 +93,7 @@ export class SocketUser {
     const peerArr = new Array();
     for (const socketUser of socketRoom.getUsers()) {
       if (socketUser !== this) {
-        const username: Username = socketUser.getNameForRoom(socketRoom);
+        const username = socketUser.getNameForRoom(socketRoom);
         peerArr.push([ socketUser.id, username ]);
       }
     }
