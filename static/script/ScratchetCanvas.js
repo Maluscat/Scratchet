@@ -86,11 +86,15 @@ class ScratchetCanvas {
     for (var i = 0; i < globalPosBufferArr.length; i++) {
       const posDataWrapper = globalPosBufferArr[i];
       const nextWrapper = globalPosBufferArr[i + 1];
+      let isFromHighlightedUser = false;
+
+      if (userPosSetHighlight != null) {
+        isFromHighlightedUser = !userPosSetHighlight.has(posDataWrapper);
+      }
       if (hasChanged) {
-        const hasReducedAlpha = userPosSetHighlight && !userPosSetHighlight.has(posDataWrapper);
         // ASSUMPTION: all posData in posDataWrapper have the same width and hue
         // because only the eraser can form multiple posData inside one wrapper
-        this.setStrokeStyle(getClientMetaHue(posDataWrapper[0]), hasReducedAlpha);
+        this.setStrokeStyle(getClientMetaHue(posDataWrapper[0]), isFromHighlightedUser);
         this.setLineWidth(getClientMetaWidth(posDataWrapper[0]));
 
         this.ctx.beginPath();
@@ -101,7 +105,9 @@ class ScratchetCanvas {
 
       if (!nextWrapper
           || getClientMetaHue(nextWrapper[0]) !== getClientMetaHue(posDataWrapper[0])
-          || getClientMetaWidth(nextWrapper[0]) !== getClientMetaWidth(posDataWrapper[0])) {
+          || getClientMetaWidth(nextWrapper[0]) !== getClientMetaWidth(posDataWrapper[0])
+            /* This forces a stroke when changing from one user to another with highlight enabled */
+          || userPosSetHighlight != null && (!userPosSetHighlight.has(nextWrapper) !== isFromHighlightedUser)) {
         this.ctx.stroke();
         hasChanged = true;
       }
