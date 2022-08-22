@@ -303,13 +303,15 @@ class ScratchetController {
 
   // ---- Socket message events ----
   userDisconnect(userID) {
-    for (const roomCode of this.rooms.keys()) {
-      // TODO Better notification handling:
-      // - "{user of current room} has disconnected"
-      // - "{user} has left room {room}"
-      this.userLeave(userID, roomCode);
+    for (const room of this.rooms.values()) {
+      if (room.nameHandler.hasUser(userID)) {
+        room.removeUser(userID);
+      }
     }
+    const activeUsername = this.activeRoom.nameHandler.getOwnUsername();
+    dispatchNotification(`${activeUsername} has disconnected`);
   }
+  // TODO utilize the room name: "{user} has left/entered (current?) room {room name}"
   userLeave(userID, roomCode) {
     const room = this.rooms.get(roomCode);
     if (room) {
@@ -330,10 +332,10 @@ class ScratchetController {
     this.activeRoom.clearUserBufferAndRedraw(userID);
   }
   userChangeName(userID, newUsername) {
-    const prevUsername = this.activeRoom.nameHandler.getUsername(userID);
-    const username = this.activeRoom.nameHandler.changeUsername(userID, newUsername);
+    const prevActiveUsername = this.activeRoom.nameHandler.getUsername(userID);
+    const activeUsername = this.activeRoom.nameHandler.changeUsername(userID, newUsername);
 
-    dispatchNotification(`${prevUsername} --> ${username}`);
+    dispatchNotification(`${prevActiveUsername} --> ${activeUsername}`);
   }
 
   ownUserGetJoinData(value) {
