@@ -64,8 +64,8 @@ export class SocketUser {
     const data = JSON.stringify({
       evt: 'joinData',
       val: {
-        room: socketRoom.roomCode,
-        name: this.getNameForRoom(socketRoom),
+        roomCode: socketRoom.roomCode,
+        username: this.getNameForRoom(socketRoom),
         defaultName: this.defaultName,
         peers: this.getTransmittablePeerArray(socketRoom)
       }

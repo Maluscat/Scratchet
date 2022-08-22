@@ -4,7 +4,7 @@ import { roomHandler } from './main.ts';
 
 export interface ConnectionData {
   roomCode?: RoomCode;
-  name?: Username;
+  username?: Username;
 }
 
 export interface MessageData {

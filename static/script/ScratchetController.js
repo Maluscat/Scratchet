@@ -65,7 +65,7 @@ class ScratchetController {
     if (roomCode) {
       sendMessage('joinRoom', {
         roomCode: roomCode,
-        name: this.globalUsername
+        username: this.globalUsername
       });
       collapseJoinRoomOverlay();
     }
@@ -341,8 +341,8 @@ class ScratchetController {
   ownUserGetJoinData(value) {
     // For async reasons, the real user ID is solely used for the username
     this.defaultUsername = value.defaultName;
-    this.setOwnUsername(value.name, true);
-    this.addNewRoom(value.room, value.peers, true);
+    this.setOwnUsername(value.username, true);
+    this.addNewRoom(value.roomCode, value.peers, true);
 
     // NOTE: Needs to be called after `addNewRoom` for the room link content size
     if (!this.isInitialized) {
@@ -356,7 +356,7 @@ class ScratchetController {
 
     const initValue = {};
     if (this.globalUsername) {
-      initValue.name = this.globalUsername;
+      initValue.username = this.globalUsername;
     }
     sendMessage('connectInit', initValue);
   }

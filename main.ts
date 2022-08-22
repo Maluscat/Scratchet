@@ -159,7 +159,7 @@ function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
 // ---- Message event response ----
 function initializeUserConnection(socketUser: SocketUser, properties: ConnectionData) {
   // NOTE `properties` is guaranteed to be an object, but it could have no properties
-  const username = properties.name;
+  const username = properties.username;
   const roomCode = properties.roomCode;
 
   const room = roomHandler.getRoomOrCreateNewRoom(roomCode);
@@ -169,7 +169,7 @@ function initializeUserConnection(socketUser: SocketUser, properties: Connection
 }
 
 function userJoinRoomFromRoomCode(socketUser: SocketUser, properties: ConnectionData) {
-  const username = properties.name;
+  const username = properties.username;
   const roomCode = properties.roomCode;
 
   if (socketUser.isActive && roomHandler.hasRoom(roomCode)) {
