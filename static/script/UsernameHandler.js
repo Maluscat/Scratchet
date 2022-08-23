@@ -48,7 +48,7 @@ class UsernameHandler {
     return newUsername;
   }
 
-  addUserToUserList(userID, username = UsernameHandler.createDefaultName(userID), isOwnUser) {
+  addUserToUserList(userID, username, isOwnUser) {
     const listNode = this.createUserListNode(username, isOwnUser, userID);
     this.usernameData.set(userID, {
       name: username,
@@ -58,7 +58,7 @@ class UsernameHandler {
   }
   removeUserFromUserList(userID) {
     if (!this.hasUser(userID)) {
-      return UsernameHandler.createDefaultName(userID, true);
+      return UsernameHandler.createUnknownDefaultName(userID);
     }
     const nameData = this.usernameData.get(userID);
     this.usernameData.delete(userID);
@@ -118,7 +118,7 @@ class UsernameHandler {
     return userList;
   }
 
-  static createDefaultName(userID, isUnknown) {
-    return (isUnknown ? 'Unknown ' : '') + 'User #' + userID;
+  static createUnknownDefaultName(userID) {
+    return 'Unknown User #' + userID;
   }
 }
