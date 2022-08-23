@@ -139,12 +139,12 @@ class ScratchetController {
   }
 
   // ---- Room handling ----
-  addNewRoom(roomCode, peers, activate) {
+  addNewRoom(roomCode, roomName, peers, activate) {
     if (!this.globalUsername) {
       throw new Error('@ addNewRoom: No global persistent username has been set');
     }
 
-    const newRoom = new ScratchetRoom(roomCode, this.globalUsername, peers);
+    const newRoom = new ScratchetRoom(roomCode, roomName, this.globalUsername, peers);
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
     roomList.appendChild(newRoom.roomListNode);
@@ -342,7 +342,7 @@ class ScratchetController {
     // For async reasons, the real user ID is solely used for the username
     this.defaultUsername = value.defaultName;
     this.setOwnUsername(value.username, true);
-    this.addNewRoom(value.roomCode, value.peers, true);
+    this.addNewRoom(value.roomCode, value.roomName, value.peers, true);
 
     // NOTE: Needs to be called after `addNewRoom` for the room link content size
     if (!this.isInitialized) {

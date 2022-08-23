@@ -8,7 +8,7 @@ class ScratchetRoom extends ScratchetCanvas {
   roomCode;
   roomName;
 
-  constructor(roomCode, globalUsername, peers) {
+  constructor(roomCode, roomName, globalUsername, peers) {
     super(ScratchetRoom.createCanvas());
 
     this.roomCode = roomCode;
@@ -21,7 +21,8 @@ class ScratchetRoom extends ScratchetCanvas {
     this.nameHandler = new UsernameHandler(globalUsername, peers);
     this.roomListNode = ScratchetRoom.createRoomListNode();
     this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
-    this.changeRoomName(ScratchetRoom.createDefaultName(globalUsername));
+
+    this.changeRoomName(roomName);
   }
 
   // ---- Generic user handling ----
@@ -64,10 +65,6 @@ class ScratchetRoom extends ScratchetCanvas {
     const listNode = document.createElement('span');
     listNode.classList.add('item');
     return listNode;
-  }
-
-  static createDefaultName(username) {
-    return username + "'s room";
   }
 
   static createRoomCodeLink(roomCode) {
