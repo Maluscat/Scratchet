@@ -66,6 +66,7 @@ export class SocketUser {
       evt: 'joinData',
       val: {
         roomCode: socketRoom.roomCode,
+        roomName: socketRoom.roomName,
         username: this.getNameForRoom(socketRoom),
         defaultName: this.defaultName,
         peers: this.getTransmittablePeerArray(socketRoom)
