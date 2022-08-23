@@ -1,6 +1,7 @@
-import type { SocketID, RoomCode, Username } from './SocketUser.ts';
+import type { SocketID, RoomCode, RoomName, Username } from './SocketUser.ts';
 import { SocketUser } from './SocketUser.ts';
 import { roomHandler } from './main.ts';
+import Validator from './static/script/Validator.mjs';
 
 export interface ConnectionData {
   roomCode?: RoomCode;
@@ -21,6 +22,7 @@ export class SocketRoom {
 
   readonly #sockets: Set<SocketUser> = new Set();
   readonly roomCode: RoomCode;
+  roomName: RoomName;
 
   // TODO: is this necessary? One can circumvent this by just sending a huge normal send
   /**
@@ -30,8 +32,9 @@ export class SocketRoom {
    */
   userBulkInitQueue: Map<SocketUser, WeakSet<SocketUser>> = new Map();
 
-  constructor(roomCode: RoomCode) {
+  constructor(roomCode: RoomCode, roomName: Username) {
     this.roomCode = roomCode;
+    this.roomName = roomName;
   }
   
   // ---- User handling ----

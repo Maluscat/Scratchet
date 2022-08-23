@@ -3,6 +3,7 @@ import Validator from './static/script/Validator.mjs';
 
 export type SocketID = number;
 export type RoomCode = number;
+export type RoomName = string;
 export type Username = string;
 
 export class SocketUser {

@@ -1,21 +1,23 @@
-import type { SocketID, RoomCode } from './SocketUser.ts';
+import type { SocketUser, SocketID, RoomCode, RoomName, Username } from './SocketUser.ts';
 import { SocketRoom } from './SocketRoom.ts';
 import Validator from './static/script/Validator.mjs';
 
 export class SocketRoomHandler {
   readonly #activeRooms: Map<RoomCode, SocketRoom> = new Map();
 
-  getRoomOrCreateNewRoom(roomCode?: RoomCode) {
+  getRoomOrCreateNewRoom(initialUser: SocketUser, initialUsername?: Username, roomCode?: RoomCode) {
     if (this.hasRoom(roomCode)) {
       return this.getRoom(roomCode!);
     } else {
-      return this.createNewRoom();
+      return this.createNewRoom(initialUser, initialUsername);
     }
   }
 
-  createNewRoom() {
+  createNewRoom(initialUser: SocketUser, initialUsername?: Username) {
     const roomCode = this.createNewRoomCode();
-    const room = new SocketRoom(roomCode);
+    const roomName = initialUser.getUsernameFromValidation(initialUsername) + "'s room";
+
+    const room = new SocketRoom(roomCode, roomName);
     this.addRoom(roomCode, room);
     return room;
   }

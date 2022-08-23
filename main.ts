@@ -162,8 +162,8 @@ function initializeUserConnection(socketUser: SocketUser, properties: Connection
   const username = properties.username;
   const roomCode = properties.roomCode;
 
-  const room = roomHandler.getRoomOrCreateNewRoom(roomCode);
   const user = socketUser.init();
+  const room = roomHandler.getRoomOrCreateNewRoom(user, username, roomCode);
 
   room.addUser(user, username);
 }
