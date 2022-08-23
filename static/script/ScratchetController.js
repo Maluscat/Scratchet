@@ -101,7 +101,11 @@ class ScratchetController {
   }
 
   changeCurrentRoomName(newRoomName) {
-    this.activeRoom.changeRoomName(newRoomName);
+    if (Validator.validateRoomName(newRoomName)) {
+      this.setCurrentRoomName(newRoomName);
+    } else {
+      this.resetRoomNameInput();
+    }
   }
 
   roomListNodeClick(room) {
@@ -136,6 +140,14 @@ class ScratchetController {
       this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, username);
       sendMessage('changeName', username, this.activeRoom.roomCode);
     }
+  }
+
+  // ---- Room name handling ----
+  resetRoomNameInput() {
+    this.activeRoom.setRoomNameInput();
+  }
+  setCurrentRoomName(newRoomName) {
+    this.activeRoom.changeRoomName(newRoomName);
   }
 
   // ---- Room handling ----
