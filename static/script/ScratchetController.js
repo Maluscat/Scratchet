@@ -148,6 +148,10 @@ class ScratchetController {
   }
   setCurrentRoomName(newRoomName) {
     this.activeRoom.changeRoomName(newRoomName);
+    sendMessage('changeRoomName', newRoomName, this.activeRoom.roomCode);
+  }
+  setNameOfRoom(roomCode, newRoomName) {
+    this.rooms.get(roomCode).changeRoomName(newRoomName);
   }
 
   // ---- Room handling ----
@@ -343,11 +347,17 @@ class ScratchetController {
   userClearData(userID) {
     this.activeRoom.clearUserBufferAndRedraw(userID);
   }
-  userChangeName(userID, newUsername) {
+  userChangeUserName(userID, newUsername) {
     const prevActiveUsername = this.activeRoom.nameHandler.getUsername(userID);
     const activeUsername = this.activeRoom.nameHandler.changeUsername(userID, newUsername);
 
-    dispatchNotification(`${prevActiveUsername} --> ${activeUsername}`);
+    dispatchNotification(`User: ${prevActiveUsername} --> ${activeUsername}`);
+  }
+  userChangeRoomName(roomCode, newRoomName) {
+    const prevCurrentRoomName = this.activeRoom.roomName;
+    this.setNameOfRoom(roomCode, newRoomName);
+
+    dispatchNotification(`Room: ${prevCurrentRoomName} --> ${newRoomName}`);
   }
 
   ownUserGetJoinData(value) {
@@ -381,9 +391,10 @@ class ScratchetController {
     } else {
       const data = JSON.parse(e.data);
       switch (data.evt) {
-        case 'disconnect':
+        case 'disconnect': {
           this.userDisconnect(data.usr);
           break;
+        }
         case 'leave': {
           this.userLeave(data.usr, data.room);
           break;
@@ -397,7 +408,11 @@ class ScratchetController {
           break;
         }
         case 'changeName': {
-          this.userChangeName(data.usr, data.val);
+          this.userChangeUserName(data.usr, data.val);
+          break;
+        }
+        case 'changeRoomName': {
+          this.userChangeRoomName(data.room, data.val);
           break;
         }
         case 'joinData': {

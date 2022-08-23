@@ -118,6 +118,12 @@ export class SocketRoom {
   }
 
   // ---- Helper functions ----
+  setName(newRoomName: RoomName) {
+    if (Validator.validateRoomName(newRoomName)) {
+      this.roomName = newRoomName;
+    }
+  }
+
   toString() {
     return `Room #${this.roomCode} (users: ${this.getUsers()})`;
   }

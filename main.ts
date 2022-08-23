@@ -63,6 +63,19 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
     },
     passOn: true
   },
+  changeRoomName: {
+    required: {
+      val: 'string',
+      room: 'number'
+    },
+    fn: (socketUser, val, socketRoom) => {
+      // Does not care which user it came from: Everyone can rename it
+      // TODO: Check if user is actually in specified room
+      // -> This is best done during the event handling
+      socketRoom!.setName(val!);
+    },
+    passOn: true
+  },
   clearUser: {
     required: {
       room: 'number'
