@@ -22,8 +22,6 @@ interface ReceivedEventInterfaceStructure {
 
 
 export const roomHandler = new SocketRoomHandler();
-// The Set tracks the socket which still need to send their data to the init sock
-const socketRequireInitQueue: Map<SocketUser, WeakSet<SocketUser>> = new Map();
 
 // NOTE values with `passOn` MUST have a required room - This is not validated
 const receivedEventsInterface: ReceivedEventInterfaceStructure = {
