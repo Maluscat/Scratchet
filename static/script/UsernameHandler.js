@@ -1,5 +1,20 @@
+'use strict';
+/**
+ * @typedef { import('./init.js') }
+ */
+
+/**
+ * @typedef { object } nameData
+ * @property { string } name
+ * @property { HTMLSpanElement } listNode
+ * @property { number } activeTimeout
+ */
+
 class UsernameHandler {
   userList;
+  /**
+   * @type { Map<number, nameData> }
+   */
   usernameData = new Map();
 
   constructor(globalUsername, peers) {

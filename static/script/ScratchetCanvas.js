@@ -1,3 +1,9 @@
+'use strict';
+/**
+ * @typedef { import('./init.js') }
+ * @typedef { import('./ScratchetRoom.js') }
+ */
+
 class ScratchetCanvas {
   canvas;
   ctx;
@@ -10,6 +16,9 @@ class ScratchetCanvas {
   width = 25;
   hue = 0;
 
+  /**
+   * @param { HTMLCanvasElement } canvas
+   */
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
