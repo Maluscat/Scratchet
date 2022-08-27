@@ -70,8 +70,6 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
     },
     fn: (socketUser, val, socketRoom) => {
       // Does not care which user it came from: Everyone can rename it
-      // TODO: Check if user is actually in specified room
-      // -> This is best done during the event handling
       socketRoom!.setName(val!);
     },
     passOn: true
@@ -102,15 +100,11 @@ router
       if (e.data instanceof ArrayBuffer) {
         const dataArr = new Int16Array(e.data);
         const roomCode = dataArr[0];
-        if (!roomHandler.hasRoom(roomCode)) {
-          console.warn(`${socketUser}: Room #${roomCode} does not exist!`);
+        if (!roomHandler.checkRoomWithUserExistance(socketUser, roomCode)) {
           return;
         }
+
         const socketRoom = roomHandler.getRoom(roomCode);
-
-        // TODO validate, whether the user actually is in the specified room
-        // -> We might need the SocketUser room handling for this again
-
         const newBuffer = socketUser.prependIDToBuffer(dataArr);
 
         if (dataArr[1] === -1) {
@@ -152,9 +146,7 @@ function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
     }
   }
 
-  // TODO also check if user is in room
-  if ('room' in data && !roomHandler.hasRoom(data.room)) {
-    console.warn(`${socketUser}: Room #${data.room} does not exist!`);
+  if ('room' in data && !roomHandler.checkRoomWithUserExistance(socketUser, data.room)) {
     return;
   }
   const socketRoom = roomHandler.getRoom(data.room!);
