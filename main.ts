@@ -97,26 +97,26 @@ router
     });
 
     sock.addEventListener('message', (e: MessageEvent) => {
-      if (e.data instanceof ArrayBuffer) {
-        const dataArr = new Int16Array(e.data);
-        const roomCode = dataArr[0];
-        if (!roomHandler.checkRoomWithUserExistance(socketUser, roomCode)) {
-          return;
-        }
+      try {
+        if (e.data instanceof ArrayBuffer) {
+          const dataArr = new Int16Array(e.data);
+          const roomCode = dataArr[0];
+          const socketRoom = roomHandler.getRoomWithUserExistanceCheck(socketUser, roomCode);
+          const newBuffer = socketUser.prependIDToBuffer(dataArr);
 
-        const socketRoom = roomHandler.getRoom(roomCode);
-        const newBuffer = socketUser.prependIDToBuffer(dataArr);
-
-        if (dataArr[1] === -1) {
-          socketRoom.sendBulkInitData(socketUser, newBuffer);
+          if (dataArr[1] === -1) {
+            socketRoom.sendBulkInitData(socketUser, newBuffer);
+          } else {
+            // Pass data on
+            socketRoom.sendAnyDataToUsers(socketUser, newBuffer);
+          }
+        } else if (typeof e.data === 'string') {
+          handleReceivedEvent(socketUser, JSON.parse(e.data));
         } else {
-          // Pass data on
-          socketRoom.sendAnyDataToUsers(socketUser, newBuffer);
+          throw new Error(`Received an unknown socket response:\n${e.data}`);
         }
-      } else if (typeof e.data === 'string') {
-        handleReceivedEvent(socketUser, JSON.parse(e.data));
-      } else {
-        console.warn(`Warning! Received an unknown socket response:\n${e.data}`);
+      } catch (e) {
+        console.warn(`Warning! ${socketUser}: ` + e.message);
       }
     });
   });
@@ -124,32 +124,28 @@ router
 // ---- Message event handling ----
 function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
   if (!data) {
-    console.warn(`Warning: couldn't parse socket event: No data supplied`);
-    return;
+    throw new Error(`Couldn't parse socket event: No data supplied`);
   }
 
   if (!Object.hasOwn(receivedEventsInterface, data.evt)) {
-    console.warn(`Warning! Unrecognized event from ${socketUser}:\n${data}`);
-    return;
+    throw new Error(`Unrecognized event:\n${data}`);
   }
   const eventInterface = receivedEventsInterface[data.evt];
 
   // Check if all required fields are present and are of their required types
   for (const [requiredField, requiredType] of Object.entries(eventInterface.required)) {
     if (!Object.hasOwn(data, requiredField)) {
-      console.warn(`Warning! Event omitted required field ${requiredField}:\n${data}`);
-      return;
+      throw new Error(`Event omitted required field ${requiredField}:\n${data}`);
     }
     if (typeof data[requiredField] !== requiredType) {
-      console.warn(`Warning! Event field ${requiredField} is not of type ${requiredType}:\n${data}`);
-      return;
+      throw new Error(`Event field ${requiredField} is not of type ${requiredType}:\n${data}`);
     }
   }
 
-  if ('room' in data && !roomHandler.checkRoomWithUserExistance(socketUser, data.room)) {
-    return;
+  let socketRoom: SocketRoom;
+  if ('room' in data) {
+    socketRoom = roomHandler.getRoomWithUserExistanceCheck(socketUser, data.room);
   }
-  const socketRoom = roomHandler.getRoom(data.room!);
 
   if ('fn' in eventInterface) {
     eventInterface.fn!(socketUser, data.val, socketRoom);

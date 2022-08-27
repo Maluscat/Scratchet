@@ -23,18 +23,17 @@ export class SocketRoomHandler {
     return room;
   }
 
-  checkRoomWithUserExistance(socketUser: SocketUser, roomCode: RoomCode) {
+  getRoomWithUserExistanceCheck(socketUser: SocketUser, roomCode?: RoomCode) {
     if (!this.hasRoom(roomCode)) {
-      console.warn(`${socketUser}: Room #${roomCode} does not exist!`);
-      return false;
+      throw new Error(`Room with roomCode #${roomCode} does not exist!`);
     }
 
     const socketRoom = this.getRoom(roomCode);
     if (!socketRoom.getUsers().has(socketUser)) {
-      console.warn(`${socketUser} is not in ${socketRoom}!`);
-      return false;
+      throw new Error(`User is not in ${socketRoom}!`);
     }
-    return true;
+
+    return socketRoom;
   }
 
   // ---- Map wrappers ----
