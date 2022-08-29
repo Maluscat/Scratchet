@@ -1,6 +1,7 @@
 import type { SocketID, RoomCode, RoomName, Username } from './SocketUser.ts';
 import { SocketUser } from './SocketUser.ts';
 import { roomHandler } from './main.ts';
+import { ScratchetError } from './ScratchetError.ts';
 import Validator from './static/script/Validator.mjs';
 
 export interface ConnectionData {

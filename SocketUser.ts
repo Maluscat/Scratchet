@@ -1,4 +1,5 @@
 import type { SocketRoom } from './SocketRoom.ts';
+import { ScratchetError } from './ScratchetError.ts';
 import Validator from './static/script/Validator.mjs';
 
 export type SocketID = number;
@@ -53,7 +54,7 @@ export class SocketUser {
   send(data: string | ArrayBuffer) {
     if (this.sock.readyState === 1) {
       if (!this.isActive) {
-        throw new Error(`${this} tried to send while inactive!`);
+        throw new ScratchetError(`Tried to send while inactive (data: ${data})`);
       }
       this.sock.send(data);
     }

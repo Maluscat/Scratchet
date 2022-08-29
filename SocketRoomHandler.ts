@@ -1,5 +1,6 @@
 import type { SocketUser, SocketID, RoomCode, RoomName, Username } from './SocketUser.ts';
 import { SocketRoom } from './SocketRoom.ts';
+import { ScratchetError } from './ScratchetError.ts';
 import Validator from './static/script/Validator.mjs';
 
 export class SocketRoomHandler {
@@ -25,12 +26,12 @@ export class SocketRoomHandler {
 
   getRoomWithUserExistanceCheck(socketUser: SocketUser, roomCode?: RoomCode) {
     if (!this.hasRoom(roomCode)) {
-      throw new Error(`Room with roomCode #${roomCode} does not exist!`);
+      throw new ScratchetError(`Room with roomCode #${roomCode} does not exist!`);
     }
 
     const socketRoom = this.getRoom(roomCode);
     if (!socketRoom.getUsers().has(socketUser)) {
-      throw new Error(`User is not in ${socketRoom}!`);
+      throw new ScratchetError(`User is not in ${socketRoom}!`);
     }
 
     return socketRoom;
