@@ -125,6 +125,6 @@ export class SocketRoom {
   }
 
   toString() {
-    return `Room #${this.roomCode} (users: ${this.getUsers()})`;
+    return `Room #${this.roomCode} (name: ${this.roomName}, users: ${this.getUsers()})`;
   }
 }

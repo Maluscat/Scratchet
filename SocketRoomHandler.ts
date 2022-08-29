@@ -5,6 +5,7 @@ import Validator from './static/script/Validator.mjs';
 export class SocketRoomHandler {
   readonly #activeRooms: Map<RoomCode, SocketRoom> = new Map();
 
+  // ---- Utility functions ----
   getRoomOrCreateNewRoom(initialUser: SocketUser, initialUsername?: Username, roomCode?: RoomCode) {
     if (this.hasRoom(roomCode)) {
       return this.getRoom(roomCode!);
@@ -20,6 +21,19 @@ export class SocketRoomHandler {
     const room = new SocketRoom(roomCode, roomName);
     this.addRoom(roomCode, room);
     return room;
+  }
+
+  getRoomWithUserExistanceCheck(socketUser: SocketUser, roomCode?: RoomCode) {
+    if (!this.hasRoom(roomCode)) {
+      throw new Error(`Room with roomCode #${roomCode} does not exist!`);
+    }
+
+    const socketRoom = this.getRoom(roomCode);
+    if (!socketRoom.getUsers().has(socketUser)) {
+      throw new Error(`User is not in ${socketRoom}!`);
+    }
+
+    return socketRoom;
   }
 
   // ---- Map wrappers ----
