@@ -31,7 +31,7 @@ export class SocketRoomHandler {
 
     const socketRoom = this.getRoom(roomCode);
     if (!socketRoom.getUsers().has(socketUser)) {
-      throw new ScratchetError(`User is not in ${socketRoom}!`);
+      throw new ScratchetError(`User is not in ${socketRoom}`);
     }
 
     return socketRoom;

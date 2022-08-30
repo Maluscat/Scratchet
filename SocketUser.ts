@@ -104,7 +104,7 @@ export class SocketUser {
   }
 
   toString() {
-    return `SocketUser #${this.id} (${this.isActive ? 'active' : 'inactive'}, default name: ${this.defaultName})`;
+    return `SocketUser #${this.id} (${this.isActive ? 'active' : 'inactive'})`;
   }
 
   // ---- Static helper functions ----

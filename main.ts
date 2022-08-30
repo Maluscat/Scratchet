@@ -111,7 +111,7 @@ router
         } else if (typeof e.data === 'string') {
           handleReceivedEvent(socketUser, JSON.parse(e.data));
         } else {
-          throw new ScratchetError(`Received an unknown socket response:\n${e.data}`);
+          throw new ScratchetError(`Received an unknown socket response: ${JSON.stringify(e.data)}`);
         }
       } catch (e) {
         if (e instanceof ScratchetError) {
@@ -130,17 +130,17 @@ function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
   }
 
   if (!Object.hasOwn(receivedEventsInterface, data.evt)) {
-    throw new ScratchetError(`Unrecognized event:\n${data}`);
+    throw new ScratchetError(`Unrecognized event: ${JSON.stringify(data)}`);
   }
   const eventInterface = receivedEventsInterface[data.evt];
 
   // Check if all required fields are present and are of their required types
   for (const [requiredField, requiredType] of Object.entries(eventInterface.required)) {
     if (!Object.hasOwn(data, requiredField)) {
-      throw new ScratchetError(`Event omitted required field ${requiredField}:\n${data}`);
+      throw new ScratchetError(`Event omitted required field '${requiredField}': ${JSON.stringify(data)}`);
     }
     if (typeof data[requiredField] !== requiredType) {
-      throw new ScratchetError(`Event field ${requiredField} is not of type ${requiredType}:\n${data}`);
+      throw new ScratchetError(`Event field '${requiredField}' is not of type '${requiredType}': ${JSON.stringify(data)}`);
     }
   }
 
