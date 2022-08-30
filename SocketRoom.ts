@@ -82,6 +82,9 @@ export class SocketRoom {
   /**
    * Go through the bulk init queue until finding a user which hasn't
    * been sent the data to yet.
+   * The rate limitation will limit how many users can join and receive
+   * init data at once, but without a limitation here the system could
+   * be exploited easily.
    *
    * @param {SocketUser} socketUser The user which sends the bulk init data.
    * @param {ArrayBuffer} newBuffer The buffer to send, with the socketUser ID prepended.

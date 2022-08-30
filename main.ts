@@ -96,6 +96,11 @@ router
 
     sock.addEventListener('message', (e: MessageEvent) => {
       try {
+        socketUser.rate.increment();
+        if (socketUser.rate.isLimited) {
+          throw new ScratchetError(`Rate limitation reached: ${socketUser.rate.getCount()}`);
+        }
+
         if (e.data instanceof ArrayBuffer) {
           const dataArr = new Int16Array(e.data);
           const roomCode = dataArr[0];

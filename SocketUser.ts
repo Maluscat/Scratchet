@@ -1,4 +1,5 @@
 import type { SocketRoom } from './SocketRoom.ts';
+import { SocketRateHandler } from './SocketRateHandler.ts';
 import { ScratchetError } from './ScratchetError.ts';
 import Validator from './static/script/Validator.mjs';
 
@@ -13,6 +14,7 @@ export class SocketUser {
   readonly sock: WebSocket;
   readonly id: SocketID;
   readonly defaultName: Username;
+  rate: SocketRateHandler; 
   isActive = false;
 
   #rooms: Map<SocketRoom, Username>;
@@ -21,6 +23,7 @@ export class SocketUser {
     this.sock = sock;
     this.id = SocketUser.socketIDCounter++;
     this.defaultName = SocketUser.createDefaultName(this.id);
+    this.rate = new SocketRateHandler();
     this.#rooms = new Map();
   }
   
