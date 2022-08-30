@@ -83,16 +83,18 @@ export class SocketRoom {
    * Go through the bulk init queue until finding a user which hasn't
    * been sent the data to yet.
    *
-   * @param {SocketUser} socketUser the user which sends the bulk init data.
+   * @param {SocketUser} socketUser The user which sends the bulk init data.
+   * @param {ArrayBuffer} newBuffer The buffer to send, with the socketUser ID prepended.
    */
   sendBulkInitData(socketUser: SocketUser, newBuffer: ArrayBuffer) {
     for (const [ servedUser, handledUsers ] of this.userBulkInitQueue) {
       if (!handledUsers.has(socketUser)) {
         servedUser.send(newBuffer);
         handledUsers.add(socketUser);
-        break;
+        return;
       }
     }
+    throw new ScratchetError(`Is not in bulk init queue but tried to send bulk init data to ${this}`);
   }
 
   // ---- Socket functions ----
