@@ -2,12 +2,10 @@
 /**
  * @typedef { import('./init.js') }
  * @typedef { import('./ScratchetRoom.js') }
+ * @typedef { import('./ScratchetCanvasControls.js') }
  */
 
-class ScratchetCanvas {
-  canvas;
-  ctx;
-
+class ScratchetCanvas extends ScratchetCanvasControls {
   pressedMouseBtn = -1;
   globalPosBuffer = new Set(); // Set<posDataWrapperInDrawOrder>
   posUserCache = new Map(); // Map<userID, Set<posDataWrapperForUser>>
@@ -20,18 +18,17 @@ class ScratchetCanvas {
    * @param { HTMLCanvasElement } canvas
    */
   constructor(canvas) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
+    super(canvas);
 
     canvas.addEventListener('contextmenu', this.canvasContext.bind(this));
     canvas.addEventListener('pointerdown', this.canvasDown.bind(this));
     window.addEventListener('pointerup', this.pointerUp.bind(this));
     canvas.addEventListener('pointermove', this.canvasDraw.bind(this));
 
-    this.setDimensions();
-
     this.setStrokeStyle();
     this.setLineWidth();
+
+    this.setTransform();
   }
 
   // ---- Event functions ----
@@ -47,8 +44,10 @@ class ScratchetCanvas {
       toggleDrawIndicatorEraseMode();
       controller.initializePosBufferErase(this.width);
     } else {
-      this.setLastPos(e.clientX, e.clientY);
-      controller.initializePosBufferNormal(...this.lastPos);
+      const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
+
+      this.setLastPos(posX, posY);
+      controller.initializePosBufferNormal(posX, posY);
     }
     this.canvasDraw(e);
   }
@@ -61,34 +60,39 @@ class ScratchetCanvas {
   }
 
   canvasDraw(e) {
+    this.setCurrentMousePos(e.clientX, e.clientY);
     moveDrawIndicator(e.clientX, e.clientY);
+
     if (this.pressedMouseBtn >= 0) {
       controller.sendPositionsIfWidthHasChanged();
 
+      const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
+
       if (this.pressedMouseBtn === 2) {
-        if (this.erasePos(e.clientX, e.clientY, CURRENT_USER_ID)) {
+        if (this.erasePos(posX, posY, CURRENT_USER_ID)) {
           this.redrawCanvas();
           controller.sendCompleteMetaDataNextTime();
-          controller.addToPosBuffer(e.clientX, e.clientY);
+          controller.addToPosBuffer(posX, posY);
         }
       } else {
         controller.sendPositionsIfHueHasChanged();
 
         this.ctx.beginPath();
         this.ctx.moveTo(...this.lastPos);
-        this.ctx.lineTo(e.clientX, e.clientY);
+        this.ctx.lineTo(posX, posY);
         this.ctx.stroke();
 
-        this.setLastPos(e.clientX, e.clientY);
+        this.setLastPos(posX, posY);
 
-        controller.addToPosBuffer(e.clientX, e.clientY);
+        controller.addToPosBuffer(posX, posY);
       }
     }
   }
 
   // ---- Canvas handling ----
   redrawCanvas(userPosSetHighlight) {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // TODO skip unseen points
+    this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
 
     const globalPosBufferArr = Array.from(this.globalPosBuffer);
     let hasChanged = true;
@@ -320,18 +324,6 @@ class ScratchetCanvas {
   }
 
   // ---- Helper functions ----
-  setDimensions() {
-    const dpr = Math.round(window.devicePixelRatio);
-
-    this.canvas.height = this.canvas.clientHeight * dpr;
-    this.canvas.width = this.canvas.clientWidth * dpr;
-
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-
-    this.ctx.scale(dpr, dpr);
-  }
-
   setLineWidth(width = this.width) {
     this.ctx.lineWidth = width;
   }
