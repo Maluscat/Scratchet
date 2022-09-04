@@ -69,7 +69,7 @@ class ScratchetController {
   windowResized() {
     for (const room of this.rooms.values()) {
       room.setDimensions();
-      room.redrawCanvas();
+      room.setTransform();
     }
   }
 
