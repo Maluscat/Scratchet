@@ -58,8 +58,12 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   focus() {
+    controls3D.changeState(this.state);
+    controls3D.changeEventTarget(this.canvas);
+
     this.canvas.classList.remove('inactive');
     this.roomListNode.classList.add('current');
+
     this.setRoomNameInput();
     // NOTE z-index is not strictly necessary, but might prove handy for future styling
     // Remove if room switch styling is complete and z-index is not needed
