@@ -98,7 +98,8 @@ const controls3D = new Controls3D(null, null, {
     rot: null
   },
   dontInvertTranY: true,
-  skipScaleKeyModifier: true
+  skipScaleKeyModifier: true,
+  useProportionalScale: true
 });
 
 let sock;
