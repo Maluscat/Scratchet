@@ -129,14 +129,18 @@ class ScratchetCanvasControls {
 
     if (this.state.tran.x > 0) {
       this.state.tran.x = 0;
+      invokeHitBorder('left');
     } else if (this.state.tran.x < -viewStopX) {
       this.state.tran.x = -viewStopX;
+      invokeHitBorder('right');
     }
 
     if (this.state.tran.y > 0) {
       this.state.tran.y = 0;
+      invokeHitBorder('top');
     } else if (this.state.tran.y < -viewStopY) {
       this.state.tran.y = -viewStopY;
+      invokeHitBorder('bottom');
     }
   }
 }

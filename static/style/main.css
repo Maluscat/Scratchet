@@ -193,6 +193,28 @@ input:invalid {
 #draw-indicator.erase {
   background-color: hsl(0, 0%, 90%);
 }
+#hit-border {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border: 0px solid transparent;
+  transition: border 0.1s ease-in;
+}
+#hit-border.hit-left {
+  border-left: 2px solid hsl(0, 0%, 90%);
+}
+#hit-border.hit-top {
+  border-top: 2px solid hsl(0, 0%, 90%);
+}
+#hit-border.hit-right {
+  border-right: 2px solid hsl(0, 0%, 90%);
+}
+#hit-border.hit-bottom {
+  border-bottom: 2px solid hsl(0, 0%, 90%);
+}
 #notification-overlay {
   display: flex;
   flex-direction: column;

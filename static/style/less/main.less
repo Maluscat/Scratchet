@@ -1,6 +1,7 @@
 // out: ../main.css
 
 @background-color: hsl(0, 0%, 8%);
+@draw-indicator-color: hsl(0, 0%, 90%);
 
 * {
   box-sizing: border-box;
@@ -227,10 +228,35 @@ input:invalid {
   left: 0;
   top: 0;
   border-radius: 100px;
-  border: 2px solid hsl(0, 0%, 90%);
+  border: 2px solid @draw-indicator-color;
   pointer-events: none;
   &.erase {
-    background-color: hsl(0, 0%, 90%);
+    background-color: @draw-indicator-color;
+  }
+}
+
+#hit-border {
+  @hit-border-size: 2px;
+  // TODO This is a repeating pattern
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border: 0px solid transparent;
+  transition: border .1s ease-in;
+  &.hit-left {
+    border-left: @hit-border-size solid @draw-indicator-color;
+  }
+  &.hit-top {
+    border-top: @hit-border-size solid @draw-indicator-color;
+  }
+  &.hit-right {
+    border-right: @hit-border-size solid @draw-indicator-color;
+  }
+  &.hit-bottom {
+    border-bottom: @hit-border-size solid @draw-indicator-color;
   }
 }
 

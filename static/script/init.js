@@ -16,6 +16,7 @@ const canvasContainer = document.getElementById('canvas-container');
 
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
+const hitBorder = document.getElementById('hit-border');
 
 const clearDrawingButton = document.getElementById('clear-drawing-button');
 
@@ -34,6 +35,7 @@ const copyRoomLinkButton = document.getElementById('copy-room-link-button');
 const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
 const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
+const HIT_BORDER_DURATION = 200;
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
 const SEND_INTERVAL = 40;
@@ -77,6 +79,13 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
     </thumb>
   `
 }, true);
+
+const hitBorderTimeouts = {
+  left: null,
+  top: null,
+  right: null,
+  bottom: null
+};
 
 const controller = new ScratchetController();
 // TODO Perhaps remove context menu function in SCanvas and let Controls do it
@@ -200,6 +209,19 @@ function toggleDrawIndicatorEraseMode(reset) {
 function moveDrawIndicator(posX, posY) {
   document.documentElement.style.setProperty('--mouseX', posX + 'px');
   document.documentElement.style.setProperty('--mouseY', posY + 'px');
+}
+
+function invokeHitBorder(direction) {
+  if (hitBorderTimeouts[direction] != null) {
+    clearTimeout(hitBorderTimeouts[direction]);
+  } else {
+    hitBorder.classList.add('hit-' + direction);
+  }
+
+  hitBorderTimeouts[direction] = setTimeout(function() {
+    hitBorder.classList.remove('hit-' + direction);
+    hitBorderTimeouts[direction] = null;
+  }, HIT_BORDER_DURATION);
 }
 
 // ---- Notifications ----
