@@ -34,6 +34,7 @@ class ScratchetCanvasControls {
   }
 
   setTransform() {
+    // NOTE Remember to apply the device pixel ratio when working with deltas and positions
     // TODO Convert to scaleMax and move the canvas around somehow (undrawable sections other color + border)?
     this.limitStateScale();
 
@@ -41,6 +42,7 @@ class ScratchetCanvasControls {
     this.limitStateTran();
 
     this.ctx.setTransform(this.state.scale.x, 0, 0, this.state.scale.y, this.state.tran.x, this.state.tran.y);
+    this.scaleByDevicePixelRatio();
 
     this.redrawCanvas();
   }
@@ -70,7 +72,6 @@ class ScratchetCanvasControls {
   }
 
   // ---- Helper functions ----
-  // TODO This is temporarily ignored
   scaleByDevicePixelRatio() {
     const dpr = Math.round(window.devicePixelRatio);
     this.ctx.scale(dpr, dpr);
@@ -80,12 +81,14 @@ class ScratchetCanvasControls {
    * Zoom towards the mouse position.
    */
   translateViewTowardCursor(mousePos) {
+    const dpr = Math.round(window.devicePixelRatio);
+
     const currentTransform = this.ctx.getTransform();
 
     const DELTA_PRECISION = 1000000;
     // These should always be equivalent, but computed separately in case of discrepancies
-    const deltaScaleX = Math.round((this.state.scale.x - currentTransform.a) * DELTA_PRECISION) / DELTA_PRECISION;
-    const deltaScaleY = Math.round((this.state.scale.y - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION;
+    const deltaScaleX = Math.round((dpr * this.state.scale.x - currentTransform.a) * DELTA_PRECISION) / DELTA_PRECISION;
+    const deltaScaleY = Math.round((dpr * this.state.scale.y - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION;
     const [posX, posY] = this.getPosWithTransform(mousePos[0], mousePos[1]);
 
     this.state.tran.x -= deltaScaleX * posX;
