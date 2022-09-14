@@ -72,8 +72,25 @@ class ScratchetCanvasControls {
   }
 
   // ---- Helper functions ----
+  getDevicePixelRatio() {
+    return Math.floor(window.devicePixelRatio);
+  }
+
+  getScaleDelta() {
+    const currentTransform = this.ctx.getTransform();
+    const dpr = this.getDevicePixelRatio();
+
+    const DELTA_PRECISION = 1000000;
+    // These should always be equivalent, but computed separately in case of discrepancies
+    return [
+      Math.round((dpr * this.state.scale.x - currentTransform.a) * DELTA_PRECISION) / DELTA_PRECISION,
+      Math.round((dpr * this.state.scale.y - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION
+    ];
+  }
+
+  // ---- Transformation functions ----
   scaleByDevicePixelRatio() {
-    const dpr = Math.round(window.devicePixelRatio);
+    const dpr = this.getDevicePixelRatio();
     this.ctx.scale(dpr, dpr);
   }
 
@@ -81,14 +98,7 @@ class ScratchetCanvasControls {
    * Zoom towards the mouse position.
    */
   translateViewTowardCursor(mousePos) {
-    const dpr = Math.round(window.devicePixelRatio);
-
-    const currentTransform = this.ctx.getTransform();
-
-    const DELTA_PRECISION = 1000000;
-    // These should always be equivalent, but computed separately in case of discrepancies
-    const deltaScaleX = Math.round((dpr * this.state.scale.x - currentTransform.a) * DELTA_PRECISION) / DELTA_PRECISION;
-    const deltaScaleY = Math.round((dpr * this.state.scale.y - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION;
+    const [deltaScaleX, deltaScaleY] = this.getScaleDelta();
     const [posX, posY] = this.getPosWithTransform(mousePos[0], mousePos[1]);
 
     this.state.tran.x -= deltaScaleX * posX;
