@@ -36,12 +36,16 @@ class ScratchetCanvasControls {
     });
   }
 
-  setTransform() {
+  setTransform(controlsOptions) {
     // NOTE Remember to apply the device pixel ratio when working with deltas and positions
+    const transformOrigin = (controlsOptions?.touches)
+      ? Controls3D.computeTouchesMidpoint(...controlsOptions.touches)
+      : this.currentMousePos;
+
     // TODO Convert to scaleMax and move the canvas around somehow (undrawable sections other color + border)?
     this.limitStateScale();
 
-    this.translateViewTowardCursor(this.currentMousePos);
+    this.translateViewTowardCursor(transformOrigin);
     this.limitStateTran();
 
     this.ctx.setTransform(this.state.scale.x, 0, 0, this.state.scale.y, this.state.tran.x, this.state.tran.y);
