@@ -36,8 +36,8 @@ class ScratchetCanvasControls {
     });
   }
 
+  // NOTE Remember to apply the device pixel ratio when working with deltas and positions
   setTransform(controlsOptions) {
-    // NOTE Remember to apply the device pixel ratio when working with deltas and positions
     const transformOrigin = (controlsOptions?.touches)
       ? Controls3D.computeTouchesMidpoint(...controlsOptions.touches)
       : this.currentMousePos;
@@ -55,8 +55,7 @@ class ScratchetCanvasControls {
   }
 
   setDimensions() {
-    // TODO Floor this
-    const dpr = Math.round(window.devicePixelRatio);
+    const dpr = this.getDevicePixelRatio();
     this.canvas.height = this.canvas.clientHeight * dpr;
     this.canvas.width = this.canvas.clientWidth * dpr;
 
@@ -71,7 +70,7 @@ class ScratchetCanvasControls {
 
   getPosWithTransform(posX, posY) {
     const currentTransform = this.ctx.getTransform();
-    const dpr = Math.round(window.devicePixelRatio);
+    const dpr = this.getDevicePixelRatio();
     return [
       (posX * dpr - currentTransform.e) / currentTransform.a,
       (posY * dpr - currentTransform.f) / currentTransform.d
