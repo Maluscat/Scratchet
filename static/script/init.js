@@ -212,6 +212,9 @@ function moveDrawIndicator(posX, posY) {
   document.documentElement.style.setProperty('--mouseX', posX + 'px');
   document.documentElement.style.setProperty('--mouseY', posY + 'px');
 }
+function resizeDrawIndicator(scale) {
+  document.documentElement.style.setProperty('--scale', scale);
+}
 
 function invokeHitBorder(direction) {
   if (hitBorderTimeouts[direction] != null) {

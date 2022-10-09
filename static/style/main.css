@@ -4,6 +4,7 @@
 :root {
   --mouseX: -100%;
   --mouseY: -100%;
+  --scale: 100%;
   --strokeWidth: 25px;
 }
 body {
@@ -180,14 +181,14 @@ input:invalid {
   background-color: hsl(0, 0%, 34%);
 }
 #draw-indicator {
-  transform: translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2));
+  transform: translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2)) scale(calc(var(--scale) * 100%));
   width: var(--strokeWidth);
   height: var(--strokeWidth);
   position: absolute;
   left: 0;
   top: 0;
   border-radius: 100px;
-  border: 2px solid hsl(0, 0%, 90%);
+  outline: calc(2px / var(--scale)) solid hsl(0, 0%, 90%);
   pointer-events: none;
 }
 #draw-indicator.erase {

@@ -10,6 +10,7 @@
 :root {
   --mouseX: -100%;
   --mouseY: -100%;
+  --scale: 100%;
   --strokeWidth: 25px;
 }
 
@@ -221,14 +222,17 @@ input:invalid {
 }
 
 #draw-indicator {
-  transform: translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2));
+  @draw-indicator-border-size: 2px;
+  transform:
+    translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2))
+    scale(calc(var(--scale) * 100%));
   width: var(--strokeWidth);
   height: var(--strokeWidth);
   position: absolute;
   left: 0;
   top: 0;
   border-radius: 100px;
-  border: 2px solid @draw-indicator-color;
+  outline: calc(@draw-indicator-border-size / var(--scale)) solid @draw-indicator-color;
   pointer-events: none;
   &.erase {
     background-color: @draw-indicator-color;

@@ -49,6 +49,8 @@ class ScratchetCanvasControls {
     this.limitStateTran();
 
     this.ctx.setTransform(this.state.scale.x, 0, 0, this.state.scale.y, this.state.tran.x, this.state.tran.y);
+    resizeDrawIndicator(this.state.scale.x);
+
     this.scaleByDevicePixelRatio();
 
     this.redrawCanvas();
