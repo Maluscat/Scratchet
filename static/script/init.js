@@ -135,7 +135,7 @@ Validator.then(module => {
   sock.addEventListener('open', controller.socketOpen.bind(controller))
   sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
 
-  window.addEventListener('wheel', mouseWheel);
+  window.addEventListener('wheel', mouseWheel, { passive: false });
   window.addEventListener('resize', controller.windowResized.bind(controller));
 });
 
@@ -160,12 +160,13 @@ function toggleHoverOverlay(e) {
 }
 
 function mouseWheel(e) {
-  if (!e.ctrlKey && e.deltaY !== 0) {
+  if (e.deltaY !== 0) {
     const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
     if (e.shiftKey) {
-      hueSlider.value += direction * 24;
-    } else {
       widthSlider.value += direction * 7;
+    } else if (e.ctrlKey) {
+      e.preventDefault();
+      hueSlider.value += direction * 24;
     }
   }
 }
