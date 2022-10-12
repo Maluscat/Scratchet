@@ -49,7 +49,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       this.setLastPos(posX, posY);
       controller.initializePosBufferNormal(posX, posY);
     }
-    this.canvasDraw(e);
+    if (e.pointerType !== 'touch') {
+      this.canvasDraw(e);
+    }
   }
 
   pointerUp() {
@@ -60,6 +62,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   canvasDraw(e) {
+    if (controls3D.touchIsActive) return;
+
     this.setCurrentMousePos(e.clientX, e.clientY);
     moveDrawIndicator(e.clientX, e.clientY);
 
