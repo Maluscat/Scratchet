@@ -49,7 +49,7 @@ class ScratchetCanvasControls {
     this.limitStateTran();
 
     this.ctx.setTransform(this.state.scale.x, 0, 0, this.state.scale.y, this.state.tran.x, this.state.tran.y);
-    resizeDrawIndicator(this.state.scale.x);
+    ui.resizeDrawIndicator(this.state.scale.x);
 
     this.scaleByDevicePixelRatio();
 
@@ -137,18 +137,18 @@ class ScratchetCanvasControls {
 
     if (this.state.tran.x > 0) {
       this.state.tran.x = 0;
-      invokeHitBorder('left');
+      ui.invokeHitBorder('left');
     } else if (this.state.tran.x < -viewStopX) {
       this.state.tran.x = -viewStopX;
-      invokeHitBorder('right');
+      ui.invokeHitBorder('right');
     }
 
     if (this.state.tran.y > 0) {
       this.state.tran.y = 0;
-      invokeHitBorder('top');
+      ui.invokeHitBorder('top');
     } else if (this.state.tran.y < -viewStopY) {
       this.state.tran.y = -viewStopY;
-      invokeHitBorder('bottom');
+      ui.invokeHitBorder('bottom');
     }
   }
 }

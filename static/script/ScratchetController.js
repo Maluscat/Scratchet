@@ -338,7 +338,7 @@ class ScratchetController {
       }
     }
     const activeUsername = this.activeRoom.nameHandler.getOwnUsername();
-    dispatchNotification(`${activeUsername} has disconnected`);
+    ui.dispatchNotification(`${activeUsername} has disconnected`);
   }
   // TODO utilize the room name: "{user} has left/entered (current?) room {room name}"
   userLeave(userID, roomCode) {
@@ -346,7 +346,7 @@ class ScratchetController {
     if (room) {
       const username = room.removeUser(userID);
 
-      dispatchNotification(`${username} has left the room`);
+      ui.dispatchNotification(`${username} has left the room`);
     }
   }
   userJoin(userID, roomCode, username) {
@@ -354,7 +354,7 @@ class ScratchetController {
     if (room) {
       room.addUser(userID, username);
 
-      dispatchNotification(`${username} has entered the room`);
+      ui.dispatchNotification(`${username} has entered the room`);
     }
   }
   userClearData(userID) {
@@ -364,13 +364,13 @@ class ScratchetController {
     const prevActiveUsername = this.activeRoom.nameHandler.getUsername(userID);
     const activeUsername = this.activeRoom.nameHandler.changeUsername(userID, newUsername);
 
-    dispatchNotification(`User: ${prevActiveUsername} --> ${activeUsername}`);
+    ui.dispatchNotification(`User: ${prevActiveUsername} --> ${activeUsername}`);
   }
   userChangeRoomName(roomCode, newRoomName) {
     const prevCurrentRoomName = this.activeRoom.roomName;
     this.setNameOfRoom(roomCode, newRoomName);
 
-    dispatchNotification(`Room: ${prevCurrentRoomName} --> ${newRoomName}`);
+    ui.dispatchNotification(`Room: ${prevCurrentRoomName} --> ${newRoomName}`);
   }
 
   ownUserGetJoinData(value) {

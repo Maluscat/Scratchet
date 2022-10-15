@@ -41,7 +41,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   canvasDown(e) {
     this.pressedMouseBtn = e.button;
     if (this.pressedMouseBtn === 2) {
-      toggleDrawIndicatorEraseMode();
+      ui.toggleDrawIndicatorEraseMode();
       controller.initializePosBufferErase(this.width);
     } else if (this.pressedMouseBtn === 0) {
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
@@ -57,7 +57,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   pointerUp() {
     controller.sendPositions();
     this.pressedMouseBtn = -1;
-    toggleDrawIndicatorEraseMode(true);
+    ui.toggleDrawIndicatorEraseMode(true);
     this.redrawCanvas();
   }
 
@@ -65,7 +65,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     if (controls3D.touchIsActive) return;
 
     this.setCurrentMousePos(e.clientX, e.clientY);
-    moveDrawIndicator(e.clientX, e.clientY);
+    ui.moveDrawIndicator(e.clientX, e.clientY);
 
     if (this.pressedMouseBtn === 0 || this.pressedMouseBtn === 2) {
       controller.sendPositionsIfWidthHasChanged();

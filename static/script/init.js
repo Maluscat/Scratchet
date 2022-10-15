@@ -14,10 +14,6 @@ const notificationTemplate = (function() {
 
 const canvasContainer = document.getElementById('canvas-container');
 
-const notificationWrapper = document.getElementById('notification-overlay');
-const drawIndicator = document.getElementById('draw-indicator');
-const hitBorder = document.getElementById('hit-border');
-
 const clearDrawingButton = document.getElementById('clear-drawing-button');
 
 const usernameInput = document.getElementById('username-input');
@@ -80,13 +76,6 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
   `
 }, true);
 
-const hitBorderTimeouts = {
-  left: null,
-  top: null,
-  right: null,
-  bottom: null
-};
-
 const controller = new ScratchetController();
 // TODO Perhaps remove context menu function in SCanvas and let Controls do it
 const controls3D = new Controls3D(null, null, {
@@ -101,6 +90,7 @@ const controls3D = new Controls3D(null, null, {
   skipScaleKeyModifier: true,
   useProportionalScale: true
 });
+const ui = new UIHandler();
 
 let sock;
 
@@ -198,48 +188,6 @@ function handleJoinRoomInputPaste(e) {
 function submitJoinRoomInput(value = joinRoomOverlayInput.value) {
   joinRoomOverlayInput.value = '';
   return controller.joinRoom(value);
-}
-
-// ---- Draw indicator ----
-function toggleDrawIndicatorEraseMode(reset) {
-  if (reset) {
-    drawIndicator.classList.remove('erase');
-  } else {
-    drawIndicator.classList.add('erase');
-  }
-}
-function moveDrawIndicator(posX, posY) {
-  document.documentElement.style.setProperty('--mouseX', posX + 'px');
-  document.documentElement.style.setProperty('--mouseY', posY + 'px');
-}
-function resizeDrawIndicator(scale) {
-  document.documentElement.style.setProperty('--scale', scale);
-}
-
-function invokeHitBorder(direction) {
-  if (hitBorderTimeouts[direction] != null) {
-    clearTimeout(hitBorderTimeouts[direction]);
-  } else {
-    hitBorder.classList.add('hit-' + direction);
-  }
-
-  hitBorderTimeouts[direction] = setTimeout(function() {
-    hitBorder.classList.remove('hit-' + direction);
-    hitBorderTimeouts[direction] = null;
-  }, HIT_BORDER_DURATION);
-}
-
-// ---- Notifications ----
-function dispatchNotification(content) {
-  const notification = notificationTemplate.cloneNode(true);
-  notification.textContent = content;
-  notificationWrapper.appendChild(notification);
-  setTimeout(() => {
-    notification.classList.add('remove');
-    setTimeout(() => {
-      notification.remove();
-    }, 200);
-  }, 1600);
 }
 
 
