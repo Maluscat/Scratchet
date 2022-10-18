@@ -102,93 +102,10 @@ Validator.then(module => {
   joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
 
   sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
-
-
-  usernameInput.addEventListener('blur', e => {
-    handleOverlayInput(e, controller.changeOwnUsername.bind(controller));
-  });
-  roomNameInput.addEventListener('blur', e => {
-    handleOverlayInput(e, controller.changeCurrentRoomName.bind(controller));
-  });
-  for (const l of document.querySelectorAll('.overlay-input')) {
-    l.addEventListener('keydown', handleOverlayInputKeys);
-  }
-
-  joinRoomOverlayInput.addEventListener('keydown', handleJoinRoomInputKeys);
-  joinRoomOverlayInput.addEventListener('paste', handleJoinRoomInputPaste);
-
-  userListButton.addEventListener('click', toggleHoverOverlay);
-  roomListButton.addEventListener('click', toggleHoverOverlay);
-  joinRoomButton.addEventListener('click', joinRoomButtonClick);
-  copyRoomLinkButton.addEventListener('click', controller.copyRoomLink.bind(controller));
-
   sock.addEventListener('open', controller.socketOpen.bind(controller))
   sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
-
-  window.addEventListener('wheel', mouseWheel, { passive: false });
-  window.addEventListener('resize', controller.windowResized.bind(controller));
 });
 
-
-// ---- Events ----
-function handleOverlayInputKeys(e) {
-  if (e.key === 'Enter' || e.key === 'Escape') {
-    e.currentTarget.blur();
-  }
-}
-function handleOverlayInput(e, callback) {
-  // From https://stackoverflow.com/a/30520997
-  for (const brNode of e.currentTarget.getElementsByTagName('br')) {
-    brNode.remove();
-  }
-  window.getSelection().removeAllRanges();
-  callback(e.currentTarget.textContent);
-}
-
-function toggleHoverOverlay(e) {
-  e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
-}
-
-function mouseWheel(e) {
-  if (e.deltaY !== 0) {
-    const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
-    if (e.shiftKey) {
-      widthSlider.value += direction * 7;
-    } else if (e.ctrlKey) {
-      e.preventDefault();
-      hueSlider.value += direction * 24;
-    }
-  }
-}
-
-function joinRoomButtonClick() {
-  joinRoomOverlayInput.classList.toggle('active');
-  joinRoomOverlayInput.focus();
-}
-function collapseJoinRoomOverlay() {
-  joinRoomOverlayInput.blur();
-  joinRoomOverlayInput.classList.remove('active');
-}
-function handleJoinRoomInputKeys(e) {
-  if (e.key === 'Escape' || e.key === 'Enter' && joinRoomOverlayInput.value === '') {
-    collapseJoinRoomOverlay();
-  }
-  if (e.key === 'Enter') {
-    submitJoinRoomInput();
-  }
-}
-function handleJoinRoomInputPaste(e) {
-  const value = (e.clipboardData || window.clipboardData).getData('text');
-  // submitJoinRoomInput happens before the paste is applied to the input
-  if (submitJoinRoomInput(value)) {
-    e.preventDefault();
-  }
-}
-
-function submitJoinRoomInput(value = joinRoomOverlayInput.value) {
-  joinRoomOverlayInput.value = '';
-  return controller.joinRoom(value);
-}
 
 
 // ---- Metadata helper functions ----

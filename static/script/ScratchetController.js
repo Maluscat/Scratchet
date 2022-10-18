@@ -80,7 +80,7 @@ class ScratchetController {
         roomCode: roomCode,
         username: this.globalUsername
       });
-      collapseJoinRoomOverlay();
+      ui.collapseJoinRoomOverlay();
     }
     return !!roomCode;
   }
