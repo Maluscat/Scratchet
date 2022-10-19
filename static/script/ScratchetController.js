@@ -30,9 +30,18 @@ class ScratchetController {
   }
 
   init() {
+    // These are events that need to access initialized properties like `activeRoom`
     hueSlider.addEvent('change:value', this.changeHue.bind(this));
     widthSlider.addEvent('change:value', this.changeWidth.bind(this));
+
+    usernameInput.addEventListener('blur', e => {
+      ui.handleOverlayInputSubmit(e, this.changeOwnUsername.bind(this));
+    });
+    roomNameInput.addEventListener('blur', e => {
+      ui.handleOverlayInputSubmit(e, this.changeCurrentRoomName.bind(this));
+    });
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
+    copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
 
     // Set the join room input to the same width as the copy room link overlay
     copyRoomLinkOverlay.classList.add('active');
@@ -45,7 +54,6 @@ class ScratchetController {
   }
 
   // ---- Event handling ----
-  // TODO fallback for an undefined `activeRoom` in case no rooms are active
   changeHue(slider) {
     this.activeRoom.setStrokeStyle(slider.value);
     this.activeRoom.hue = slider.value;

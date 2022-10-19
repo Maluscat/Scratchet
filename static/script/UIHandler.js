@@ -24,12 +24,6 @@ const hitBorderTimeouts = {
 
 class UIHandler {
   constructor() {
-    usernameInput.addEventListener('blur', e => {
-      this.handleOverlayInputSubmit(e, controller.changeOwnUsername.bind(controller));
-    });
-    roomNameInput.addEventListener('blur', e => {
-      this.handleOverlayInputSubmit(e, controller.changeCurrentRoomName.bind(controller));
-    });
     for (const l of document.querySelectorAll('.overlay-input')) {
       l.addEventListener('keydown', this.handleOverlayInputKeys.bind(this));
     }
@@ -40,7 +34,6 @@ class UIHandler {
     userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
     roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
     joinRoomButton.addEventListener('click', this.focusJoinRoomOverlay.bind(this));
-    copyRoomLinkButton.addEventListener('click', controller.copyRoomLink.bind(controller));
 
     window.addEventListener('wheel', this.mouseWheel.bind(this), { passive: false });
     window.addEventListener('resize', controller.windowResized.bind(controller));
