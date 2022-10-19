@@ -1,8 +1,22 @@
 'use strict';
 
+const notificationTemplate = (function() {
+  const node = document.createElement('div');
+  node.classList.add('notification');
+  node.classList.add('button');
+  return node;
+}());
+
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 const hitBorder = document.getElementById('hit-border');
+
+const newRoomButton = document.getElementById('new-room-button');
+const joinRoomButton = document.getElementById('join-room-button');
+const joinRoomOverlayInput = document.getElementById('join-room-overlay-input');
+const copyRoomLinkButton = document.getElementById('copy-room-link-button');
+const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
+const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
 const hitBorderTimeouts = {
   left: null,

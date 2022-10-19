@@ -6,13 +6,6 @@
 
 var Validator = import('/script/Validator.mjs');
 
-const notificationTemplate = (function() {
-  const node = document.createElement('div');
-  node.classList.add('notification');
-  node.classList.add('button');
-  return node;
-}());
-
 const canvasContainer = document.getElementById('canvas-container');
 
 const clearDrawingButton = document.getElementById('clear-drawing-button');
@@ -24,13 +17,6 @@ const userListWrapper = document.getElementById('user-list-wrapper');
 const roomNameInput = document.getElementById('roomcode-input');
 const roomListButton = document.getElementById('room-list-button');
 const roomList = document.getElementById('room-list');
-
-const newRoomButton = document.getElementById('new-room-button');
-const joinRoomButton = document.getElementById('join-room-button');
-const joinRoomOverlayInput = document.getElementById('join-room-overlay-input');
-const copyRoomLinkButton = document.getElementById('copy-room-link-button');
-const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
-const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
 const HIT_BORDER_DURATION = 200;
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
