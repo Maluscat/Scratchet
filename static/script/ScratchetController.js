@@ -9,8 +9,6 @@ class ScratchetController {
   globalUsername;
   defaultUsername;
 
-  isInitialized = false;
-
   /**
    * @type { Map<number, ScratchetRoom> }
    */
@@ -44,8 +42,6 @@ class ScratchetController {
 
     setInterval(this.sendPositions.bind(this), SEND_INTERVAL);
     setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL);
-
-    this.isInitialized = true;
   }
 
   // ---- Event handling ----
@@ -380,7 +376,7 @@ class ScratchetController {
     this.addNewRoom(value.roomCode, value.roomName, value.peers, true);
 
     // NOTE: Needs to be called after `addNewRoom` for the room link content size
-    if (!this.isInitialized) {
+    if (!this.activeRoom) {
       this.init();
     }
   }
