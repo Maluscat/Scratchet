@@ -18,6 +18,10 @@ const roomNameInput = document.getElementById('roomcode-input');
 const roomListButton = document.getElementById('room-list-button');
 const roomList = document.getElementById('room-list');
 
+const joinRoomOverlayInput = document.getElementById('join-room-overlay-input');
+const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
+const copyRoomLinkContent = document.getElementById('copy-room-link-content');
+
 const HIT_BORDER_DURATION = 200;
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
