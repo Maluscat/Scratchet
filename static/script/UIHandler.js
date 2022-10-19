@@ -14,10 +14,10 @@ const hitBorderTimeouts = {
 class UIHandler {
   constructor() {
     usernameInput.addEventListener('blur', e => {
-      this.handleOverlayInput(e, controller.changeOwnUsername.bind(controller));
+      this.handleOverlayInputSubmit(e, controller.changeOwnUsername.bind(controller));
     });
     roomNameInput.addEventListener('blur', e => {
-      this.handleOverlayInput(e, controller.changeCurrentRoomName.bind(controller));
+      this.handleOverlayInputSubmit(e, controller.changeCurrentRoomName.bind(controller));
     });
     for (const l of document.querySelectorAll('.overlay-input')) {
       l.addEventListener('keydown', this.handleOverlayInputKeys.bind(this));
@@ -28,32 +28,14 @@ class UIHandler {
 
     userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
     roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
-    joinRoomButton.addEventListener('click', this.joinRoomButtonClick.bind(this));
+    joinRoomButton.addEventListener('click', this.focusJoinRoomOverlay.bind(this));
     copyRoomLinkButton.addEventListener('click', controller.copyRoomLink.bind(controller));
 
     window.addEventListener('wheel', this.mouseWheel.bind(this), { passive: false });
     window.addEventListener('resize', controller.windowResized.bind(controller));
   }
 
-  // ---- Events ----
-  handleOverlayInputKeys(e) {
-    if (e.key === 'Enter' || e.key === 'Escape') {
-      e.currentTarget.blur();
-    }
-  }
-  handleOverlayInput(e, callback) {
-    // From https://stackoverflow.com/a/30520997
-    for (const brNode of e.currentTarget.getElementsByTagName('br')) {
-      brNode.remove();
-    }
-    window.getSelection().removeAllRanges();
-    callback(e.currentTarget.textContent);
-  }
-
-  toggleHoverOverlay(e) {
-    e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
-  }
-
+  // ---- Misc events ----
   mouseWheel(e) {
     if (e.deltaY !== 0) {
       const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
@@ -66,7 +48,27 @@ class UIHandler {
     }
   }
 
-  joinRoomButtonClick() {
+  // ---- Overlay events ----
+  handleOverlayInputKeys(e) {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      e.currentTarget.blur();
+    }
+  }
+  handleOverlayInputSubmit(e, callback) {
+    // From https://stackoverflow.com/a/30520997
+    for (const brNode of e.currentTarget.getElementsByTagName('br')) {
+      brNode.remove();
+    }
+    window.getSelection().removeAllRanges();
+    callback(e.currentTarget.textContent);
+  }
+
+  toggleHoverOverlay(e) {
+    e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
+  }
+
+  // ---- Join room input events ----
+  focusJoinRoomOverlay() {
     joinRoomOverlayInput.classList.toggle('active');
     joinRoomOverlayInput.focus();
   }
