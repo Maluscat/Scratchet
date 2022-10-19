@@ -370,13 +370,15 @@ class ScratchetController {
   }
 
   ownUserGetJoinData(value) {
+    const isInitial = !this.activeRoom;
+
     // For async reasons, the real user ID is solely used for the username
     this.defaultUsername = value.defaultName;
     this.setOwnUsername(value.username, true);
     this.addNewRoom(value.roomCode, value.roomName, value.peers, true);
 
-    // NOTE: Needs to be called after `addNewRoom` for the room link content size
-    if (!this.activeRoom) {
+    // NOTE: Needs to be called after `addNewRoom` to wait for the room activation
+    if (isInitial) {
       this.init();
     }
   }
