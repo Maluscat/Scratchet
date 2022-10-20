@@ -136,7 +136,7 @@ class ScratchetController {
     } else if (!Validator.validateUsername(newUsername)) {
       // TODO Clip the username at 20 characters instead of resetting it
       this.resetUsernameInput();
-    } else if (newUsername !== this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID)) {
+    } else if (newUsername !== this.activeRoom.getOwnUser().name) {
       this.setOwnUsername(newUsername);
     }
   }
@@ -145,16 +145,16 @@ class ScratchetController {
   resetUsernameToDefault() {
     localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
     this.setOwnUsername(this.defaultUsername);
-    this.activeRoom.nameHandler.setUsernameInput(this.defaultUsername);
+    this.resetUsernameInput();
   }
   resetUsernameInput() {
-    this.activeRoom.nameHandler.setUsernameInput();
+    this.activeRoom.setUsernameInput();
   }
   setOwnUsername(username, isInitial) {
     this.globalUsername = username;
     localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
     if (!isInitial) {
-      this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, username);
+      this.activeRoom.changeUsername(CURRENT_USER_ID, username);
       sendMessage('changeName', username, this.activeRoom.roomCode);
     }
   }
@@ -197,9 +197,8 @@ class ScratchetController {
 
     room.focus();
 
-    room.nameHandler.setUsernameInput();
-    room.nameHandler.appendUserList();
-    room.nameHandler.updateUserIndicator();
+    room.setUsernameInput();
+    room.appendUserList();
 
     copyRoomLinkContent.textContent = room.roomCodeLink;
 
@@ -337,11 +336,11 @@ class ScratchetController {
   // ---- Socket message events ----
   userDisconnect(userID) {
     for (const room of this.rooms.values()) {
-      if (room.nameHandler.hasUser(userID)) {
+      if (room.hasUser(userID)) {
         room.removeUser(userID);
       }
     }
-    const activeUsername = this.activeRoom.nameHandler.getOwnUsername();
+    const activeUsername = this.activeRoom.getOwnUser().name;
     ui.dispatchNotification(`${activeUsername} has disconnected`);
   }
   // TODO utilize the room name: "{user} has left/entered (current?) room {room name}"
@@ -365,8 +364,8 @@ class ScratchetController {
     this.activeRoom.clearUserBufferAndRedraw(userID);
   }
   userChangeUserName(userID, newUsername) {
-    const prevActiveUsername = this.activeRoom.nameHandler.getUsername(userID);
-    const activeUsername = this.activeRoom.nameHandler.changeUsername(userID, newUsername);
+    const prevActiveUsername = this.activeRoom.getUser(userID).name;
+    const activeUsername = this.activeRoom.changeUsername(userID, newUsername);
 
     ui.dispatchNotification(`User: ${prevActiveUsername} --> ${activeUsername}`);
   }

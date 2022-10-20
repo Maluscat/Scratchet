@@ -3,6 +3,7 @@
  * @typedef { import('./init.js') }
  * @typedef { import('./ScratchetCanvas.js') }
  * @typedef { import('./UsernameHandler.js') }
+ * @typedef { import('./ScratchetUser.js') }
  */
 
 class ScratchetRoom extends ScratchetCanvas {
@@ -15,37 +16,99 @@ class ScratchetRoom extends ScratchetCanvas {
   roomCode;
   roomName;
 
+  /** @type { Map<number, ScratchetUser> } */
+  users = new Map();
+  userListNode;
+
   constructor(roomCode, roomName, globalUsername, peers) {
     super(ScratchetRoom.createCanvas());
 
     this.roomCode = roomCode;
 
-    this.addUserToUserCache(CURRENT_USER_ID);
-    for (const [ userID ] of peers) {
-      this.addUserToUserCache(userID);
-    }
-
-    this.nameHandler = new UsernameHandler(globalUsername, peers);
+    this.userListNode = ScratchetRoom.createEmptyUserList();
     this.roomListNode = ScratchetRoom.createRoomListNode();
     this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
+
+    this.addUser(CURRENT_USER_ID, globalUsername)
+    for (const [ userID, username ] of peers) {
+      this.addUser(userID, username);
+    }
 
     this.changeRoomName(roomName);
   }
 
-  // ---- Generic user handling ----
+  // ---- User handling ----
+  /** @return { ScratchetUser } */
+  getOwnUser() {
+    return this.users.get(CURRENT_USER_ID);
+  }
+  /**
+   * @param { number } userID
+   * @return { ScratchetUser }
+   */
+  getUser(userID) {
+    return this.users.get(userID);
+  }
+  /**
+   * @param { number } userID
+   * @return { boolean }
+   */
+  hasUser(userID) {
+    return this.users.has(userID);
+  }
+
   addUser(userID, username) {
+    const user = new ScratchetUser(username, userID);
+
+    this.users.set(userID, user);
     this.addUserToUserCache(userID);
-    this.nameHandler.addUserToUserList(userID, username);
+
+    this.userListNode.appendChild(user.listNode);
+    this.updateUserIndicator();
+
     this.sendJoinedUserBuffer();
   }
   removeUser(userID) {
+    if (!this.hasUser(userID)) {
+      return ScratchetUser.createUnknownDefaultName(userID);
+    }
+    const user = this.getUser(userID);
+    this.users.delete(userID);
+
     this.clearUserBufferAndRedraw(userID);
     this.posUserCache.delete(userID);
-    return this.nameHandler.removeUserFromUserList(userID);
+
+    this.userListNode.removeChild(user.listNode);
+    this.updateUserIndicator();
+
+    return user.name;
   }
 
   addUserToUserCache(userID) {
     this.posUserCache.set(userID, new Set());
+  }
+
+  changeUsername(userID, newUsername) {
+    if (!this.hasUser(userID)) {
+      this.addUser(userID, newUsername);
+    }
+    this.getUser(userID).setName(newUsername);
+    return newUsername;
+  }
+
+  setUsernameInput() {
+    usernameInput.textContent = this.getOwnUser().name;
+  }
+  updateUserIndicator() {
+    userListButton.textContent = this.users.size;
+  }
+
+  appendUserList() {
+    if (userListWrapper.childElementCount > 0) {
+      userListWrapper.firstElementChild.remove();
+    }
+    userListWrapper.appendChild(this.userListNode);
+    this.updateUserIndicator();
   }
 
   // ---- Generic room handling ----
@@ -80,6 +143,12 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   // ---- Static helper functions ----
+  static createEmptyUserList() {
+    const userList = document.createElement('ul');
+    userList.classList.add('user-list');
+    return userList;
+  }
+
   static createRoomListNode() {
     const listNode = document.createElement('span');
     listNode.classList.add('item');

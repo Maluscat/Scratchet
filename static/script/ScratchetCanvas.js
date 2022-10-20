@@ -258,7 +258,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
     posData = this.convertServerDataToClientData(posData, userID);
     if (posData) {
-      this.nameHandler.setUserColorIndicator(userID, getClientMetaHue(posData));
+      this.getUser(userID).setColorIndicator(getClientMetaHue(posData));
       this.addClientDataToBuffer(posData, userID);
       this.redrawCanvas();
     }
