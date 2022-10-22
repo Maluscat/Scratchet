@@ -1,7 +1,7 @@
-import type { SocketRoom } from './SocketRoom.ts';
-import { SocketRateHandler } from './SocketRateHandler.ts';
-import { ScratchetError } from './ScratchetError.ts';
-import Validator from './static/script/Validator.mjs';
+import type { SocketRoom } from 'SocketRoom';
+import { SocketRateHandler } from 'SocketRateHandler';
+import { ScratchetError } from 'ScratchetError';
+import Validator from 'Validator';
 
 export type SocketID = number;
 export type RoomCode = number;

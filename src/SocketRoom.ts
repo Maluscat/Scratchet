@@ -1,8 +1,8 @@
-import type { SocketID, RoomCode, RoomName, Username } from './SocketUser.ts';
-import { SocketUser } from './SocketUser.ts';
-import { roomHandler } from './main.ts';
-import { ScratchetError } from './ScratchetError.ts';
-import Validator from './static/script/Validator.mjs';
+import type { SocketID, RoomCode, RoomName, Username } from 'SocketUser';
+import { SocketUser } from 'SocketUser';
+import { ScratchetError } from 'ScratchetError';
+import { roomHandler } from 'main';
+import Validator from 'Validator';
 
 export interface ConnectionData {
   roomCode?: RoomCode;

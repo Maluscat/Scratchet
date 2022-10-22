@@ -1,0 +1,11 @@
+{
+  "imports": {
+    "main": "./main.ts",
+    "Validator": "./static/script/Validator.mjs",
+    "SocketRoom": "./src/SocketRoom.ts",
+    "SocketUser": "./src/SocketUser.ts",
+    "SocketRoomHandler": "./src/SocketRoomHandler.ts",
+    "SocketRateHandler": "./src/SocketRateHandler.ts",
+    "ScratchetError": "./src/ScratchetError.ts"
+  }
+}

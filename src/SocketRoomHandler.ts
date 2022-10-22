@@ -1,7 +1,7 @@
-import type { SocketUser, SocketID, RoomCode, RoomName, Username } from './SocketUser.ts';
-import { SocketRoom } from './SocketRoom.ts';
-import { ScratchetError } from './ScratchetError.ts';
-import Validator from './static/script/Validator.mjs';
+import type { SocketUser, SocketID, RoomCode, RoomName, Username } from 'SocketUser';
+import { SocketRoom } from 'SocketRoom';
+import { ScratchetError } from 'ScratchetError';
+import Validator from 'Validator';
 
 export class SocketRoomHandler {
   readonly #activeRooms: Map<RoomCode, SocketRoom> = new Map();
