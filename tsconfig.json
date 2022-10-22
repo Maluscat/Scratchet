@@ -1,6 +1,18 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext"
-  }
+    "module": "esnext",
+    "lib": [ "esnext", "dom" ],
+    "allowJs": true,
+    "paths": {
+      "*": [
+        "./src/*",
+        "./static/script/*.mjs" 
+      ]
+    }
+  },
+  "include": [
+    "./*",
+    "./src/*"
+  ]
 }
