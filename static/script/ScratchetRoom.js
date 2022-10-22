@@ -70,7 +70,7 @@ class ScratchetRoom extends ScratchetCanvas {
   }
   removeUser(userID) {
     if (!this.hasUser(userID)) {
-      return ScratchetUser.createUnknownDefaultName(userID);
+      throw new Error(`@ removeUser: User #${userID} does not exist`);
     }
     const user = this.getUser(userID);
     this.users.delete(userID);
@@ -90,7 +90,7 @@ class ScratchetRoom extends ScratchetCanvas {
 
   changeUsername(userID, newUsername) {
     if (!this.hasUser(userID)) {
-      this.addUser(userID, newUsername);
+      throw new Error(`@ changeUsername: User #${userID} does not exist`);
     }
     this.getUser(userID).setName(newUsername);
     return newUsername;

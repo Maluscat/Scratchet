@@ -51,9 +51,4 @@ class ScratchetUser {
 
     return listNode;
   }
-
-  // ---- Static helper functions ----
-  static createUnknownDefaultName(userID) {
-    return 'Unknown User #' + userID;
-  }
 }

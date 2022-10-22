@@ -167,7 +167,7 @@ class ScratchetController {
     this.activeRoom.changeRoomName(newRoomName);
     sendMessage('changeRoomName', newRoomName, this.activeRoom.roomCode);
   }
-  setNameOfRoom(roomCode, newRoomName) {
+  changeRoomName(roomCode, newRoomName) {
     this.rooms.get(roomCode).changeRoomName(newRoomName);
   }
 
@@ -334,46 +334,42 @@ class ScratchetController {
   }
 
   // ---- Socket message events ----
+  // NOTE: Received data is considered validated
   userDisconnect(userID) {
     for (const room of this.rooms.values()) {
-      if (room.hasUser(userID)) {
-        room.removeUser(userID);
-      }
+      room.removeUser(userID);
     }
     const activeUsername = this.activeRoom.getOwnUser().name;
+
     ui.dispatchNotification(`${activeUsername} has disconnected`);
   }
   // TODO utilize the room name: "{user} has left/entered (current?) room {room name}"
   userLeave(userID, roomCode) {
     const room = this.rooms.get(roomCode);
-    if (room) {
-      const username = room.removeUser(userID).name;
+    const username = room.removeUser(userID).name;
 
-      ui.dispatchNotification(`${username} has left the room`);
-    }
+    ui.dispatchNotification(`${username} has left the room`);
   }
   userJoin(userID, roomCode, username) {
     const room = this.rooms.get(roomCode);
-    if (room) {
-      room.addUser(userID, username);
+    room.addUser(userID, username);
 
-      ui.dispatchNotification(`${username} has entered the room`);
-    }
+    ui.dispatchNotification(`${username} has entered the room`);
   }
   userClearData(userID) {
     this.activeRoom.clearUserBufferAndRedraw(userID);
   }
   userChangeUserName(userID, newUsername) {
-    const prevActiveUsername = this.activeRoom.getUser(userID).name;
-    const activeUsername = this.activeRoom.changeUsername(userID, newUsername);
+    const prevUsername = this.activeRoom.getUser(userID).name;
+    this.activeRoom.changeUsername(userID, newUsername);
 
-    ui.dispatchNotification(`User: ${prevActiveUsername} --> ${activeUsername}`);
+    ui.dispatchNotification(`User: ${prevUsername} --> ${newUsername}`);
   }
   userChangeRoomName(roomCode, newRoomName) {
-    const prevCurrentRoomName = this.activeRoom.roomName;
-    this.setNameOfRoom(roomCode, newRoomName);
+    const prevRoomName = this.activeRoom.roomName;
+    this.changeRoomName(roomCode, newRoomName);
 
-    ui.dispatchNotification(`Room: ${prevCurrentRoomName} --> ${newRoomName}`);
+    ui.dispatchNotification(`Room: ${prevRoomName} --> ${newRoomName}`);
   }
 
   ownUserGetJoinData(value) {
