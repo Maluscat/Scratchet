@@ -81,7 +81,7 @@ class ScratchetRoom extends ScratchetCanvas {
     this.userListNode.removeChild(user.listNode);
     this.updateUserIndicator();
 
-    return user.name;
+    return user;
   }
 
   addUserToUserCache(userID) {
@@ -96,13 +96,14 @@ class ScratchetRoom extends ScratchetCanvas {
     return newUsername;
   }
 
+  // ---- User UI helpers ----
   setUsernameInput() {
     usernameInput.textContent = this.getOwnUser().name;
   }
+
   updateUserIndicator() {
     userListButton.textContent = this.users.size;
   }
-
   appendUserList() {
     if (userListWrapper.childElementCount > 0) {
       userListWrapper.firstElementChild.remove();
@@ -137,7 +138,7 @@ class ScratchetRoom extends ScratchetCanvas {
     this.roomListNode.classList.remove('current');
   }
 
-  // ---- Helper functions ----
+  // ---- Room UI helpers ----
   setRoomNameInput() {
     roomNameInput.textContent = this.roomName;
   }

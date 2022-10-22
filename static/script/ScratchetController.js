@@ -347,7 +347,7 @@ class ScratchetController {
   userLeave(userID, roomCode) {
     const room = this.rooms.get(roomCode);
     if (room) {
-      const username = room.removeUser(userID);
+      const username = room.removeUser(userID).name;
 
       ui.dispatchNotification(`${username} has left the room`);
     }
