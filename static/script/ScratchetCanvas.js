@@ -8,7 +8,6 @@
 class ScratchetCanvas extends ScratchetCanvasControls {
   pressedMouseBtn = -1;
   globalPosBuffer = new Set(); // Set<posDataWrapperInDrawOrder>
-  posUserCache = new Map(); // Map<userID, Set<posDataWrapperForUser>>
   lastPos = new Array(2);
 
   width = 25;
@@ -172,8 +171,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.redrawCanvas();
   }
   handleEraseData(data, userID) {
-    if (this.posUserCache.has(userID)) {
-      const userPosSet = this.posUserCache.get(userID);
+    if (this.hasUser(userID)) {
+      const userPosSet = this.getUser(userID).posCache;
       for (let i = META_LEN.ERASE; i < data.length; i += 2) {
         this.erasePos(data[i], data[i + 1], userID, userPosSet, getClientMetaWidth(data));
       }
@@ -182,8 +181,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
   erasePos(posX, posY, userID, userPosSet, eraserWidth = this.width) {
     if (!userPosSet) {
-      if (!this.posUserCache.has(userID)) return;
-      userPosSet = this.posUserCache.get(userID);
+      if (!this.hasUser(userID)) return;
+      userPosSet = this.getUser(userID).posCache;
     }
     let hasErased = false;
     for (const posDataWrapper of userPosSet) {
@@ -221,15 +220,15 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
       if (posDataWrapper.length === 0) {
         this.globalPosBuffer.delete(posDataWrapper);
-        this.posUserCache.get(userID).delete(posDataWrapper);
+        userPosSet.delete(posDataWrapper);
       }
     }
     return hasErased;
   }
 
   sendJoinedUserBuffer(targetUserID) {
-    const userCache = this.posUserCache.get(CURRENT_USER_ID);
-    if (userCache && userCache.size > 0) {
+    const userCache = this.getOwnUser().posCache;
+    if (userCache.size > 0) {
       const joinedBuffer = [this.roomCode];
       for (const posDataWrapper of userCache) {
         for (const posData of posDataWrapper) {
@@ -241,7 +240,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   clearUserBufferAndRedraw(userID) {
-    const userCache = this.posUserCache.get(userID);
+    const userCache = this.getUser(userID).posCache;
     if (userCache) {
       for (const posDataWrapper of userCache) {
         this.globalPosBuffer.delete(posDataWrapper);
@@ -252,8 +251,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   addServerDataToBuffer(posData, userID) {
-    if (!this.posUserCache.has(userID)) {
-      throw new Error(`User #${userID} unknown!`);
+    if (!this.hasUser(userID)) {
+      throw new Error(`@ addServerDataToBuffer: User #${userID} does not exist`);
     }
 
     posData = this.convertServerDataToClientData(posData, userID);
@@ -266,7 +265,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   addClientDataToBuffer(posData, userID) {
     const posDataWrapper = createPosDataWrapper(posData);
     this.globalPosBuffer.add(posDataWrapper);
-    this.posUserCache.get(userID).add(posDataWrapper);
+    this.getUser(userID).posCache.add(posDataWrapper);
   }
 
   // ---- Protocol converter ----
@@ -282,7 +281,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
 
     if (extraLen > 0) {
-      let userPosSet = this.posUserCache.get(userID);
+      let userPosSet = this.getUser(userID).posCache;
       if (userPosSet.size === 0) {
         return false;
       }

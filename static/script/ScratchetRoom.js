@@ -61,8 +61,6 @@ class ScratchetRoom extends ScratchetCanvas {
     const user = new ScratchetUser(username, userID);
 
     this.users.set(userID, user);
-    this.addUserToUserCache(userID);
-
     this.userListNode.appendChild(user.listNode);
     this.updateUserIndicator();
 
@@ -76,16 +74,11 @@ class ScratchetRoom extends ScratchetCanvas {
     this.users.delete(userID);
 
     this.clearUserBufferAndRedraw(userID);
-    this.posUserCache.delete(userID);
 
     this.userListNode.removeChild(user.listNode);
     this.updateUserIndicator();
 
     return user;
-  }
-
-  addUserToUserCache(userID) {
-    this.posUserCache.set(userID, new Set());
   }
 
   changeUsername(userID, newUsername) {

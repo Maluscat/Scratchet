@@ -212,7 +212,7 @@ class ScratchetController {
 
   // ---- Canvas handling ----
   highlightUser(userID) {
-    this.activeRoom.redrawCanvas(this.activeRoom.posUserCache.get(userID));
+    this.activeRoom.redrawCanvas(this.activeRoom.getUser(userID).posCache);
   }
 
   addToPosBuffer(posX, posY) {

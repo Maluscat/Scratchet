@@ -2,6 +2,7 @@
 class ScratchetUser {
   userID;
   name;
+  posCache;
 
   listNode;
   activeTimeout;
@@ -9,6 +10,7 @@ class ScratchetUser {
   constructor(username, userID) {
     this.userID = userID;
     this.name = username;
+    this.posCache = new Set();
     this.listNode = this.createUserListNode(username, userID === CURRENT_USER_ID);
   }
 
