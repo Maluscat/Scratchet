@@ -73,7 +73,7 @@ class ScratchetRoom extends ScratchetCanvas {
     const user = this.getUser(userID);
     this.users.delete(userID);
 
-    this.clearUserBufferAndRedraw(userID);
+    this.clearUserBufferAndRedraw(user);
 
     this.userListNode.removeChild(user.listNode);
     this.updateUserIndicator();

@@ -33,7 +33,7 @@ class ScratchetUser {
 
   // ---- Events ----
   listNodeMouseEnter() {
-    controller.highlightUser(this.userID);
+    controller.highlightUser(this);
   }
   listNodeMouseLeave() {
     controller.activeRoom.redrawCanvas();

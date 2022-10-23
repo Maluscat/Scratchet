@@ -65,7 +65,7 @@ class ScratchetController {
   }
 
   clearDrawing() {
-    this.activeRoom.clearCurrentUserCanvas();
+    this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.getOwnUser());
     this.sendCompleteMetaDataNextTime();
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
@@ -211,8 +211,8 @@ class ScratchetController {
   }
 
   // ---- Canvas handling ----
-  highlightUser(userID) {
-    this.activeRoom.redrawCanvas(this.activeRoom.getUser(userID).posCache);
+  highlightUser(user) {
+    this.activeRoom.redrawCanvas(user.posCache);
   }
 
   addToPosBuffer(posX, posY) {
@@ -287,7 +287,8 @@ class ScratchetController {
       const posData = new Int16Array(this.posBufferServer);
       sock.send(posData.buffer);
       if (this.posBufferClient.length > 0) {
-        this.activeRoom.addClientDataToBuffer(new Int16Array(this.posBufferClient), CURRENT_USER_ID);
+        this.activeRoom.addClientDataToBuffer(
+          new Int16Array(this.posBufferClient), this.activeRoom.getOwnUser());
         // posBufferServer needs to be checked due to asynchronities
         // between willSendCompleteMetaData and sendPositions
         // And to ensure that it only resets on normal mode
@@ -320,16 +321,21 @@ class ScratchetController {
     data = data.subarray(2);
 
     const targetRoom = this.rooms.get(roomCode);
+    // TODO Perhaps integrate this check & error into `getUser` directly
+    if (!targetRoom.hasUser(userID)) {
+      throw new Error(`@ parseSocketData: User #${userID} does not exist`);
+    }
+    const targetUser = targetRoom.getUser(userID);
 
     switch (mode) {
       case MODE.BULK_INIT:
-        targetRoom.handleBulkInitData(data, userID);
+        targetRoom.handleBulkInitData(data, targetUser);
         break;
       case MODE.ERASE:
-        targetRoom.handleEraseData(data, userID);
+        targetRoom.handleEraseData(data, targetUser);
         break;
       default:
-        targetRoom.addServerDataToBuffer(data, userID);
+        targetRoom.addServerDataToBuffer(data, targetUser);
     }
   }
 
@@ -356,8 +362,9 @@ class ScratchetController {
 
     ui.dispatchNotification(`${username} has entered the room`);
   }
-  userClearData(userID) {
-    this.activeRoom.clearUserBufferAndRedraw(userID);
+  userClearData(userID, roomCode) {
+    const user = this.rooms.get(roomCode).getUser(userID);
+    this.activeRoom.clearUserBufferAndRedraw(user);
   }
   userChangeUserName(userID, newUsername) {
     const prevUsername = this.activeRoom.getUser(userID).name;
@@ -418,7 +425,7 @@ class ScratchetController {
           break;
         }
         case 'clearUser': {
-          this.userClearData(data.usr);
+          this.userClearData(data.usr, data.room);
           break;
         }
         case 'changeName': {
