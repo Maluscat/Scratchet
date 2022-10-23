@@ -13,7 +13,8 @@ const roomNameInput = document.getElementById('roomcode-input');
 const roomListButton = document.getElementById('room-list-button');
 const roomList = document.getElementById('room-list');
 
-const joinRoomOverlayInput = document.getElementById('join-room-overlay-input');
+const joinRoomOverlayInput =
+  /** @type {HTMLInputElement} */ (document.getElementById('join-room-overlay-input'));
 const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
 const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
