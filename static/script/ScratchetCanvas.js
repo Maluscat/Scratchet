@@ -42,7 +42,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.pressedMouseBtn = e.button;
     if (this.pressedMouseBtn === 2) {
       ui.toggleDrawIndicatorEraseMode();
-      controller.initializePosBufferErase(this.width);
+      controller.initializePosBufferErase();
     } else if (this.pressedMouseBtn === 0) {
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
