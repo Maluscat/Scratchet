@@ -1,8 +1,4 @@
 'use strict';
-/**
- * @typedef { import('./hallo89.net/State3D.js') }
- */
-
 class ScratchetCanvasControls {
   static VIEW_WIDTH = 8191;
   static VIEW_HEIGHT = 8191;

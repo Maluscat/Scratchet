@@ -1,10 +1,4 @@
 'use strict';
-/**
- * @typedef { import('./init.js') }
- * @typedef { import('./ScratchetCanvas.js') }
- * @typedef { import('./UsernameHandler.js') }
- */
-
 class ScratchetRoom extends ScratchetCanvas {
   static canvasZIndex = 1;
 

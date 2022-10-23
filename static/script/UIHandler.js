@@ -1,5 +1,4 @@
 'use strict';
-
 const notificationTemplate = (function() {
   const node = document.createElement('div');
   node.classList.add('notification');

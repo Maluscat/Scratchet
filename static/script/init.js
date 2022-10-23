@@ -1,10 +1,5 @@
 'use strict';
-/**
- * @typedef { import('./hallo89.net/Controls3D.js') }
- * @typedef { import('./UIHandler.js') }
- */
-
-var Validator = import('/script/Validator.mjs');
+var Validator = import('./Validator.mjs');
 
 const canvasContainer = document.getElementById('canvas-container');
 

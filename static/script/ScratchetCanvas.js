@@ -1,10 +1,4 @@
 'use strict';
-/**
- * @typedef { import('./init.js') }
- * @typedef { import('./ScratchetRoom.js') }
- * @typedef { import('./ScratchetCanvasControls.js') }
- */
-
 class ScratchetCanvas extends ScratchetCanvasControls {
   pressedMouseBtn = -1;
   globalPosBuffer = new Set(); // Set<posDataWrapperInDrawOrder>

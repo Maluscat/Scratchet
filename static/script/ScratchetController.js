@@ -1,10 +1,4 @@
 'use strict';
-/**
- * @typedef { import('./init.js') }
- * @typedef { import('./ScratchetRoom.js') }
- * @typedef { import('./Validator.mjs') }
- */
-
 class ScratchetController {
   globalUsername;
   defaultUsername;
