@@ -173,9 +173,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.redrawCanvas();
   }
   erasePos(posX, posY, user, eraserWidth = this.width) {
-    const userPosSet = user.posCache;
     let hasErased = false;
-    for (const posDataWrapper of userPosSet) {
+    for (const posDataWrapper of user.posCache) {
 
       for (let i = 0; i < posDataWrapper.length; i++) {
         const posData = posDataWrapper[i];
@@ -210,7 +209,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
       if (posDataWrapper.length === 0) {
         this.globalPosBuffer.delete(posDataWrapper);
-        userPosSet.delete(posDataWrapper);
+        user.posCache.delete(posDataWrapper);
       }
     }
     return hasErased;
@@ -230,14 +229,13 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   clearUserBufferAndRedraw(user) {
-    const userCache = user.posCache;
-    if (userCache) {
-      for (const posDataWrapper of userCache) {
+    if (user.posCache.size > 0) {
+      for (const posDataWrapper of user.posCache) {
         this.globalPosBuffer.delete(posDataWrapper);
       }
-      userCache.clear();
+      user.posCache.clear();
+      this.redrawCanvas();
     }
-    this.redrawCanvas();
   }
 
   addServerDataToBuffer(posData, user) {
@@ -267,13 +265,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
 
     if (extraLen > 0) {
-      let userPosSet = user.posCache;
-      if (userPosSet.size === 0) {
+      if (user.posCache.size === 0) {
         return false;
       }
 
-      userPosSet = Array.from(userPosSet);
-      const lastPosData = userPosSet[userPosSet.length - 1][0];
+      const posCacheArr = Array.from(user.posCache);
+      const lastPosData = posCacheArr[posCacheArr.length - 1][0];
 
       // Get width/hue of the last package
       if (flag & 0b0001) {
