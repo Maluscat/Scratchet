@@ -21,7 +21,7 @@ const Validator = {
 
   validateRoomName(roomName) {
     // The additional 7 characters is the length of "'s room"
-    if (!roomName || roomName.length > Validator.MAX_USERNAME_LENGTH + 7) {
+    if (!roomName || roomName.length > (Validator.MAX_USERNAME_LENGTH + 7)) {
       return false;
     }
     return true;
