@@ -93,7 +93,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   // ---- Canvas handling ----
-  redrawCanvas(userPosSetHighlight) {
+  redrawCanvas(userHighlight) {
     // TODO skip unseen points
     this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
 
@@ -104,8 +104,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       const nextWrapper = globalPosBufferArr[i + 1];
       let isFromHighlightedUser = false;
 
-      if (userPosSetHighlight != null) {
-        isFromHighlightedUser = !userPosSetHighlight.has(posDataWrapper);
+      if (userHighlight != null) {
+        isFromHighlightedUser = !userHighlight.posCache.has(posDataWrapper);
       }
       if (hasChanged) {
         // ASSUMPTION: all posData in posDataWrapper have the same width and hue
@@ -123,7 +123,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           || getClientMetaHue(nextWrapper[0]) !== getClientMetaHue(posDataWrapper[0])
           || getClientMetaWidth(nextWrapper[0]) !== getClientMetaWidth(posDataWrapper[0])
             /* This forces a stroke when changing from one user to another with highlight enabled */
-          || userPosSetHighlight != null && (!userPosSetHighlight.has(nextWrapper) !== isFromHighlightedUser)) {
+          || userHighlight != null && (!userHighlight.posCache.has(nextWrapper) !== isFromHighlightedUser)) {
         this.ctx.stroke();
         hasChanged = true;
       }
