@@ -154,7 +154,7 @@ class ScratchetController {
     this.globalUsername = username;
     localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
     if (!isInitial) {
-      this.activeRoom.changeUsername(CURRENT_USER_ID, username);
+      this.activeRoom.getOwnUser().setName(username);
       sendMessage('changeName', username, this.activeRoom.roomCode);
     }
   }
@@ -366,9 +366,11 @@ class ScratchetController {
     const user = this.rooms.get(roomCode).getUser(userID);
     this.activeRoom.clearUserBufferAndRedraw(user);
   }
-  userChangeUserName(userID, newUsername) {
-    const prevUsername = this.activeRoom.getUser(userID).name;
-    this.activeRoom.changeUsername(userID, newUsername);
+  userChangeUserName(userID, roomCode, newUsername) {
+    const room = this.rooms.get(roomCode);
+    const user = room.getUser(userID);
+    const prevUsername = user.name;
+    user.setName(newUsername);
 
     ui.dispatchNotification(`User: ${prevUsername} --> ${newUsername}`);
   }
@@ -429,7 +431,7 @@ class ScratchetController {
           break;
         }
         case 'changeName': {
-          this.userChangeUserName(data.usr, data.val);
+          this.userChangeUserName(data.usr, data.room, data.val);
           break;
         }
         case 'changeRoomName': {

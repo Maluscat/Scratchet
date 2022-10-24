@@ -81,14 +81,6 @@ class ScratchetRoom extends ScratchetCanvas {
     return user;
   }
 
-  changeUsername(userID, newUsername) {
-    if (!this.hasUser(userID)) {
-      throw new Error(`@ changeUsername: User #${userID} does not exist`);
-    }
-    this.getUser(userID).setName(newUsername);
-    return newUsername;
-  }
-
   // ---- User UI helpers ----
   setUsernameInput() {
     usernameInput.textContent = this.getOwnUser().name;
