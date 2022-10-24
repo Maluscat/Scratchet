@@ -118,6 +118,7 @@ class ScratchetController {
   }
 
   changeCurrentRoomName(newRoomName) {
+    newRoomName = newRoomName.trim();
     if (Validator.validateRoomName(newRoomName)) {
       this.setCurrentRoomName(newRoomName);
     } else {
@@ -133,17 +134,16 @@ class ScratchetController {
     newUsername = newUsername.trim();
     if (newUsername === '') {
       this.resetUsernameToDefault();
-    } else if (!Validator.validateUsername(newUsername)) {
+    } else if (Validator.validateUsername(newUsername)) {
+      this.setOwnUsername(newUsername);
+    } else  {
       // TODO Clip the username at 20 characters instead of resetting it
       this.resetUsernameInput();
-    } else if (newUsername !== this.activeRoom.getOwnUser().name) {
-      this.setOwnUsername(newUsername);
     }
   }
 
   // ---- Username handling ----
   resetUsernameToDefault() {
-    localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
     this.setOwnUsername(this.defaultUsername);
     this.resetUsernameInput();
   }
@@ -151,11 +151,13 @@ class ScratchetController {
     this.activeRoom.setUsernameInput();
   }
   setOwnUsername(username, isInitial) {
-    this.globalUsername = username;
-    localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
-    if (!isInitial) {
-      this.activeRoom.getOwnUser().setName(username);
-      sendMessage('changeName', username, this.activeRoom.roomCode);
+    if (isInitial || username !== this.activeRoom.getOwnUser().name) {
+      this.globalUsername = username;
+      localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
+      if (!isInitial) {
+        this.activeRoom.getOwnUser().setName(username);
+        sendMessage('changeName', username, this.activeRoom.roomCode);
+      }
     }
   }
 
@@ -166,9 +168,6 @@ class ScratchetController {
   setCurrentRoomName(newRoomName) {
     this.activeRoom.changeRoomName(newRoomName);
     sendMessage('changeRoomName', newRoomName, this.activeRoom.roomCode);
-  }
-  changeRoomName(roomCode, newRoomName) {
-    this.rooms.get(roomCode).changeRoomName(newRoomName);
   }
 
   // ---- Room handling ----
@@ -378,8 +377,9 @@ class ScratchetController {
     ui.dispatchNotification(`User: ${prevUsername} --> ${newUsername}`);
   }
   userChangeRoomName(roomCode, newRoomName) {
-    const prevRoomName = this.activeRoom.roomName;
-    this.changeRoomName(roomCode, newRoomName);
+    const room = this.rooms.get(roomCode);
+    const prevRoomName = room.roomName;
+    room.changeRoomName(newRoomName);
 
     ui.dispatchNotification(`Room: ${prevRoomName} --> ${newRoomName}`);
   }
