@@ -342,12 +342,15 @@ class ScratchetController {
   // ---- Socket message events ----
   // NOTE: Received data is considered validated
   userDisconnect(userID) {
+    const activeUsername = this.activeRoom.hasUser(userID) && this.activeRoom.getUser(userID).name;
     for (const room of this.rooms.values()) {
-      room.removeUser(userID);
+      if (room.hasUser(userID)) {
+        room.removeUser(userID);
+      }
     }
-    const activeUsername = this.activeRoom.getOwnUser().name;
-
-    ui.dispatchNotification(`${activeUsername} has disconnected`);
+    if (activeUsername) {
+      ui.dispatchNotification(`${activeUsername} has disconnected`);
+    }
   }
   // TODO utilize the room name: "{user} has left/entered (current?) room {room name}"
   userLeave(userID, roomCode) {
