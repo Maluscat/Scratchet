@@ -166,8 +166,10 @@ class ScratchetController {
     this.activeRoom.setRoomNameInput();
   }
   setCurrentRoomName(newRoomName) {
-    this.activeRoom.changeRoomName(newRoomName);
-    sendMessage('changeRoomName', newRoomName, this.activeRoom.roomCode);
+    if (newRoomName !== this.activeRoom.roomName) {
+      this.activeRoom.changeRoomName(newRoomName);
+      sendMessage('changeRoomName', newRoomName, this.activeRoom.roomCode);
+    }
   }
 
   // ---- Room handling ----
