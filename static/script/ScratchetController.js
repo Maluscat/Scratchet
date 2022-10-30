@@ -87,7 +87,7 @@ class ScratchetController {
 
   joinRoom(roomInputValue) {
     const roomCode = Validator.validateRoomInputValueToRoomCode(roomInputValue);
-    if (roomCode) {
+    if (roomCode && !this.rooms.has(roomCode)) {
       sendMessage('joinRoom', {
         roomCode: roomCode,
         username: this.globalUsername

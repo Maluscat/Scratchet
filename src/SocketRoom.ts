@@ -40,16 +40,18 @@ export class SocketRoom {
   
   // ---- User handling ----
   addUser(socketUser: SocketUser, username?: Username) {
-    this.#sockets.add(socketUser);
+    if (!this.#sockets.has(socketUser)) {
+      this.#sockets.add(socketUser);
 
-    socketUser.addToRoom(this, username);
-    // This is done to enfore correct validation (which happens in addToRoom)
-    username = socketUser.getNameForRoom(this);
+      socketUser.addToRoom(this, username);
+      // This is done to enfore correct validation (which happens in addToRoom)
+      username = socketUser.getNameForRoom(this);
 
-    this.addUserToBulkInitQueue(socketUser);
-    this.sendJSONToUsers(socketUser, 'join', username);
+      this.addUserToBulkInitQueue(socketUser);
+      this.sendJSONToUsers(socketUser, 'join', username);
 
-    socketUser.sendInitialJoinData(this);
+      socketUser.sendInitialJoinData(this);
+    }
   }
   removeUser(socketUser: SocketUser) {
     this.removeUserFromBulkInitQueue(socketUser);
