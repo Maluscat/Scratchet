@@ -1,5 +1,9 @@
+const USERNAME_LEN = 20;
+
 const Validator = {
-  MAX_USERNAME_LENGTH: 20,
+  MAX_USERNAME_LENGTH: USERNAME_LEN,
+  // The additional 7 characters is the length of "'s room"
+  MAX_ROOM_NAME_LENGTH: USERNAME_LEN + 7,
 
   JOINROOM_VALIDATE_REGEX: /^(?:(?:https?:\/\/)?\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w*?)*#)?(\d{4})$/,
 
@@ -21,7 +25,7 @@ const Validator = {
 
   validateRoomName(roomName) {
     // The additional 7 characters is the length of "'s room"
-    if (!roomName || roomName.length > (Validator.MAX_USERNAME_LENGTH + 7)) {
+    if (!roomName || roomName.length > (Validator.MAX_ROOM_NAME_LENGTH)) {
       return false;
     }
     return true;

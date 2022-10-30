@@ -34,12 +34,26 @@ class ScratchetController {
     hueSlider.addEvent('change:value', this.changeHue.bind(this));
     widthSlider.addEvent('change:value', this.changeWidth.bind(this));
 
+    usernameInput.addEventListener('input', e => {
+      ui.handleOverlayInputChange(e, Validator.validateUsername);
+    });
+    usernameInput.addEventListener('beforeinput', e => {
+      ui.handleOverlayInputBeforeChange(e, Validator.MAX_USERNAME_LENGTH);
+    });
     usernameInput.addEventListener('blur', e => {
       ui.handleOverlayInputSubmit(e, this.changeOwnUsername.bind(this));
+    });
+
+    roomNameInput.addEventListener('input', e => {
+      ui.handleOverlayInputChange(e, Validator.validateRoomName);
+    });
+    roomNameInput.addEventListener('beforeinput', e => {
+      ui.handleOverlayInputBeforeChange(e, Validator.MAX_ROOM_NAME_LENGTH);
     });
     roomNameInput.addEventListener('blur', e => {
       ui.handleOverlayInputSubmit(e, this.changeCurrentRoomName.bind(this));
     });
+
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
     copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
 
@@ -136,8 +150,7 @@ class ScratchetController {
       this.resetUsernameToDefault();
     } else if (Validator.validateUsername(newUsername)) {
       this.setOwnUsername(newUsername);
-    } else  {
-      // TODO Clip the username at 20 characters instead of resetting it
+    } else {
       this.resetUsernameInput();
     }
   }
@@ -148,6 +161,7 @@ class ScratchetController {
     this.resetUsernameInput();
   }
   resetUsernameInput() {
+    usernameInput.classList.remove('invalid');
     this.activeRoom.setUsernameInput();
   }
   setOwnUsername(username, isInitial) {
@@ -163,6 +177,7 @@ class ScratchetController {
 
   // ---- Room name handling ----
   resetRoomNameInput() {
+    roomNameInput.classList.remove('invalid');
     this.activeRoom.setRoomNameInput();
   }
   setCurrentRoomName(newRoomName) {

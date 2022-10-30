@@ -22,6 +22,7 @@ const joinRoomOverlayInput = document.getElementById('join-room-overlay-input');
 const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
 const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
+const OVERLAY_INPUT_INVALID_DURATION = 365;
 const HIT_BORDER_DURATION = 200;
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
