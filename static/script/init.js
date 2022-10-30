@@ -65,7 +65,6 @@ const widthSlider = new Slider89(document.getElementById('width-slider'), {
 }, true);
 
 const controller = new ScratchetController();
-// TODO Perhaps remove context menu function in SCanvas and let Controls do it
 const controls3D = new Controls3D(null, null, {
   mod: {
     tran: 1,
