@@ -3,6 +3,8 @@
 @background-color: hsl(0, 0%, 8%);
 @draw-indicator-color: hsl(0, 0%, 90%);
 
+@invalid-color: #B83232;
+
 * {
   box-sizing: border-box;
 }
@@ -131,6 +133,10 @@ input:invalid {
     -1.25px 1.25px @background-color,
     1.25px -1.25px @background-color,
     -1.25px -1.25px @background-color;
+  &.invalid {
+    outline: 3px solid @invalid-color;
+    transition: outline .1s ease-out;
+  }
   br {
     display: none;
   }

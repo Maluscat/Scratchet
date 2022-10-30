@@ -14,6 +14,7 @@ const newRoomButton = document.getElementById('new-room-button');
 const joinRoomButton = document.getElementById('join-room-button');
 const copyRoomLinkButton = document.getElementById('copy-room-link-button');
 
+const overlayInputInvalidTimeouts = new Map();
 const hitBorderTimeouts = {
   left: null,
   top: null,
@@ -64,6 +65,43 @@ class UIHandler {
     }
     window.getSelection().removeAllRanges();
     callback(e.currentTarget.textContent);
+  }
+
+  // Prevent editing when content exceeds maximum length
+  handleOverlayInputBeforeChange(e, maxLength) {
+    // Needs to be saved because `e.currentTarget` is short lived (-> timeout below)
+    const targetNode = e.currentTarget;
+    const addedContentLen = (e.data || e.dataTransfer?.getData('text/plain'))?.length ?? 0;
+    let addedTotalLen = 0;
+    // Compute the length of the new content, taking all ranges (i.e. text selections) into account
+    for (const range of e.getTargetRanges()) {
+      addedTotalLen += addedContentLen - (range.endOffset - range.startOffset);
+    }
+    const newContentLength = targetNode.textContent.length + addedTotalLen;
+    if (newContentLength > maxLength) {
+      e.preventDefault();
+      invalidBlink();
+    }
+
+    function invalidBlink() {
+      targetNode.classList.add('invalid');
+      if (overlayInputInvalidTimeouts.has(targetNode)) {
+        clearTimeout(overlayInputInvalidTimeouts.get(targetNode));
+      }
+      overlayInputInvalidTimeouts.set(targetNode,
+        setTimeout(() => {
+          targetNode.classList.remove('invalid');
+        }, OVERLAY_INPUT_INVALID_DURATION)
+      );
+    }
+  }
+  handleOverlayInputChange(e, validatorCallback) {
+    const content = e.currentTarget.textContent;
+    if (content !== '' && !validatorCallback(content)) {
+      e.currentTarget.classList.add('invalid');
+    } else {
+      e.currentTarget.classList.remove('invalid');
+    }
   }
 
   toggleHoverOverlay(e) {

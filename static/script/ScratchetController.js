@@ -28,12 +28,26 @@ class ScratchetController {
     hueSlider.addEvent('change:value', this.changeHue.bind(this));
     widthSlider.addEvent('change:value', this.changeWidth.bind(this));
 
+    usernameInput.addEventListener('input', e => {
+      ui.handleOverlayInputChange(e, Validator.validateUsername);
+    });
+    usernameInput.addEventListener('beforeinput', e => {
+      ui.handleOverlayInputBeforeChange(e, Validator.MAX_USERNAME_LENGTH);
+    });
     usernameInput.addEventListener('blur', e => {
       ui.handleOverlayInputSubmit(e, this.changeOwnUsername.bind(this));
+    });
+
+    roomNameInput.addEventListener('input', e => {
+      ui.handleOverlayInputChange(e, Validator.validateRoomName);
+    });
+    roomNameInput.addEventListener('beforeinput', e => {
+      ui.handleOverlayInputBeforeChange(e, Validator.MAX_ROOM_NAME_LENGTH);
     });
     roomNameInput.addEventListener('blur', e => {
       ui.handleOverlayInputSubmit(e, this.changeCurrentRoomName.bind(this));
     });
+
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
     copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
 
@@ -59,7 +73,7 @@ class ScratchetController {
   }
 
   clearDrawing() {
-    this.activeRoom.clearCurrentUserCanvas();
+    this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.getOwnUser());
     this.sendCompleteMetaDataNextTime();
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
@@ -112,6 +126,7 @@ class ScratchetController {
   }
 
   changeCurrentRoomName(newRoomName) {
+    newRoomName = newRoomName.trim();
     if (Validator.validateRoomName(newRoomName)) {
       this.setCurrentRoomName(newRoomName);
     } else {
@@ -127,42 +142,43 @@ class ScratchetController {
     newUsername = newUsername.trim();
     if (newUsername === '') {
       this.resetUsernameToDefault();
-    } else if (!Validator.validateUsername(newUsername)) {
-      // TODO Clip the username at 20 characters instead of resetting it
-      this.resetUsernameInput();
-    } else if (newUsername !== this.activeRoom.nameHandler.getUsername(CURRENT_USER_ID)) {
+    } else if (Validator.validateUsername(newUsername)) {
       this.setOwnUsername(newUsername);
+    } else {
+      this.resetUsernameInput();
     }
   }
 
   // ---- Username handling ----
   resetUsernameToDefault() {
-    localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
     this.setOwnUsername(this.defaultUsername);
-    this.activeRoom.nameHandler.setUsernameInput(this.defaultUsername);
+    this.resetUsernameInput();
   }
   resetUsernameInput() {
-    this.activeRoom.nameHandler.setUsernameInput();
+    usernameInput.classList.remove('invalid');
+    this.activeRoom.setUsernameInput();
   }
   setOwnUsername(username, isInitial) {
-    this.globalUsername = username;
-    localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
-    if (!isInitial) {
-      this.activeRoom.nameHandler.changeUsername(CURRENT_USER_ID, username);
-      sendMessage('changeName', username, this.activeRoom.roomCode);
+    if (isInitial || username !== this.activeRoom.getOwnUser().name) {
+      this.globalUsername = username;
+      localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
+      if (!isInitial) {
+        this.activeRoom.getOwnUser().setName(username);
+        sendMessage('changeName', username, this.activeRoom.roomCode);
+      }
     }
   }
 
   // ---- Room name handling ----
   resetRoomNameInput() {
+    roomNameInput.classList.remove('invalid');
     this.activeRoom.setRoomNameInput();
   }
   setCurrentRoomName(newRoomName) {
-    this.activeRoom.changeRoomName(newRoomName);
-    sendMessage('changeRoomName', newRoomName, this.activeRoom.roomCode);
-  }
-  setNameOfRoom(roomCode, newRoomName) {
-    this.rooms.get(roomCode).changeRoomName(newRoomName);
+    if (newRoomName !== this.activeRoom.roomName) {
+      this.activeRoom.changeRoomName(newRoomName);
+      sendMessage('changeRoomName', newRoomName, this.activeRoom.roomCode);
+    }
   }
 
   // ---- Room handling ----
@@ -191,9 +207,8 @@ class ScratchetController {
 
     room.focus();
 
-    room.nameHandler.setUsernameInput();
-    room.nameHandler.appendUserList();
-    room.nameHandler.updateUserIndicator();
+    room.setUsernameInput();
+    room.appendUserList();
 
     copyRoomLinkContent.textContent = room.roomCodeLink;
 
@@ -206,8 +221,8 @@ class ScratchetController {
   }
 
   // ---- Canvas handling ----
-  highlightUser(userID) {
-    this.activeRoom.redrawCanvas(this.activeRoom.posUserCache.get(userID));
+  highlightUser(user) {
+    this.activeRoom.redrawCanvas(user);
   }
 
   addToPosBuffer(posX, posY) {
@@ -282,7 +297,8 @@ class ScratchetController {
       const posData = new Int16Array(this.posBufferServer);
       sock.send(posData.buffer);
       if (this.posBufferClient.length > 0) {
-        this.activeRoom.addClientDataToBuffer(new Int16Array(this.posBufferClient), CURRENT_USER_ID);
+        this.activeRoom.addClientDataToBuffer(
+          new Int16Array(this.posBufferClient), this.activeRoom.getOwnUser());
         // posBufferServer needs to be checked due to asynchronities
         // between willSendCompleteMetaData and sendPositions
         // And to ensure that it only resets on normal mode
@@ -315,60 +331,68 @@ class ScratchetController {
     data = data.subarray(2);
 
     const targetRoom = this.rooms.get(roomCode);
+    // TODO Perhaps integrate this check & error into `getUser` directly
+    if (!targetRoom.hasUser(userID)) {
+      throw new Error(`@ parseSocketData: User #${userID} does not exist`);
+    }
+    const targetUser = targetRoom.getUser(userID);
 
     switch (mode) {
       case MODE.BULK_INIT:
-        targetRoom.handleBulkInitData(data, userID);
+        targetRoom.handleBulkInitData(data, targetUser);
         break;
       case MODE.ERASE:
-        targetRoom.handleEraseData(data, userID);
+        targetRoom.handleEraseData(data, targetUser);
         break;
       default:
-        targetRoom.addServerDataToBuffer(data, userID);
+        targetRoom.addServerDataToBuffer(data, targetUser);
     }
   }
 
   // ---- Socket message events ----
+  // NOTE: Received data is considered validated
   userDisconnect(userID) {
+    const activeUsername = this.activeRoom.hasUser(userID) && this.activeRoom.getUser(userID).name;
     for (const room of this.rooms.values()) {
-      if (room.nameHandler.hasUser(userID)) {
+      if (room.hasUser(userID)) {
         room.removeUser(userID);
       }
     }
-    const activeUsername = this.activeRoom.nameHandler.getOwnUsername();
-    ui.dispatchNotification(`${activeUsername} has disconnected`);
+    if (activeUsername) {
+      ui.dispatchNotification(`${activeUsername} has disconnected`);
+    }
   }
   // TODO utilize the room name: "{user} has left/entered (current?) room {room name}"
   userLeave(userID, roomCode) {
     const room = this.rooms.get(roomCode);
-    if (room) {
-      const username = room.removeUser(userID);
+    const username = room.removeUser(userID).name;
 
-      ui.dispatchNotification(`${username} has left the room`);
-    }
+    ui.dispatchNotification(`${username} has left the room`);
   }
   userJoin(userID, roomCode, username) {
     const room = this.rooms.get(roomCode);
-    if (room) {
-      room.addUser(userID, username);
+    room.addUser(userID, username);
 
-      ui.dispatchNotification(`${username} has entered the room`);
-    }
+    ui.dispatchNotification(`${username} has entered the room`);
   }
-  userClearData(userID) {
-    this.activeRoom.clearUserBufferAndRedraw(userID);
+  userClearData(userID, roomCode) {
+    const user = this.rooms.get(roomCode).getUser(userID);
+    this.activeRoom.clearUserBufferAndRedraw(user);
   }
-  userChangeUserName(userID, newUsername) {
-    const prevActiveUsername = this.activeRoom.nameHandler.getUsername(userID);
-    const activeUsername = this.activeRoom.nameHandler.changeUsername(userID, newUsername);
+  userChangeUserName(userID, roomCode, newUsername) {
+    const room = this.rooms.get(roomCode);
+    const user = room.getUser(userID);
+    const prevUsername = user.name;
+    user.setName(newUsername);
 
-    ui.dispatchNotification(`User: ${prevActiveUsername} --> ${activeUsername}`);
+    ui.dispatchNotification(`User: ${prevUsername} --> ${newUsername}`);
   }
   userChangeRoomName(roomCode, newRoomName) {
-    const prevCurrentRoomName = this.activeRoom.roomName;
-    this.setNameOfRoom(roomCode, newRoomName);
+    const room = this.rooms.get(roomCode);
+    const prevRoomName = room.roomName;
+    room.changeRoomName(newRoomName);
 
-    ui.dispatchNotification(`Room: ${prevCurrentRoomName} --> ${newRoomName}`);
+    ui.dispatchNotification(`Room: ${prevRoomName} --> ${newRoomName}`);
   }
 
   ownUserGetJoinData(value) {
@@ -417,11 +441,11 @@ class ScratchetController {
           break;
         }
         case 'clearUser': {
-          this.userClearData(data.usr);
+          this.userClearData(data.usr, data.room);
           break;
         }
         case 'changeName': {
-          this.userChangeUserName(data.usr, data.val);
+          this.userChangeUserName(data.usr, data.room, data.val);
           break;
         }
         case 'changeRoomName': {
