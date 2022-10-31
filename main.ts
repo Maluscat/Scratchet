@@ -43,6 +43,14 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       userJoinRoomFromRoomCode(socketUser, val!);
     }
   },
+  newRoom: {
+    required: {
+      val: 'object'
+    },
+    fn: (socketUser, val) => {
+      addNewRoom(socketUser, val!);
+    }
+  },
   leave: {
     required: {
       room: 'number'
@@ -185,6 +193,14 @@ function userJoinRoomFromRoomCode(socketUser: SocketUser, properties: Connection
     const socketRoom = roomHandler.getRoom(roomCode!);
     socketRoom.addUser(socketUser, username);
   }
+}
+
+function addNewRoom(socketUser: SocketUser, properties: ConnectionData) {
+  const username = properties.username;
+
+  // TODO Prevent "leaking" empty SocketRooms (Never even create empty rooms)
+  const room = roomHandler.createNewRoom(socketUser, username);
+  room.addUser(socketUser, username);
 }
 
 // ---- Room handling ----
