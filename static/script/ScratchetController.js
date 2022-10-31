@@ -50,6 +50,7 @@ class ScratchetController {
 
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
     copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
+    newRoomButton.addEventListener('click', this.requestNewRoom.bind(this));
 
     // Set the join room input to the same width as the copy room link overlay
     copyRoomLinkOverlay.classList.add('active');
@@ -62,6 +63,14 @@ class ScratchetController {
   }
 
   // ---- Event handling ----
+  windowResized() {
+    for (const room of this.rooms.values()) {
+      room.setDimensions();
+      room.setTransform();
+    }
+  }
+
+  // -> Utility overlay
   changeHue(slider) {
     this.activeRoom.setStrokeStyle(slider.value);
     this.activeRoom.hue = slider.value;
@@ -78,11 +87,9 @@ class ScratchetController {
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
 
-  windowResized() {
-    for (const room of this.rooms.values()) {
-      room.setDimensions();
-      room.setTransform();
-    }
+  // -> Room overlay
+  requestNewRoom() {
+    sendMessage('newRoom', { username: this.globalUsername });
   }
 
   joinRoom(roomInputValue) {
@@ -138,6 +145,7 @@ class ScratchetController {
     this.switchActiveRoom(room);
   }
 
+  // -> Social overlay
   changeOwnUsername(newUsername) {
     newUsername = newUsername.trim();
     if (newUsername === '') {
