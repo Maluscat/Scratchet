@@ -1,6 +1,4 @@
 'use strict';
-var Global = import('./Global.mjs');
-
 const canvasContainer = document.getElementById('canvas-container');
 
 const clearDrawingButton = document.getElementById('clear-drawing-button');
@@ -79,11 +77,12 @@ const controls3D = new Controls3D(null, null, {
 });
 const ui = new UIHandler();
 
+var Global;
 let sock;
 
 
 // ---- Wait for modules ----
-Global.then(module => {
+import('./Global.mjs').then(module => {
   Global = module.default;
 
   joinRoomOverlayInput.pattern = Global.Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
