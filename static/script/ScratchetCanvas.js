@@ -151,7 +151,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   handleBulkInitData(data, user) {
     let index = 1;
     for (let i = 1; i < data.length; i++) {
-      if (data[i] === MODE.BULK_INIT) {
+      if (data[i] === Global.MODE.BULK_INIT) {
         this.addServerDataToBuffer(data.subarray(index, i), user);
         index = i + 1;
       }
@@ -214,7 +214,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       const joinedBuffer = [this.roomCode];
       for (const posDataWrapper of userCache) {
         for (const posData of posDataWrapper) {
-          joinedBuffer.push(MODE.BULK_INIT, ...this.convertClientDataToServerData(posData));
+          joinedBuffer.push(Global.MODE.BULK_INIT, ...this.convertClientDataToServerData(posData));
         }
       }
       sock.send(new Int16Array(joinedBuffer));

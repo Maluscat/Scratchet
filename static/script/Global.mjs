@@ -1,6 +1,12 @@
 const USERNAME_LEN = 20;
 
 const Global = {
+  SEND_INTERVAL: 40,
+  MODE: {
+    BULK_INIT: -1,
+    ERASE: -2,
+  },
+
   Validator: {
     MAX_USERNAME_LENGTH: USERNAME_LEN,
     // The additional 7 characters is the length of "'s room"

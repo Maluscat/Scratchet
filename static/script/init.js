@@ -20,12 +20,7 @@ const OVERLAY_INPUT_INVALID_DURATION = 365;
 const HIT_BORDER_DURATION = 200;
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
-const SEND_INTERVAL = 40;
 const SEND_FULL_METADATA_INTERVAL = 1000;
-const MODE = {
-  BULK_INIT: -1,
-  ERASE: -2,
-};
 // Metadata length in a payload of the specified mode, excluding the extra server metadata
 const META_LEN = {
   NORMAL: 5,

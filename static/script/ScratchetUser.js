@@ -28,7 +28,7 @@ class ScratchetUser {
     this.activeTimeout = setTimeout(() => {
       this.listNode.style.removeProperty('color');
       this.activeTimeout = null;
-    }, SEND_INTERVAL * 1.5);
+    }, Global.SEND_INTERVAL * 1.5);
   }
 
   // ---- Events ----

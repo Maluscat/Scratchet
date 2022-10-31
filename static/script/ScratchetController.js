@@ -57,7 +57,7 @@ class ScratchetController {
       (copyRoomLinkContent.offsetWidth / parseFloat(getComputedStyle(copyRoomLinkContent).fontSize)) + 'em';
     copyRoomLinkOverlay.classList.remove('active');
 
-    setInterval(this.sendPositions.bind(this), SEND_INTERVAL);
+    setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL);
     setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL);
   }
 
@@ -257,13 +257,13 @@ class ScratchetController {
     this.posBufferClient = [hue, width, lastPosX, lastPosY, flag];
   }
   initializePosBufferErase() {
-    this.posBufferServer = [this.activeRoom.roomCode, MODE.ERASE, this.activeRoom.width];
+    this.posBufferServer = [this.activeRoom.roomCode, Global.MODE.ERASE, this.activeRoom.width];
     this.posBufferClient = [];
   }
 
   // TODO this can probably be made less redundant
   resetPosBuffer() {
-    if (getPendingServerMetaMode(this.posBufferServer) === MODE.ERASE) {
+    if (getPendingServerMetaMode(this.posBufferServer) === Global.MODE.ERASE) {
       this.initializePosBufferErase();
     } else {
       this.initializePosBufferNormal(
@@ -274,7 +274,7 @@ class ScratchetController {
   }
   // Only update width and hue
   updatePosBuffer() {
-    if (getPendingServerMetaMode(this.posBufferServer) === MODE.ERASE) {
+    if (getPendingServerMetaMode(this.posBufferServer) === Global.MODE.ERASE) {
       this.initializePosBufferErase();
     } else if (this.posBufferClient.length > 0) {
       this.initializePosBufferNormal(
@@ -292,7 +292,7 @@ class ScratchetController {
   sendPositions() {
     const mode = getPendingServerMetaMode(this.posBufferServer);
 
-    if (mode === MODE.ERASE && this.posBufferServer.length > (META_LEN.ERASE + EXTRA_SERVER_META_LEN)
+    if (mode === Global.MODE.ERASE && this.posBufferServer.length > (META_LEN.ERASE + EXTRA_SERVER_META_LEN)
         || this.posBufferClient.length > META_LEN.NORMAL) {
       const posData = new Int16Array(this.posBufferServer);
       sock.send(posData.buffer);
@@ -338,10 +338,10 @@ class ScratchetController {
     const targetUser = targetRoom.getUser(userID);
 
     switch (mode) {
-      case MODE.BULK_INIT:
+      case Global.MODE.BULK_INIT:
         targetRoom.handleBulkInitData(data, targetUser);
         break;
-      case MODE.ERASE:
+      case Global.MODE.ERASE:
         targetRoom.handleEraseData(data, targetUser);
         break;
       default:
