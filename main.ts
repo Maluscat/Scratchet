@@ -5,6 +5,7 @@ import type { SocketRoom, ConnectionData, MessageData } from 'SocketRoom';
 import { SocketUser } from 'SocketUser';
 import { SocketRoomHandler } from 'SocketRoomHandler';
 import { ScratchetError } from 'ScratchetError';
+import Global from 'Global';
 
 // IN CASE OF 'INTERNAL SERVER ERROR': --allow-read IS MISSING
 const app = new Application();
@@ -107,7 +108,7 @@ router
           const socketRoom = roomHandler.getRoomWithUserExistanceCheck(socketUser, roomCode);
           const newBuffer = socketUser.prependIDToBuffer(dataArr);
 
-          if (dataArr[1] === -1) {
+          if (dataArr[1] === Global.MODE.BULK_INIT) {
             socketRoom.sendBulkInitData(socketUser, newBuffer);
           } else {
             // Pass data on
