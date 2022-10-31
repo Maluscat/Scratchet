@@ -1,7 +1,7 @@
 {
   "imports": {
     "main": "./main.ts",
-    "Validator": "./static/script/Validator.mjs",
+    "Global": "./static/script/Global.mjs",
     "SocketRoom": "./src/SocketRoom.ts",
     "SocketUser": "./src/SocketUser.ts",
     "SocketRoomHandler": "./src/SocketRoomHandler.ts",

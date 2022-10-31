@@ -1,7 +1,7 @@
 import type { SocketUser, SocketID, RoomCode, RoomName, Username } from 'SocketUser';
 import { SocketRoom } from 'SocketRoom';
 import { ScratchetError } from 'ScratchetError';
-import Validator from 'Validator';
+import Global from 'Global';
 
 export class SocketRoomHandler {
   readonly #activeRooms: Map<RoomCode, SocketRoom> = new Map();
@@ -43,7 +43,7 @@ export class SocketRoomHandler {
   }
 
   hasRoom(roomCode?: RoomCode) {
-    if (Validator.validateRoomCode(roomCode)) {
+    if (Global.Validator.validateRoomCode(roomCode)) {
       return this.#activeRooms.has(roomCode!);
     }
     return false;

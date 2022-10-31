@@ -1,5 +1,5 @@
 'use strict';
-var Validator = import('./Validator.mjs');
+var Global = import('./Global.mjs');
 
 const canvasContainer = document.getElementById('canvas-container');
 
@@ -83,10 +83,10 @@ let sock;
 
 
 // ---- Wait for modules ----
-Validator.then(module => {
-  Validator = module.default;
+Global.then(module => {
+  Global = module.default;
 
-  joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
+  joinRoomOverlayInput.pattern = Global.Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
 
   sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
   sock.addEventListener('open', controller.socketOpen.bind(controller))

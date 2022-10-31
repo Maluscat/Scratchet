@@ -29,20 +29,20 @@ class ScratchetController {
     widthSlider.addEvent('change:value', this.changeWidth.bind(this));
 
     usernameInput.addEventListener('input', e => {
-      ui.handleOverlayInputChange(e, Validator.validateUsername);
+      ui.handleOverlayInputChange(e, Global.Validator.validateUsername);
     });
     usernameInput.addEventListener('beforeinput', e => {
-      ui.handleOverlayInputBeforeChange(e, Validator.MAX_USERNAME_LENGTH);
+      ui.handleOverlayInputBeforeChange(e, Global.Validator.MAX_USERNAME_LENGTH);
     });
     usernameInput.addEventListener('blur', e => {
       ui.handleOverlayInputSubmit(e, this.changeOwnUsername.bind(this));
     });
 
     roomNameInput.addEventListener('input', e => {
-      ui.handleOverlayInputChange(e, Validator.validateRoomName);
+      ui.handleOverlayInputChange(e, Global.Validator.validateRoomName);
     });
     roomNameInput.addEventListener('beforeinput', e => {
-      ui.handleOverlayInputBeforeChange(e, Validator.MAX_ROOM_NAME_LENGTH);
+      ui.handleOverlayInputBeforeChange(e, Global.Validator.MAX_ROOM_NAME_LENGTH);
     });
     roomNameInput.addEventListener('blur', e => {
       ui.handleOverlayInputSubmit(e, this.changeCurrentRoomName.bind(this));
@@ -86,7 +86,7 @@ class ScratchetController {
   }
 
   joinRoom(roomInputValue) {
-    const roomCode = Validator.validateRoomInputValueToRoomCode(roomInputValue);
+    const roomCode = Global.Validator.validateRoomInputValueToRoomCode(roomInputValue);
     if (roomCode && !this.rooms.has(roomCode)) {
       sendMessage('joinRoom', {
         roomCode: roomCode,
@@ -127,7 +127,7 @@ class ScratchetController {
 
   changeCurrentRoomName(newRoomName) {
     newRoomName = newRoomName.trim();
-    if (Validator.validateRoomName(newRoomName)) {
+    if (Global.Validator.validateRoomName(newRoomName)) {
       this.setCurrentRoomName(newRoomName);
     } else {
       this.resetRoomNameInput();
@@ -142,7 +142,7 @@ class ScratchetController {
     newUsername = newUsername.trim();
     if (newUsername === '') {
       this.resetUsernameToDefault();
-    } else if (Validator.validateUsername(newUsername)) {
+    } else if (Global.Validator.validateUsername(newUsername)) {
       this.setOwnUsername(newUsername);
     } else {
       this.resetUsernameInput();
