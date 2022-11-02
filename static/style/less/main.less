@@ -3,6 +3,8 @@
 @canvas-color: hsl(0, 0%, 8%);
 @draw-indicator-color: hsl(0, 0%, 90%);
 
+@general-border-radius: 1.4em;
+
 @invalid-color: #B83232;
 
 * {
@@ -190,7 +192,7 @@ input:invalid {
     display: none;
     padding: .375em .8em;
     margin: 0 .15em;
-    border-radius: 1.4em;
+    border-radius: @general-border-radius;
     white-space: nowrap;
     z-index: 1;
     > ul {
