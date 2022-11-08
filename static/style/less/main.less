@@ -32,9 +32,29 @@ canvas, #canvas-container {
 }
 
 canvas {
+  @canvas-anim-duration: .6s;
+  @canvas-inactive-scale: .9175;
   position: absolute;
+  background-color: @canvas-color;
+  outline: 6px solid @background-color;
+  border-radius: 0;
+  &:not(.inactive) {
+    animation: translateIn @canvas-anim-duration ease;
+    .canvasKeyframes.translateIn(72.5%, 0);
+    @media (orientation: portrait) {
+      .canvasKeyframes.translateIn(0, 72.5%);
+    }
+  }
   &.inactive {
-    display: none;
+    visibility: hidden;
+    pointer-events: none;
+    border-radius: @general-border-radius;
+
+    animation: translateOut @canvas-anim-duration ease;
+    .canvasKeyframes.translateOut(-30%, 0);
+    @media (orientation: portrait) {
+      .canvasKeyframes.translateOut(0, -30%);
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 // main: main.less
 @canvas-color: hsl(0, 0%, 8%);
+@background-color: hsl(0, 0%, 18.5%);
 @draw-indicator-color: hsl(0, 0%, 90%);
 
 @general-border-radius: 1.4em;
@@ -11,3 +12,48 @@
 @overlay-gap: .5em;
 @overlay-bg: hsl(0, 0%, 18%);
 @slider-dims: 1.6em;
+
+
+.canvasKeyframes {
+  .translateIn(@translateX, @translateY) {
+    @keyframes translateIn {
+      0% {
+        scale: @canvas-inactive-scale;
+        z-index: 0;
+        pointer-events: none;
+        border-radius: @general-border-radius;
+      }
+      49.9% {
+        z-index: 0;
+      }
+      50% {
+        z-index: 2147483647;
+        transform: translate(@translateX, @translateY);
+      }
+      85% {
+        border-radius: @general-border-radius;
+      }
+      100% {
+        pointer-events: none;
+      }
+    }
+  }
+  .translateOut(@translateX, @translateY) {
+    @keyframes translateOut {
+      0% {
+        border-radius: 0;
+        visibility: visible;
+      }
+      2% {
+        border-radius: @general-border-radius;
+      }
+      50% {
+        transform: translate(@translateX, @translateY);
+      }
+      100% {
+        scale: @canvas-inactive-scale;
+        visibility: visible;
+      }
+    }
+  }
+}

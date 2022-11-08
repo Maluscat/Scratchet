@@ -10,7 +10,7 @@
 body {
   display: flex;
   justify-content: center;
-  background-color: hsl(0, 0%, 8%);
+  background-color: hsl(0, 0%, 18.5%);
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -26,9 +26,96 @@ canvas,
 }
 canvas {
   position: absolute;
+  background-color: hsl(0, 0%, 8%);
+  outline: 6px solid hsl(0, 0%, 18.5%);
+  border-radius: 0;
+}
+canvas:not(.inactive) {
+  animation: translateIn 0.6s ease;
+}
+@keyframes translateIn {
+  0% {
+    scale: 0.9175;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 1.4em;
+  }
+  49.9% {
+    z-index: 0;
+  }
+  50% {
+    z-index: 2147483647;
+    transform: translate(72.5%, 0);
+  }
+  85% {
+    border-radius: 1.4em;
+  }
+  100% {
+    pointer-events: none;
+  }
+}
+@media (orientation: portrait) {
+  @keyframes translateIn {
+    0% {
+      scale: 0.9175;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 1.4em;
+    }
+    49.9% {
+      z-index: 0;
+    }
+    50% {
+      z-index: 2147483647;
+      transform: translate(0, 72.5%);
+    }
+    85% {
+      border-radius: 1.4em;
+    }
+    100% {
+      pointer-events: none;
+    }
+  }
 }
 canvas.inactive {
-  display: none;
+  visibility: hidden;
+  pointer-events: none;
+  border-radius: 1.4em;
+  animation: translateOut 0.6s ease;
+}
+@keyframes translateOut {
+  0% {
+    border-radius: 0;
+    visibility: visible;
+  }
+  2% {
+    border-radius: 1.4em;
+  }
+  50% {
+    transform: translate(-30%, 0);
+  }
+  100% {
+    scale: 0.9175;
+    visibility: visible;
+  }
+}
+@media (orientation: portrait) {
+  @keyframes translateOut {
+    0% {
+      border-radius: 0;
+      visibility: visible;
+    }
+    2% {
+      border-radius: 1.4em;
+    }
+    50% {
+      transform: translate(0, -30%);
+    }
+    100% {
+      scale: 0.9175;
+      visibility: visible;
+    }
+  }
 }
 button,
 input {
