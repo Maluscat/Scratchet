@@ -30,8 +30,10 @@ canvas {
   outline: 6px solid hsl(0, 0%, 18.5%);
   border-radius: 0;
 }
-canvas:not(.inactive) {
-  animation: translateIn 0.6s ease;
+@media not (prefers-reduced-motion) {
+  canvas:not(.inactive) {
+    animation: translateIn 0.6s ease;
+  }
 }
 @keyframes translateIn {
   0% {
@@ -81,7 +83,11 @@ canvas.inactive {
   visibility: hidden;
   pointer-events: none;
   border-radius: 1.4em;
-  animation: translateOut 0.6s ease;
+}
+@media not (prefers-reduced-motion) {
+  canvas.inactive {
+    animation: translateOut 0.6s ease;
+  }
 }
 @keyframes translateOut {
   0% {
