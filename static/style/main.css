@@ -31,7 +31,7 @@ canvas {
   border-radius: 0;
 }
 @media not (prefers-reduced-motion) {
-  canvas:not(.inactive) {
+  canvas:not(.inactive):not(:only-child) {
     animation: translateIn 0.6s ease;
   }
 }

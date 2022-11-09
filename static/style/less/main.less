@@ -38,7 +38,7 @@ canvas {
   background-color: @canvas-color;
   outline: 6px solid @background-color;
   border-radius: 0;
-  &:not(.inactive) {
+  &:not(.inactive):not(:only-child) {
     @media not (prefers-reduced-motion) {
       animation: translateIn @canvas-anim-duration ease;
     }
