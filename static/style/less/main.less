@@ -115,7 +115,7 @@ input:invalid {
     border: 2px solid @canvas-color;
     background-color: @overlay-bg;
     box-sizing: content-box;
-    padding: .155em;
+    padding: @overlay-padding;
   }
   .button,
   .overlay-input,
@@ -180,15 +180,15 @@ input:invalid {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    width: 2.4em;
-    height: 2.4em;
+    font-size: 1.25rem;
+    width: @overlay-button-dims;
+    height: @overlay-button-dims;
     > svg {
-      width: 1.15em;
-      height: 1.15em;
+      width: @overlay-svg-dims;
+      height: @overlay-svg-dims;
       &.plus-icon {
-        width: .825em;
-        height: .825em;
+        width: @overlay-svg-dims * .73;
+        height: @overlay-svg-dims * .73;
       }
     }
   }
