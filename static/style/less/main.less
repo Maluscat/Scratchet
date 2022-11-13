@@ -21,6 +21,10 @@ body {
   height: 100vh;
   overflow: hidden;
   color: hsl(0, 0%, 95%);
+  // This is to prevent a gray flash before the first room has been loaded
+  &.initial-load {
+    background-color: @canvas-color;
+  }
   > *:not(#canvas-container) {
     z-index: @max-z-index;
   }

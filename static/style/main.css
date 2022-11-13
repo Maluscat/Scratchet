@@ -16,6 +16,9 @@ body {
   overflow: hidden;
   color: hsl(0, 0%, 95%);
 }
+body.initial-load {
+  background-color: hsl(0, 0%, 8%);
+}
 body > *:not(#canvas-container) {
   z-index: 2147483647;
 }

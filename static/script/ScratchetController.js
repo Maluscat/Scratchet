@@ -187,6 +187,7 @@ class ScratchetController extends ScratchetBufferController {
     }
 
     const newRoom = new ScratchetRoom(roomCode, roomName, this.globalUsername, peers);
+    document.body.classList.remove('initial-load');
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
     roomList.appendChild(newRoom.roomListNode);
