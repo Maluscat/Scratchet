@@ -25,7 +25,8 @@ const SEND_FULL_METADATA_INTERVAL = 1000;
 const META_LEN = {
   NORMAL: 5,
   ERASE: 2,
-}
+};
+const BULK_INIT_SEPARATOR_LEN = 2;
 // Length of the additional metadata for the server, currently the userID
 const EXTRA_SERVER_META_LEN = 1;
 

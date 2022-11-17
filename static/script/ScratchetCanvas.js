@@ -149,14 +149,16 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   // ---- Buffer functions ----
   handleBulkInitData(data, user) {
-    let index = 1;
+    let startIndex = BULK_INIT_SEPARATOR_LEN;
+    // i == 0 is the bulk init mode indicator (MODE.BULK_INIT) and can be skipped
     for (let i = 1; i < data.length; i++) {
       if (data[i] === Global.MODE.BULK_INIT) {
-        this.addServerDataToBuffer(data.subarray(index, i), user);
-        index = i + 1;
+        const wrapperDestIndex = data[i + 1];
+        this.addServerDataToBuffer(data.subarray(startIndex, i), user, wrapperDestIndex);
+        startIndex = i + BULK_INIT_SEPARATOR_LEN;
       }
     }
-    this.addServerDataToBuffer(data.subarray(index), user);
+    this.addServerDataToBuffer(data.subarray(startIndex), user);
     this.redrawCanvas();
   }
   handleEraseData(data, user) {
@@ -211,10 +213,15 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   sendJoinedUserBuffer() {
     const userCache = this.getOwnUser().posCache;
     if (userCache.size > 0) {
+      const globalPosBufferArr = Array.from(this.globalPosBuffer);
       const joinedBuffer = [this.roomCode];
       for (const posDataWrapper of userCache) {
+        const wrapperDestIndex = globalPosBufferArr.indexOf(posDataWrapper);
         for (const posData of posDataWrapper) {
-          joinedBuffer.push(Global.MODE.BULK_INIT, ...this.convertClientDataToServerData(posData));
+          joinedBuffer.push(
+            Global.MODE.BULK_INIT,
+            wrapperDestIndex,
+            ...this.convertClientDataToServerData(posData));
         }
       }
       sock.send(new Int16Array(joinedBuffer));
@@ -231,17 +238,24 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
   }
 
-  addServerDataToBuffer(posData, user) {
+  addServerDataToBuffer(posData, user, wrapperDestIndex) {
     posData = this.convertServerDataToClientData(posData, user);
     if (posData) {
       user.setColorIndicator(getClientMetaHue(posData));
-      this.addClientDataToBuffer(posData, user);
+      this.addClientDataToBuffer(posData, user, wrapperDestIndex);
       this.redrawCanvas();
     }
   }
-  addClientDataToBuffer(posData, user) {
+  addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = createPosDataWrapper(posData);
-    this.globalPosBuffer.add(posDataWrapper);
+    // TODO This continuous conversion is dirty
+    if (wrapperDestIndex != null) {
+      const globalPosBufferArr = Array.from(this.globalPosBuffer);
+      globalPosBufferArr.splice(wrapperDestIndex, 0, posDataWrapper);
+      this.globalPosBuffer = new Set(globalPosBufferArr);
+    } else {
+      this.globalPosBuffer.add(posDataWrapper);
+    }
     user.posCache.add(posDataWrapper);
   }
 
