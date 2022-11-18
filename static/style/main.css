@@ -188,6 +188,7 @@ input:invalid {
   pointer-events: auto;
 }
 .overlay-input {
+  z-index: 2147483637 !important;
   white-space: nowrap;
   font-size: 1.025em;
   background-color: transparent;
@@ -244,7 +245,7 @@ input:invalid {
 .button-wrapper .floating-overlay-wrapper {
   padding: 0 1.56rem;
   margin: 0 -1.56rem;
-  z-index: 1;
+  z-index: 2147483645;
   position: absolute;
   top: 0;
 }
