@@ -172,6 +172,7 @@ input:invalid {
 .overlay .hover-overlay,
 .overlay .overlay-input:focus,
 .overlay .sl89-track {
+  z-index: 2147483646;
   border: 2px solid hsl(0, 0%, 8%);
   background-color: hsl(0, 0%, 18%);
   box-sizing: content-box;
@@ -219,8 +220,8 @@ input:invalid {
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;
-  width: 2.175em;
-  height: 2.175em;
+  width: 2.72rem;
+  height: 2.72rem;
 }
 .button-group .button > svg {
   width: 1.05em;
@@ -240,8 +241,18 @@ input:invalid {
     display: block;
   }
 }
-.button-wrapper .hover-overlay.active {
-  display: block;
+.button-wrapper .floating-overlay-wrapper {
+  padding: 0 1.56rem;
+  margin: 0 -1.56rem;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+}
+.overlay.left .button-wrapper .floating-overlay-wrapper {
+  left: 100%;
+}
+.overlay.right .button-wrapper .floating-overlay-wrapper {
+  right: 100%;
 }
 .button-wrapper .hover-overlay {
   display: none;
@@ -249,7 +260,9 @@ input:invalid {
   margin: 0 0.15em;
   border-radius: 1.4em;
   white-space: nowrap;
-  z-index: 1;
+}
+.button-wrapper .hover-overlay.active {
+  display: block;
 }
 .button-wrapper .hover-overlay > ul {
   margin: 0;
@@ -262,16 +275,6 @@ input:invalid {
 }
 .button-wrapper .hover-overlay > ul .item:hover {
   font-weight: bold;
-}
-.button-wrapper.absolute .hover-overlay {
-  position: absolute;
-  top: 0;
-}
-.overlay.left .button-wrapper.absolute .hover-overlay {
-  left: 100%;
-}
-.overlay.right .button-wrapper.absolute .hover-overlay {
-  right: 100%;
 }
 .sl89-thumb {
   background-color: hsl(0, 0%, 31%);

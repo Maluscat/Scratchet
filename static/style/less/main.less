@@ -206,8 +206,21 @@ input:invalid {
       display: block;
     }
   }
-  .hover-overlay.active {
-    display: block;
+  .floating-overlay-wrapper {
+    // Creating a hoverable but still invisible area 
+    @floating-padding: (@overlay-button-dims / 2) + @overlay-padding;
+    padding: 0 @floating-padding;
+    margin: 0 -@floating-padding;
+    z-index: 1;
+
+    position: absolute;
+    top: 0;
+    .overlay.left & {
+      left: 100%;
+    }
+    .overlay.right & {
+      right: 100%
+    }
   }
   .hover-overlay {
     display: none;
@@ -215,7 +228,9 @@ input:invalid {
     margin: 0 .15em;
     border-radius: @general-border-radius;
     white-space: nowrap;
-    z-index: 1;
+    &.active {
+      display: block;
+    }
     > ul {
       margin: 0;
       list-style: none;
@@ -227,16 +242,6 @@ input:invalid {
           font-weight: bold;
         }
       }
-    }
-  }
-  &.absolute .hover-overlay {
-    position: absolute;
-    top: 0;
-    .overlay.left & {
-      left: 100%;
-    }
-    .overlay.right & {
-      right: 100%
     }
   }
 }
