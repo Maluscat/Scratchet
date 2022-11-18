@@ -129,13 +129,17 @@ input:invalid {
 }
 
 .overlay-input {
-  @extra-padding: .4em;
+  @extra-padding: .4rem;
+  white-space: nowrap;
+  font-size: 1.025em;
   background-color: transparent;
+  padding-top: @overlay-padding;
+  padding-bottom: @overlay-padding;
+  // Overwriting `.overlay.overlay-input:focus` styles (see above)
   padding-left: @extra-padding !important;
   padding-right: @extra-padding !important;
-  white-space: nowrap;
-  // Reverting the changed position caused by the extra padding
-  margin: 0 -@extra-padding;
+  // Lessen the changed position caused by the extra padding
+  margin: 0 -(@extra-padding / 2);
   text-shadow:
     1px 0 @canvas-color,
     -1px 0 @canvas-color,
@@ -165,9 +169,7 @@ input:invalid {
 .horizontal-group {
   display: flex;
   align-items: center;
-  > *:not(:last-child) {
-    margin-right: @overlay-gap;
-  }
+  gap: @overlay-gap;
 }
 
 .button-group {
