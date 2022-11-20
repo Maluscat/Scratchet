@@ -1,7 +1,7 @@
 'use strict';
 class ScratchetCanvas extends ScratchetCanvasControls {
   pressedMouseBtn = -1;
-  globalPosBuffer = new Array(); // Array<posDataWrappersInDrawOrder>
+  posBuffer = new Array(); // Array<posDataWrappersInDrawOrder>
   lastPos = new Array(2);
 
   width = 25;
@@ -91,9 +91,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
 
     let hasChanged = true;
-    for (var i = 0; i < this.globalPosBuffer.length; i++) {
-      const posDataWrapper = this.globalPosBuffer[i];
-      const nextWrapper = this.globalPosBuffer[i + 1];
+    for (var i = 0; i < this.posBuffer.length; i++) {
+      const posDataWrapper = this.posBuffer[i];
+      const nextWrapper = this.posBuffer[i + 1];
       let isFromHighlightedUser = false;
 
       if (userHighlight != null) {
@@ -214,7 +214,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     if (userCache.size > 0) {
       const joinedBuffer = [this.roomCode];
       for (const posDataWrapper of userCache) {
-        const wrapperDestIndex = this.globalPosBuffer.indexOf(posDataWrapper);
+        const wrapperDestIndex = this.posBuffer.indexOf(posDataWrapper);
         for (const posData of posDataWrapper) {
           joinedBuffer.push(
             Global.MODE.BULK_INIT,
@@ -247,9 +247,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = createPosDataWrapper(posData);
     if (wrapperDestIndex != null) {
-      this.globalPosBuffer.splice(wrapperDestIndex, 0, posDataWrapper);
+      this.posBuffer.splice(wrapperDestIndex, 0, posDataWrapper);
     } else {
-      this.globalPosBuffer.push(posDataWrapper);
+      this.posBuffer.push(posDataWrapper);
     }
     user.posCache.add(posDataWrapper);
   }
@@ -313,7 +313,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   // ---- Helper functions ----
   deleteFromPosBuffer(item) {
-    this.globalPosBuffer.splice(this.globalPosBuffer.indexOf(item), 1);
+    this.posBuffer.splice(this.posBuffer.indexOf(item), 1);
   }
 
   setLineWidth(width = this.width) {
