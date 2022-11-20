@@ -344,7 +344,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   getPosDataIndex(wrapperDestIndex) {
     let start = 0;
     let end = this.initPosIndexes.length - 1;
-    while (start < end) {
+    while (start <= end) {
       const mid = Math.floor((start + end) / 2);
 
       if (this.initPosIndexes[mid] === wrapperDestIndex) {
@@ -352,12 +352,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
 
       if (wrapperDestIndex < this.initPosIndexes[mid]) {
-        end = mid;
+        end = mid - 1;
       } else {
         start = mid + 1;
       }
     }
-    return end; // end === start
+    return end + 1;
   }
   deleteFromPosBuffer(item) {
     this.posBuffer.splice(this.posBuffer.indexOf(item), 1);
