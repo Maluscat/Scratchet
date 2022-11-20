@@ -1,8 +1,22 @@
 'use strict';
 class ScratchetCanvas extends ScratchetCanvasControls {
   pressedMouseBtn = -1;
-  posBuffer = new Array(); // Array<posDataWrappersInDrawOrder>
   lastPos = new Array(2);
+
+  /**
+   * Contains the posDataWrappers to draw in sequential order.
+   */
+  posBuffer = new Array();
+  /**
+   * Contains the "bulk init indexes" / "wrapper destination indexes"
+   * for the corresponding entries in {@link posBuffer},
+   * so that potentially incoming bulk init user data can be sequenced
+   * into the {@link posBuffer} by its indexes, retaining draw order.
+   *
+   * (TODO) Can be deleted after an approximated timespan
+   * when all peer data should have arrived.
+   */
+  initPosIndexes = new Array();
 
   width = 25;
   hue = 0;
@@ -247,11 +261,20 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = createPosDataWrapper(posData);
     if (wrapperDestIndex != null) {
-      this.posBuffer.splice(wrapperDestIndex, 0, posDataWrapper);
+      const insertIndex = this.getPosDataIndex(wrapperDestIndex);
+      this.addToBufferWithInitIndex(posDataWrapper, wrapperDestIndex, insertIndex);
     } else {
-      this.posBuffer.push(posDataWrapper);
+      this.addToBufferWithInitIndex(posDataWrapper, Infinity);
     }
     user.posCache.add(posDataWrapper);
+  }
+
+  addToBufferWithInitIndex(value, initIndex, insertIndex = Infinity) {
+    // insertIndex === Infinity is equivalent to `Array.push`
+    if (this.initPosIndexes) {
+      this.initPosIndexes.splice(insertIndex, 0, initIndex);
+    }
+    this.posBuffer.splice(insertIndex, 0, value);
   }
 
   // ---- Protocol converter ----
@@ -312,6 +335,30 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   // ---- Helper functions ----
+  /**
+   * Simple binary search. Returns the desired position of the input number.
+   * (Inspired by https://stackoverflow.com/a/50612218).
+   * @param {number} wrapperDestIndex The bulk init index to get the position of.
+   * @return {number} An {@link initPosIndexes} index.
+   */
+  getPosDataIndex(wrapperDestIndex) {
+    let start = 0;
+    let end = this.initPosIndexes.length - 1;
+    while (start < end) {
+      const mid = Math.floor((start + end) / 2);
+
+      if (this.initPosIndexes[mid] === wrapperDestIndex) {
+        return mid;
+      }
+
+      if (wrapperDestIndex < this.initPosIndexes[mid]) {
+        end = mid;
+      } else {
+        start = mid + 1;
+      }
+    }
+    return end; // end === start
+  }
   deleteFromPosBuffer(item) {
     this.posBuffer.splice(this.posBuffer.indexOf(item), 1);
   }
