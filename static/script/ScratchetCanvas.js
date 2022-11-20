@@ -166,14 +166,19 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     // i == 0 is the bulk init mode indicator (MODE.BULK_INIT) and can be skipped
     for (let i = 1; i < data.length; i++) {
       if (data[i] === Global.MODE.BULK_INIT) {
-        const wrapperDestIndex = data[i + 1];
-        this.addServerDataToBuffer(data.subarray(startIndex, i), user, wrapperDestIndex);
+        this.sliceInitDataAndAddToBuffer(data, user, startIndex, i);
         startIndex = i + BULK_INIT_SEPARATOR_LEN;
       }
     }
-    this.addServerDataToBuffer(data.subarray(startIndex), user);
+    this.sliceInitDataAndAddToBuffer(data, user, startIndex);
     this.redrawCanvas();
   }
+  sliceInitDataAndAddToBuffer(data, user, startIndex, endIndex = Infinity) {
+    const posData = data.subarray(startIndex, endIndex);
+    const wrapperDestIndex = data[startIndex - BULK_INIT_SEPARATOR_LEN + 1];
+    this.addServerDataToBuffer(posData, user, wrapperDestIndex);
+  }
+
   handleEraseData(data, user) {
     for (let i = META_LEN.ERASE; i < data.length; i += 2) {
       this.erasePos(data[i], data[i + 1], user, getClientMetaWidth(data));
