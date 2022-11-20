@@ -1,7 +1,7 @@
 'use strict';
 class ScratchetCanvas extends ScratchetCanvasControls {
   pressedMouseBtn = -1;
-  globalPosBuffer = new Set(); // Set<posDataWrapperInDrawOrder>
+  globalPosBuffer = new Array(); // Array<posDataWrappersInDrawOrder>
   lastPos = new Array(2);
 
   width = 25;
@@ -90,11 +90,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     // TODO skip unseen points
     this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
 
-    const globalPosBufferArr = Array.from(this.globalPosBuffer);
     let hasChanged = true;
-    for (var i = 0; i < globalPosBufferArr.length; i++) {
-      const posDataWrapper = globalPosBufferArr[i];
-      const nextWrapper = globalPosBufferArr[i + 1];
+    for (var i = 0; i < this.globalPosBuffer.length; i++) {
+      const posDataWrapper = this.globalPosBuffer[i];
+      const nextWrapper = this.globalPosBuffer[i + 1];
       let isFromHighlightedUser = false;
 
       if (userHighlight != null) {
@@ -203,7 +202,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         }
       }
       if (posDataWrapper.length === 0) {
-        this.globalPosBuffer.delete(posDataWrapper);
+        this.deleteFromPosBuffer(posDataWrapper);
         user.posCache.delete(posDataWrapper);
       }
     }
@@ -213,10 +212,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   sendJoinedUserBuffer() {
     const userCache = this.getOwnUser().posCache;
     if (userCache.size > 0) {
-      const globalPosBufferArr = Array.from(this.globalPosBuffer);
       const joinedBuffer = [this.roomCode];
       for (const posDataWrapper of userCache) {
-        const wrapperDestIndex = globalPosBufferArr.indexOf(posDataWrapper);
+        const wrapperDestIndex = this.globalPosBuffer.indexOf(posDataWrapper);
         for (const posData of posDataWrapper) {
           joinedBuffer.push(
             Global.MODE.BULK_INIT,
@@ -231,7 +229,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   clearUserBufferAndRedraw(user) {
     if (user.posCache.size > 0) {
       for (const posDataWrapper of user.posCache) {
-        this.globalPosBuffer.delete(posDataWrapper);
+        this.deleteFromPosBuffer(posDataWrapper);
       }
       user.posCache.clear();
       this.redrawCanvas();
@@ -248,13 +246,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = createPosDataWrapper(posData);
-    // TODO This continuous conversion is dirty
     if (wrapperDestIndex != null) {
-      const globalPosBufferArr = Array.from(this.globalPosBuffer);
-      globalPosBufferArr.splice(wrapperDestIndex, 0, posDataWrapper);
-      this.globalPosBuffer = new Set(globalPosBufferArr);
+      this.globalPosBuffer.splice(wrapperDestIndex, 0, posDataWrapper);
     } else {
-      this.globalPosBuffer.add(posDataWrapper);
+      this.globalPosBuffer.push(posDataWrapper);
     }
     user.posCache.add(posDataWrapper);
   }
@@ -317,6 +312,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   // ---- Helper functions ----
+  deleteFromPosBuffer(item) {
+    this.globalPosBuffer.splice(this.globalPosBuffer.indexOf(item), 1);
+  }
+
   setLineWidth(width = this.width) {
     this.ctx.lineWidth = width;
   }
