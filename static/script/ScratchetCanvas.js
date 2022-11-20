@@ -258,11 +258,15 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   addServerDataToBuffer(posData, user, wrapperDestIndex) {
     posData = this.convertServerDataToClientData(posData, user);
     if (posData) {
-      user.setColorIndicator(getClientMetaHue(posData));
       this.addClientDataToBuffer(posData, user, wrapperDestIndex);
-      this.redrawCanvas();
     }
   }
+  addServerDataToBufferAndDraw(posData, user) {
+    user.setColorIndicator(getClientMetaHue(posData));
+    this.addServerDataToBuffer(posData, user);
+    this.redrawCanvas();
+  }
+
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = createPosDataWrapper(posData);
     if (wrapperDestIndex != null) {

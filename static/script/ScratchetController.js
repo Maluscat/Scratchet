@@ -353,7 +353,7 @@ class ScratchetController {
         targetRoom.handleEraseData(data, targetUser);
         break;
       default:
-        targetRoom.addServerDataToBuffer(data, targetUser);
+        targetRoom.addServerDataToBufferAndDraw(data, targetUser);
     }
   }
 
