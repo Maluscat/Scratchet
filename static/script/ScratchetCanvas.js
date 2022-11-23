@@ -35,6 +35,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.setLineWidth();
 
     this.setTransform();
+
+    setTimeout(() => {
+      delete this.initPosIndexes;
+    }, Global.MAX_INIT_TRANSMISSION_TIME);
   }
 
   // ---- Event functions ----
@@ -269,7 +273,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = createPosDataWrapper(posData);
-    if (wrapperDestIndex != null) {
+    if (wrapperDestIndex != null && this.initPosIndexes) {
       const insertIndex = this.getPosDataIndex(wrapperDestIndex);
       this.addToBufferWithInitIndex(posDataWrapper, wrapperDestIndex, insertIndex);
     } else {

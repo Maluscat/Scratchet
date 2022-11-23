@@ -1,6 +1,7 @@
 const USERNAME_LEN = 20;
 
 const Global = {
+  MAX_INIT_TRANSMISSION_TIME: 30 * 1000,
   SEND_INTERVAL: 40,
   MODE: {
     BULK_INIT: -1,
