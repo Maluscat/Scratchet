@@ -80,7 +80,7 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   updateUserIndicator() {
-    userListButton.textContent = this.users.size;
+    ui.setUserIndicator(this.users.size);
   }
   appendUserList() {
     if (userListWrapper.childElementCount > 0) {

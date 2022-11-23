@@ -217,7 +217,7 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   updateRoomIndicator() {
-    roomListButton.textContent = this.rooms.size;
+    ui.setRoomIndicator(this.rooms.size);
   }
 
   // ---- Canvas helpers ----

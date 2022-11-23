@@ -138,6 +138,14 @@ class UIHandler {
     return controller.joinRoom(value);
   }
 
+  // ---- Indicators ----
+  setRoomIndicator(value) {
+    roomListButton.textContent = value;
+  }
+  setUserIndicator(value) {
+    userListButton.textContent = value;
+  }
+
   // ---- Draw indicator ----
   toggleDrawIndicatorEraseMode(reset) {
     if (reset) {
