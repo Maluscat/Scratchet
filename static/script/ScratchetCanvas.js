@@ -16,6 +16,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    * when all peer data should have arrived
    */
   initPosIndexes = new Array();
+  /**
+   * Contains points which were undone so that they can be redone.
+   */
+  redoBuffer = new Array();
 
   width = 25;
   hue = 0;
@@ -159,6 +163,31 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   setLastPos(posX, posY) {
     this.lastPos[0] = posX;
     this.lastPos[1] = posY;
+  }
+
+  // ---- Undo/redo ----
+  /** @param {ScratchetUser} user */
+  undoPoint(user) {
+    if (user.posCache.size > 0) {
+      const posData = Array.from(user.posCache).at(-1);
+      user.posCache.delete(posData);
+      this.deleteFromPosBuffer(posData);
+      this.redoBuffer.push(posData);
+      this.redrawCanvas();
+    }
+  }
+  /** @param {ScratchetUser} user */
+  redoPoint(user) {
+    if (this.redoBuffer.length > 0) {
+      const posData = this.redoBuffer.pop();
+      user.posCache.add(posData);
+      this.addToBufferWithInitIndex(posData, Infinity);
+      this.redrawCanvas();
+    }
+  }
+
+  clearRedoBuffer() {
+    this.redoBuffer = new Array();
   }
 
   // ---- Buffer functions ----
@@ -312,6 +341,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     } else {
       this.addToBufferWithInitIndex(posDataWrapper, Infinity);
     }
+    this.clearRedoBuffer();
     user.posCache.add(posDataWrapper);
   }
 

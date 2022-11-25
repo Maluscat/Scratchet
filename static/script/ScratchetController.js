@@ -39,6 +39,9 @@ class ScratchetController extends ScratchetBufferController {
       ui.handleOverlayInputSubmit(e, this.changeCurrentRoomName.bind(this));
     });
 
+    undoButton.addEventListener('click', this.invokeUndo.bind(this));
+    redoButton.addEventListener('click', this.invokeRedo.bind(this));
+
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
     copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
     newRoomButton.addEventListener('click', this.requestNewRoom.bind(this));
@@ -146,6 +149,14 @@ class ScratchetController extends ScratchetBufferController {
     } else {
       this.resetUsernameInput();
     }
+  }
+
+  // -> Utility overlay
+  invokeUndo() {
+    this.activeRoom.undoPoint(this.activeRoom.getOwnUser());
+  }
+  invokeRedo() {
+    this.activeRoom.redoPoint(this.activeRoom.getOwnUser());
   }
 
   // ---- Username handling ----
