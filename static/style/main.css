@@ -246,7 +246,7 @@ input:invalid {
     transform: translateY(-0.5em);
   }
 }
-#utility-overlay .button,
+#utility-overlay > .button,
 #utility-overlay .sl89-track {
   width: 12em;
   height: 1.6em;

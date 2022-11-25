@@ -16,6 +16,9 @@ const joinRoomOverlayInput =
 const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
 const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
+const undoButton = document.getElementById('undo-button');
+const redoButton = document.getElementById('redo-button');
+
 const OVERLAY_INPUT_INVALID_DURATION = 365;
 const HIT_BORDER_DURATION = 200;
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
