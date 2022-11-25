@@ -193,8 +193,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   // ---- Buffer functions ----
   handleBulkInitData(data, user) {
     let startIndex = BULK_INIT_SEPARATOR_LEN;
-    // i == 0 is the bulk init mode indicator (MODE.BULK_INIT) and can be skipped
-    for (let i = 1; i < data.length; i++) {
+    for (let i = startIndex; i < data.length; i++) {
       if (data[i] === Global.MODE.BULK_INIT) {
         this.sliceInitDataAndAddToBuffer(data, user, startIndex, i);
         startIndex = i + BULK_INIT_SEPARATOR_LEN;
