@@ -19,25 +19,17 @@ class ScratchetController extends ScratchetBufferController {
     hueSlider.addEvent('change:value', this.changeHue.bind(this));
     widthSlider.addEvent('change:value', this.changeWidth.bind(this));
 
-    usernameInput.addEventListener('input', e => {
-      ui.handleOverlayInputChange(e, Global.Validator.validateUsername);
-    });
-    usernameInput.addEventListener('beforeinput', e => {
-      ui.handleOverlayInputBeforeChange(e, Global.Validator.MAX_USERNAME_LENGTH);
-    });
-    usernameInput.addEventListener('blur', e => {
-      ui.handleOverlayInputSubmit(e, this.changeOwnUsername.bind(this));
-    });
+    ui.registerInputHandler(
+      usernameInput,
+      this.changeOwnUsername.bind(this),
+      Global.Validator.MAX_USERNAME_LENGTH,
+      Global.Validator.validateUsername);
 
-    roomNameInput.addEventListener('input', e => {
-      ui.handleOverlayInputChange(e, Global.Validator.validateRoomName);
-    });
-    roomNameInput.addEventListener('beforeinput', e => {
-      ui.handleOverlayInputBeforeChange(e, Global.Validator.MAX_ROOM_NAME_LENGTH);
-    });
-    roomNameInput.addEventListener('blur', e => {
-      ui.handleOverlayInputSubmit(e, this.changeCurrentRoomName.bind(this));
-    });
+    ui.registerInputHandler(
+      roomNameInput,
+      this.changeCurrentRoomName.bind(this),
+      Global.Validator.MAX_ROOM_NAME_LENGTH,
+      Global.Validator.validateRoomName);
 
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
     copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));

@@ -52,7 +52,24 @@ class UIHandler {
     }
   }
 
-  // ---- Overlay events ----
+  toggleHoverOverlay(e) {
+    e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
+  }
+
+  // ---- Input helpers ----
+  registerInputHandler(inputElement, submitCallback, validatorMaxLen, validatorCallback) {
+    inputElement.addEventListener('beforeinput', e => {
+      this.handleOverlayInputBeforeChange(e, validatorMaxLen);
+    });
+    inputElement.addEventListener('input', e => {
+      this.handleOverlayInputChange(e, validatorCallback);
+    });
+    inputElement.addEventListener('blur', e => {
+      this.handleOverlayInputSubmit(e, submitCallback);
+    });
+  }
+
+  // ---- Input events ----
   handleOverlayInputKeys(e) {
     if (e.key === 'Enter' || e.key === 'Escape') {
       e.currentTarget.blur();
@@ -102,10 +119,6 @@ class UIHandler {
     } else {
       e.currentTarget.classList.remove('invalid');
     }
-  }
-
-  toggleHoverOverlay(e) {
-    e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
   }
 
   // ---- Join room input events ----
