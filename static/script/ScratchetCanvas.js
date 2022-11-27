@@ -52,12 +52,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.pressedMouseBtn = e.button;
     if (this.pressedMouseBtn === 2) {
       ui.toggleDrawIndicatorEraseMode();
-      controller.initializePosBufferErase();
+      controller.initializeSendBufferErase();
     } else if (this.pressedMouseBtn === 0) {
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
       this.setLastPos(posX, posY);
-      controller.initializePosBufferNormal(posX, posY);
+      controller.initializeSendBufferNormal(posX, posY);
     }
     if (e.pointerType !== 'touch') {
       this.canvasDraw(e);
@@ -86,7 +86,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         if (this.erasePos(posX, posY, this.getOwnUser())) {
           this.redrawCanvas();
           controller.sendCompleteMetaDataNextTime();
-          controller.addToPosBuffer(posX, posY);
+          controller.addToSendBuffer(posX, posY);
         }
       } else {
         controller.sendPositionsIfHueHasChanged();
@@ -98,7 +98,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
         this.setLastPos(posX, posY);
 
-        controller.addToPosBuffer(posX, posY);
+        controller.addToSendBuffer(posX, posY);
       }
     }
   }
