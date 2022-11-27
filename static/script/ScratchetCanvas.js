@@ -181,7 +181,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     if (this.redoBuffer.length > 0) {
       const posData = this.redoBuffer.pop();
       user.posCache.add(posData);
-      this.addToBufferWithInitIndex(posData, Infinity);
+      this.addToBuffer(posData);
       this.redrawCanvas();
     }
   }
@@ -336,15 +336,22 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     const posDataWrapper = createPosDataWrapper(posData);
     if (wrapperDestIndex != null && this.initPosIndexes) {
       const insertIndex = this.getPosDataIndex(wrapperDestIndex);
-      this.addToBufferWithInitIndex(posDataWrapper, wrapperDestIndex, insertIndex);
+      this.addToBuffer(posDataWrapper, wrapperDestIndex, insertIndex);
     } else {
-      this.addToBufferWithInitIndex(posDataWrapper, Infinity);
+      this.addToBuffer(posDataWrapper);
     }
     this.clearRedoBuffer();
     user.posCache.add(posDataWrapper);
   }
 
-  addToBufferWithInitIndex(value, initIndex, insertIndex = Infinity) {
+  /**
+   * Add a posDataWrapper to the {@link posBuffer} with an optional init index,
+   * at an optional array position.
+   * @param {Array<Array<number>>} value The posDataWrapper to insert.
+   * @param {number} [initIndex = Infinity] The init index of the posDataWrapper.
+   * @param {number} [insertIndex = Infinity] The array index to insert value at.
+   */
+  addToBuffer(value, initIndex = Infinity, insertIndex = Infinity) {
     // insertIndex === Infinity is equivalent to `Array.push`
     if (this.initPosIndexes) {
       this.initPosIndexes.splice(insertIndex, 0, initIndex);
