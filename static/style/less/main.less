@@ -117,6 +117,7 @@ input:invalid {
     background-color: @overlay-bg;
     box-sizing: content-box;
     padding: @overlay-padding;
+    transition: transform .075s ease;
   }
   .button,
   .overlay-input,
@@ -126,6 +127,20 @@ input:invalid {
   .slider-hue-indicator {
     border-radius: 100px;
     pointer-events: auto;
+  }
+
+  body.inactive & {
+    .sl89-thumb,
+    .sl89-thumb * {
+      pointer-events: none;
+    }
+    .button:not(.persistent),
+    .sl89-track {
+      pointer-events: none;
+      transform: scale(.915);
+      background-color: @overlay-bg--inactive;
+      color: @main-color--inactive;
+    }
   }
 }
 
@@ -271,6 +286,9 @@ input:invalid {
   pointer-events: none;
   &.erase {
     background-color: @draw-indicator-color;
+  }
+  body.inactive & {
+    display: none;
   }
 }
 

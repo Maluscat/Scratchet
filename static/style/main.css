@@ -177,6 +177,7 @@ input:invalid {
   background-color: hsl(0, 0%, 18%);
   box-sizing: content-box;
   padding: 0.2rem;
+  transition: transform 0.075s ease;
 }
 .overlay .button,
 .overlay .overlay-input,
@@ -186,6 +187,17 @@ input:invalid {
 .overlay .slider-hue-indicator {
   border-radius: 100px;
   pointer-events: auto;
+}
+body.inactive .overlay .sl89-thumb,
+body.inactive .overlay .sl89-thumb * {
+  pointer-events: none;
+}
+body.inactive .overlay .button:not(.persistent),
+body.inactive .overlay .sl89-track {
+  pointer-events: none;
+  transform: scale(0.915);
+  background-color: hsl(0, 0%, 12%);
+  color: hsl(0, 0%, 85%);
 }
 .overlay-input {
   z-index: 2147483637 !important;
@@ -298,6 +310,9 @@ input:invalid {
 }
 #draw-indicator.erase {
   background-color: hsl(0, 0%, 90%);
+}
+body.inactive #draw-indicator {
+  display: none;
 }
 #hit-border {
   pointer-events: none;
