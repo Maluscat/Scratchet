@@ -5,6 +5,7 @@ class ScratchetController extends ScratchetBufferController {
 
   /** @type { Map<number, ScratchetRoom> } */
   rooms = new Map();
+  activeIntervals = new Array();
 
   constructor() {
     super();
@@ -41,8 +42,27 @@ class ScratchetController extends ScratchetBufferController {
       (copyRoomLinkContent.offsetWidth / parseFloat(getComputedStyle(copyRoomLinkContent).fontSize)) + 'em';
     copyRoomLinkOverlay.classList.remove('active');
 
-    setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL);
-    setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL);
+    this.activate();
+  }
+
+  activate() {
+    document.body.classList.remove('inactive');
+
+    this.activeIntervals.push(
+      setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL));
+    this.activeIntervals.push(
+      setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL));
+  }
+
+  deactivate() {
+    for (const intervalID of this.activeIntervals) {
+      clearInterval(intervalID);
+    }
+    this.activeIntervals = new Array();
+
+    document.body.classList.add('inactive');
+    this.activeRoom = null;
+    ui.setUserIndicator(0);
   }
 
   // ---- Event handling ----
