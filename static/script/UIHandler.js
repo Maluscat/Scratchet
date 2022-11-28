@@ -24,10 +24,6 @@ const hitBorderTimeouts = {
 
 class UIHandler {
   constructor() {
-    for (const l of document.querySelectorAll('.overlay-input')) {
-      l.addEventListener('keydown', this.handleOverlayInputKeys.bind(this));
-    }
-
     joinRoomOverlayInput.addEventListener('keydown', this.handleJoinRoomInputKeys.bind(this));
     joinRoomOverlayInput.addEventListener('paste', this.handleJoinRoomInputPaste.bind(this));
 
@@ -58,6 +54,7 @@ class UIHandler {
 
   // ---- Input helpers ----
   registerInputHandler(inputElement, submitCallback, validatorMaxLen, validatorCallback) {
+    inputElement.addEventListener('keydown', this.handleOverlayInputKeys.bind(this));
     inputElement.addEventListener('beforeinput', e => {
       this.handleOverlayInputBeforeChange(e, validatorMaxLen);
     });
