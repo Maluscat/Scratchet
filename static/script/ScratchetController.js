@@ -48,9 +48,9 @@ class ScratchetController extends ScratchetBufferController {
   activate() {
     document.body.classList.remove('inactive');
 
-    this.activeIntervals.push(
+    this.activeIntervals.add(
       setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL));
-    this.activeIntervals.push(
+    this.activeIntervals.add(
       setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL));
   }
 
@@ -58,7 +58,7 @@ class ScratchetController extends ScratchetBufferController {
     for (const intervalID of this.activeIntervals) {
       clearInterval(intervalID);
     }
-    this.activeIntervals = new Array();
+    this.activeIntervals.clear();
 
     document.body.classList.add('inactive');
     this.activeRoom = null;
