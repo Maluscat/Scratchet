@@ -11,6 +11,7 @@ const drawIndicator = document.getElementById('draw-indicator');
 const hitBorder = document.getElementById('hit-border');
 
 const newRoomButton = document.getElementById('new-room-button');
+const leaveRoomButton = document.getElementById('leave-room-button');
 const joinRoomButton = document.getElementById('join-room-button');
 const copyRoomLinkButton = document.getElementById('copy-room-link-button');
 

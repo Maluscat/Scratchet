@@ -35,6 +35,7 @@ class ScratchetController extends ScratchetBufferController {
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
     copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
     newRoomButton.addEventListener('click', this.requestNewRoom.bind(this));
+    leaveRoomButton.addEventListener('click', this.leaveCurrentRoom.bind(this));
 
     // Set the join room input to the same width as the copy room link overlay
     copyRoomLinkOverlay.classList.add('active');
@@ -89,6 +90,11 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   // -> Room overlay
+  leaveCurrentRoom() {
+    sendMessage('leave', null, this.activeRoom.roomCode);
+    this.removeRoom(this.activeRoom);
+  }
+
   requestNewRoom() {
     sendMessage('newRoom', { username: this.globalUsername });
   }
@@ -207,6 +213,17 @@ class ScratchetController extends ScratchetBufferController {
     if (activate) {
       this.switchActiveRoom(newRoom);
     }
+  }
+  removeRoom(room) {
+    this.rooms.delete(room.roomCode);
+    room.removeSelf();
+    if (this.rooms.size > 0) {
+      // Switch to the first room
+      this.switchActiveRoom(this.rooms.values().next().value);
+    } else {
+      this.deactivate();
+    }
+    this.updateRoomIndicator();
   }
 
   switchActiveRoom(room) {
