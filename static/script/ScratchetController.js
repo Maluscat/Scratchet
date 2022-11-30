@@ -41,8 +41,6 @@ class ScratchetController extends ScratchetBufferController {
     joinRoomOverlayInput.style.maxWidth =
       (copyRoomLinkContent.offsetWidth / parseFloat(getComputedStyle(copyRoomLinkContent).fontSize)) + 'em';
     copyRoomLinkOverlay.classList.remove('active');
-
-    this.activate();
   }
 
   activate() {
@@ -310,7 +308,7 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   ownUserGetJoinData(value) {
-    const isInitial = !this.activeRoom;
+    const isDeactivated = !this.activeRoom;
 
     // For async reasons, the real user ID is solely used for the username
     this.defaultUsername = value.defaultName;
@@ -318,8 +316,8 @@ class ScratchetController extends ScratchetBufferController {
     this.addNewRoom(value.roomCode, value.roomName, value.peers, true);
 
     // NOTE: Needs to be called after `addNewRoom` to wait for the room activation
-    if (isInitial) {
-      this.init();
+    if (isDeactivated) {
+      this.activate();
     }
   }
 

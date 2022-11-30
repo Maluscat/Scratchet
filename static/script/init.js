@@ -91,6 +91,8 @@ import('./Global.mjs').then(module => {
   sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
   sock.addEventListener('open', controller.socketOpen.bind(controller))
   sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
+
+  controller.init();
 });
 
 
