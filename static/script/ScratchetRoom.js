@@ -116,6 +116,13 @@ class ScratchetRoom extends ScratchetCanvas {
     this.roomListNode.classList.remove('current');
   }
 
+  removeSelf() {
+    this.unfocus();
+    this.roomListNode.remove();
+    this.userListNode.remove();
+    this.canvas.remove();
+  }
+
   // ---- Room UI helpers ----
   setRoomNameInput() {
     roomNameInput.textContent = this.roomName;
