@@ -9,6 +9,9 @@ class ScratchetController extends ScratchetBufferController {
 
   constructor() {
     super();
+    // Binding functions to themselves to be able to remove them from events
+    this.pointerUp = this.pointerUp.bind(this);
+
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
       this.globalUsername = persistentUsername;
@@ -46,6 +49,7 @@ class ScratchetController extends ScratchetBufferController {
 
   activate() {
     document.body.classList.remove('inactive');
+    window.addEventListener('pointerup', this.pointerUp);
 
     this.activeIntervals.add(
       setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL));
@@ -59,12 +63,18 @@ class ScratchetController extends ScratchetBufferController {
     }
     this.activeIntervals.clear();
 
+    window.removeEventListener('pointerup', this.pointerUp);
     document.body.classList.add('inactive');
     this.activeRoom = null;
     ui.setUserIndicator(0);
   }
 
   // ---- Event handling ----
+  pointerUp() {
+    this.sendPositions();
+    this.activeRoom.finalizeDraw();
+  }
+
   windowResized() {
     for (const room of this.rooms.values()) {
       room.setDimensions();

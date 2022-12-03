@@ -27,7 +27,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     super(canvas);
 
     canvas.addEventListener('pointerdown', this.canvasDown.bind(this));
-    window.addEventListener('pointerup', this.pointerUp.bind(this));
     canvas.addEventListener('pointermove', this.canvasDraw.bind(this));
 
     this.setStrokeStyle();
@@ -63,13 +62,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
   }
 
-  pointerUp() {
-    controller.sendPositions();
-    this.pressedMouseBtn = -1;
-    ui.toggleDrawIndicatorEraseMode(true);
-    this.redrawCanvas();
-  }
-
   canvasDraw(e) {
     if (controls3D.touchIsActive) return;
 
@@ -98,6 +90,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         controller.addToSendBuffer(posX, posY);
       }
     }
+  }
+
+  finalizeDraw() {
+    this.pressedMouseBtn = -1;
+    ui.toggleDrawIndicatorEraseMode(true);
+    this.redrawCanvas();
   }
 
   // ---- Canvas handling ----
