@@ -31,24 +31,9 @@ class UIHandler {
     userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
     roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
     joinRoomButton.addEventListener('click', this.focusJoinRoomOverlay.bind(this));
-
-    window.addEventListener('wheel', this.mouseWheel.bind(this), { passive: false });
-    window.addEventListener('resize', controller.windowResized.bind(controller));
   }
 
   // ---- Misc events ----
-  mouseWheel(e) {
-    if (e.deltaY !== 0) {
-      const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
-      if (e.shiftKey) {
-        widthSlider.value += direction * 7;
-      } else if (e.ctrlKey) {
-        e.preventDefault();
-        hueSlider.value += direction * 24;
-      }
-    }
-  }
-
   toggleHoverOverlay(e) {
     e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
   }

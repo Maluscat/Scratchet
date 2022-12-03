@@ -11,6 +11,8 @@ class ScratchetController extends ScratchetBufferController {
     super();
     // Binding functions to themselves to be able to remove them from events
     this.pointerUp = this.pointerUp.bind(this);
+    this.mouseWheel = this.mouseWheel.bind(this);
+    this.windowResized = this.windowResized.bind(this);
 
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
@@ -49,7 +51,10 @@ class ScratchetController extends ScratchetBufferController {
 
   activate() {
     document.body.classList.remove('inactive');
+
     window.addEventListener('pointerup', this.pointerUp);
+    window.addEventListener('wheel', this.mouseWheel, { passive: false });
+    window.addEventListener('resize', this.windowResized);
 
     this.activeIntervals.add(
       setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL));
@@ -64,6 +69,9 @@ class ScratchetController extends ScratchetBufferController {
     this.activeIntervals.clear();
 
     window.removeEventListener('pointerup', this.pointerUp);
+    window.removeEventListener('wheel', this.mouseWheel);
+    window.removeEventListener('resize', this.windowResized);
+
     document.body.classList.add('inactive');
     this.activeRoom = null;
     ui.setUserIndicator(0);
@@ -79,6 +87,18 @@ class ScratchetController extends ScratchetBufferController {
     for (const room of this.rooms.values()) {
       room.setDimensions();
       room.setTransform();
+    }
+  }
+
+  mouseWheel(e) {
+    if (e.deltaY !== 0) {
+      const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
+      if (e.shiftKey) {
+        widthSlider.value += direction * 7;
+      } else if (e.ctrlKey) {
+        e.preventDefault();
+        hueSlider.value += direction * 24;
+      }
     }
   }
 
