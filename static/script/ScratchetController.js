@@ -74,6 +74,7 @@ class ScratchetController extends ScratchetBufferController {
 
     document.body.classList.add('inactive');
     this.activeRoom = null;
+    roomNameInput.textContent = '';
     ui.setUserIndicator(0);
   }
 
