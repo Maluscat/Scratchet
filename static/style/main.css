@@ -192,6 +192,9 @@ body.inactive .overlay .sl89-thumb,
 body.inactive .overlay .sl89-thumb * {
   pointer-events: none;
 }
+body.inactive .overlay .overlay-input:not(.persistent) {
+  display: none;
+}
 body.inactive .overlay .button:not(.persistent),
 body.inactive .overlay .sl89-track {
   pointer-events: none;
