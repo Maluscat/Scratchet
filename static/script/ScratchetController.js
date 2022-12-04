@@ -202,13 +202,17 @@ class ScratchetController extends ScratchetBufferController {
   }
   resetUsernameInput() {
     usernameInput.classList.remove('invalid');
-    this.activeRoom.setUsernameInput();
+    if (this.activeRoom != null) {
+      this.activeRoom.setUsernameInput();
+    } else {
+      usernameInput.textContent = this.globalUsername;
+    }
   }
   setOwnUsername(username, isInitial) {
-    if (isInitial || username !== this.activeRoom.getOwnUser().name) {
+    if (isInitial || this.activeRoom == null || username !== this.activeRoom.getOwnUser().name) {
       this.globalUsername = username;
       localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
-      if (!isInitial) {
+      if (!isInitial && this.activeRoom != null) {
         this.activeRoom.getOwnUser().setName(username);
         sendMessage('changeName', username, this.activeRoom.roomCode);
       }
