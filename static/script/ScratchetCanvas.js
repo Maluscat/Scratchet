@@ -195,41 +195,60 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
       for (let i = 0; i < posDataWrapper.length; i++) {
         const posData = posDataWrapper[i];
-
-        let newPosData = new Array(META_LEN.NORMAL);
-        for (let i = 0; i < newPosData.length; i++) {
-          newPosData[i] = posData[i];
-        }
+        let startIdx = META_LEN.NORMAL;
 
         for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
-          // Push only the points back into the array which are not in range of the erase pos
-          if (Math.abs(posData[j] - posX) > eraserWidth || Math.abs(posData[j + 1] - posY) > eraserWidth) {
-            newPosData.push(posData[j], posData[j + 1]);
-          } else {
-            hasErased = true;
-            if (newPosData.length > META_LEN.NORMAL) {
-              posDataWrapper.push(new Int16Array(newPosData));
+          // If is in range of erase
+          if (Math.abs(posData[j] - posX) < eraserWidth
+              && Math.abs(posData[j + 1] - posY) < eraserWidth) {
+            // We use j as the endIndex
+            if (startIdx !== -1 && j >= startIdx) {
+              const newPosData = createNewPosData(posData, startIdx, j);
+              posDataWrapper.push(newPosData);
+              hasErased = true;
+              startIdx = -1;
             }
-            if (j <= posData.length - META_LEN.NORMAL) {
-              newPosData = [posData[0], posData[1], posData[j + 2], posData[j + 3], posData[4]];
-            } else {
-              newPosData = [];
-            }
+          } else if (startIdx === -1) {
+            startIdx = j;
           }
         }
 
-        if (newPosData.length > META_LEN.NORMAL) {
-          posDataWrapper[i] = new Int16Array(newPosData);
+        // Cleanup; If the last position in posData stayed intact
+        // (Which the above loop skipped)
+        if (startIdx !== -1 && posData.length > startIdx) {
+          if (startIdx > META_LEN.NORMAL) {
+            const newPosData = createNewPosData(posData, startIdx, posData.length);
+            posDataWrapper[i] = newPosData;
+          }
         } else {
           posDataWrapper.splice(i, 1);
         }
       }
+
       if (posDataWrapper.length === 0) {
         this.deleteFromPosBuffer(posDataWrapper);
         user.posCache.delete(posDataWrapper);
       }
     }
     return hasErased;
+
+    // Create new Int16Array from a start index to end index of posData
+    function createNewPosData(originalPosData, startIdx, endIdx) {
+      // The first sub array retains its original metadata, so we can just excerpt it
+      if (startIdx === META_LEN.NORMAL) {
+        return originalPosData.subarray(0, endIdx);
+      } else {
+        const newPosData = new Int16Array((endIdx - startIdx) + META_LEN.NORMAL);
+        newPosData[0] = originalPosData[0];
+        newPosData[1] = originalPosData[1];
+        newPosData[2] = originalPosData[startIdx];
+        newPosData[3] = originalPosData[startIdx + 1];
+        for (let i = 0; i < newPosData.length - META_LEN.NORMAL; i++) {
+          newPosData[i + META_LEN.NORMAL] = originalPosData[startIdx + i];
+        }
+        return newPosData;
+      }
+    }
   }
 
   sendJoinedUserBuffer() {
