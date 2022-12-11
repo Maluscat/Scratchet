@@ -197,11 +197,16 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         const posData = posDataWrapper[i];
         let startIdx = META_LEN.NORMAL;
 
+        // Also check and potentially overwrite the moveTo anchor
+        if (posIsInEraseRange(posData[2], posData[3])) {
+          posData[2] = posData[5];
+          posData[3] = posData[6];
+          hasErased = true;
+        }
+
         for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
-          // If is in range of erase
-          if (Math.abs(posData[j] - posX) < eraserWidth
-              && Math.abs(posData[j + 1] - posY) < eraserWidth) {
-            // We use j as the endIndex
+          if (posIsInEraseRange(posData[j], posData[j + 1])) {
+            // j is used as the endIndex
             if (startIdx !== -1 && j >= startIdx) {
               const newPosData = createNewPosData(posData, startIdx, j);
               posDataWrapper.push(newPosData);
@@ -231,6 +236,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
     }
     return hasErased;
+
+    function posIsInEraseRange(testPosX, testPosY) {
+      return Math.abs(testPosX - posX) < eraserWidth
+          && Math.abs(testPosY - posY) < eraserWidth;
+    }
 
     // Create new Int16Array from a start index to end index of posData
     function createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
