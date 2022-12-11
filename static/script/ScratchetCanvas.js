@@ -189,8 +189,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
     this.redrawCanvas();
   }
-  erasePos(posX, posY, user, eraserWidth = this.width) {
-    let hasErased = false;
+  erasePos(targetPosX, targetPosY, user, eraserWidth = this.width) {
+    let hasChanged = false;
     for (const posDataWrapper of user.posCache) {
 
       for (let i = 0; i < posDataWrapper.length; i++) {
@@ -201,7 +201,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         if (posIsInEraseRange(posData[2], posData[3])) {
           posData[2] = posData[5];
           posData[3] = posData[6];
-          hasErased = true;
+          hasChanged = true;
         }
 
         for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
@@ -210,7 +210,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
             if (startIdx !== -1 && j >= startIdx) {
               const newPosData = createNewPosData(posData, startIdx, j);
               posDataWrapper.push(newPosData);
-              hasErased = true;
+              hasChanged = true;
               startIdx = -1;
             }
           } else if (startIdx === -1) {
@@ -224,6 +224,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           if (startIdx > META_LEN.NORMAL) {
             const newPosData = createNewPosData(posData, startIdx);
             posDataWrapper[i] = newPosData;
+            hasChanged = true;
           }
         } else {
           posDataWrapper.splice(i, 1);
@@ -235,11 +236,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         user.posCache.delete(posDataWrapper);
       }
     }
-    return hasErased;
+    return hasChanged;
 
     function posIsInEraseRange(testPosX, testPosY) {
-      return Math.abs(testPosX - posX) < eraserWidth
-          && Math.abs(testPosY - posY) < eraserWidth;
+      return Math.abs(testPosX - targetPosX) < eraserWidth
+          && Math.abs(testPosY - targetPosY) < eraserWidth;
     }
 
     // Create new Int16Array from a start index to end index of posData
