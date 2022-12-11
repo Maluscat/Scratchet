@@ -217,7 +217,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         // (Which the above loop skipped)
         if (startIdx !== -1 && posData.length > startIdx) {
           if (startIdx > META_LEN.NORMAL) {
-            const newPosData = createNewPosData(posData, startIdx, posData.length);
+            const newPosData = createNewPosData(posData, startIdx);
             posDataWrapper[i] = newPosData;
           }
         } else {
@@ -233,7 +233,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     return hasErased;
 
     // Create new Int16Array from a start index to end index of posData
-    function createNewPosData(originalPosData, startIdx, endIdx) {
+    function createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
       // The first sub array retains its original metadata, so we can just excerpt it
       if (startIdx === META_LEN.NORMAL) {
         return originalPosData.subarray(0, endIdx);
