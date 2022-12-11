@@ -207,9 +207,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
           if (posIsInEraseRange(posData[j], posData[j + 1])) {
             // j is used as the endIndex
-            if (startIdx !== -1 && j >= startIdx) {
-              const newPosData = createNewPosData(posData, startIdx, j);
-              posDataWrapper.push(newPosData);
+            if (startIdx !== -1) {
+              if (startIdx !== j) {
+                const newPosData = createNewPosData(posData, startIdx, j);
+                posDataWrapper.push(newPosData);
+              }
               hasChanged = true;
               startIdx = -1;
             }
