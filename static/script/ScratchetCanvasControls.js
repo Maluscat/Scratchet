@@ -66,13 +66,22 @@ class ScratchetCanvasControls {
     this.currentMousePos[1] = posY;
   }
 
-  getPosWithTransform(posX, posY) {
+  getPosWithTransformFloat(posX, posY) {
     const currentTransform = this.ctx.getTransform();
     const dpr = this.getDevicePixelRatio();
     return [
       (posX * dpr - currentTransform.e) / currentTransform.a,
       (posY * dpr - currentTransform.f) / currentTransform.d
     ];
+  }
+  /**
+   * Returns floored position data based on the current transform.
+   * Floored is useful in order to mitigate discrepancies between client and peers
+   * because transmitted (position) data is always floored in the TypedArray.
+   */
+  getPosWithTransform(posX, posY) {
+    return this.getPosWithTransformFloat(posX, posY)
+      .map(pos => Math.floor(pos));
   }
 
   // ---- Helper functions ----
@@ -103,7 +112,7 @@ class ScratchetCanvasControls {
    */
   translateViewTowardCursor(mousePos) {
     const [deltaScaleX, deltaScaleY] = this.getScaleDelta();
-    const [posX, posY] = this.getPosWithTransform(mousePos[0], mousePos[1]);
+    const [posX, posY] = this.getPosWithTransformFloat(mousePos[0], mousePos[1]);
 
     this.state.tran.x -= deltaScaleX * posX;
     this.state.tran.y -= deltaScaleY * posY;
