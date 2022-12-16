@@ -1,5 +1,5 @@
 'use strict';
-class ScratchetController extends ScratchtBufferController {
+class ScratchetController extends ScratchetBufferController {
   globalUsername;
   defaultUsername;
 

@@ -1,5 +1,5 @@
 'use strict';
-class ScratchtBufferController {
+class ScratchetBufferController {
   /**
    * A buffer collecting the drawn positions
    * and sending them to the server on {@link sendPositions} call.
