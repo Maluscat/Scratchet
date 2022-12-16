@@ -71,7 +71,7 @@ class ScratchtBufferController {
   sendPositions() {
     const mode = this.getBufferMode();
 
-    if (mode === Global.MODE.ERASE && this.sendBufferServer.length > (META_LEN.ERASE + EXTRA_SERVER_META_LEN)
+    if (mode === Global.MODE.ERASE && this.sendBufferServer.length > (META_LEN.ERASE + EXTRA_META_LEN_SEND)
         || this.sendBufferClient.length > META_LEN.NORMAL) {
       const posData = new Int16Array(this.sendBufferServer);
       sock.send(posData.buffer);

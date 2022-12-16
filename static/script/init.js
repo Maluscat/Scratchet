@@ -27,8 +27,9 @@ const META_LEN = {
   ERASE: 2,
 };
 const BULK_INIT_SEPARATOR_LEN = 2;
-// Length of the additional metadata for the server, currently the userID
-const EXTRA_SERVER_META_LEN = 1;
+// Length of additional metadata to and from the server
+const EXTRA_META_LEN_SEND = 1; // room code
+const EXTRA_META_LEN_RECEIVE = EXTRA_META_LEN_SEND + 1; // room code + userID
 
 /*
  * data/socketData: bulk data received via socket
@@ -92,11 +93,11 @@ import('./Global.mjs').then(module => {
 
 // ---- Metadata helper functions ----
 function getReceivedServerMetaMode(receivedServerDataWithMetadata) {
-  return receivedServerDataWithMetadata[1 + EXTRA_SERVER_META_LEN];
+  return receivedServerDataWithMetadata[EXTRA_META_LEN_RECEIVE];
 }
 // Server data without extra server metadata
 function getPendingServerMetaMode(pendingServerDataWithMetadata) {
-  return pendingServerDataWithMetadata[1];
+  return pendingServerDataWithMetadata[EXTRA_META_LEN_SEND];
 }
 
 function getClientMetaHue(clientDataWithMetadata) {
