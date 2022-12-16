@@ -8,13 +8,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    */
   posBuffer = new Array();
   /**
-   * Contains the "bulk init indexes" / "wrapper destination indexes"
+   * - Contains the "bulk init indexes" / "wrapper destination indexes"
    * for the corresponding entries in {@link posBuffer},
    * so that potentially incoming bulk init user data can be sequenced
    * into the {@link posBuffer} by its indexes, retaining draw order.
-   *
-   * (TODO) Can be deleted after an approximated timespan
-   * when all peer data should have arrived.
+   * - Is deleted in the constructor after an approximated timespan
+   * when all peer data should have arrived
    */
   initPosIndexes = new Array();
 
