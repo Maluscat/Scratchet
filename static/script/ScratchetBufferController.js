@@ -19,8 +19,10 @@ class ScratchetBufferController {
 
   // ---- Send buffer handling ----
   addToSendBuffer(posX, posY) {
-    this.liveClientBuffer.push(posX, posY);
     this.sendBuffer.push(posX, posY);
+    if (this.getBufferMode() >= 0) {
+      this.liveClientBuffer.push(posX, posY);
+    }
   }
 
   initializeSendBufferNormal(lastPosX, lastPosY) {
@@ -51,7 +53,6 @@ class ScratchetBufferController {
   }
   initializeSendBufferErase() {
     this.sendBuffer = [this.activeRoom.roomCode, Global.MODE.ERASE, this.activeRoom.width];
-    this.liveClientBuffer = [];
   }
 
   // TODO this can probably be made less redundant
@@ -79,13 +80,17 @@ class ScratchetBufferController {
 
   // ---- Send handling ----
   sendPositions() {
+    if (this.sendBuffer.length === 0) return;
     const mode = this.getBufferMode();
 
-    if (mode === Global.MODE.ERASE && this.sendBuffer.length > (META_LEN.ERASE + EXTRA_META_LEN_SEND)
-        || this.liveClientBuffer.length > META_LEN.NORMAL) {
+    if (mode === Global.MODE.ERASE
+          && this.sendBuffer.length > (META_LEN.ERASE + EXTRA_META_LEN_SEND)
+        || mode >= 0
+          && this.liveClientBuffer.length > META_LEN.NORMAL) {
       const posData = new Int16Array(this.sendBuffer);
       sock.send(posData.buffer);
-      if (this.liveClientBuffer.length > 0) {
+
+      if (mode >= 0) {
         this.activeRoom.addClientDataToBuffer(
           new Int16Array(this.liveClientBuffer), this.activeRoom.getOwnUser());
         // posBufferServer needs to be checked due to asynchronities
@@ -103,12 +108,14 @@ class ScratchetBufferController {
 
   // Overrule timer if hue or stroke width has changed
   sendPositionsIfWidthHasChanged() {
-    if (this.activeRoom.width !== getClientMetaWidth(this.liveClientBuffer)) {
+    if (this.getBufferMode() >= 0
+        && this.activeRoom.width !== getClientMetaWidth(this.liveClientBuffer)) {
       this.sendPositions();
     }
   }
   sendPositionsIfHueHasChanged() {
-    if (this.activeRoom.hue !== getClientMetaHue(this.liveClientBuffer)) {
+    if (this.getBufferMode() >= 0
+        && this.activeRoom.hue !== getClientMetaHue(this.liveClientBuffer)) {
       this.sendPositions();
     }
   }
