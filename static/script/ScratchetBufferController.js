@@ -50,8 +50,8 @@ class ScratchtBufferController {
       this.initializeSendBufferErase();
     } else {
       this.initializeSendBufferNormal(
-        this.sendBufferClient[this.sendBufferClient.length - 2],
-        this.sendBufferClient[this.sendBufferClient.length - 1],
+        this.sendBufferClient.at(-2),
+        this.sendBufferClient.at(-1),
       );
     }
   }
