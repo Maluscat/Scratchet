@@ -46,7 +46,7 @@ class ScratchtBufferController {
 
   // TODO this can probably be made less redundant
   resetSendBuffer() {
-    if (getPendingServerMetaMode(this.sendBufferServer) === Global.MODE.ERASE) {
+    if (this.getBufferMode() === Global.MODE.ERASE) {
       this.initializeSendBufferErase();
     } else {
       this.initializeSendBufferNormal(
@@ -57,7 +57,7 @@ class ScratchtBufferController {
   }
   // Only update width and hue
   updateSendBuffer() {
-    if (getPendingServerMetaMode(this.sendBufferServer) === Global.MODE.ERASE) {
+    if (this.getBufferMode() === Global.MODE.ERASE) {
       this.initializeSendBufferErase();
     } else if (this.sendBufferClient.length > 0) {
       this.initializeSendBufferNormal(
@@ -69,7 +69,7 @@ class ScratchtBufferController {
 
   // ---- Send handling ----
   sendPositions() {
-    const mode = getPendingServerMetaMode(this.sendBufferServer);
+    const mode = this.getBufferMode();
 
     if (mode === Global.MODE.ERASE && this.sendBufferServer.length > (META_LEN.ERASE + EXTRA_SERVER_META_LEN)
         || this.sendBufferClient.length > META_LEN.NORMAL) {
@@ -105,5 +105,10 @@ class ScratchtBufferController {
 
   sendCompleteMetaDataNextTime() {
     this.willSendCompleteMetaData = true;
+  }
+
+  // ---- Helper functions ----
+  getBufferMode() {
+    return getPendingServerMetaMode(this.sendBufferServer);
   }
 }
