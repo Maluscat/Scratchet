@@ -106,9 +106,9 @@ function getClientMetaHue(clientDataWithMetadata) {
   }
   return false;
 }
-function getClientMetaWidth(clientDataWithMetadata) {
+function getClientMetaWidth(clientDataWithMetadata, offset = 0) {
   // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
-  return clientDataWithMetadata[1];
+  return clientDataWithMetadata[1 + offset];
 }
 
 // ---- Generic helper functions ----

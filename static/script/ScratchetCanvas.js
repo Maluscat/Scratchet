@@ -77,7 +77,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     ui.moveDrawIndicator(e.clientX, e.clientY);
 
     if (this.pressedMouseBtn === 0 || this.pressedMouseBtn === 2) {
-      controller.sendPositionsIfWidthHasChanged();
+      controller.sendPositionsIfMetaHasChanged();
 
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
@@ -88,8 +88,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           controller.addToSendBuffer(posX, posY);
         }
       } else {
-        controller.sendPositionsIfHueHasChanged();
-
         this.ctx.beginPath();
         this.ctx.moveTo(...this.lastPos);
         this.ctx.lineTo(posX, posY);

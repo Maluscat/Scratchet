@@ -106,16 +106,12 @@ class ScratchetBufferController {
     }
   }
 
-  // Overrule timer if hue or stroke width has changed
-  sendPositionsIfWidthHasChanged() {
-    if (this.getBufferMode() >= 0
-        && this.activeRoom.width !== getClientMetaWidth(this.liveClientBuffer)) {
-      this.sendPositions();
-    }
-  }
-  sendPositionsIfHueHasChanged() {
-    if (this.getBufferMode() >= 0
-        && this.activeRoom.hue !== getClientMetaHue(this.liveClientBuffer)) {
+  sendPositionsIfMetaHasChanged() {
+    if (this.getBufferMode() === Global.MODE.ERASE
+          && this.activeRoom.width !== getClientMetaWidth(this.sendBuffer, EXTRA_META_LEN_SEND)
+        || (this.getBufferMode() >= 0
+          && this.activeRoom.width !== getClientMetaWidth(this.liveClientBuffer)
+          || this.activeRoom.hue !== getClientMetaHue(this.liveClientBuffer))) {
       this.sendPositions();
     }
   }
