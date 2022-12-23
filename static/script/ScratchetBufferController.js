@@ -33,11 +33,11 @@ class ScratchetBufferController {
     this.sendBuffer = new Array(2);
 
     // TODO put these into constants
-    if ((flag & 0b0010) === 0) {
+    if ((flag & META_FLAGS.LAST_HUE) === 0) {
       this.lastHue = hue;
       this.sendBuffer.push(this.lastHue);
     }
-    if ((flag & 0b0001) === 0) {
+    if ((flag & META_FLAGS.LAST_WIDTH) === 0) {
       this.lastWidth = width;
       this.sendBuffer.push(this.lastWidth);
     }
@@ -121,10 +121,10 @@ class ScratchetBufferController {
   getNormalModeFlag(hue, width) {
     let flag = 0;
     if (!this.willSendCompleteMetaData && getClientMetaHue(this.liveClientBuffer) === hue) {
-      flag |= 0b0010;
+      flag |= META_FLAGS.LAST_HUE;
     }
     if (!this.willSendCompleteMetaData && getClientMetaWidth(this.liveClientBuffer) === width) {
-      flag |= 0b0001;
+      flag |= META_FLAGS.LAST_WIDTH;
     }
     return flag;
   }

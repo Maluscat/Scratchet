@@ -344,11 +344,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       const lastPosData = posCacheArr[posCacheArr.length - 1][0];
 
       // Get width/hue of the last package
-      if (flag & 0b0001) {
+      if (flag & META_FLAGS.LAST_HUE) {
         clientPosData[0] = clientPosData[1];
         clientPosData[1] = getClientMetaWidth(lastPosData);
       }
-      if (flag & 0b0010) {
+      if (flag & META_FLAGS.LAST_HUE) {
         clientPosData[0] = getClientMetaHue(lastPosData);
       }
     }
@@ -368,10 +368,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       serverPosData[i + 1] = serverPosData[i];
     }
 
-    if ((flag & 0b0001) === 0) {
+    if ((flag & META_FLAGS.LAST_WIDTH) === 0) {
       serverPosData[extraLen--] = getClientMetaWidth(posData);
     }
-    if ((flag & 0b0010) === 0) {
+    if ((flag & META_FLAGS.LAST_HUE) === 0) {
       serverPosData[extraLen--] = getClientMetaHue(posData);
     }
 

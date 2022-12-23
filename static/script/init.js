@@ -26,6 +26,10 @@ const META_LEN = {
   NORMAL: 5,
   ERASE: 2,
 };
+const META_FLAGS = {
+  LAST_HUE: 0b0010,
+  LAST_WIDTH: 0b0001
+};
 const BULK_INIT_SEPARATOR_LEN = 2;
 // Length of additional metadata to and from the server
 const EXTRA_META_LEN_SEND = 1; // room code
@@ -114,8 +118,8 @@ function getClientMetaWidth(clientDataWithMetadata, offset = 0) {
 // ---- Generic helper functions ----
 function getExtraMetaLengthFromFlag(flag) {
   let extraLen = 0;
-  if (flag & 0b0001) extraLen++;
-  if (flag & 0b0010) extraLen++;
+  if (flag & META_FLAGS.LAST_WIDTH) extraLen++;
+  if (flag & META_FLAGS.LAST_HUE) extraLen++;
   return extraLen;
 }
 
