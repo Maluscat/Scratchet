@@ -32,7 +32,6 @@ class ScratchetBufferController {
 
     this.sendBuffer = new Array(2);
 
-    // TODO put these into constants
     if ((flag & META_FLAGS.LAST_HUE) === 0) {
       this.lastHue = hue;
       this.sendBuffer.push(this.lastHue);
