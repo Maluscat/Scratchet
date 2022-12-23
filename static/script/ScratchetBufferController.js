@@ -28,19 +28,16 @@ class ScratchetBufferController {
   initializeSendBufferNormal(lastPosX, lastPosY) {
     const hue = this.activeRoom.hue;
     const width = this.activeRoom.width;
-    let flag = 0;
+    const flag = this.getNormalModeFlag(hue, width);
 
     this.sendBuffer = new Array(2);
 
-    if (!this.willSendCompleteMetaData && getClientMetaHue(this.liveClientBuffer) === hue) {
-      flag |= 0b0010;
-    } else {
+    // TODO put these into constants
+    if ((flag & 0b0010) === 0) {
       this.lastHue = hue;
       this.sendBuffer.push(this.lastHue);
     }
-    if (!this.willSendCompleteMetaData && getClientMetaWidth(this.liveClientBuffer) === width) {
-      flag |= 0b0001;
-    } else {
+    if ((flag & 0b0001) === 0) {
       this.lastWidth = width;
       this.sendBuffer.push(this.lastWidth);
     }
@@ -66,11 +63,11 @@ class ScratchetBufferController {
       );
     }
   }
-  // Only update width and hue
-  updateSendBuffer() {
+  // Update the meta in place with the assumption that no data has been added yet
+  updateInitializedSendBufferMeta() {
     if (this.getBufferMode() === Global.MODE.ERASE) {
-      this.initializeSendBufferErase();
-    } else if (this.liveClientBuffer.length > 0) {
+      this.sendBuffer[2] = this.activeRoom.width;
+    } else if (this.getBufferMode() !== this.getNormalModeFlag(this.activeRoom.hue, this.activeRoom.width)) {
       this.initializeSendBufferNormal(
         this.liveClientBuffer[2],
         this.liveClientBuffer[3],
@@ -102,7 +99,7 @@ class ScratchetBufferController {
       }
       this.resetSendBuffer();
     } else {
-      this.updateSendBuffer();
+      this.updateInitializedSendBufferMeta();
     }
   }
 
@@ -121,6 +118,17 @@ class ScratchetBufferController {
   }
 
   // ---- Helper functions ----
+  getNormalModeFlag(hue, width) {
+    let flag = 0;
+    if (!this.willSendCompleteMetaData && getClientMetaHue(this.liveClientBuffer) === hue) {
+      flag |= 0b0010;
+    }
+    if (!this.willSendCompleteMetaData && getClientMetaWidth(this.liveClientBuffer) === width) {
+      flag |= 0b0001;
+    }
+    return flag;
+  }
+
   getBufferMode() {
     return getPendingServerMetaMode(this.sendBuffer);
   }
