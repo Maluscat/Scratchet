@@ -1,5 +1,5 @@
-import { Application, Router, Context } from 'https://deno.land/x/oak@v10.5.1/mod.ts';
-import * as path from 'https://deno.land/std@0.132.0/path/mod.ts';
+import { Application, Router, Context } from 'https://deno.land/x/oak@v11.1.0/mod.ts';
+import * as path from 'https://deno.land/std@0.170.0/path/mod.ts';
 import type { SocketID, RoomCode } from 'SocketUser';
 import type { SocketRoom, ConnectionData, MessageData } from 'SocketRoom';
 import { SocketUser } from 'SocketUser';
