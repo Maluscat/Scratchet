@@ -51,7 +51,6 @@ class ScratchetBufferController {
     this.sendBuffer = [this.activeRoom.roomCode, Global.MODE.ERASE, this.activeRoom.width];
   }
 
-  // TODO this can probably be made less redundant
   resetSendBuffer() {
     if (this.getBufferMode() === Global.MODE.ERASE) {
       this.initializeSendBufferErase();
@@ -62,11 +61,15 @@ class ScratchetBufferController {
       );
     }
   }
-  // Update the meta in place with the assumption that no data has been added yet
+  /**
+   * Update the {@link sendBuffer} metadata in place
+   * with the ASSUMPTION that the buffer is in its initialized state.
+   */
   updateInitializedSendBufferMeta() {
-    if (this.getBufferMode() === Global.MODE.ERASE) {
+    const mode = this.getBufferMode();
+    if (mode === Global.MODE.ERASE) {
       this.sendBuffer[2] = this.activeRoom.width;
-    } else if (this.getBufferMode() !== this.getNormalModeFlag(this.activeRoom.hue, this.activeRoom.width)) {
+    } else if (mode !== this.getNormalModeFlag(this.activeRoom.hue, this.activeRoom.width)) {
       this.initializeSendBufferNormal(
         this.liveClientBuffer[2],
         this.liveClientBuffer[3],
