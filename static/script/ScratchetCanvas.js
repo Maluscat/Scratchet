@@ -21,6 +21,19 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    */
   redoBuffer = new Array();
 
+  /**
+   * - Contains points that were erased so that they can be redone.
+   * - This only needs to be done for the erase because {@link posBuffer}
+   * already is its own undo buffer naturally.
+   * - Is used in conjunction with {@link undoEraseIndexes}.
+   */
+  undoEraseBuffer = new Array();
+  /**
+   * Contains one {@link posBuffer} index for every {@link undoEraseBuffer} entry.
+   * This is necessary to ensure correct undo ordering.
+   */
+  undoEraseIndexes = new Array();
+
   width = 25;
   hue = 0;
 
@@ -86,7 +99,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
       if (this.pressedMouseBtn === 2) {
-        if (this.erasePos(posX, posY, this.getOwnUser())) {
+        if (this.erasePos(posX, posY, this.getOwnUser(), true)) {
           this.redrawCanvas();
           controller.sendCompleteMetaDataNextTime();
           controller.addToSendBuffer(posX, posY);
@@ -210,13 +223,14 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   handleEraseData(data, user) {
     for (let i = META_LEN.ERASE; i < data.length; i += 2) {
-      this.erasePos(data[i], data[i + 1], user, getClientMetaWidth(data));
+      this.erasePos(data[i], data[i + 1], user, false, getClientMetaWidth(data));
     }
     this.redrawCanvas();
   }
-  erasePos(targetPosX, targetPosY, user, eraserWidth = this.width) {
+  erasePos(targetPosX, targetPosY, user, saveRedo = false, eraserWidth = this.width) {
     let hasChanged = false;
     for (const posDataWrapper of user.posCache) {
+      const redoPosData = new Array(META_LEN.NORMAL);
 
       for (let i = 0; i < posDataWrapper.length; i++) {
         const posData = posDataWrapper[i];
@@ -224,6 +238,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
         // Also check and potentially overwrite the moveTo anchor
         if (posIsInEraseRange(posData[2], posData[3], posData[1])) {
+          // TODO save these into redoPosData too
           posData[2] = posData[5];
           posData[3] = posData[6];
           hasChanged = true;
@@ -236,6 +251,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
               if (startIdx !== j) {
                 const newPosData = createNewPosData(posData, startIdx, j);
                 posDataWrapper.push(newPosData);
+              }
+              if (saveRedo) {
+                redoPosData.push(posData[j], posData[j + 1]);
               }
               hasChanged = true;
               startIdx = -1;
@@ -255,6 +273,15 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           }
         } else {
           posDataWrapper.splice(i, 1);
+        }
+        // Perhaps find another way to check whether something has been erased?
+        if (saveRedo && redoPosData.length > META_LEN.NORMAL) {
+          for (let i = 0; i < META_LEN.NORMAL - 1; i++) {
+            redoPosData[i] = posData[i];
+          }
+          redoPosData[META_LEN.NORMAL - 1] = 0;
+          console.log(redoPosData);
+          this.undoEraseBuffer.push(redoPosData);
         }
       }
 
