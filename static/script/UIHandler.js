@@ -15,6 +15,8 @@ const leaveRoomButton = document.getElementById('leave-room-button');
 const joinRoomButton = document.getElementById('join-room-button');
 const copyRoomLinkButton = document.getElementById('copy-room-link-button');
 
+const nonPersistentButtons = Array.from(document.querySelectorAll('button:not(.persistent)'));
+
 const overlayInputInvalidTimeouts = new Map();
 const hitBorderTimeouts = {
   left: null,
@@ -132,6 +134,26 @@ class UIHandler {
   submitJoinRoomInput(value = joinRoomOverlayInput.value) {
     joinRoomOverlayInput.value = '';
     return controller.joinRoom(value);
+  }
+
+  // ---- General focus handling ----
+  activateUI() {
+    document.body.classList.remove('inactive');
+    this.updateNonPersistentTabIndex(0);
+  }
+  deactivateUI() {
+    document.body.classList.add('inactive');
+    this.updateNonPersistentTabIndex(-1);
+
+    if (nonPersistentButtons.includes(document.activeElement)) {
+      document.activeElement.blur();
+    }
+  }
+
+  updateNonPersistentTabIndex(value) {
+    for (const button of nonPersistentButtons) {
+      button.tabIndex = value;
+    }
   }
 
   // ---- Indicators ----

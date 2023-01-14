@@ -50,7 +50,7 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   activate() {
-    document.body.classList.remove('inactive');
+    ui.activateUI();
 
     window.addEventListener('pointerup', this.pointerUp);
     window.addEventListener('wheel', this.mouseWheel, { passive: false });
@@ -72,7 +72,8 @@ class ScratchetController extends ScratchetBufferController {
     window.removeEventListener('wheel', this.mouseWheel);
     window.removeEventListener('resize', this.windowResized);
 
-    document.body.classList.add('inactive');
+    ui.deactivateUI();
+
     this.activeRoom = null;
     roomNameInput.textContent = '';
     ui.setUserIndicator(0);
