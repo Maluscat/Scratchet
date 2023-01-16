@@ -102,6 +102,15 @@ import('./Global.mjs').then(module => {
 
 
 
+// ---- Animation timing getters ----
+function getCanvasAnimDurationRemove() {
+  return ui.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.REMOVE;
+}
+function getCanvasAnimDurationInOut() {
+  return ui.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.INOUT;
+}
+
+
 // ---- Metadata helper functions ----
 function getReceivedServerMetaMode(receivedServerDataWithMetadata) {
   return receivedServerDataWithMetadata[EXTRA_META_LEN_RECEIVE];

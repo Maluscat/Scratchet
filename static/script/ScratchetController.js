@@ -151,7 +151,7 @@ class ScratchetController extends ScratchetBufferController {
 
     await navigator.clipboard.writeText(this.activeRoom.roomCodeLink);
 
-    if (matchMedia('(hover: hover)').matches) {
+    if (window.matchMedia('(hover: hover)').matches) {
       copyRoomLinkOverlay.classList.add('copied');
       dispatchTimeout();
     } else {

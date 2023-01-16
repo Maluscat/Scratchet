@@ -26,7 +26,15 @@ const hitBorderTimeouts = {
 };
 
 class UIHandler {
+  #prefersReducedMotionQuery;
+
+  get prefersReducedMotion() {
+    return this.#prefersReducedMotionQuery.matches;
+  }
+
   constructor() {
+    this.#prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion)');
+
     joinRoomOverlayInput.addEventListener('keydown', this.handleJoinRoomInputKeys.bind(this));
     joinRoomOverlayInput.addEventListener('paste', this.handleJoinRoomInputPaste.bind(this));
 
@@ -161,7 +169,7 @@ class UIHandler {
     canvasContainer.classList.add('block-inout-animation');
     setTimeout(() => {
       canvasContainer.classList.remove('block-inout-animation');
-    }, CANVAS_ANIM_DURATION.INOUT);
+    }, getCanvasAnimDurationInOut());
   }
 
   // ---- Indicators ----

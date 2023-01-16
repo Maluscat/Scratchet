@@ -134,7 +134,7 @@ class ScratchetRoom extends ScratchetCanvas {
       setTimeout(() => {
         this.canvas.remove();
         resolve();
-      }, CANVAS_ANIM_DURATION.REMOVE);
+      }, getCanvasAnimDurationRemove());
     });
   }
 
