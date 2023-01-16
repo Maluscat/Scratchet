@@ -34,7 +34,7 @@ canvas {
   border-radius: 0;
 }
 @media not (prefers-reduced-motion) {
-  canvas:not(.inactive):not(:only-child) {
+  canvas:not(.inactive):not(.remove):not(:only-child) {
     animation: translateIn 0.6s ease;
   }
 }
@@ -82,7 +82,11 @@ canvas {
     }
   }
 }
-canvas.inactive {
+#canvas-container.block-inout-animation canvas:not(.inactive):not(.remove):not(:only-child) {
+  animation-duration: 0s;
+}
+canvas.inactive,
+canvas.remove {
   visibility: hidden;
   pointer-events: none;
   border-radius: 1.4em;
@@ -124,6 +128,32 @@ canvas.inactive {
       scale: 0.9175;
       visibility: visible;
     }
+  }
+}
+@media not (prefers-reduced-motion) {
+  canvas.remove {
+    outline-width: 25vmax;
+    animation: canvasRemove 0.26s ease !important;
+  }
+}
+@keyframes canvasRemove {
+  0% {
+    border-radius: 0;
+    visibility: visible;
+  }
+  2% {
+    border-radius: 1.4em;
+  }
+  47% {
+    transform: scale(0.925);
+    filter: none;
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.125);
+    opacity: 0;
+    filter: blur(12px);
+    visibility: visible;
   }
 }
 button,

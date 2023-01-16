@@ -23,11 +23,19 @@
 @main-color--inactive: hsl(0, 0%, 85%);
 
 
+// -- Canvas animations --
+@canvas-anim-inactive-scale: .9175;
+
+// NOTE: Remember to update CANVAS_ANIM_DURATION (init.js) when changing these values
+@canvas-anim-duration-inOut: .6s;
+@canvas-anim-duration-remove: .26s;
+
+
 .canvasKeyframes {
   .translateIn(@translateX, @translateY) {
     @keyframes translateIn {
       0% {
-        scale: @canvas-inactive-scale;
+        scale: @canvas-anim-inactive-scale;
         z-index: 0;
         pointer-events: none;
         border-radius: @general-border-radius;
@@ -60,7 +68,29 @@
         transform: translate(@translateX, @translateY);
       }
       100% {
-        scale: @canvas-inactive-scale;
+        scale: @canvas-anim-inactive-scale;
+        visibility: visible;
+      }
+    }
+  }
+  .remove() {
+    @keyframes canvasRemove {
+      0% {
+        border-radius: 0;
+        visibility: visible;
+      }
+      2% {
+        border-radius: @general-border-radius;
+      }
+      47% {
+        transform: scale(.925);
+        filter: none;
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.125);
+        opacity: 0;
+        filter: blur(12px);
         visibility: visible;
       }
     }

@@ -36,33 +36,44 @@ canvas, #canvas-container {
 }
 
 canvas {
-  @canvas-anim-duration: .6s;
-  @canvas-inactive-scale: .9175;
   position: absolute;
   background-color: @canvas-color;
   outline: 6px solid @background-color;
   border-radius: 0;
-  &:not(.inactive):not(:only-child) {
+  &:not(.inactive):not(.remove):not(:only-child) {
     @media not (prefers-reduced-motion) {
-      animation: translateIn @canvas-anim-duration ease;
+      animation: translateIn @canvas-anim-duration-inOut ease;
     }
     .canvasKeyframes.translateIn(72.5%, 0);
     @media (orientation: portrait) {
       .canvasKeyframes.translateIn(0, 72.5%);
     }
+
+    #canvas-container.block-inout-animation & {
+      animation-duration: 0s;
+    }
   }
-  &.inactive {
+
+  &.inactive, &.remove {
     visibility: hidden;
     pointer-events: none;
     border-radius: @general-border-radius;
-
+  }
+  &.inactive {
     @media not (prefers-reduced-motion) {
-      animation: translateOut @canvas-anim-duration ease;
+      animation: translateOut @canvas-anim-duration-inOut ease;
     }
     .canvasKeyframes.translateOut(-30%, 0);
     @media (orientation: portrait) {
       .canvasKeyframes.translateOut(0, -30%);
     }
+  }
+  &.remove {
+    @media not (prefers-reduced-motion) {
+      outline-width: 25vmax;
+      animation: canvasRemove @canvas-anim-duration-remove ease !important;
+    }
+    .canvasKeyframes.remove();
   }
 }
 
