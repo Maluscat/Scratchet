@@ -156,6 +156,14 @@ class UIHandler {
     }
   }
 
+  // ---- Animation helpers ----
+  blockCanvasInOutAnimation() {
+    canvasContainer.classList.add('block-inout-animation');
+    setTimeout(() => {
+      canvasContainer.classList.remove('block-inout-animation');
+    }, CANVAS_ANIM_DURATION.INOUT);
+  }
+
   // ---- Indicators ----
   setRoomIndicator(value) {
     roomListButton.textContent = value;

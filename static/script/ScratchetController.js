@@ -250,14 +250,23 @@ class ScratchetController extends ScratchetBufferController {
       this.switchActiveRoom(newRoom);
     }
   }
-  removeRoom(room) {
+  async removeRoom(room) {
     this.rooms.delete(room.roomCode);
-    room.removeSelf();
+
+    /** @type {ScratchetRoom} */
+    let firstRoom;
     if (this.rooms.size > 0) {
-      // Switch to the first room
-      this.switchActiveRoom(this.rooms.values().next().value);
+      firstRoom = this.rooms.values().next().value;
+      firstRoom.displayCanvas();
     } else {
       this.deactivate();
+    }
+
+    ui.blockCanvasInOutAnimation();
+    await room.removeSelf();
+
+    if (firstRoom) {
+      this.switchActiveRoom(firstRoom);
     }
     this.updateRoomIndicator();
   }

@@ -103,7 +103,7 @@ class ScratchetRoom extends ScratchetCanvas {
     controls3D.changeState(this.state);
     controls3D.changeEventTarget(this.canvas);
 
-    this.canvas.classList.remove('inactive');
+    this.displayCanvas();
     this.roomListNode.classList.add('current');
 
     this.setRoomNameInput();
@@ -116,14 +116,28 @@ class ScratchetRoom extends ScratchetCanvas {
     this.roomListNode.classList.remove('current');
   }
 
-  removeSelf() {
+  displayCanvas() {
+    this.canvas.classList.remove('inactive');
+  }
+
+  async removeSelf() {
+    await this.removeCanvas();
     this.unfocus();
     this.roomListNode.remove();
     this.userListNode.remove();
-    this.canvas.remove();
   }
 
   // ---- Room UI helpers ----
+  removeCanvas() {
+    return new Promise(resolve => {
+      this.canvas.classList.add('remove');
+      setTimeout(() => {
+        this.canvas.remove();
+        resolve();
+      }, CANVAS_ANIM_DURATION.REMOVE);
+    });
+  }
+
   setRoomNameInput() {
     roomNameInput.textContent = this.roomName;
   }
