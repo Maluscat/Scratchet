@@ -5,7 +5,7 @@ class ScratchetController extends ScratchetBufferController {
 
   /** @type { Map<number, ScratchetRoom> } */
   rooms = new Map();
-  activeIntervals = new Array();
+  activeIntervals = new Set();
 
   constructor() {
     super();
