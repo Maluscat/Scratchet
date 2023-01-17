@@ -42,11 +42,13 @@ class ScratchetController extends ScratchetBufferController {
     newRoomButton.addEventListener('click', this.requestNewRoom.bind(this));
     leaveRoomButton.addEventListener('click', this.leaveCurrentRoom.bind(this));
 
-    // Set the join room input to the same width as the copy room link overlay
+    // Set the join room input to the same width as the copy room link overlay, with a dummy value
+    copyRoomLinkContent.textContent = ScratchetRoom.createRoomCodeLink('0000');
     copyRoomLinkOverlay.classList.add('active');
     joinRoomOverlayInput.style.maxWidth =
       (copyRoomLinkContent.offsetWidth / parseFloat(getComputedStyle(copyRoomLinkContent).fontSize)) + 'em';
     copyRoomLinkOverlay.classList.remove('active');
+    copyRoomLinkContent.textContent = '';
   }
 
   activate() {
