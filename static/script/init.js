@@ -25,20 +25,23 @@ const CANVAS_ANIM_DURATION = {
 
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
+
 const SEND_FULL_METADATA_INTERVAL = 1000;
+const BULK_INIT_SEPARATOR_LEN = 2;
+
 // Metadata length in a payload of the specified mode, excluding the extra server metadata
 const META_LEN = {
   NORMAL: 5,
   ERASE: 2,
 };
+// Length of additional metadata to and from the server
+const EXTRA_META_LEN_SEND = 1; // room code
+const EXTRA_META_LEN_RECEIVE = EXTRA_META_LEN_SEND + 1; // room code + userID
+
 const META_FLAGS = {
   LAST_HUE: 0b0010,
   LAST_WIDTH: 0b0001
 };
-const BULK_INIT_SEPARATOR_LEN = 2;
-// Length of additional metadata to and from the server
-const EXTRA_META_LEN_SEND = 1; // room code
-const EXTRA_META_LEN_RECEIVE = EXTRA_META_LEN_SEND + 1; // room code + userID
 
 /*
  * data/socketData: bulk data received via socket
