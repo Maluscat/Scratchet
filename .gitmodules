@@ -1,0 +1,3 @@
+[submodule "static/script/library/controls3d"]
+	path = static/script/library/controls3d
+	url = https://gitlab.com/Hallo89/controls3d
