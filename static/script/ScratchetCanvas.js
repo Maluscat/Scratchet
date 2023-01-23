@@ -1,7 +1,9 @@
 'use strict';
 class ScratchetCanvas extends ScratchetCanvasControls {
-  pressedMouseBtn = -1;
   lastPos = new Array(2);
+
+  isDrawing = false;
+  activeTool = ToolsEnum.Brush;
 
   /**
    * Contains the posDataWrappers to draw in sequential order.
@@ -47,16 +49,25 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   canvasDown(e) {
-    this.pressedMouseBtn = e.button;
-    if (this.pressedMouseBtn === 2) {
-      ui.toggleDrawIndicatorEraseMode();
-      controller.initializeSendBufferErase();
-    } else if (this.pressedMouseBtn === 0) {
-      const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
+    if (e.button === 0) {
+      this.isDrawing = true;
 
-      this.setLastPos(posX, posY);
-      controller.initializeSendBufferNormal(posX, posY);
+      switch (this.activeTool) {
+        case ToolsEnum.Brush: {
+          const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
+
+          this.setLastPos(posX, posY);
+          controller.initializeSendBufferNormal(posX, posY);
+          break;
+        }
+        case ToolsEnum.Eraser: {
+          ui.toggleDrawIndicatorEraseMode();
+          controller.initializeSendBufferErase();
+          break;
+        }
+      }
     }
+
     if (e.pointerType !== 'touch') {
       this.canvasDraw(e);
     }
@@ -68,32 +79,37 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.setCurrentMousePos(e.clientX, e.clientY);
     ui.moveDrawIndicator(e.clientX, e.clientY);
 
-    if (this.pressedMouseBtn === 0 || this.pressedMouseBtn === 2) {
+    if (this.isDrawing) {
       controller.sendPositionsIfMetaHasChanged();
 
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
-      if (this.pressedMouseBtn === 2) {
-        if (this.erasePos(posX, posY, this.getOwnUser())) {
-          this.redrawCanvas();
-          controller.sendCompleteMetaDataNextTime();
+      switch (this.activeTool) {
+        case ToolsEnum.Brush: {
+          this.ctx.beginPath();
+          this.ctx.moveTo(...this.lastPos);
+          this.ctx.lineTo(posX, posY);
+          this.ctx.stroke();
+
+          this.setLastPos(posX, posY);
+
           controller.addToSendBuffer(posX, posY);
+          break;
         }
-      } else {
-        this.ctx.beginPath();
-        this.ctx.moveTo(...this.lastPos);
-        this.ctx.lineTo(posX, posY);
-        this.ctx.stroke();
-
-        this.setLastPos(posX, posY);
-
-        controller.addToSendBuffer(posX, posY);
+        case ToolsEnum.Eraser: {
+          if (this.erasePos(posX, posY, this.getOwnUser())) {
+            this.redrawCanvas();
+            controller.sendCompleteMetaDataNextTime();
+            controller.addToSendBuffer(posX, posY);
+          }
+          break;
+        }
       }
     }
   }
 
   finalizeDraw() {
-    this.pressedMouseBtn = -1;
+    this.isDrawing = false;
     ui.toggleDrawIndicatorEraseMode(true);
     this.redrawCanvas();
   }
