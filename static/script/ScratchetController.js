@@ -37,6 +37,10 @@ class ScratchetController extends ScratchetBufferController {
       Global.Validator.MAX_ROOM_NAME_LENGTH,
       Global.Validator.validateRoomName);
 
+    for (const [ tool, toolButton ] of ui.toolButtonMap) {
+      toolButton.addEventListener('click', this.toolButtonClick.bind(this, tool, toolButton));
+    }
+
     clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
     copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
     newRoomButton.addEventListener('click', this.requestNewRoom.bind(this));
@@ -115,6 +119,14 @@ class ScratchetController extends ScratchetBufferController {
     this.activeRoom.setLineWidth(slider.value);
     this.activeRoom.width = slider.value
     document.documentElement.style.setProperty('--strokeWidth', slider.value + 'px');
+  }
+
+  toolButtonClick(tool, button) {
+    if (this.activeRoom.activeTool !== tool) {
+      ui.toolButtonMap.get(this.activeRoom.activeTool).classList.remove('active');
+      this.activeRoom.activeTool = tool;
+      button.classList.add('active');
+    }
   }
 
   clearDrawing() {

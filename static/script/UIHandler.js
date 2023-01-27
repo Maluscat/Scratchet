@@ -10,6 +10,8 @@ const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 const hitBorder = document.getElementById('hit-border');
 
+const toolButtons = document.querySelectorAll('#toolbar > .button');
+
 const newRoomButton = document.getElementById('new-room-button');
 const leaveRoomButton = document.getElementById('leave-room-button');
 const joinRoomButton = document.getElementById('join-room-button');
@@ -32,8 +34,15 @@ class UIHandler {
     return this.#prefersReducedMotionQuery.matches;
   }
 
+  toolButtonMap = new Map();
+
   constructor() {
     this.#prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion)');
+
+    for (const toolButton of toolButtons) {
+      const tool = ToolsEnum[toolButton.dataset.tool];
+      this.toolButtonMap.set(tool, toolButton);
+    }
 
     joinRoomOverlayInput.addEventListener('keydown', this.handleJoinRoomInputKeys.bind(this));
     joinRoomOverlayInput.addEventListener('paste', this.handleJoinRoomInputPaste.bind(this));
