@@ -178,6 +178,10 @@ input:invalid {
   border-color: hsl(4, 60%, 48%) !important;
   background-color: hsl(0, 20%, 18%) !important;
 }
+.overlay > *:not(:last-child),
+.button-group > *:not(:last-child) {
+  margin-bottom: 0.45rem;
+}
 .overlay {
   position: absolute;
   pointer-events: none;
@@ -194,9 +198,6 @@ input:invalid {
 }
 .overlay.right {
   right: 0.85rem;
-}
-.overlay > *:not(:last-child) {
-  margin-bottom: 0.45rem;
 }
 .overlay .button,
 .overlay .hover-overlay,

@@ -100,6 +100,12 @@ input:invalid {
   background-color: saturate(@overlay-bg, 20%) !important;
 }
 
+.overlay, .button-group {
+  > *:not(:last-child) {
+    margin-bottom: @overlay-gap;
+  }
+}
+
 .overlay {
   position: absolute;
   pointer-events: none;
@@ -115,9 +121,6 @@ input:invalid {
   }
   &.right {
     right: @overlay-margin;
-  }
-  > *:not(:last-child) {
-    margin-bottom: @overlay-gap;
   }
   .button,
   .hover-overlay,
