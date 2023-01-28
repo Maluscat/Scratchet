@@ -175,7 +175,7 @@ button:active {
   background-color: hsl(0, 0%, 21%) !important;
 }
 input:invalid {
-  border-color: hsl(4, 60%, 48%) !important;
+  border-color: #B83232 !important;
   background-color: hsl(0, 20%, 18%) !important;
 }
 .overlay > *:not(:last-child),
