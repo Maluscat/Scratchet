@@ -28,6 +28,15 @@
 @overlay-bg--inactive: darken(@overlay-bg, 6%);
 
 
+// -- Toolbar --
+@toolbar-bg: fade(@overlay-bg, 45%);
+
+@toolbar-button-shrink-factor: 0.835;
+
+@toolbar-button-dims: @overlay-button-dims * @toolbar-button-shrink-factor;
+@toolbar-svg-dims: (@overlay-svg-dims + .05em) * @toolbar-button-shrink-factor;
+@toolbar-padding: (@overlay-button-dims * (1 - @toolbar-button-shrink-factor) / 2);
+
 
 // -- Canvas animations --
 @canvas-anim-inactive-scale: .9175;

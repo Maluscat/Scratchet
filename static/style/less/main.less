@@ -366,9 +366,38 @@ input:invalid {
 }
 
 #utility-overlay {
+  > .button-group {
+    display: inline-block;
+  }
   .sl89-track {
     width: 12em;
     height: @slider-dims;
+  }
+}
+
+#toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: calc(@toolbar-padding - @overlay-border-dims);
+  padding: @toolbar-padding;
+  background-color: @toolbar-bg;
+  border-radius: 100px;
+  backdrop-filter: blur(3px);
+  .button {
+    width: @toolbar-button-dims;
+    height: @toolbar-button-dims;
+    &.active {
+      background-color: @overlay-bg--active;
+    }
+    &:not(.active) {
+      background-color: transparent;
+      border: none;
+      margin: @overlay-border-dims;
+    }
+    > svg {
+      width: @toolbar-svg-dims;
+      height: @toolbar-svg-dims;
+    }
   }
 }
 
