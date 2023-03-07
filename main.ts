@@ -1,15 +1,11 @@
-import { Application, Router, Context } from 'https://deno.land/x/oak@v11.1.0/mod.ts';
-import * as denoPath from 'https://deno.land/std@0.170.0/path/mod.ts';
-import type { SocketID, RoomCode } from 'SocketUser';
 import type { SocketRoom, ConnectionData, MessageData } from 'SocketRoom';
+import type { Context } from 'oak';
+
+import { app, router } from 'router';
 import { SocketUser } from 'SocketUser';
 import { SocketRoomHandler } from 'SocketRoomHandler';
 import { ScratchetError } from 'ScratchetError';
 import Global from 'Global';
-
-// IN CASE OF 'INTERNAL SERVER ERROR': --allow-read IS MISSING
-const app = new Application();
-const router = new Router();
 
 
 interface ReceivedEventInterfaceStructure {
@@ -137,6 +133,9 @@ router
     });
   });
 
+await app.listen({ port: 8002 });
+
+
 // ---- Message event handling ----
 function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
   if (!data) {
@@ -220,38 +219,3 @@ function destroyUser(socketUser: SocketUser) {
   }
   // TODO Garbage collect the user properly
 }
-
-
-// ---- Oak boilerplate stuff ----
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-// static routing with 404 fallback
-app.use(async (ctx, next) => {
-  await next();
-  try {
-    let path = ctx.request.url.pathname;
-    path = skipDirectoryInPath(path, '/script/library/slider89/', 'dist/');
-
-    await ctx.send({
-      root: denoPath.join(Deno.cwd(), 'static'),
-      index: 'index.html',
-      path: path
-    });
-  } catch (e) {
-    ctx.response.status = 404;
-    ctx.response.body = '404';
-  }
-});
-
-function skipDirectoryInPath(path: string, pathPrefix: string, pathIntermediate: string) {
-  if (path.startsWith(pathPrefix)) {
-    path = pathPrefix + pathIntermediate + path.slice(pathPrefix.length);
-  }
-  return path;
-}
-
-app.addEventListener('listen', function(e) {
-  console.log("Listening on port ༼ つ ◕_◕ ༽つ " + e.port);
-});
-await app.listen({ port: 8002 });
