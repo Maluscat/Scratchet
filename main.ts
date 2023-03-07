@@ -1,5 +1,5 @@
 import { Application, Router, Context } from 'https://deno.land/x/oak@v11.1.0/mod.ts';
-import * as path from 'https://deno.land/std@0.170.0/path/mod.ts';
+import * as denoPath from 'https://deno.land/std@0.170.0/path/mod.ts';
 import type { SocketID, RoomCode } from 'SocketUser';
 import type { SocketRoom, ConnectionData, MessageData } from 'SocketRoom';
 import { SocketUser } from 'SocketUser';
@@ -230,15 +230,26 @@ app.use(router.allowedMethods());
 app.use(async (ctx, next) => {
   await next();
   try {
+    let path = ctx.request.url.pathname;
+    path = skipDirectoryInPath(path, '/script/library/slider89/', 'dist/');
+
     await ctx.send({
-      root: path.join(Deno.cwd(), 'static'),
-      index: 'index.html'
+      root: denoPath.join(Deno.cwd(), 'static'),
+      index: 'index.html',
+      path: path
     });
   } catch (e) {
     ctx.response.status = 404;
     ctx.response.body = '404';
   }
 });
+
+function skipDirectoryInPath(path: string, pathPrefix: string, pathIntermediate: string) {
+  if (path.startsWith(pathPrefix)) {
+    path = pathPrefix + pathIntermediate + path.slice(pathPrefix.length);
+  }
+  return path;
+}
 
 app.addEventListener('listen', function(e) {
   console.log("Listening on port ༼ つ ◕_◕ ༽つ " + e.port);
