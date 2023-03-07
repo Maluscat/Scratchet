@@ -1,3 +1,7 @@
-[submodule "static/script/library/controls3d"]
+[submodule "controls3d"]
 	path = static/script/library/controls3d
-	url = https://gitlab.com/Hallo89/controls3d
+	url = https://gitlab.com/Hallo89/controls3d.git/
+[submodule "slider89"]
+	path = static/script/library/slider89
+	url = https://github.com/Hallo89/Slider89.git
+	branch = project-rewrite
