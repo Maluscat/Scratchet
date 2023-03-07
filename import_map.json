@@ -9,7 +9,7 @@
     "SocketRateHandler": "./src/SocketRateHandler.ts",
     "ScratchetError": "./src/ScratchetError.ts",
 
-    "oak": "https://deno.land/x/oak@v11.1.0/mod.ts",
-    "path": "https://deno.land/std@0.170.0/path/mod.ts"
+    "oak": "https://deno.land/x/oak@v12.1.0/mod.ts",
+    "path": "https://deno.land/std@0.178.0/path/mod.ts"
   }
 }

@@ -1,4 +1,5 @@
-import type { SocketUser, SocketID, RoomCode, RoomName, Username } from 'SocketUser';
+import type { SocketUser, RoomCode, Username } from 'SocketUser';
+
 import { SocketRoom } from 'SocketRoom';
 import { ScratchetError } from 'ScratchetError';
 import Global from 'Global';

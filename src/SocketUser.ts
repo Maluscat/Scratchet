@@ -1,4 +1,5 @@
 import type { SocketRoom } from 'SocketRoom';
+
 import { SocketRateHandler } from 'SocketRateHandler';
 import { ScratchetError } from 'ScratchetError';
 import Global from 'Global';
