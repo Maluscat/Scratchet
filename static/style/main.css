@@ -178,9 +178,24 @@ input:invalid {
   border-color: #B83232 !important;
   background-color: hsl(0, 20%, 18%) !important;
 }
-.overlay > *:not(:last-child),
-.button-group > *:not(:last-child) {
-  margin-bottom: 0.45rem;
+.button-group,
+.horizontal {
+  gap: 0.45rem;
+}
+.button-group {
+  display: inline-flex;
+  flex-direction: column;
+}
+.button-group.right {
+  align-items: flex-end;
+}
+.horizontal,
+.button-wrapper {
+  display: flex;
+  align-items: center;
+}
+.horizontal {
+  flex-direction: row;
 }
 .overlay {
   position: absolute;
@@ -253,16 +268,6 @@ body.inactive .overlay .sl89-track {
 .overlay-input br {
   display: none;
 }
-.horizontal-group {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-.button-group.right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
 .button-group .button {
   display: flex;
   align-items: center;
@@ -280,8 +285,6 @@ body.inactive .overlay .sl89-track {
   height: 0.7665em;
 }
 .button-wrapper {
-  display: flex;
-  align-items: center;
   position: relative;
 }
 @media (hover: hover) {
@@ -397,16 +400,14 @@ body.inactive #draw-indicator {
     transform: translateY(-0.5em);
   }
 }
-#utility-overlay > .button-group {
-  display: inline-block;
-}
 #utility-overlay .sl89-track {
   width: 12em;
   height: 1.65rem;
 }
 #toolbar {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
+  width: min-content;
   gap: calc(0.2244rem - 2px);
   padding: 0.2244rem;
   background-color: hsla(0, 0%, 18%, 0.45);

@@ -15,7 +15,7 @@
     <div id="hit-border"></div>
 
     <div id="social-overlay" class="overlay top left button-group">
-      <div class="horizontal-group">
+      <div class="horizontal">
         <div class="button-wrapper">
           <button id="user-list-button" class="button" type="button" title="Toggle user list" aria-label="Toggle user list">0</button>
           <div class="floating-overlay-wrapper has-pointer-events">
@@ -27,7 +27,7 @@
     </div>
 
     <div id="room-overlay" class="overlay top right button-group">
-      <div class="horizontal-group">
+      <div class="horizontal">
         <span id="roomcode-input" class="overlay-input" contenteditable="true" spellcheck="false"></span>
         <div class="button-wrapper">
           <div class="floating-overlay-wrapper has-pointer-events">
@@ -82,30 +82,31 @@
       </div>
     </div>
 
-    <div id="utility-overlay" class="overlay bottom left">
-      <div class="button-group">
-        <div id="toolbar">
-          <button data-tool="Brush" class="button active" type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="currentColor" d="M0 21.398c5.504.456 3.533-5.392 8.626-5.445l2.206 1.841c.549 6.645-7.579 8.127-10.832 3.604zm16.878-8.538c1.713-2.687 7.016-11.698 7.016-11.698.423-.747-.515-1.528-1.17-.976 0 0-7.887 6.857-10.213 9.03-1.838 1.719-1.846 2.504-2.441 5.336l2.016 1.681c2.67-1.098 3.439-1.248 4.792-3.373z"/>
-            </svg>
-          </button>
-          <button data-tool="Eraser" class="button" type="button">
-            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" aria-hidden="true">
-              <path fill="currentColor" d="M5.662 23l-5.369-5.365c-.195-.195-.293-.45-.293-.707 0-.256.098-.512.293-.707l14.929-14.928c.195-.194.451-.293.707-.293.255 0 .512.099.707.293l7.071 7.073c.196.195.293.451.293.708 0 .256-.097.511-.293.707l-11.216 11.219h5.514v2h-12.343zm3.657-2l-5.486-5.486-1.419 1.414 4.076 4.072h2.829zm.456-11.429l-4.528 4.528 5.658 5.659 4.527-4.53-5.657-5.657z"/>
-            </svg>
-          </button>
-        </div>
-
-        <button id="clear-drawing-button" class="button" type="button" title="Clear your drawing" aria-label="Clear your drawing">
-          <!-- trash-can-28 by Iconmonstr @ https://iconmonstr.com/trash-can-28-svg/ -->
+    <div id="utility-overlay" class="overlay bottom left button-group">
+      <div id="toolbar">
+        <button data-tool="Brush" class="button active" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M0 21.398c5.504.456 3.533-5.392 8.626-5.445l2.206 1.841c.549 6.645-7.579 8.127-10.832 3.604zm16.878-8.538c1.713-2.687 7.016-11.698 7.016-11.698.423-.747-.515-1.528-1.17-.976 0 0-7.887 6.857-10.213 9.03-1.838 1.719-1.846 2.504-2.441 5.336l2.016 1.681c2.67-1.098 3.439-1.248 4.792-3.373z"/>
+          </svg>
+        </button>
+        <button data-tool="Eraser" class="button" type="button">
           <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" aria-hidden="true">
-            <path fill="currentColor" d="M19 24h-14c-1.104 0-2-.896-2-2v-17h-1v-2h6v-1.5c0-.827.673-1.5 1.5-1.5h5c.825 0 1.5.671 1.5 1.5v1.5h6v2h-1v17c0 1.104-.896 2-2 2zm0-19h-14v16.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-16.5zm-9 4c0-.552-.448-1-1-1s-1 .448-1 1v9c0 .552.448 1 1 1s1-.448 1-1v-9zm6 0c0-.552-.448-1-1-1s-1 .448-1 1v9c0 .552.448 1 1 1s1-.448 1-1v-9zm-2-7h-4v1h4v-1z"/>
+            <path fill="currentColor" d="M5.662 23l-5.369-5.365c-.195-.195-.293-.45-.293-.707 0-.256.098-.512.293-.707l14.929-14.928c.195-.194.451-.293.707-.293.255 0 .512.099.707.293l7.071 7.073c.196.195.293.451.293.708 0 .256-.097.511-.293.707l-11.216 11.219h5.514v2h-12.343zm3.657-2l-5.486-5.486-1.419 1.414 4.076 4.072h2.829zm.456-11.429l-4.528 4.528 5.658 5.659 4.527-4.53-5.657-5.657z"/>
           </svg>
         </button>
       </div>
-      <div id="width-slider"></div>
-      <div id="hue-slider"></div>
+
+      <button id="clear-drawing-button" class="button" type="button" title="Clear your drawing" aria-label="Clear your drawing">
+        <!-- trash-can-28 by Iconmonstr @ https://iconmonstr.com/trash-can-28-svg/ -->
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" aria-hidden="true">
+          <path fill="currentColor" d="M19 24h-14c-1.104 0-2-.896-2-2v-17h-1v-2h6v-1.5c0-.827.673-1.5 1.5-1.5h5c.825 0 1.5.671 1.5 1.5v1.5h6v2h-1v17c0 1.104-.896 2-2 2zm0-19h-14v16.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-16.5zm-9 4c0-.552-.448-1-1-1s-1 .448-1 1v9c0 .552.448 1 1 1s1-.448 1-1v-9zm6 0c0-.552-.448-1-1-1s-1 .448-1 1v9c0 .552.448 1 1 1s1-.448 1-1v-9zm-2-7h-4v1h4v-1z"/>
+        </svg>
+      </button>
+
+      <div class="button-group horizontal">
+        <div id="width-slider"></div>
+        <div id="hue-slider"></div>
+      </div>
     </div>
 
     <div id="notification-overlay" class="overlay top overlay-text"></div>
