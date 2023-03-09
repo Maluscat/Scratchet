@@ -288,8 +288,8 @@ input:invalid {
 
 .sl89-thumb {
   background-color: hsl(0, 0%, 31%);
-  width: @slider-dims;
-  height: @slider-dims;
+  width: @slider-thumb-dims;
+  height: @slider-thumb-dims;
   &:hover {
     background-color: hsl(0, 0%, 34%);
   }
@@ -371,13 +371,6 @@ input:invalid {
   }
 }
 
-#utility-overlay {
-  .sl89-track {
-    width: 12em;
-    height: @slider-dims;
-  }
-}
-
 #toolbar {
   display: inline-flex;
   flex-direction: column;
@@ -405,7 +398,16 @@ input:invalid {
   }
 }
 
-#hue-slider {
+#tool-config-bar {
+  min-height: @config-bar-height;
+  .sl89-track {
+    height: @config-bar-height;
+    box-sizing: border-box;
+    width: 12em;
+  }
+}
+
+.hue-slider {
   .slider-hue-indicator {
     border: 4px solid @canvas-color;
     height: 100%;
@@ -424,7 +426,7 @@ input:invalid {
     );
   }
 }
-#width-slider {
+.width-slider {
   .sl89-thumb {
     display: flex;
     justify-content: center;

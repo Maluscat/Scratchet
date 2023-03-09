@@ -25,7 +25,7 @@ class ScratchetRoom extends ScratchetCanvas {
     // Set active tool by current active class
     for (const tool of Object.values(this.tools)) {
       if (tool.buttonNode.classList.contains('active')) {
-        this.activeTool = tool;
+        this.#setActiveTool(tool);
       }
     }
 
@@ -48,9 +48,13 @@ class ScratchetRoom extends ScratchetCanvas {
     const tool = this.tools[toolName];
     if (this.activeTool !== tool) {
       this.activeTool.deactivate();
-      this.activeTool = tool;
-      this.activeTool.activate();
+      this.#setActiveTool(tool);
     }
+  }
+
+  #setActiveTool(tool) {
+    this.activeTool = tool;
+    this.activeTool.activate();
   }
 
 
