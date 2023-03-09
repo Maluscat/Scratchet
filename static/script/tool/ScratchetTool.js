@@ -4,9 +4,6 @@ class ScratchetTool {
   buttonNode;
   configBarContent = [];
 
-  /** @type { Function } */
-  onActivate;
-
   constructor(toolName) {
     if (!toolName) {
       throw new Error('No tool name has been passed!');
@@ -20,10 +17,6 @@ class ScratchetTool {
   activate() {
     this.buttonNode.classList.add('active');
     this.#populateConfigBar();
-    this.onActivate();
-  }
-  deactivate() {
-    this.buttonNode.classList.remove('active');
   }
 
 

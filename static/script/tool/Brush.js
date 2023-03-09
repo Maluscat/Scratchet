@@ -26,14 +26,15 @@ class Brush extends ScratchetTool {
       `
     });
 
-    // Trigger slider style recomputation
-    this.onActivate = () => {
-      this.#sliders.width.value = this.#sliders.width.value;
-      this.#sliders.hue.value = this.#sliders.hue.value;
-    }
-
 
     this.configBarContent.push(widthWrapper);
     this.configBarContent.push(hueWrapper);
+  }
+
+  // Trigger slider style recomputation
+  activate() {
+    super.activate();
+    this.#sliders.width.value = this.#sliders.width.value;
+    this.#sliders.hue.value = this.#sliders.hue.value;
   }
 }
