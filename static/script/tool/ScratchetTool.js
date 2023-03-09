@@ -1,4 +1,5 @@
 class ScratchetTool {
+  static toolbar = document.getElementById('toolbar');
   static configBarWrapper = document.getElementById('tool-config-bar');
 
   buttonNode;
@@ -15,6 +16,7 @@ class ScratchetTool {
 
   // ---- Activation handling ----
   activate() {
+    ScratchetTool.toolbar.querySelector('.active').classList.remove('active');
     this.buttonNode.classList.add('active');
     this.#populateConfigBar();
   }

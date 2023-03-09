@@ -47,7 +47,6 @@ class ScratchetRoom extends ScratchetCanvas {
   activateTool(toolName) {
     const tool = this.tools[toolName];
     if (this.activeTool !== tool) {
-      this.activeTool.deactivate();
       this.#setActiveTool(tool);
     }
   }
