@@ -141,7 +141,7 @@ class UIHandler {
     }
   }
   handleJoinRoomInputPaste(e) {
-    const value = (e.clipboardData || window.clipboardData).getData('text');
+    const value = e.clipboardData.getData('text/plain');
     // submitJoinRoomInput happens before the paste is applied to the input
     if (this.submitJoinRoomInput(value)) {
       e.preventDefault();
