@@ -3,7 +3,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   lastPos = new Array(2);
 
   isDrawing = false;
-  activeTool = ToolsEnum.Brush;
+  /** @type ScratchetTool */
+  activeTool;
 
   /**
    * Contains the posDataWrappers to draw in sequential order.
@@ -52,15 +53,16 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     if (e.button === 0) {
       this.isDrawing = true;
 
-      switch (this.activeTool) {
-        case ToolsEnum.Brush: {
+      // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
+      switch (this.activeTool.constructor) {
+        case Brush: {
           const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
           this.setLastPos(posX, posY);
           controller.initializeSendBufferNormal(posX, posY);
           break;
         }
-        case ToolsEnum.Eraser: {
+        case Eraser: {
           ui.toggleDrawIndicatorEraseMode();
           controller.initializeSendBufferErase();
           break;
@@ -84,8 +86,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
-      switch (this.activeTool) {
-        case ToolsEnum.Brush: {
+      switch (this.activeTool.constructor) {
+        case Brush: {
           this.ctx.beginPath();
           this.ctx.moveTo(...this.lastPos);
           this.ctx.lineTo(posX, posY);
@@ -96,7 +98,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           controller.addToSendBuffer(posX, posY);
           break;
         }
-        case ToolsEnum.Eraser: {
+        case Eraser: {
           if (this.erasePos(posX, posY, this.getOwnUser())) {
             this.redrawCanvas();
             controller.sendCompleteMetaDataNextTime();

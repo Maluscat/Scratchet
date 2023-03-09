@@ -16,11 +16,6 @@ const joinRoomOverlayInput =
 const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
 const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
-const ToolsEnum = {
-  Brush: 0,
-  Eraser: 1,
-};
-
 const OVERLAY_INPUT_INVALID_DURATION = 365;
 const HIT_BORDER_DURATION = 200;
 const CANVAS_ANIM_DURATION = {

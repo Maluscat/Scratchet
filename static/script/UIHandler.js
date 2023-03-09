@@ -34,15 +34,8 @@ class UIHandler {
     return this.#prefersReducedMotionQuery.matches;
   }
 
-  toolButtonMap = new Map();
-
   constructor() {
     this.#prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion)');
-
-    for (const toolButton of toolButtons) {
-      const tool = ToolsEnum[toolButton.dataset.tool];
-      this.toolButtonMap.set(tool, toolButton);
-    }
 
     joinRoomOverlayInput.addEventListener('keydown', this.handleJoinRoomInputKeys.bind(this));
     joinRoomOverlayInput.addEventListener('paste', this.handleJoinRoomInputPaste.bind(this));

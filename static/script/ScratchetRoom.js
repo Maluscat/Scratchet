@@ -13,8 +13,21 @@ class ScratchetRoom extends ScratchetCanvas {
   users = new Map();
   userListNode;
 
+  tools;
+
   constructor(roomCode, roomName, globalUsername, peers) {
     super(ScratchetRoom.createCanvas());
+
+    this.tools = {
+      brush: new Brush(),
+      eraser: new Eraser(),
+    };
+    // Set active tool by current active class
+    for (const tool of Object.values(this.tools)) {
+      if (tool.buttonNode.classList.contains('active')) {
+        this.activeTool = tool;
+      }
+    }
 
     this.roomCode = roomCode;
 
@@ -29,6 +42,17 @@ class ScratchetRoom extends ScratchetCanvas {
 
     this.changeRoomName(roomName);
   }
+
+  // ---- Tool handling ----
+  activateTool(toolName) {
+    const tool = this.tools[toolName];
+    if (this.activeTool !== tool) {
+      this.activeTool.deactivate();
+      this.activeTool = tool;
+      this.activeTool.activate();
+    }
+  }
+
 
   // ---- User handling ----
   /** @return { ScratchetUser } */
