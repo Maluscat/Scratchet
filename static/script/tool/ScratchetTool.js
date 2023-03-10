@@ -40,11 +40,20 @@ class ScratchetTool {
       range: [1, max],
       value: 25,
       precision: 0,
+      events: {
+        'change:value': [
+          ScratchetTool.setCSSStrokeWidth
+        ]
+      },
       structure: `
         <thumb>
           <:value "$value" class=[slider-width-value]>
         </thumb>
       `
     });
+  }
+
+  static setCSSStrokeWidth(slider) {
+    document.documentElement.style.setProperty('--strokeWidth', slider.value + 'px');
   }
 }

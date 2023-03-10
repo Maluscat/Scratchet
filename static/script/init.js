@@ -50,27 +50,6 @@ const META_FLAGS = {
  * metadata: currently: [hue, width, lastPosX, lastPosY]
  */
 
-const hueSlider = new Slider89(document.getElementById('hue-slider'), {
-  range: [0, 360],
-  precision: 0,
-  structure: `
-    <thumb>
-      <:indicator class=[slider-hue-indicator] style=[background-color: ${makeHSLString('$value')};]>
-    </thumb>
-  `
-}, true);
-
-const widthSlider = new Slider89(document.getElementById('width-slider'), {
-  range: [1, 80],
-  value: 25,
-  precision: 0,
-  structure: `
-    <thumb>
-      <:value "$value" class=[slider-width-value]>
-    </thumb>
-  `
-}, true);
-
 const controller = new ScratchetController();
 const controls3D = new Controls3D(null, null, {
   mod: {

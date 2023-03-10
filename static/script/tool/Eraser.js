@@ -18,5 +18,6 @@ class Eraser extends ScratchetTool {
   activate() {
     super.activate();
     this.#sliders.width.value = this.#sliders.width.value;
+    ScratchetTool.setCSSStrokeWidth(this.#sliders.width);
   }
 }

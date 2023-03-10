@@ -36,5 +36,6 @@ class Brush extends ScratchetTool {
     super.activate();
     this.#sliders.width.value = this.#sliders.width.value;
     this.#sliders.hue.value = this.#sliders.hue.value;
+    ScratchetTool.setCSSStrokeWidth(this.#sliders.width);
   }
 }

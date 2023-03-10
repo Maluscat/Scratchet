@@ -3,7 +3,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   lastPos = new Array(2);
 
   isDrawing = false;
-  /** @type ScratchetTool */
+
+  tools;
+  /** @type { ScratchetTool } */
   activeTool;
 
   /**
@@ -20,14 +22,19 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    */
   initPosIndexes = new Array();
 
-  width = 25;
-  hue = 0;
-
   /**
    * @param { HTMLCanvasElement } canvas
    */
   constructor(canvas) {
     super(canvas);
+
+    // TODO Currently the brush metadata is always up-to-date "by accident"
+    // because the whole canvas is redrawn unconditionally on pointerUp...
+    // Make this not so wasteful!
+    this.tools = {
+      brush: new Brush(),
+      eraser: new Eraser(),
+    };
 
     canvas.addEventListener('pointerdown', this.canvasDown.bind(this));
     canvas.addEventListener('pointermove', this.canvasDraw.bind(this));
@@ -202,7 +209,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
     this.redrawCanvas();
   }
-  erasePos(targetPosX, targetPosY, user, eraserWidth = this.width) {
+  erasePos(targetPosX, targetPosY, user, eraserWidth = this.tools.eraser.width) {
     let hasChanged = false;
     for (const posDataWrapper of user.posCache) {
 
@@ -425,10 +432,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.posBuffer.splice(this.posBuffer.indexOf(item), 1);
   }
 
-  setLineWidth(width = this.width) {
+  setLineWidth(width = this.tools.brush.width) {
     this.ctx.lineWidth = width;
   }
-  setStrokeStyle(hue = this.hue, hasReducedAlpha) {
+  setStrokeStyle(hue = this.tools.brush.hue, hasReducedAlpha) {
     this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
   }
 }

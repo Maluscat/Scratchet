@@ -13,15 +13,9 @@ class ScratchetRoom extends ScratchetCanvas {
   users = new Map();
   userListNode;
 
-  tools;
-
   constructor(roomCode, roomName, globalUsername, peers) {
     super(ScratchetRoom.createCanvas());
 
-    this.tools = {
-      brush: new Brush(),
-      eraser: new Eraser(),
-    };
     // Set active tool by current active class
     for (const tool of Object.values(this.tools)) {
       if (tool.buttonNode.classList.contains('active')) {
@@ -135,6 +129,8 @@ class ScratchetRoom extends ScratchetCanvas {
 
     this.setRoomNameInput();
     this.canvas.style.zIndex = ScratchetRoom.canvasZIndex++;
+
+    this.activeTool.activate();
   }
   unfocus() {
     controls3D.changeState(null);

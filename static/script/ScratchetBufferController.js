@@ -26,8 +26,8 @@ class ScratchetBufferController {
   }
 
   initializeSendBufferNormal(lastPosX, lastPosY) {
-    const hue = this.activeRoom.hue;
-    const width = this.activeRoom.width;
+    const hue = this.activeRoom.tools.brush.hue;
+    const width = this.activeRoom.tools.brush.width;
     const flag = this.getNormalModeFlag(hue, width);
 
     this.sendBuffer = new Array(2);
@@ -48,7 +48,7 @@ class ScratchetBufferController {
     this.liveClientBuffer = [hue, width, lastPosX, lastPosY, flag];
   }
   initializeSendBufferErase() {
-    this.sendBuffer = [this.activeRoom.roomCode, Global.MODE.ERASE, this.activeRoom.width];
+    this.sendBuffer = [this.activeRoom.roomCode, Global.MODE.ERASE, this.activeRoom.tools.eraser.width];
   }
 
   resetSendBuffer() {
@@ -68,8 +68,8 @@ class ScratchetBufferController {
   updateInitializedSendBufferMeta() {
     const mode = this.getBufferMode();
     if (mode === Global.MODE.ERASE) {
-      this.sendBuffer[2] = this.activeRoom.width;
-    } else if (mode !== this.getNormalModeFlag(this.activeRoom.hue, this.activeRoom.width)) {
+      this.sendBuffer[2] = this.activeRoom.tools.eraser.width;
+    } else if (mode !== this.getNormalModeFlag(this.activeRoom.tools.brush.hue, this.activeRoom.tools.brush.width)) {
       this.initializeSendBufferNormal(
         this.liveClientBuffer[2],
         this.liveClientBuffer[3],
@@ -107,10 +107,10 @@ class ScratchetBufferController {
 
   sendPositionsIfMetaHasChanged() {
     if (this.getBufferMode() === Global.MODE.ERASE
-          && this.activeRoom.width !== getClientMetaWidth(this.sendBuffer, EXTRA_META_LEN_SEND)
+          && this.activeRoom.tools.eraser.width !== getClientMetaWidth(this.sendBuffer, EXTRA_META_LEN_SEND)
         || (this.getBufferMode() >= 0
-          && this.activeRoom.width !== getClientMetaWidth(this.liveClientBuffer)
-          || this.activeRoom.hue !== getClientMetaHue(this.liveClientBuffer))) {
+          && this.activeRoom.tools.brush.width !== getClientMetaWidth(this.liveClientBuffer)
+          || this.activeRoom.tools.brush.hue !== getClientMetaHue(this.liveClientBuffer))) {
       this.sendPositions();
     }
   }

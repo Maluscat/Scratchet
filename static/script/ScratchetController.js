@@ -21,10 +21,6 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   init() {
-    // These are events that need to access initialized properties like `activeRoom`
-    hueSlider.addEvent('change:value', this.changeHue.bind(this));
-    widthSlider.addEvent('change:value', this.changeWidth.bind(this));
-
     ui.registerInputHandler(
       usernameInput,
       this.changeOwnUsername.bind(this),
@@ -108,17 +104,6 @@ class ScratchetController extends ScratchetBufferController {
         hueSlider.value += direction * 24;
       }
     }
-  }
-
-  // -> Utility overlay
-  changeHue(slider) {
-    this.activeRoom.setStrokeStyle(slider.value);
-    this.activeRoom.hue = slider.value;
-  }
-  changeWidth(slider) {
-    this.activeRoom.setLineWidth(slider.value);
-    this.activeRoom.width = slider.value
-    document.documentElement.style.setProperty('--strokeWidth', slider.value + 'px');
   }
 
   toolButtonClick(toolName) {
@@ -293,9 +278,6 @@ class ScratchetController extends ScratchetBufferController {
     room.appendUserList();
 
     copyRoomLinkContent.textContent = room.roomCodeLink;
-
-    hueSlider.value = room.hue;
-    widthSlider.value = room.width;
   }
 
   updateRoomIndicator() {
