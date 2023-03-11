@@ -5,6 +5,9 @@ class Eraser extends ScratchetTool {
   get width() {
     return this.#sliders.width.value;
   }
+  set width(value) {
+    this.#sliders.width.value = value;
+  }
 
   constructor() {
     super('eraser');

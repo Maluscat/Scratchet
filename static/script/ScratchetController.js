@@ -97,12 +97,7 @@ class ScratchetController extends ScratchetBufferController {
   mouseWheel(e) {
     if (e.deltaY !== 0) {
       const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
-      if (e.shiftKey) {
-        widthSlider.value += direction * 7;
-      } else if (e.ctrlKey) {
-        e.preventDefault();
-        hueSlider.value += direction * 24;
-      }
+      this.activeRoom.scrollAction(e, direction);
     }
   }
 

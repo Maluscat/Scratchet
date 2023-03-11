@@ -5,11 +5,18 @@ class Brush extends ScratchetTool {
   get width() {
     return this.#sliders.width.value;
   }
+  set width(value) {
+    this.#sliders.width.value = value;
+  }
+
   get hue() {
     return this.#sliders.hue.value;
   }
+  set hue(value) {
+    this.#sliders.hue.value = value;
+  }
 
-  constructor() {
+  constructor(onWidthChange, onHueChange) {
     super('brush');
 
     const widthWrapper = ScratchetTool.createSliderWrapper('width-slider');
@@ -25,6 +32,13 @@ class Brush extends ScratchetTool {
         </thumb>
       `
     });
+
+    if (onWidthChange) {
+      this.#sliders.width.addEvent('change:value', s => onWidthChange(s.value));
+    }
+    if (onHueChange) {
+      this.#sliders.hue.addEvent('change:value', s => onHueChange(s.value));
+    }
 
 
     this.configBarContent.push(widthWrapper);

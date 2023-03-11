@@ -50,6 +50,24 @@ class ScratchetRoom extends ScratchetCanvas {
     this.activeTool.activate();
   }
 
+  scrollAction(e, direction) {
+    switch (this.activeTool.constructor) {
+      case Brush: {
+        if (e.ctrlKey) {
+          e.preventDefault();
+          /** @type { Brush } */ (this.activeTool).hue += direction * 24;
+        }
+        // No break!
+      }
+      case Eraser: {
+        if (e.shiftKey) {
+         /** @type { Brush | Eraser } */ (this.activeTool).width += direction * 7;
+        }
+        break;
+      }
+    }
+  }
+
 
   // ---- User handling ----
   /** @return { ScratchetUser } */

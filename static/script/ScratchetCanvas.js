@@ -28,11 +28,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   constructor(canvas) {
     super(canvas);
 
-    // TODO Currently the brush metadata is always up-to-date "by accident"
-    // because the whole canvas is redrawn unconditionally on pointerUp...
-    // Make this not so wasteful!
     this.tools = {
-      brush: new Brush(),
+      brush: new Brush(this.setLineWidth.bind(this), this.setStrokeStyle.bind(this)),
       eraser: new Eraser(),
     };
 
