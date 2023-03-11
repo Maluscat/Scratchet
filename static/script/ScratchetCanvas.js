@@ -118,9 +118,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   finalizeDraw() {
-    this.isDrawing = false;
-    ui.toggleDrawIndicatorEraseMode(true);
-    this.redrawCanvas();
+    if (this.isDrawing === true) {
+      this.isDrawing = false;
+      ui.toggleDrawIndicatorEraseMode(true);
+      this.redrawCanvas();
+    }
   }
 
   // ---- Canvas handling ----
