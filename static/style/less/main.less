@@ -287,11 +287,11 @@ input:invalid {
 }
 
 .sl89-thumb {
-  background-color: hsl(0, 0%, 31%);
+  background-color: @slider-thumb-color;
   width: @slider-thumb-dims;
   height: @slider-thumb-dims;
   &:hover {
-    background-color: hsl(0, 0%, 34%);
+    background-color: @slider-thumb-color--hover;
   }
 }
 
@@ -305,7 +305,7 @@ input:invalid {
   position: absolute;
   left: 0;
   top: 0;
-  border-radius: 100px;
+  border-radius: 1000px;
   outline: calc(@draw-indicator-border-size / var(--scale)) solid @draw-indicator-color;
   pointer-events: none;
   &.erase {
@@ -428,6 +428,7 @@ input:invalid {
 }
 .width-slider {
   .sl89-thumb {
+    width: @slider-width-thumb-width;
     display: flex;
     justify-content: center;
     align-items: center;

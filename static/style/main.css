@@ -342,7 +342,7 @@ body.inactive .overlay .sl89-track {
   position: absolute;
   left: 0;
   top: 0;
-  border-radius: 100px;
+  border-radius: 1000px;
   outline: calc(2px / var(--scale)) solid hsl(0, 0%, 90%);
   pointer-events: none;
 }
@@ -442,6 +442,7 @@ body.inactive #draw-indicator {
   background-image: linear-gradient(to right, hsl(0, 75%, 70%), hsl(45, 75%, 70%), hsl(90, 75%, 70%), hsl(135, 75%, 70%), hsl(180, 75%, 70%), hsl(225, 75%, 70%), hsl(270, 75%, 70%), hsl(315, 75%, 70%), hsl(0, 75%, 70%));
 }
 .width-slider .sl89-thumb {
+  width: 2.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
