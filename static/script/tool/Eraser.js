@@ -13,7 +13,7 @@ class Eraser extends ScratchetTool {
     super('eraser');
 
     const widthWrapper = ScratchetTool.createSliderWrapper('width-slider');
-    this.#sliders.width = ScratchetTool.createWidthSlider(widthWrapper, 80);
+    this.#sliders.width = ScratchetTool.createWidthSlider(widthWrapper, 300);
 
     this.configBarContent.push(widthWrapper);
   }
