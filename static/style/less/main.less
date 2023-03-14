@@ -122,6 +122,9 @@ input:invalid {
   flex-direction: row;
 }
 
+.has-pointer-events {
+  pointer-events: auto !important;
+}
 
 // ---- Overlays & groups ----
 .overlay {
@@ -141,6 +144,10 @@ input:invalid {
     right: @overlay-margin;
   }
 
+  &.self-centered {
+    align-self: center;
+  }
+
   .button,
   .hover-overlay,
   .overlay-input:focus,
@@ -154,7 +161,6 @@ input:invalid {
   }
   .button,
   .overlay-input,
-  .has-pointer-events,
   .sl89-thumb,
   .sl89-track,
   .slider-hue-indicator {
@@ -371,6 +377,38 @@ input:invalid {
   }
 }
 
+#prompt-wrapper {
+  display: none;
+  flex-direction: column;
+  border-radius: @general-border-radius;
+  background-color: @prompt-bg;
+  backdrop-filter: @general-backdrop-blur;
+  &.active {
+    display: flex;
+  }
+  .header {
+    font-size: 1.15rem;
+    padding: 1em 1.5em;
+    width: 100%;
+    font-weight: bold;
+    text-align: center;
+    background-color: @prompt-header-bg;
+    border-top-left-radius: @general-border-radius;
+    border-top-right-radius: @general-border-radius;
+  }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: @overlay-gap;
+    padding: 1.2em 1.65em;
+    width: 100%;
+  }
+  .button {
+    background-color: @overlay-bg--active;
+    padding: .475em 1em;
+  }
+}
+
 #toolbar {
   display: inline-flex;
   flex-direction: column;
@@ -379,7 +417,7 @@ input:invalid {
   padding: @toolbar-padding;
   background-color: @toolbar-bg;
   border-radius: 100px;
-  backdrop-filter: blur(3px);
+  backdrop-filter: @general-backdrop-blur;
   .button {
     width: @toolbar-button-dims;
     height: @toolbar-button-dims;

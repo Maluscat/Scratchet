@@ -43,7 +43,7 @@ canvas {
     scale: 0.9175;
     z-index: 0;
     pointer-events: none;
-    border-radius: 1.4em;
+    border-radius: 1.4rem;
   }
   49.9% {
     z-index: 0;
@@ -53,7 +53,7 @@ canvas {
     transform: translate(72.5%, 0);
   }
   85% {
-    border-radius: 1.4em;
+    border-radius: 1.4rem;
   }
   100% {
     pointer-events: none;
@@ -65,7 +65,7 @@ canvas {
       scale: 0.9175;
       z-index: 0;
       pointer-events: none;
-      border-radius: 1.4em;
+      border-radius: 1.4rem;
     }
     49.9% {
       z-index: 0;
@@ -75,7 +75,7 @@ canvas {
       transform: translate(0, 72.5%);
     }
     85% {
-      border-radius: 1.4em;
+      border-radius: 1.4rem;
     }
     100% {
       pointer-events: none;
@@ -89,7 +89,7 @@ canvas.inactive,
 canvas.remove {
   visibility: hidden;
   pointer-events: none;
-  border-radius: 1.4em;
+  border-radius: 1.4rem;
 }
 @media not (prefers-reduced-motion) {
   canvas.inactive {
@@ -102,7 +102,7 @@ canvas.remove {
     visibility: visible;
   }
   2% {
-    border-radius: 1.4em;
+    border-radius: 1.4rem;
   }
   50% {
     transform: translate(-30%, 0);
@@ -119,7 +119,7 @@ canvas.remove {
       visibility: visible;
     }
     2% {
-      border-radius: 1.4em;
+      border-radius: 1.4rem;
     }
     50% {
       transform: translate(0, -30%);
@@ -142,7 +142,7 @@ canvas.remove {
     visibility: visible;
   }
   2% {
-    border-radius: 1.4em;
+    border-radius: 1.4rem;
   }
   47% {
     transform: scale(0.925);
@@ -197,6 +197,9 @@ input:invalid {
 .horizontal {
   flex-direction: row;
 }
+.has-pointer-events {
+  pointer-events: auto !important;
+}
 .overlay {
   position: absolute;
   pointer-events: none;
@@ -214,12 +217,15 @@ input:invalid {
 .overlay.right {
   right: 0.85rem;
 }
+.overlay.self-centered {
+  align-self: center;
+}
 .overlay .button,
 .overlay .hover-overlay,
 .overlay .overlay-input:focus,
 .overlay .sl89-track {
-  z-index: 2147483646;
   border: 2px solid hsl(0, 0%, 8%);
+  z-index: 2147483646;
   background-color: hsl(0, 0%, 18%);
   box-sizing: content-box;
   padding: 0.2rem;
@@ -227,7 +233,6 @@ input:invalid {
 }
 .overlay .button,
 .overlay .overlay-input,
-.overlay .has-pointer-events,
 .overlay .sl89-thumb,
 .overlay .sl89-track,
 .overlay .slider-hue-indicator {
@@ -309,7 +314,7 @@ body.inactive .overlay .sl89-track {
   display: none;
   padding: 0.375em 0.8em;
   margin: 0 0.15em;
-  border-radius: 1.4em;
+  border-radius: 1.4rem;
   white-space: nowrap;
 }
 .button-wrapper .hover-overlay.active {
@@ -400,6 +405,43 @@ body.inactive #draw-indicator {
     transform: translateY(-0.5em);
   }
 }
+#prompt-wrapper {
+  display: none;
+  flex-direction: column;
+  border-radius: 1.4rem;
+  background-color: hsla(0, 0%, 16%, 0.7);
+  backdrop-filter: blur(22px);
+}
+#prompt-wrapper.active {
+  display: flex;
+}
+#prompt-wrapper .header {
+  font-size: 1.15rem;
+  padding: 1em 1.5em;
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+  background-color: hsl(0, 0%, 21.5%);
+  border-top-left-radius: 1.4rem;
+  border-top-right-radius: 1.4rem;
+}
+#prompt-wrapper .buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 1.2em 1.65em;
+  width: 100%;
+}
+#prompt-wrapper .button {
+  background-color: hsl(0, 0%, 25%);
+  padding: 0.475em 1em;
+}
+#prompt-wrapper .button:hover {
+  background-color: hsl(0, 0%, 29%) !important;
+}
+#prompt-wrapper .button:active {
+  background-color: hsl(0, 0%, 28%) !important;
+}
 #toolbar {
   display: inline-flex;
   flex-direction: column;
@@ -408,14 +450,14 @@ body.inactive #draw-indicator {
   padding: 0.2244rem;
   background-color: hsla(0, 0%, 18%, 0.45);
   border-radius: 100px;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(22px);
 }
 #toolbar .button {
   width: 2.2712rem;
   height: 2.2712rem;
 }
 #toolbar .button.active {
-  background-color: hsl(0, 0%, 21%);
+  background-color: hsl(0, 0%, 25%);
 }
 #toolbar .button:not(.active) {
   background-color: transparent;

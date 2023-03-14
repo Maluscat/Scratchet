@@ -9,7 +9,8 @@
 @slider-thumb-color: hsl(0, 0%, 31%);
 @slider-thumb-color--hover: hsl(0, 0%, 34%);
 
-@general-border-radius: 1.4em;
+@general-border-radius: 1.4rem;
+@general-backdrop-blur: blur(22px);
 
 @invalid-color: #B83232;
 @invalid-overlay-bg: saturate(@overlay-bg, 20%);
@@ -32,6 +33,11 @@
 @overlay-bg--hover: lighten(@overlay-bg, 4%);
 @overlay-bg--active: lighten(@overlay-bg, 3%);
 @overlay-bg--inactive: darken(@overlay-bg, 6%);
+
+// -- Prompt --
+@prompt-base: darken(@overlay-bg, 2%);
+@prompt-bg: fade(@prompt-base, 70%);
+@prompt-header-bg: lighten(@prompt-base, 5.5%);
 
 
 // -- Toolbar --
