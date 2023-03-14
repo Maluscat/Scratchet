@@ -27,7 +27,31 @@ const hitBorderTimeouts = {
   bottom: null
 };
 
+
 class UIHandler {
+  actions = {
+    leaveRoom: {
+      button: document.getElementById('leave-room-button'),
+      fn: controller.leaveCurrentRoom
+    },
+    copyRoomLink: {
+      button: document.getElementById('copy-room-link-button'),
+      fn: controller.copyRoomLink
+    },
+    createRoom: {
+      button: document.getElementById('new-room-button'),
+      fn: controller.requestNewRoom
+    },
+    joinRoom: {
+      button: document.getElementById('join-room-button'),
+      fn: this.focusJoinRoomOverlay
+    },
+    clear: {
+      button: document.getElementById('clear-drawing-button'),
+      fn: controller.clearDrawing
+    }
+  };
+
   #prefersReducedMotionQuery;
 
   get prefersReducedMotion() {
@@ -37,12 +61,26 @@ class UIHandler {
   constructor() {
     this.#prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion)');
 
+    userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
+    roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
+
     joinRoomOverlayInput.addEventListener('keydown', this.handleJoinRoomInputKeys.bind(this));
     joinRoomOverlayInput.addEventListener('paste', this.handleJoinRoomInputPaste.bind(this));
 
-    userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
-    roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
-    joinRoomButton.addEventListener('click', this.focusJoinRoomOverlay.bind(this));
+    promptNode.cancelButton.addEventListener('click', this.removePrompt.bind(this));
+
+    // Adding tools to actions
+    for (const toolButton of document.querySelectorAll('#toolbar > .button')) {
+      const toolName = toolButton.dataset.tool;
+      this.actions[toolName] = {
+        button: toolButton,
+        fn: controller.toolButtonClick.bind(controller, toolName)
+      };
+    }
+
+    for (const [ actionName, action ] of Object.entries(this.actions)) {
+      action.button.addEventListener('click', action.fn);
+    }
   }
 
   // ---- Misc events ----

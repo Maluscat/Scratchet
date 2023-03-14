@@ -14,6 +14,11 @@ class ScratchetController extends ScratchetBufferController {
     this.mouseWheel = this.mouseWheel.bind(this);
     this.windowResized = this.windowResized.bind(this);
 
+    this.clearDrawing = this.clearDrawing.bind(this);
+    this.copyRoomLink = this.copyRoomLink.bind(this);
+    this.requestNewRoom = this.requestNewRoom.bind(this);
+    this.leaveCurrentRoom = this.leaveCurrentRoom.bind(this);
+
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
       this.globalUsername = persistentUsername;
@@ -32,15 +37,6 @@ class ScratchetController extends ScratchetBufferController {
       this.changeCurrentRoomName.bind(this),
       Global.Validator.MAX_ROOM_NAME_LENGTH,
       Global.Validator.validateRoomName);
-
-    for (const toolButton of toolButtons) {
-      toolButton.addEventListener('click', this.toolButtonClick.bind(this, toolButton.dataset.tool));
-    }
-
-    clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
-    copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
-    newRoomButton.addEventListener('click', this.requestNewRoom.bind(this));
-    leaveRoomButton.addEventListener('click', this.leaveCurrentRoom.bind(this));
 
     // Set the join room input to the same width as the copy room link overlay, with a dummy value
     copyRoomLinkContent.textContent = ScratchetRoom.createRoomCodeLink('0000');
