@@ -200,6 +200,9 @@ input:invalid {
 .has-pointer-events {
   pointer-events: auto !important;
 }
+.no-border {
+  border: none !important;
+}
 .overlay {
   position: absolute;
   pointer-events: none;
@@ -251,8 +254,25 @@ body.inactive .overlay .button:not(.persistent),
 body.inactive .overlay .sl89-track {
   pointer-events: none;
   transform: scale(0.915);
-  background-color: hsl(0, 0%, 12%);
-  color: hsl(0, 0%, 85%);
+  background-color: hsl(0, 0%, 12%) !important;
+  color: hsl(0, 0%, 85%) !important;
+}
+.panel {
+  border: 4px solid hsl(0, 0%, 8%);
+  display: inline-flex;
+  flex-direction: column;
+  background-color: hsla(0, 0%, 16%, 0.675);
+  border-radius: calc(1.4rem + 4px);
+  backdrop-filter: blur(22px);
+}
+.panel .button {
+  background-color: hsl(0, 0%, 25.5%);
+}
+.panel .button:hover {
+  background-color: hsl(0, 0%, 29.5%) !important;
+}
+.panel .button:active {
+  background-color: hsl(0, 0%, 28.5%) !important;
 }
 .overlay-input {
   z-index: 2147483637 !important;
@@ -405,16 +425,8 @@ body.inactive #draw-indicator {
     transform: translateY(-0.5em);
   }
 }
-#prompt-wrapper {
-  border: 4px solid hsl(0, 0%, 8%);
+#prompt-wrapper:not(.active) {
   display: none;
-  flex-direction: column;
-  border-radius: 1.4rem;
-  background-color: hsla(0, 0%, 16%, 0.675);
-  backdrop-filter: blur(22px);
-}
-#prompt-wrapper.active {
-  display: flex;
 }
 #prompt-wrapper .header {
   font-size: 1.15rem;
@@ -422,7 +434,7 @@ body.inactive #draw-indicator {
   width: 100%;
   font-weight: bold;
   text-align: center;
-  background-color: hsla(0, 0%, 22.5%, 0.675);
+  background-color: hsla(0, 0%, 23%, 0.675);
   border-top-left-radius: 1.4rem;
   border-top-right-radius: 1.4rem;
 }
@@ -434,24 +446,13 @@ body.inactive #draw-indicator {
   width: 100%;
 }
 #prompt-wrapper .button {
-  background-color: hsl(0, 0%, 25.5%);
   padding: 0.475em 1em;
 }
-#prompt-wrapper .button:hover {
-  background-color: hsl(0, 0%, 29.5%) !important;
-}
-#prompt-wrapper .button:active {
-  background-color: hsl(0, 0%, 28.5%) !important;
-}
 #toolbar {
-  display: inline-flex;
-  flex-direction: column;
   width: min-content;
   gap: calc(0.2244rem - 2px);
-  padding: 0.2244rem;
-  background-color: hsla(0, 0%, 16%, 0.675);
   border-radius: 100px;
-  backdrop-filter: blur(22px);
+  padding: 0.2244rem;
 }
 #toolbar .button {
   width: 2.2712rem;

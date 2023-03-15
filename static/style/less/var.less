@@ -10,7 +10,6 @@
 @slider-thumb-color--hover: hsl(0, 0%, 34%);
 
 @general-border-radius: 1.4rem;
-@general-backdrop-blur: blur(22px);
 
 @invalid-color: #B83232;
 @invalid-overlay-bg: saturate(@overlay-bg, 20%);
@@ -32,15 +31,18 @@
 @overlay-bg: lighten(@canvas-color, 10%);
 @overlay-bg--inactive: darken(@overlay-bg, 6%);
 
+// -- Panel --
 @panel-border-dims: 4px;
+@panel-backdrop-blur: blur(22px);
+
+@panel-border-radius-with-border: calc(@general-border-radius + @panel-border-dims);
 
 @panel-bg-base: lighten(@canvas-color, 8%);
 @panel-bg: fade(@panel-bg-base, 67.5%);
 @panel-btn-bg: lighten(@panel-bg-base, 9.5%);
 
-
 // -- Prompt --
-@prompt-header-bg: lighten(@panel-bg, 6.5%);
+@prompt-header-bg: lighten(@panel-bg, 7%);
 
 
 // -- Toolbar --
