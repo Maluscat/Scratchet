@@ -381,7 +381,7 @@ input:invalid {
   display: none;
   flex-direction: column;
   border-radius: @general-border-radius;
-  background-color: @prompt-bg;
+  background-color: @panel-bg;
   backdrop-filter: @general-backdrop-blur;
   &.active {
     display: flex;
@@ -404,7 +404,7 @@ input:invalid {
     width: 100%;
   }
   .button {
-    background-color: @overlay-bg--active;
+    background-color: @panel-btn-bg;
     padding: .475em 1em;
   }
 }
@@ -415,14 +415,14 @@ input:invalid {
   width: min-content;
   gap: calc(@toolbar-padding - @overlay-border-dims);
   padding: @toolbar-padding;
-  background-color: @toolbar-bg;
+  background-color: @panel-bg;
   border-radius: 100px;
   backdrop-filter: @general-backdrop-blur;
   .button {
     width: @toolbar-button-dims;
     height: @toolbar-button-dims;
     &.active {
-      background-color: @overlay-bg--active;
+      background-color: @panel-btn-bg;
     }
     &:not(.active) {
       background-color: transparent;

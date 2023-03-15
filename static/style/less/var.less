@@ -34,10 +34,15 @@
 @overlay-bg--active: lighten(@overlay-bg, 3%);
 @overlay-bg--inactive: darken(@overlay-bg, 6%);
 
+@panel-border-dims: 4px;
+
+@panel-bg-base: lighten(@canvas-color, 8%);
+@panel-bg: fade(@panel-bg-base, 67.5%);
+@panel-btn-bg: lighten(@panel-bg-base, 9.5%);
+
+
 // -- Prompt --
-@prompt-base: darken(@overlay-bg, 2%);
-@prompt-bg: fade(@prompt-base, 70%);
-@prompt-header-bg: lighten(@prompt-base, 5.5%);
+@prompt-header-bg: lighten(@panel-bg, 6.5%);
 
 
 // -- Toolbar --

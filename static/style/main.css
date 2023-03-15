@@ -409,7 +409,7 @@ body.inactive #draw-indicator {
   display: none;
   flex-direction: column;
   border-radius: 1.4rem;
-  background-color: hsla(0, 0%, 16%, 0.7);
+  background-color: hsla(0, 0%, 16%, 0.675);
   backdrop-filter: blur(22px);
 }
 #prompt-wrapper.active {
@@ -421,7 +421,7 @@ body.inactive #draw-indicator {
   width: 100%;
   font-weight: bold;
   text-align: center;
-  background-color: hsl(0, 0%, 21.5%);
+  background-color: hsla(0, 0%, 22.5%, 0.675);
   border-top-left-radius: 1.4rem;
   border-top-right-radius: 1.4rem;
 }
@@ -433,7 +433,7 @@ body.inactive #draw-indicator {
   width: 100%;
 }
 #prompt-wrapper .button {
-  background-color: hsl(0, 0%, 25%);
+  background-color: hsl(0, 0%, 25.5%);
   padding: 0.475em 1em;
 }
 #prompt-wrapper .button:hover {
@@ -448,7 +448,7 @@ body.inactive #draw-indicator {
   width: min-content;
   gap: calc(0.2244rem - 2px);
   padding: 0.2244rem;
-  background-color: hsla(0, 0%, 18%, 0.45);
+  background-color: hsla(0, 0%, 16%, 0.675);
   border-radius: 100px;
   backdrop-filter: blur(22px);
 }
@@ -457,7 +457,7 @@ body.inactive #draw-indicator {
   height: 2.2712rem;
 }
 #toolbar .button.active {
-  background-color: hsl(0, 0%, 25%);
+  background-color: hsl(0, 0%, 25.5%);
 }
 #toolbar .button:not(.active) {
   background-color: transparent;
