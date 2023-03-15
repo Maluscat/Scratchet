@@ -406,6 +406,7 @@ body.inactive #draw-indicator {
   }
 }
 #prompt-wrapper {
+  border: 4px solid hsl(0, 0%, 8%);
   display: none;
   flex-direction: column;
   border-radius: 1.4rem;
@@ -437,10 +438,10 @@ body.inactive #draw-indicator {
   padding: 0.475em 1em;
 }
 #prompt-wrapper .button:hover {
-  background-color: hsl(0, 0%, 29%) !important;
+  background-color: hsl(0, 0%, 29.5%) !important;
 }
 #prompt-wrapper .button:active {
-  background-color: hsl(0, 0%, 28%) !important;
+  background-color: hsl(0, 0%, 28.5%) !important;
 }
 #toolbar {
   display: inline-flex;

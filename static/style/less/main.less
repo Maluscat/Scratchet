@@ -86,13 +86,8 @@ button, input {
   border: none;
 }
 button {
+  .buttonStyle(@overlay-bg);
   cursor: pointer;
-  &:hover {
-    background-color: @overlay-bg--hover !important;
-  }
-  &:active {
-    background-color: @overlay-bg--active !important;
-  }
 }
 
 input:invalid {
@@ -152,8 +147,8 @@ input:invalid {
   .hover-overlay,
   .overlay-input:focus,
   .sl89-track {
+    .generalBorder(@overlay-border-dims);
     z-index: (@max-z-index - 1);
-    border: @overlay-border-dims solid @canvas-color;
     background-color: @overlay-bg;
     box-sizing: content-box;
     padding: @overlay-padding;
@@ -378,6 +373,7 @@ input:invalid {
 }
 
 #prompt-wrapper {
+  .generalBorder(@panel-border-dims);
   display: none;
   flex-direction: column;
   border-radius: @general-border-radius;
@@ -404,6 +400,7 @@ input:invalid {
     width: 100%;
   }
   .button {
+    .buttonStyle(@panel-btn-bg);
     background-color: @panel-btn-bg;
     padding: .475em 1em;
   }

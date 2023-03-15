@@ -29,9 +29,7 @@
 @slider-thumb-dims: 1.75rem;
 @slider-width-thumb-width: 2.5rem;
 
-@overlay-bg: hsl(0, 0%, 18%);
-@overlay-bg--hover: lighten(@overlay-bg, 4%);
-@overlay-bg--active: lighten(@overlay-bg, 3%);
+@overlay-bg: lighten(@canvas-color, 10%);
 @overlay-bg--inactive: darken(@overlay-bg, 6%);
 
 @panel-border-dims: 4px;
@@ -53,6 +51,21 @@
 @toolbar-button-dims: @overlay-button-dims * @toolbar-button-shrink-factor;
 @toolbar-svg-dims: (@overlay-svg-dims + .05em) * @toolbar-button-shrink-factor;
 @toolbar-padding: (@overlay-button-dims * (1 - @toolbar-button-shrink-factor) / 2);
+
+
+// -- Utility mixins --
+.generalBorder(@border-size) {
+  border: @border-size solid @canvas-color;
+}
+
+.buttonStyle(@base-color) {
+  &:hover {
+    background-color: lighten(@base-color, 4%) !important;
+  }
+  &:active {
+    background-color: lighten(@base-color, 3%) !important;
+  }
+}
 
 
 // -- Canvas animations --
