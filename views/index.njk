@@ -25,7 +25,7 @@
     <div id="social-overlay" class="overlay top left button-group">
       <div class="horizontal">
         <div class="button-wrapper">
-          <button id="user-list-button" class="button" type="button" title="Toggle user list" aria-label="Toggle user list">0</button>
+          <button id="user-list-button" class="button" type="button" title="Toggle user list">0</button>
           <div class="floating-overlay-wrapper has-pointer-events">
             <div id="user-list-wrapper" class="hover-overlay"></div>
           </div>
@@ -43,10 +43,10 @@
               <ul id="room-list"></ul>
             </div>
           </div>
-          <button id="room-list-button" class="button" type="button" title="Toggle room list" aria-label="Toggle room list">0</button>
+          <button id="room-list-button" class="button" type="button" title="Toggle room list">0</button>
         </div>
       </div>
-      <button id="leave-room-button" class="button" type="button" title="Leave current room" aria-label="Leave current room">
+      <button id="leave-room-button" class="button" type="button" title="Leave current room">
         {% include 'component/svg/log-out-13.svg' %}
       </button>
       <div class="button-wrapper">
@@ -57,19 +57,19 @@
             {% include 'component/svg/check-mark-17.svg' %}
           </div>
         </div>
-        <button id="copy-room-link-button" class="button" type="button" title="Copy room link" aria-label="Copy room link">
+        <button id="copy-room-link-button" class="button" type="button" title="Copy room link">
           {% include 'component/svg/link-2.svg' %}
         </button>
       </div>
 
-      <button id="new-room-button" class="button persistent" type="button" title="Create an empty room" aria-label="Create an empty room">
+      <button id="new-room-button" class="button persistent" type="button" title="Create an empty room">
         {% include 'component/svg/plus-2.svg' %}
       </button>
       <div class="button-wrapper">
         <input
           type="text" id="join-room-overlay-input" class="hover-overlay has-pointer-events no-hover" title="Enter a four-letter room code or a room link"
           minlength="4" spellcheck="false" autocomplete="off" autocorrect="off" placeholder="Room link or room code"/>
-        <button id="join-room-button" class="button persistent" type="button" title="Join a room" aria-label="Join a room">
+        <button id="join-room-button" class="button persistent" type="button" title="Join a room">
           {% include 'component/svg/arrow-right-lined.svg' %}
         </button>
       </div>
@@ -77,15 +77,15 @@
 
     <div id="utility-overlay" class="overlay bottom left button-group">
       <div id="toolbar" class="panel no-border has-pointer-events">
-        <button data-tool="brush" class="button active" type="button">
+        <button data-tool="brush" class="button active" type="button" title="Use the brush tool">
           {% include 'component/svg/paintbrush-1.svg' %}
         </button>
-        <button data-tool="eraser" class="button" type="button">
+        <button data-tool="eraser" class="button" type="button" title="Use the eraser tool">
           {% include 'component/svg/eraser-1.svg' %}
         </button>
       </div>
 
-      <button id="clear-drawing-button" class="button" type="button" title="Clear your drawing" aria-label="Clear your drawing">
+      <button id="clear-drawing-button" class="button" type="button" title="Clear your drawing">
         {% include 'component/svg/trash-can-28.svg' %}
       </button>
 
