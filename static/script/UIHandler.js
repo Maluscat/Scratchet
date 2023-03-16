@@ -20,13 +20,6 @@ const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 const hitBorder = document.getElementById('hit-border');
 
-const toolButtons = document.querySelectorAll('#toolbar > .button');
-
-const newRoomButton = document.getElementById('new-room-button');
-const leaveRoomButton = document.getElementById('leave-room-button');
-const joinRoomButton = document.getElementById('join-room-button');
-const copyRoomLinkButton = document.getElementById('copy-room-link-button');
-
 const nonPersistentButtons = Array.from(document.querySelectorAll('button:not(.persistent)'));
 
 const overlayInputInvalidTimeouts = new Map();

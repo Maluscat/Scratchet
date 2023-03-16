@@ -1,8 +1,6 @@
 'use strict';
 const canvasContainer = document.getElementById('canvas-container');
 
-const clearDrawingButton = document.getElementById('clear-drawing-button');
-
 const usernameInput = document.getElementById('username-input');
 const userListButton = document.getElementById('user-list-button');
 const userListWrapper = document.getElementById('user-list-wrapper');
