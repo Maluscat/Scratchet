@@ -28,7 +28,7 @@ app.use(async (ctx, next) => {
   await next();
   try {
     let path = ctx.request.url.pathname;
-    path = skipPath(path, '/script/library/slider89/', 'dist/');
+    path = skipPath(path, '/library/slider89/', 'dist/');
 
     await ctx.send({
       root: STATIC_DIR,
