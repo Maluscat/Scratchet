@@ -1,14 +1,27 @@
 import * as denoPath from 'path';
 import { Application, Router } from 'oak';
+import Nunjucks from 'nunjucks';
+ 
+const VIEWS_DIR = denoPath.join(Deno.cwd(), 'views/');
+const STATIC_DIR = denoPath.join(Deno.cwd(), 'static/');
 
 // IN CASE OF 'INTERNAL SERVER ERROR': --allow-read IS MISSING
 export const app = new Application();
 export const router = new Router();
+const njkEnv = new Nunjucks.configure(VIEWS_DIR);
 
 
 // ---- Oak boilerplate stuff ----
 app.use(router.routes());
 app.use(router.allowedMethods());
+
+app.use(async (ctx, next) => {
+  await next();
+  if (ctx.request.url.pathname === '/') {
+    ctx.response.status = 200;
+    ctx.response.body = njkEnv.render('index.njk');
+  }
+});
 
 // static routing with 404 fallback
 app.use(async (ctx, next) => {
@@ -18,8 +31,7 @@ app.use(async (ctx, next) => {
     path = skipPath(path, '/script/library/slider89/', 'dist/');
 
     await ctx.send({
-      root: denoPath.join(Deno.cwd(), 'static'),
-      index: 'index.html',
+      root: STATIC_DIR,
       path: path
     });
   } catch {

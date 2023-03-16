@@ -10,6 +10,7 @@
     "ScratchetError": "./src/ScratchetError.ts",
 
     "oak": "https://deno.land/x/oak@v12.1.0/mod.ts",
-    "path": "https://deno.land/std@0.178.0/path/mod.ts"
+    "path": "https://deno.land/std@0.178.0/path/mod.ts",
+    "nunjucks": "https://deno.land/x/nunjucks@3.2.3-2/mod.js"
   }
 }
