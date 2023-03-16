@@ -5,3 +5,6 @@
 	path = static/script/library/slider89
 	url = https://github.com/Hallo89/Slider89.git
 	branch = project-rewrite
+[submodule "utility-wheel"]
+	path = static/script/library/utility-wheel
+	url = https://gitlab.com/Hallo89/utility-wheel.git
