@@ -6,6 +6,16 @@ const notificationTemplate = (function() {
   return node;
 }());
 
+const promptNode = (function() {
+  const promptWrapper = document.getElementById('prompt-wrapper');
+  return {
+    wrapper: promptWrapper,
+    header: promptWrapper.querySelector('.header'),
+    cancelButton: promptWrapper.querySelector('button.cancel'),
+    submitButton: promptWrapper.querySelector('button.submit')
+  }
+}());
+
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 const hitBorder = document.getElementById('hit-border');
@@ -248,6 +258,21 @@ class UIHandler {
       hitBorder.classList.remove('hit-' + direction);
       hitBorderTimeouts[direction] = null;
     }, HIT_BORDER_DURATION);
+  }
+
+  // ---- Prompts ----
+  dispatchPrompt(heading, onSubmit) {
+    promptNode.header.textContent = heading;
+    promptNode.submitButton.onclick = this.submitPrompt.bind(this, onSubmit);
+    promptNode.wrapper.classList.add('active');
+  }
+
+  submitPrompt(callback) {
+    this.removePrompt();
+    callback();
+  }
+  removePrompt() {
+    promptNode.wrapper.classList.remove('active');
   }
 
   // ---- Notifications ----
