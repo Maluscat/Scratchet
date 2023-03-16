@@ -41,6 +41,9 @@ const hitBorderTimeouts = {
 class UIHandler {
   actions = {
     leaveRoom: {
+      prompt: {
+        caption: 'Leave the current room?'
+      },
       button: document.getElementById('leave-room-button'),
       fn: controller.leaveCurrentRoom
     },
@@ -57,6 +60,9 @@ class UIHandler {
       fn: this.focusJoinRoomOverlay
     },
     clear: {
+      prompt: {
+        caption: 'Clear your drawing?'
+      },
       button: document.getElementById('clear-drawing-button'),
       fn: controller.clearDrawing
     }
@@ -89,7 +95,19 @@ class UIHandler {
     }
 
     for (const [ actionName, action ] of Object.entries(this.actions)) {
-      action.button.addEventListener('click', action.fn);
+      action.button.addEventListener('click', this.callAction.bind(this, actionName));
+      action.button.addEventListener('dblclick', this.callAction.bind(this, actionName));
+    }
+  }
+
+  // ---- Action handling ----
+  async callAction(actionName, e) {
+    const action = this.actions[actionName];
+    if (action.prompt && (!e || e.type !== 'dblclick' && !e.shiftKey)) {
+      this.dispatchPrompt(action.prompt.caption, action.fn);
+    } else {
+      this.removePrompt();
+      action.fn();
     }
   }
 
