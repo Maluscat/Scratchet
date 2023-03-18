@@ -1,3 +1,4 @@
+'use strict';
 class ScratchetTool {
   static toolbar = document.getElementById('toolbar');
   static configBarWrapper = document.getElementById('tool-config-bar');

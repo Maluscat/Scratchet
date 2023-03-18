@@ -1,3 +1,4 @@
+'use strict';
 class Eraser extends ScratchetTool {
   #sliders = {};
 

@@ -1,3 +1,4 @@
+'use strict';
 class Brush extends ScratchetTool {
   #sliders = {};
 
