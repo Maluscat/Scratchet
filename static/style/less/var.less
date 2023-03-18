@@ -69,6 +69,21 @@
   }
 }
 
+.surroundingTextShadow(@color, @start: 1px, @end: @start, @increment: .25px, @current: @start) {
+  & when (@current <= @end) {
+    text-shadow+:
+      @current 0 @color,
+      -@current 0 @color,
+      0 @current @color,
+      0 -@current @color,
+      @current @current @color,
+      -@current @current @color,
+      @current -@current @color,
+      -@current -@current @color;
+    .surroundingTextShadow(@color, @start, @end, @increment, @current + @increment);
+  }
+}
+
 
 // -- Canvas animations --
 @canvas-anim-inactive-scale: .9175;

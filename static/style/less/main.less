@@ -202,6 +202,7 @@ input:invalid {
 
 .overlay-input {
   @extra-padding: .4rem;
+  .surroundingTextShadow(@canvas-color, 1px, 2px, .25px);
   z-index: (@max-z-index - 10) !important;
   white-space: nowrap;
   font-size: 1.025em;
@@ -213,23 +214,6 @@ input:invalid {
   padding-right: @extra-padding !important;
   // Lessen the changed position caused by the extra padding
   margin: 0 -(@extra-padding / 2);
-  text-shadow:
-    1px 0 @canvas-color,
-    -1px 0 @canvas-color,
-    0 1px @canvas-color,
-    0 -1px @canvas-color,
-    1px 1px @canvas-color,
-    -1px 1px @canvas-color,
-    1px -1px @canvas-color,
-    -1px -1px @canvas-color,
-    1.25px 0 @canvas-color,
-    -1.25px 0 @canvas-color,
-    0 1.25px @canvas-color,
-    0 -1.25px @canvas-color,
-    1.25px 1.25px @canvas-color,
-    -1.25px 1.25px @canvas-color,
-    1.25px -1.25px @canvas-color,
-    -1.25px -1.25px @canvas-color;
   &.invalid {
     outline: 3px solid @invalid-color;
     transition: outline .1s ease-out;

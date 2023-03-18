@@ -275,6 +275,7 @@ body.inactive .overlay .sl89-track {
   background-color: hsl(0, 0%, 28.5%) !important;
 }
 .overlay-input {
+  text-shadow: 1px 0 hsl(0, 0%, 8%), -1px 0 hsl(0, 0%, 8%), 0 1px hsl(0, 0%, 8%), 0 -1px hsl(0, 0%, 8%), 1px 1px hsl(0, 0%, 8%), -1px 1px hsl(0, 0%, 8%), 1px -1px hsl(0, 0%, 8%), -1px -1px hsl(0, 0%, 8%), 1.25px 0 hsl(0, 0%, 8%), -1.25px 0 hsl(0, 0%, 8%), 0 1.25px hsl(0, 0%, 8%), 0 -1.25px hsl(0, 0%, 8%), 1.25px 1.25px hsl(0, 0%, 8%), -1.25px 1.25px hsl(0, 0%, 8%), 1.25px -1.25px hsl(0, 0%, 8%), -1.25px -1.25px hsl(0, 0%, 8%), 1.5px 0 hsl(0, 0%, 8%), -1.5px 0 hsl(0, 0%, 8%), 0 1.5px hsl(0, 0%, 8%), 0 -1.5px hsl(0, 0%, 8%), 1.5px 1.5px hsl(0, 0%, 8%), -1.5px 1.5px hsl(0, 0%, 8%), 1.5px -1.5px hsl(0, 0%, 8%), -1.5px -1.5px hsl(0, 0%, 8%), 1.75px 0 hsl(0, 0%, 8%), -1.75px 0 hsl(0, 0%, 8%), 0 1.75px hsl(0, 0%, 8%), 0 -1.75px hsl(0, 0%, 8%), 1.75px 1.75px hsl(0, 0%, 8%), -1.75px 1.75px hsl(0, 0%, 8%), 1.75px -1.75px hsl(0, 0%, 8%), -1.75px -1.75px hsl(0, 0%, 8%), 2px 0 hsl(0, 0%, 8%), -2px 0 hsl(0, 0%, 8%), 0 2px hsl(0, 0%, 8%), 0 -2px hsl(0, 0%, 8%), 2px 2px hsl(0, 0%, 8%), -2px 2px hsl(0, 0%, 8%), 2px -2px hsl(0, 0%, 8%), -2px -2px hsl(0, 0%, 8%);
   z-index: 2147483637 !important;
   white-space: nowrap;
   font-size: 1.025em;
@@ -284,7 +285,6 @@ body.inactive .overlay .sl89-track {
   padding-left: 0.4rem !important;
   padding-right: 0.4rem !important;
   margin: 0 -0.2rem;
-  text-shadow: 1px 0 hsl(0, 0%, 8%), -1px 0 hsl(0, 0%, 8%), 0 1px hsl(0, 0%, 8%), 0 -1px hsl(0, 0%, 8%), 1px 1px hsl(0, 0%, 8%), -1px 1px hsl(0, 0%, 8%), 1px -1px hsl(0, 0%, 8%), -1px -1px hsl(0, 0%, 8%), 1.25px 0 hsl(0, 0%, 8%), -1.25px 0 hsl(0, 0%, 8%), 0 1.25px hsl(0, 0%, 8%), 0 -1.25px hsl(0, 0%, 8%), 1.25px 1.25px hsl(0, 0%, 8%), -1.25px 1.25px hsl(0, 0%, 8%), 1.25px -1.25px hsl(0, 0%, 8%), -1.25px -1.25px hsl(0, 0%, 8%);
 }
 .overlay-input.invalid {
   outline: 3px solid #B83232;
