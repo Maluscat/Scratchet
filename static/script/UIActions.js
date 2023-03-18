@@ -62,6 +62,7 @@ class UIActions {
 
     this.utilityWheel.addEvent('invoke', this.utilWheelInvoke);
     this.utilityWheel.addEvent('hide', this.utilWheelHide);
+    this.utilityWheel.addEvent('pointerUp', this.utilWheelUp);
 
     this.setUtilityWheelAction('top', this.actions.copyRoomLink);
     this.setUtilityWheelAction('left', this.actions.brush);
@@ -86,6 +87,9 @@ class UIActions {
   }
   utilWheelHide() {
     document.body.classList.remove('active-utility-wheel');
+  }
+  utilWheelUp(e) {
+    ui.moveDrawIndicator(e.x, e.y);
   }
 
   /**
