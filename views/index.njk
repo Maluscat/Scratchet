@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/library/utility-wheel/style/main.css">
     <link rel="stylesheet" href="/style/hallo89.net/global.css">
     <link rel="stylesheet" href="/style/main.css">
     <title>Scratchet</title>
@@ -13,6 +14,8 @@
     <div id="draw-indicator"></div>
 
     <div id="hit-border"></div>
+
+    {% include 'static/library/utility-wheel/html/snippet.html' %}
 
     <div id="prompt-wrapper" class="panel overlay self-centered has-pointer-events">
       <span class="header"></span>
@@ -47,30 +50,30 @@
         </div>
       </div>
       <button id="leave-room-button" class="button" type="button" title="Leave current room">
-        {% include 'component/svg/log-out-13.svg' %}
+        {% include 'views/component/svg/log-out-13.svg' %}
       </button>
       <div class="button-wrapper">
         <div id="copy-room-link-overlay" class="hover-overlay">
           <span id="copy-room-link-content"></span>
           <div class="copied-indicator" aria-hidden="true">
             Copied
-            {% include 'component/svg/check-mark-17.svg' %}
+            {% include 'views/component/svg/check-mark-17.svg' %}
           </div>
         </div>
         <button id="copy-room-link-button" class="button" type="button" title="Copy room link">
-          {% include 'component/svg/link-2.svg' %}
+          {% include 'views/component/svg/link-2.svg' %}
         </button>
       </div>
 
       <button id="new-room-button" class="button persistent" type="button" title="Create an empty room">
-        {% include 'component/svg/plus.svg' %}
+        {% include 'views/component/svg/plus.svg' %}
       </button>
       <div class="button-wrapper">
         <input
           type="text" id="join-room-overlay-input" class="hover-overlay has-pointer-events no-hover" title="Enter a four-letter room code or a room link"
           minlength="4" spellcheck="false" autocomplete="off" autocorrect="off" placeholder="Room link or room code"/>
         <button id="join-room-button" class="button persistent" type="button" title="Join a room">
-          {% include 'component/svg/arrow-right-lined.svg' %}
+          {% include 'views/component/svg/arrow-right-lined.svg' %}
         </button>
       </div>
     </div>
@@ -78,15 +81,15 @@
     <div id="utility-overlay" class="overlay bottom left button-group">
       <div id="toolbar" class="panel no-border has-pointer-events">
         <button data-tool="brush" class="button active" type="button" title="Use the brush tool">
-          {% include 'component/svg/paintbrush-1.svg' %}
+          {% include 'views/component/svg/paintbrush-1.svg' %}
         </button>
         <button data-tool="eraser" class="button" type="button" title="Use the eraser tool">
-          {% include 'component/svg/eraser-1.svg' %}
+          {% include 'views/component/svg/eraser-1.svg' %}
         </button>
       </div>
 
       <button id="clear-drawing-button" class="button" type="button" title="Clear your drawing">
-        {% include 'component/svg/trash-can-28.svg' %}
+        {% include 'views/component/svg/trash-can-28.svg' %}
       </button>
 
       <div id="tool-config-bar" class="button-group horizontal">
@@ -97,6 +100,7 @@
 
     <div id="notification-overlay" class="overlay top overlay-text"></div>
 
+    <script src="/library/utility-wheel/script/UtilityWheel.js"></script>
     <script src="/library/slider89/slider89.js"></script>
     <script src="/library/controls3d/State3D.js"></script>
     <script src="/library/controls3d/Controls3D.js"></script>

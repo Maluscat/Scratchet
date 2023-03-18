@@ -2,13 +2,12 @@ import * as denoPath from 'path';
 import { Application, Router } from 'oak';
 import Nunjucks from 'nunjucks';
  
-const VIEWS_DIR = denoPath.join(Deno.cwd(), 'views/');
 const STATIC_DIR = denoPath.join(Deno.cwd(), 'static/');
 
 // IN CASE OF 'INTERNAL SERVER ERROR': --allow-read IS MISSING
 export const app = new Application();
 export const router = new Router();
-const njkEnv = new Nunjucks.configure(VIEWS_DIR);
+const njkEnv = new Nunjucks.configure(Deno.cwd());
 
 
 // ---- Oak boilerplate stuff ----
@@ -19,7 +18,7 @@ app.use(async (ctx, next) => {
   await next();
   if (ctx.request.url.pathname === '/') {
     ctx.response.status = 200;
-    ctx.response.body = njkEnv.render('index.njk');
+    ctx.response.body = njkEnv.render('views/index.njk');
   }
 });
 
