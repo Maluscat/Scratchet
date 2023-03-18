@@ -305,10 +305,6 @@ body.inactive .overlay .sl89-track {
   width: 1.05em;
   height: 1.05em;
 }
-.button-group .button > svg.plus-icon {
-  width: 0.7665em;
-  height: 0.7665em;
-}
 .button-wrapper {
   position: relative;
 }
