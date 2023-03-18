@@ -344,7 +344,8 @@ body > .utility-wheel {
   &.erase {
     background-color: @draw-indicator-color;
   }
-  body.inactive & {
+  body.inactive &,
+  body.active-utility-wheel & {
     display: none;
   }
 }

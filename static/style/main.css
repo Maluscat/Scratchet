@@ -409,7 +409,8 @@ body > .utility-wheel .uw-section-content.uw-bottom .wrapper > svg {
 #draw-indicator.erase {
   background-color: hsl(0, 0%, 90%);
 }
-body.inactive #draw-indicator {
+body.inactive #draw-indicator,
+body.active-utility-wheel #draw-indicator {
   display: none;
 }
 #hit-border {
