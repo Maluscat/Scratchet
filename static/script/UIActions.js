@@ -60,6 +60,9 @@ class UIActions {
       target: canvasContainer
     });
 
+    this.utilityWheel.addEvent('invoke', this.utilWheelInvoke);
+    this.utilityWheel.addEvent('hide', this.utilWheelHide);
+
     this.setUtilityWheelAction('top', this.actions.copyRoomLink);
     this.setUtilityWheelAction('left', this.actions.brush);
     this.setUtilityWheelAction('bottom', this.actions.clear);
@@ -78,6 +81,13 @@ class UIActions {
   }
 
   // ---- Utility wheel handling ----
+  utilWheelInvoke() {
+    document.body.classList.add('active-utility-wheel');
+  }
+  utilWheelHide() {
+    document.body.classList.remove('active-utility-wheel');
+  }
+
   /**
    * @param { SectionSide } side
    * @param { Object } action

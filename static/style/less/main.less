@@ -35,6 +35,13 @@ canvas, #canvas-container {
   height: 100%;
 }
 
+#canvas-container {
+  transition: filter .05s ease-in-out;
+  body.active-utility-wheel & {
+    filter: @utilWheel-background-blur;
+  }
+}
+
 canvas {
   position: absolute;
   background-color: @canvas-color;

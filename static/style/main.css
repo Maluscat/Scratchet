@@ -34,6 +34,12 @@ canvas,
   width: 100%;
   height: 100%;
 }
+#canvas-container {
+  transition: filter 0.05s ease-in-out;
+}
+body.active-utility-wheel #canvas-container {
+  filter: blur(14px);
+}
 canvas {
   position: absolute;
   background-color: hsl(0, 0%, 8%);
