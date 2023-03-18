@@ -1,3 +1,10 @@
+body > .utility-wheel {
+  --utilWheel-wheel-size: calc(8rem + 24vw);
+  --utilWheel-center-size: 6.75rem;
+  --utilWheel-gradient-stop: 20.5em;
+  --utilWheel-border-color: hsl(0, 0%, 55%);
+  --utilWheel-section-color: hsl(0, 0%, 21%);
+}
 * {
   box-sizing: border-box;
 }
@@ -358,6 +365,29 @@ body.inactive .overlay .sl89-track {
 }
 .sl89-thumb:hover {
   background-color: hsl(0, 0%, 34%);
+}
+body > .utility-wheel {
+  font-size: 0.935rem;
+}
+body > .utility-wheel .uw-section-target {
+  background: radial-gradient(at 0 0, hsla(0, 0%, 8%, 0.65), transparent calc(var(--utilWheel-wheel-size) * 0.81));
+}
+body > .utility-wheel .uw-section-content {
+  width: 19.65em;
+  height: 19.65em;
+}
+body > .utility-wheel .uw-section-content .wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+body > .utility-wheel .uw-section-content .wrapper > svg {
+  width: 2.35em;
+  height: 2.35em;
+}
+body > .utility-wheel .uw-section-content.uw-bottom .wrapper > svg {
+  order: -1;
 }
 #draw-indicator {
   transform: translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2)) scale(calc(var(--scale) * 100%));

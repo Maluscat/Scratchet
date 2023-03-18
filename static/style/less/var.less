@@ -44,6 +44,21 @@
 // -- Prompt --
 @prompt-header-bg: lighten(@panel-bg, 7%);
 
+// -- Utility wheel --
+body > .utility-wheel {
+  --utilWheel-wheel-size: calc(8rem + 24vw);
+  --utilWheel-center-size: 6.75rem;
+  --utilWheel-gradient-stop: 20.5em;
+  --utilWheel-border-color: hsl(0, 0%, 55%);
+  --utilWheel-section-color: hsl(0, 0%, 21%);
+}
+@utilWheel-background-blur: blur(14px);
+
+@utilWheel-content-gap: 1rem;
+@utilWheel-content-size: 19.65em;
+@utilWheel-svg-dims: 2.35em;
+
+@utilWheel-default-gradient: fade(@canvas-color, 65%);
 
 // -- Toolbar --
 @toolbar-bg: fade(@overlay-bg, 45%);

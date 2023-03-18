@@ -1,5 +1,5 @@
 // out: ../main.css
-@import (reference) 'var.less';
+@import 'var.less';
 
 * {
   box-sizing: border-box;
@@ -294,6 +294,30 @@ input:invalid {
   height: @slider-thumb-dims;
   &:hover {
     background-color: @slider-thumb-color--hover;
+  }
+}
+
+body > .utility-wheel {
+  font-size: .935rem;
+  .uw-section-target {
+    background: radial-gradient(at 0 0, @utilWheel-default-gradient, transparent calc(var(--utilWheel-wheel-size) * .81));
+  }
+  .uw-section-content {
+    width: @utilWheel-content-size;
+    height: @utilWheel-content-size;
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: @utilWheel-content-gap;
+      > svg {
+        width: @utilWheel-svg-dims;
+        height: @utilWheel-svg-dims;
+      }
+    }
+    &.uw-bottom .wrapper > svg {
+      order: -1;
+    }
   }
 }
 
