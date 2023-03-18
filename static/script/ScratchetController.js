@@ -18,6 +18,7 @@ class ScratchetController extends ScratchetBufferController {
     this.copyRoomLink = this.copyRoomLink.bind(this);
     this.requestNewRoom = this.requestNewRoom.bind(this);
     this.leaveCurrentRoom = this.leaveCurrentRoom.bind(this);
+    this.toolButtonClick = this.toolButtonClick.bind(this);
 
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
