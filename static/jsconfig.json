@@ -7,6 +7,7 @@
   }
   "include": [
     "./script/**/*",
-    "./script/**/*.mjs"
+    "./script/**/*.mjs",
+    "./library/**/*"
   ]
 }
