@@ -5,30 +5,39 @@ class UIActions {
       prompt: {
         caption: 'Leave the current room?'
       },
+      shortTitle: 'Leave room',
       button: document.getElementById('leave-room-button')
     },
     copyRoomLink: {
       button: document.getElementById('copy-room-link-button')
     },
     createRoom: {
+      shortTitle: 'Create empty room',
       button: document.getElementById('new-room-button')
     },
     joinRoom: {
+      shortTitle: 'Join room',
       button: document.getElementById('join-room-button')
     },
     clear: {
       prompt: {
         caption: 'Clear your drawing?'
       },
+      shortTitle: 'Clear drawing',
       button: document.getElementById('clear-drawing-button')
     }
   };
+
+  utilityWheel;
 
   constructor(callbacks) {
     // Add tools to actions
     for (const toolButton of document.querySelectorAll('#toolbar > .button')) {
       const toolName = toolButton.dataset.tool;
+      const title = 'Tool: ' + toolName.charAt(0).toUpperCase() + toolName.slice(1);
+
       this.actions[toolName] = {
+        shortTitle: title,
         button: toolButton,
         fn: () => callbacks._tools(toolName)
       };
@@ -46,8 +55,18 @@ class UIActions {
       action.button.addEventListener('click', this.callAction.bind(this, actionName));
       action.button.addEventListener('dblclick', this.callAction.bind(this, actionName));
     }
+
+    this.utilityWheel = new UtilityWheel(document.querySelector('body > .utility-wheel'), {
+      target: canvasContainer
+    });
+
+    this.setUtilityWheelAction('top', this.actions.copyRoomLink);
+    this.setUtilityWheelAction('left', this.actions.brush);
+    this.setUtilityWheelAction('bottom', this.actions.clear);
+    this.setUtilityWheelAction('right', this.actions.eraser);
   }
 
+  // ---- Action handling ----
   callAction(actionName, e) {
     const action = this.actions[actionName];
     if (action.prompt && (!e || e.type !== 'dblclick' && !e.shiftKey)) {
@@ -56,5 +75,33 @@ class UIActions {
       ui.removePrompt();
       action.fn();
     }
+  }
+
+  // ---- Utility wheel handling ----
+  /**
+   * @param { SectionSide } side
+   * @param { Object } action
+   */
+  setUtilityWheelAction(side, action) {
+    const sectionElement = this.createUtilityWheelSectionElement(side, action);
+    this.utilityWheel.setSection(side, sectionElement, action.fn);
+  }
+
+  /**
+   * @param { SectionSide } side
+   * @param { Object } action
+   */
+  createUtilityWheelSectionElement(side, action) {
+    const title = action.shortTitle || action.button.title;
+
+    const wrapper = document.createElement('div');
+    const tooltip = document.createTextNode(title);
+    const icon = action.button.querySelector('svg').cloneNode(true);
+
+    wrapper.classList.add('wrapper');
+    wrapper.appendChild(tooltip);
+    wrapper.appendChild(icon);
+
+    return wrapper;
   }
 }
