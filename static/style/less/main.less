@@ -137,7 +137,6 @@ input:invalid {
 .overlay {
   position: absolute;
   pointer-events: none;
-  user-select: none;
   &.bottom {
     bottom: @overlay-margin;
   }
@@ -161,6 +160,7 @@ input:invalid {
   .sl89-track {
     .generalBorder(@overlay-border-dims);
     z-index: (@high-z-index + 9);
+    user-select: none;
     background-color: @overlay-bg;
     box-sizing: content-box;
     padding: @overlay-padding;
