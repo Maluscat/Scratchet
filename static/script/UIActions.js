@@ -73,7 +73,7 @@ class UIActions {
   // ---- Action handling ----
   callAction(actionName, e) {
     const action = this.actions[actionName];
-    if (action.prompt && (!e || e.type !== 'dblclick' && !e.shiftKey)) {
+    if (action.prompt && (!e || e.type !== 'dblclick' && !e.shiftKey && !e.ctrlKey)) {
       ui.dispatchPrompt(action.prompt.caption, action.fn);
     } else {
       ui.removePrompt();
