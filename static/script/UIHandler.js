@@ -59,6 +59,7 @@ class UIHandler {
     joinRoomOverlayInput.addEventListener('paste', this.handleJoinRoomInputPaste.bind(this));
 
     promptNode.cancelButton.addEventListener('click', this.removePrompt.bind(this));
+    promptNode.wrapper.addEventListener('contextmenu', this.preventPromptContext.bind(this));
   }
 
   // ---- Misc events ----
@@ -241,6 +242,12 @@ class UIHandler {
   }
   removePrompt() {
     promptNode.wrapper.classList.remove('active');
+  }
+
+  preventPromptContext(e) {
+    if (e.button === 2 && !e.shiftKey) {
+      e.preventDefault();
+    }
   }
 
   // ---- Notifications ----
