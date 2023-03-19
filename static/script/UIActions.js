@@ -64,10 +64,10 @@ class UIActions {
     this.utilityWheel.addEvent('hide', this.utilWheelHide);
     this.utilityWheel.addEvent('pointerUp', this.utilWheelUp);
 
-    this.setUtilityWheelAction('top', this.actions.copyRoomLink);
-    this.setUtilityWheelAction('left', this.actions.brush);
-    this.setUtilityWheelAction('bottom', this.actions.clear);
-    this.setUtilityWheelAction('right', this.actions.eraser);
+    this.setUtilityWheelAction('top', 'copyRoomLink');
+    this.setUtilityWheelAction('left', 'brush');
+    this.setUtilityWheelAction('bottom', 'clear');
+    this.setUtilityWheelAction('right', 'eraser');
   }
 
   // ---- Action handling ----
@@ -94,11 +94,12 @@ class UIActions {
 
   /**
    * @param { SectionSide } side
-   * @param { Object } action
+   * @param { string } actionName
    */
-  setUtilityWheelAction(side, action) {
+  setUtilityWheelAction(side, actionName) {
+    const action = this.actions[actionName];
     const sectionElement = this.createUtilityWheelSectionElement(side, action);
-    this.utilityWheel.setSection(side, sectionElement, action.fn);
+    this.utilityWheel.setSection(side, sectionElement, this.callAction.bind(this, actionName));
   }
 
   /**
