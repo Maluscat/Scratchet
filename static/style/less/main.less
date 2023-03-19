@@ -26,7 +26,7 @@ body {
     background-color: @canvas-color;
   }
   > *:not(#canvas-container) {
-    z-index: @max-z-index;
+    z-index: (@high-z-index + 10);
   }
 }
 
@@ -160,7 +160,7 @@ input:invalid {
   .overlay-input:focus,
   .sl89-track {
     .generalBorder(@overlay-border-dims);
-    z-index: (@max-z-index - 1);
+    z-index: (@high-z-index + 9);
     background-color: @overlay-bg;
     box-sizing: content-box;
     padding: @overlay-padding;
@@ -213,7 +213,7 @@ input:invalid {
 }
 .overlay-input {
   @extra-padding: .4rem;
-  z-index: (@max-z-index - 10) !important;
+  z-index: @high-z-index !important;
   white-space: nowrap;
   font-size: 1.025em;
   background-color: transparent;
@@ -260,7 +260,7 @@ input:invalid {
     @floating-padding: (@overlay-button-dims / 2) + @overlay-padding;
     padding: 0 @floating-padding;
     margin: 0 -@floating-padding;
-    z-index: (@max-z-index - 2);
+    z-index: (@high-z-index + 8);
 
     position: absolute;
     top: 0;
@@ -306,6 +306,7 @@ input:invalid {
 
 body > .utility-wheel {
   font-size: .935rem;
+  z-index: (@high-z-index + 11) !important;
   .uw-section-target {
     background: radial-gradient(at 0 0, @utilWheel-default-gradient, transparent calc(var(--utilWheel-wheel-size) * .81));
   }

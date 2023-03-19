@@ -27,7 +27,7 @@ body.initial-load {
   background-color: hsl(0, 0%, 8%);
 }
 body > *:not(#canvas-container) {
-  z-index: 2147483647;
+  z-index: 100000010;
 }
 canvas,
 #canvas-container {
@@ -62,7 +62,7 @@ canvas {
     z-index: 0;
   }
   50% {
-    z-index: 2147483646;
+    z-index: 100000007;
     transform: translate(72.5%, 0);
   }
   85% {
@@ -84,7 +84,7 @@ canvas {
       z-index: 0;
     }
     50% {
-      z-index: 2147483646;
+      z-index: 100000007;
       transform: translate(0, 72.5%);
     }
     85% {
@@ -241,7 +241,7 @@ input:invalid {
 .overlay .overlay-input:focus,
 .overlay .sl89-track {
   border: 2px solid hsl(0, 0%, 8%);
-  z-index: 2147483646;
+  z-index: 100000009;
   background-color: hsl(0, 0%, 18%);
   box-sizing: content-box;
   padding: 0.2rem;
@@ -292,7 +292,7 @@ body.inactive .overlay .sl89-track {
   text-shadow: 1px 0 hsl(0, 0%, 8%), -1px 0 hsl(0, 0%, 8%), 0 1px hsl(0, 0%, 8%), 0 -1px hsl(0, 0%, 8%), 1px 1px hsl(0, 0%, 8%), -1px 1px hsl(0, 0%, 8%), 1px -1px hsl(0, 0%, 8%), -1px -1px hsl(0, 0%, 8%), 1.25px 0 hsl(0, 0%, 8%), -1.25px 0 hsl(0, 0%, 8%), 0 1.25px hsl(0, 0%, 8%), 0 -1.25px hsl(0, 0%, 8%), 1.25px 1.25px hsl(0, 0%, 8%), -1.25px 1.25px hsl(0, 0%, 8%), 1.25px -1.25px hsl(0, 0%, 8%), -1.25px -1.25px hsl(0, 0%, 8%), 1.5px 0 hsl(0, 0%, 8%), -1.5px 0 hsl(0, 0%, 8%), 0 1.5px hsl(0, 0%, 8%), 0 -1.5px hsl(0, 0%, 8%), 1.5px 1.5px hsl(0, 0%, 8%), -1.5px 1.5px hsl(0, 0%, 8%), 1.5px -1.5px hsl(0, 0%, 8%), -1.5px -1.5px hsl(0, 0%, 8%), 1.75px 0 hsl(0, 0%, 8%), -1.75px 0 hsl(0, 0%, 8%), 0 1.75px hsl(0, 0%, 8%), 0 -1.75px hsl(0, 0%, 8%), 1.75px 1.75px hsl(0, 0%, 8%), -1.75px 1.75px hsl(0, 0%, 8%), 1.75px -1.75px hsl(0, 0%, 8%), -1.75px -1.75px hsl(0, 0%, 8%), 2px 0 hsl(0, 0%, 8%), -2px 0 hsl(0, 0%, 8%), 0 2px hsl(0, 0%, 8%), 0 -2px hsl(0, 0%, 8%), 2px 2px hsl(0, 0%, 8%), -2px 2px hsl(0, 0%, 8%), 2px -2px hsl(0, 0%, 8%), -2px -2px hsl(0, 0%, 8%);
 }
 .overlay-input {
-  z-index: 2147483637 !important;
+  z-index: 100000000 !important;
   white-space: nowrap;
   font-size: 1.025em;
   background-color: transparent;
@@ -332,7 +332,7 @@ body.inactive .overlay .sl89-track {
 .button-wrapper .floating-overlay-wrapper {
   padding: 0 1.56rem;
   margin: 0 -1.56rem;
-  z-index: 2147483645;
+  z-index: 100000008;
   position: absolute;
   top: 0;
 }
@@ -374,6 +374,7 @@ body.inactive .overlay .sl89-track {
 }
 body > .utility-wheel {
   font-size: 0.935rem;
+  z-index: 100000011 !important;
 }
 body > .utility-wheel .uw-section-target {
   background: radial-gradient(at 0 0, hsla(0, 0%, 8%, 0.65), transparent calc(var(--utilWheel-wheel-size) * 0.81));
