@@ -55,13 +55,16 @@ class ScratchetRoom extends ScratchetCanvas {
       case Brush: {
         if (e.shiftKey) {
           /** @type { Brush } */ (this.activeTool).hue += direction * 24;
-          break;
+        } else if (!e.ctrlKey) {
+          /** @type { Brush } */ (this.activeTool).width += direction * 7;
         }
-        // No break!
+        break;
       }
       case Eraser: {
-        if (!e.shiftKey && !e.ctrlKey) {
-          /** @type { Brush | Eraser } */ (this.activeTool).width += direction * 7;
+        if (e.shiftKey) {
+          /** @type { Eraser } */ (this.activeTool).width += direction * 21;
+        } else if (!e.ctrlKey) {
+          /** @type { Eraser } */ (this.activeTool).width += direction * 7;
         }
         break;
       }
