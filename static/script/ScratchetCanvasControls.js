@@ -56,7 +56,7 @@ class ScratchetCanvasControls {
   }
 
   setDimensions() {
-    const dpr = this.getDevicePixelRatio();
+    const dpr = ScratchetCanvasControls.getDevicePixelRatio();
     this.canvas.height = this.canvas.clientHeight * dpr;
     this.canvas.width = this.canvas.clientWidth * dpr;
 
@@ -71,7 +71,7 @@ class ScratchetCanvasControls {
 
   getPosWithTransformFloat(posX, posY) {
     const currentTransform = this.ctx.getTransform();
-    const dpr = this.getDevicePixelRatio();
+    const dpr = ScratchetCanvasControls.getDevicePixelRatio();
     return [
       (posX * dpr - currentTransform.e) / currentTransform.a,
       (posY * dpr - currentTransform.f) / currentTransform.d
@@ -88,13 +88,9 @@ class ScratchetCanvasControls {
   }
 
   // ---- Helper functions ----
-  getDevicePixelRatio() {
-    return Math.floor(window.devicePixelRatio);
-  }
-
   getScaleDelta() {
     const currentTransform = this.ctx.getTransform();
-    const dpr = this.getDevicePixelRatio();
+    const dpr = ScratchetCanvasControls.getDevicePixelRatio();
 
     const DELTA_PRECISION = 1000000;
     // These should always be equivalent, but computed separately in case of discrepancies
@@ -106,7 +102,7 @@ class ScratchetCanvasControls {
 
   // ---- Transformation functions ----
   scaleByDevicePixelRatio() {
-    const dpr = this.getDevicePixelRatio();
+    const dpr = ScratchetCanvasControls.getDevicePixelRatio();
     this.ctx.scale(dpr, dpr);
   }
 
@@ -158,5 +154,10 @@ class ScratchetCanvasControls {
       this.state.tran.y = -viewStopY;
       ui.invokeHitBorder('bottom');
     }
+  }
+
+  // ---- Static helpers ----
+  static getDevicePixelRatio() {
+    return Math.floor(window.devicePixelRatio);
   }
 }
