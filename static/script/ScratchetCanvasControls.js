@@ -33,6 +33,9 @@ class ScratchetCanvasControls {
   }
 
   // NOTE Remember to apply the device pixel ratio when working with deltas and positions
+  /**
+   * @param { Controls3DDrawInfo } controlsOptions
+   */
   setTransform(controlsOptions) {
     const transformOrigin = (controlsOptions?.touches)
       ? Controls3D.computeTouchesMidpoint(...controlsOptions.touches)
