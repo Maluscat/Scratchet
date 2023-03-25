@@ -3,6 +3,9 @@ class ScratchetCanvasControls {
   static VIEW_WIDTH = 8191;
   static VIEW_HEIGHT = 8191;
 
+  static MAX_SCALE = 4;
+  minScale = 0;
+
   canvas;
   ctx;
   currentMousePos = [0, 0];
@@ -59,6 +62,10 @@ class ScratchetCanvasControls {
     const dpr = ScratchetCanvasControls.getDevicePixelRatio();
     this.canvas.height = this.canvas.clientHeight * dpr;
     this.canvas.width = this.canvas.clientWidth * dpr;
+
+    this.minScale = Math.max(
+        this.canvas.width / ScratchetCanvasControls.VIEW_WIDTH,
+        this.canvas.height / ScratchetCanvasControls.VIEW_HEIGHT);
 
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
@@ -118,20 +125,16 @@ class ScratchetCanvasControls {
   }
 
   limitStateScale() {
-    const scaleMin = Math.max(
-      this.canvas.width / ScratchetCanvasControls.VIEW_WIDTH,
-      this.canvas.height / ScratchetCanvasControls.VIEW_HEIGHT);
-
-    if (this.state.scale.x < scaleMin) {
-      this.state.scale.x = scaleMin;
-    } else if (this.state.scale.x > 4) {
-      this.state.scale.x = 4;
+    if (this.state.scale.x < this.minScale) {
+      this.state.scale.x = this.minScale;
+    } else if (this.state.scale.x > ScratchetCanvasControls.MAX_SCALE) {
+      this.state.scale.x = ScratchetCanvasControls.MAX_SCALE;
     }
 
-    if (this.state.scale.y < scaleMin) {
-      this.state.scale.y = scaleMin;
-    } else if (this.state.scale.y > 4) {
-      this.state.scale.y = 4;
+    if (this.state.scale.y < this.minScale) {
+      this.state.scale.y = this.minScale;
+    } else if (this.state.scale.y > ScratchetCanvasControls.MAX_SCALE) {
+      this.state.scale.y = ScratchetCanvasControls.MAX_SCALE;
     }
   }
 
