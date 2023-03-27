@@ -58,7 +58,6 @@ const controls3D = new Controls3D(null, null, {
     rot: null
   },
   dontInvertTranY: true,
-  useProportionalScale: true,
   keyModifier: {
     scale: {
       x: [ ['ctrlKey'] ],
