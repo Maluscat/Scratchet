@@ -151,6 +151,8 @@ class ScratchetRoom extends ScratchetCanvas {
     this.setRoomNameInput();
     this.canvas.style.zIndex = ScratchetRoom.canvasZIndex++;
 
+    this.updateScaleSlider();
+
     this.activeTool.activate();
   }
   unfocus() {

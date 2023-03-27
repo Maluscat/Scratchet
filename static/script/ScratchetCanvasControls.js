@@ -46,10 +46,12 @@ class ScratchetCanvasControls {
   /**
    * @param { Controls3DDrawInfo } [drawInfo]
    */
-  setTransform(drawInfo) {
+  setTransform(drawInfo, useCenterOrigin = false) {
     const transformOrigin = (drawInfo?.touches)
       ? Controls3D.computeTouchesMidpoint(...drawInfo.touches)
-      : this.currentMousePos;
+      : (useCenterOrigin
+        ? ScratchetCanvasControls.getViewportCenter()
+        : this.currentMousePos);
 
     // TODO Convert to scaleMax and move the canvas around somehow (undrawable sections other color + border)?
     this.limitStateScale();
@@ -63,6 +65,10 @@ class ScratchetCanvasControls {
     this.scaleByDevicePixelRatio();
 
     this.redrawCanvas();
+
+    if (ui.scaleSlider.value !== this.state.scale.x) {
+      this.updateScaleSlider();
+    }
   }
 
   /** @param { DeepPartial<State> } newState */
@@ -81,8 +87,14 @@ class ScratchetCanvasControls {
         this.canvas.width / ScratchetCanvasControls.VIEW_WIDTH,
         this.canvas.height / ScratchetCanvasControls.VIEW_HEIGHT));
 
+    ui.scaleSlider.range[0] = this.minScale;
+
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
+  }
+
+  updateScaleSlider() {
+    ui.scaleSlider.value = this.state.scale.x;
   }
 
   setCurrentMousePos(posX, posY) {
