@@ -16,6 +16,7 @@ const promptNode = (function() {
   }
 }());
 
+const infoOverlay = document.getElementById('info-overlay');
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 const hitBorder = document.getElementById('hit-border');
@@ -34,6 +35,7 @@ const hitBorderTimeouts = {
 class UIHandler {
   #prefersReducedMotionQuery;
 
+  scaleSlider;
   actions;
 
   get prefersReducedMotion() {
@@ -51,6 +53,31 @@ class UIHandler {
       clear: controller.clearDrawing,
       _tools: controller.toolButtonClick
     });
+
+    this.scaleSlider = new Slider89(infoOverlay, {
+      range: [ 0, ScratchetCanvasControls.MAX_SCALE ],
+      _percent: '100%',
+      events: {
+        // TODO change this to the 'update' event once it is shipped in Slider89
+        'move': [(slider) => {
+          controller.scaleCanvasAtCenter(slider.value);
+        }],
+        'change:value': [(slider) => {
+          slider._percent =
+            Math.round(ScratchetCanvasControls.scaleInterpolateFn(slider.value) * 100) + '%';
+        }]
+      },
+      structure: `
+        <indicatorWrapper>
+          <:indicatorButton button "$_percent"
+              type=[button] title=[Reset zoom] class=[button scale-button]>
+        </indicatorWrapper>
+        <:track>
+      `
+    });
+    this.scaleSlider.node.slider.id = 'scale-slider';
+    this.scaleSlider.node.indicatorButton
+      .addEventListener('click', controller.scaleCanvasAtCenter.bind(controller, 0));
 
     userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
     roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
