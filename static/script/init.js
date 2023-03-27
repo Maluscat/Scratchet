@@ -63,7 +63,6 @@ const controls3D = new Controls3D(null, null, {
     scale: {
       x: [ ['ctrlKey'] ],
       y: [ ['ctrlKey'] ],
-      z: [ ['ctrlKey'] ],
     }
   }
 });
