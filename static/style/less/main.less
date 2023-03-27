@@ -550,3 +550,26 @@ body > .utility-wheel {
     transform: none;
   }
 }
+
+#scale-slider {
+  display: flex;
+  align-items: center;
+  gap: (@overlay-gap / 2);
+  height: @scaleSlider-height;
+  .scale-button, .sl89-track, .sl89-thumb {
+    height: 100%;
+  }
+  .scale-button {
+    padding: .185em .5em;
+    font-size: .775rem;
+  }
+  .sl89-track {
+    width: @scaleSlider-width;
+    padding: 0;
+  }
+  .sl89-thumb {
+    body.initial-load & {
+      visibility: hidden;
+    }
+  }
+}

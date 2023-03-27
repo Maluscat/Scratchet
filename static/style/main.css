@@ -575,3 +575,25 @@ body.active-utility-wheel #draw-indicator {
   opacity: 1;
   transform: none;
 }
+#scale-slider {
+  display: flex;
+  align-items: center;
+  gap: 0.225rem;
+  height: 0.95rem;
+}
+#scale-slider .scale-button,
+#scale-slider .sl89-track,
+#scale-slider .sl89-thumb {
+  height: 100%;
+}
+#scale-slider .scale-button {
+  padding: 0.185em 0.5em;
+  font-size: 0.775rem;
+}
+#scale-slider .sl89-track {
+  width: 7.5rem;
+  padding: 0;
+}
+body.initial-load #scale-slider .sl89-thumb {
+  visibility: hidden;
+}
