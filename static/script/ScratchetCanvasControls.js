@@ -65,6 +65,12 @@ class ScratchetCanvasControls {
     this.redrawCanvas();
   }
 
+  /** @param { DeepPartial<State> } newState */
+  setTransformWithNewState(newState, ...args) {
+    this.state.assignNewState(newState);
+    this.setTransform(...args);
+  }
+
   setDimensions() {
     const dpr = ScratchetCanvasControls.getDevicePixelRatio();
     this.canvas.height = this.canvas.clientHeight * dpr;
@@ -170,6 +176,13 @@ class ScratchetCanvasControls {
   // ---- Static helpers ----
   static getDevicePixelRatio() {
     return Math.floor(window.devicePixelRatio);
+  }
+
+  static getViewportCenter() {
+    return [
+      Math.trunc(document.documentElement.clientWidth / 2),
+      Math.trunc(document.documentElement.clientHeight / 2)
+    ];
   }
 
   // ---- Static math helpers ---

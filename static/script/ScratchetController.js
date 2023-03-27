@@ -13,6 +13,7 @@ class ScratchetController extends ScratchetBufferController {
     this.pointerUp = this.pointerUp.bind(this);
     this.mouseWheel = this.mouseWheel.bind(this);
     this.windowResized = this.windowResized.bind(this);
+    this.scaleCanvasAtCenter = this.scaleCanvasAtCenter.bind(this);
 
     this.clearDrawing = this.clearDrawing.bind(this);
     this.copyRoomLink = this.copyRoomLink.bind(this);
@@ -89,6 +90,12 @@ class ScratchetController extends ScratchetBufferController {
       room.setDimensions();
       room.setTransform();
     }
+  }
+
+  scaleCanvasAtCenter(scaleAmount) {
+    this.activeRoom.setTransformWithNewState({
+      scale: { x: scaleAmount, y: scaleAmount }
+    }, null, true);
   }
 
   mouseWheel(e) {
