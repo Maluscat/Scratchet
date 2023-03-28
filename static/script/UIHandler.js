@@ -194,10 +194,12 @@ class UIHandler {
   activateUI() {
     document.body.classList.remove('inactive');
     this.updateNonPersistentTabIndex(0);
+    this.actions.utilityWheel.enable();
   }
   deactivateUI() {
     document.body.classList.add('inactive');
     this.updateNonPersistentTabIndex(-1);
+    this.actions.utilityWheel.disable();
 
     if (nonPersistentButtons.includes(document.activeElement)) {
       document.activeElement.blur();
