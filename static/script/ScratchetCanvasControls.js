@@ -3,7 +3,7 @@ class ScratchetCanvasControls {
   static VIEW_WIDTH = 8191;
   static VIEW_HEIGHT = 8191;
 
-  static MAX_SCALE = 3;
+  static MAX_SCALE = ScratchetCanvasControls.scaleInterpolateFnInverse(20); // 2000 %
   minScale = 0;
 
   canvas;
@@ -199,9 +199,9 @@ class ScratchetCanvasControls {
 
   // ---- Static math helpers ---
   static scaleInterpolateFn(x) {
-    return Math.pow(Math.E, x);
+    return Math.pow(Math.E, 1.05 * x);
   }
   static scaleInterpolateFnInverse(x) {
-    return Math.log(x);
+    return Math.log(x) / 1.05;
   }
 }
