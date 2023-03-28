@@ -88,18 +88,18 @@
         </button>
       </div>
 
-      <button id="undo-button" class="button" type="button" title="Undo last action">
-        <!-- TODO: ICON -->
-        U
-      </button>
-      <button id="redo-button" class="button" type="button" title="Redo last undone action">
-        <!-- TODO: ICON -->
-        R
-      </button>
-
       <button id="clear-drawing-button" class="button" type="button" title="Clear your drawing">
         {% include 'views/component/svg/trash-can-28.svg' %}
       </button>
+
+      <div class="horizontal">
+        <button id="undo-button" class="button" type="button" title="Undo last action">
+          {% include 'views/component/svg/undo.svg' %}
+        </button>
+        <button id="redo-button" class="button" type="button" title="Redo last undone action">
+          {% include 'views/component/svg/redo.svg' %}
+        </button>
+      </div>
 
       <div id="tool-config-bar" class="button-group horizontal">
         <div id="width-slider"></div>
