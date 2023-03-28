@@ -6,13 +6,22 @@ const notificationTemplate = (function() {
   return node;
 }());
 
+const promptNode = (function() {
+  const promptWrapper = document.getElementById('prompt-wrapper');
+  return {
+    wrapper: promptWrapper,
+    header: promptWrapper.querySelector('.header'),
+    cancelButton: promptWrapper.querySelector('button.cancel'),
+    submitButton: promptWrapper.querySelector('button.submit')
+  }
+}());
+
+const infoOverlay = document.getElementById('info-overlay');
 const notificationWrapper = document.getElementById('notification-overlay');
 const drawIndicator = document.getElementById('draw-indicator');
 const hitBorder = document.getElementById('hit-border');
 
-const newRoomButton = document.getElementById('new-room-button');
-const joinRoomButton = document.getElementById('join-room-button');
-const copyRoomLinkButton = document.getElementById('copy-room-link-button');
+const nonPersistentButtons = Array.from(document.querySelectorAll('button:not(.persistent)'));
 
 const overlayInputInvalidTimeouts = new Map();
 const hitBorderTimeouts = {
@@ -22,37 +31,84 @@ const hitBorderTimeouts = {
   bottom: null
 };
 
+
 class UIHandler {
+  #prefersReducedMotionQuery;
+
+  scaleSlider;
+  actions;
+
+  get prefersReducedMotion() {
+    return this.#prefersReducedMotionQuery.matches;
+  }
+
   constructor() {
-    for (const l of document.querySelectorAll('.overlay-input')) {
-      l.addEventListener('keydown', this.handleOverlayInputKeys.bind(this));
-    }
+    this.#prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion)');
+
+    this.actions = new UIActions({
+      leaveRoom: controller.leaveCurrentRoom,
+      copyRoomLink: controller.copyRoomLink,
+      createRoom: controller.requestNewRoom,
+      joinRoom: this.focusJoinRoomOverlay,
+      clear: controller.clearDrawing,
+      _tools: controller.toolButtonClick
+    });
+
+    this.scaleSlider = new Slider89(infoOverlay, {
+      range: [ 0, ScratchetCanvasControls.MAX_SCALE ],
+      _percent: '100%',
+      events: {
+        // TODO change this to the 'update' event once it is shipped in Slider89
+        'move': [(slider) => {
+          controller.scaleCanvasAtCenter(slider.value);
+        }],
+        'change:value': [(slider) => {
+          slider._percent =
+            Math.round(ScratchetCanvasControls.scaleInterpolateFn(slider.value) * 100) + '%';
+        }]
+      },
+      structure: `
+        <indicatorWrapper>
+          <:indicatorButton button "$_percent"
+              type=[button] title=[Reset zoom] class=[button scale-button]>
+        </indicatorWrapper>
+        <:track>
+      `
+    });
+    this.scaleSlider.node.slider.id = 'scale-slider';
+    this.scaleSlider.node.indicatorButton
+      .addEventListener('click', controller.scaleCanvasAtCenter.bind(controller, 0));
+
+    userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
+    roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
 
     joinRoomOverlayInput.addEventListener('keydown', this.handleJoinRoomInputKeys.bind(this));
     joinRoomOverlayInput.addEventListener('paste', this.handleJoinRoomInputPaste.bind(this));
 
-    userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
-    roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
-    joinRoomButton.addEventListener('click', this.focusJoinRoomOverlay.bind(this));
-
-    window.addEventListener('wheel', this.mouseWheel.bind(this), { passive: false });
-    window.addEventListener('resize', controller.windowResized.bind(controller));
+    promptNode.cancelButton.addEventListener('click', this.removePrompt.bind(this));
+    promptNode.wrapper.addEventListener('contextmenu', this.preventPromptContext.bind(this));
   }
 
   // ---- Misc events ----
-  mouseWheel(e) {
-    if (e.deltaY !== 0) {
-      const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
-      if (e.shiftKey) {
-        widthSlider.value += direction * 7;
-      } else if (e.ctrlKey) {
-        e.preventDefault();
-        hueSlider.value += direction * 24;
-      }
-    }
+  toggleHoverOverlay(e) {
+    e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
   }
 
-  // ---- Overlay events ----
+  // ---- Input helpers ----
+  registerInputHandler(inputElement, submitCallback, validatorMaxLen, validatorCallback) {
+    inputElement.addEventListener('keydown', this.handleOverlayInputKeys.bind(this));
+    inputElement.addEventListener('beforeinput', e => {
+      this.handleOverlayInputBeforeChange(e, validatorMaxLen);
+    });
+    inputElement.addEventListener('input', e => {
+      this.handleOverlayInputChange(e, validatorCallback);
+    });
+    inputElement.addEventListener('blur', e => {
+      this.handleOverlayInputSubmit(e, submitCallback);
+    });
+  }
+
+  // ---- Input events ----
   handleOverlayInputKeys(e) {
     if (e.key === 'Enter' || e.key === 'Escape') {
       e.currentTarget.blur();
@@ -104,10 +160,6 @@ class UIHandler {
     }
   }
 
-  toggleHoverOverlay(e) {
-    e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
-  }
-
   // ---- Join room input events ----
   focusJoinRoomOverlay() {
     joinRoomOverlayInput.classList.toggle('active');
@@ -126,7 +178,7 @@ class UIHandler {
     }
   }
   handleJoinRoomInputPaste(e) {
-    const value = (e.clipboardData || window.clipboardData).getData('text');
+    const value = e.clipboardData.getData('text/plain');
     // submitJoinRoomInput happens before the paste is applied to the input
     if (this.submitJoinRoomInput(value)) {
       e.preventDefault();
@@ -136,6 +188,44 @@ class UIHandler {
   submitJoinRoomInput(value = joinRoomOverlayInput.value) {
     joinRoomOverlayInput.value = '';
     return controller.joinRoom(value);
+  }
+
+  // ---- General focus handling ----
+  activateUI() {
+    document.body.classList.remove('inactive');
+    this.updateNonPersistentTabIndex(0);
+    this.actions.utilityWheel.enable();
+  }
+  deactivateUI() {
+    document.body.classList.add('inactive');
+    this.updateNonPersistentTabIndex(-1);
+    this.actions.utilityWheel.disable();
+
+    if (nonPersistentButtons.includes(document.activeElement)) {
+      document.activeElement.blur();
+    }
+  }
+
+  updateNonPersistentTabIndex(value) {
+    for (const button of nonPersistentButtons) {
+      button.tabIndex = value;
+    }
+  }
+
+  // ---- Animation helpers ----
+  blockCanvasInOutAnimation() {
+    canvasContainer.classList.add('block-inout-animation');
+    setTimeout(() => {
+      canvasContainer.classList.remove('block-inout-animation');
+    }, getCanvasAnimDurationInOut());
+  }
+
+  // ---- Indicators ----
+  setRoomIndicator(value) {
+    roomListButton.textContent = value;
+  }
+  setUserIndicator(value) {
+    userListButton.textContent = value;
   }
 
   // ---- Draw indicator ----
@@ -166,6 +256,27 @@ class UIHandler {
       hitBorder.classList.remove('hit-' + direction);
       hitBorderTimeouts[direction] = null;
     }, HIT_BORDER_DURATION);
+  }
+
+  // ---- Prompts ----
+  dispatchPrompt(heading, onSubmit) {
+    promptNode.header.textContent = heading;
+    promptNode.submitButton.onclick = this.submitPrompt.bind(this, onSubmit);
+    promptNode.wrapper.classList.add('active');
+  }
+
+  submitPrompt(callback) {
+    this.removePrompt();
+    callback();
+  }
+  removePrompt() {
+    promptNode.wrapper.classList.remove('active');
+  }
+
+  preventPromptContext(e) {
+    if (e.button === 2 && !e.shiftKey) {
+      e.preventDefault();
+    }
   }
 
   // ---- Notifications ----

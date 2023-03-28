@@ -1,4 +1,5 @@
 import type { SocketID, RoomCode, RoomName, Username } from 'SocketUser';
+
 import { SocketUser } from 'SocketUser';
 import { ScratchetError } from 'ScratchetError';
 import { roomHandler } from 'main';

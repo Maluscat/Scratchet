@@ -16,6 +16,13 @@ class ScratchetRoom extends ScratchetCanvas {
   constructor(roomCode, roomName, globalUsername, peers) {
     super(ScratchetRoom.createCanvas());
 
+    // Set active tool by current active class
+    for (const tool of Object.values(this.tools)) {
+      if (tool.buttonNode.classList.contains('active')) {
+        this.#setActiveTool(tool);
+      }
+    }
+
     this.roomCode = roomCode;
 
     this.userListNode = ScratchetRoom.createEmptyUserList();
@@ -29,6 +36,41 @@ class ScratchetRoom extends ScratchetCanvas {
 
     this.changeRoomName(roomName);
   }
+
+  // ---- Tool handling ----
+  activateTool(toolName) {
+    const tool = this.tools[toolName];
+    if (this.activeTool !== tool) {
+      this.#setActiveTool(tool);
+    }
+  }
+
+  #setActiveTool(tool) {
+    this.activeTool = tool;
+    this.activeTool.activate();
+  }
+
+  scrollAction(e, direction) {
+    switch (this.activeTool.constructor) {
+      case Brush: {
+        if (e.shiftKey) {
+          /** @type { Brush } */ (this.activeTool).hue += direction * 24;
+        } else if (!e.ctrlKey) {
+          /** @type { Brush } */ (this.activeTool).width += direction * 7;
+        }
+        break;
+      }
+      case Eraser: {
+        if (e.shiftKey) {
+          /** @type { Eraser } */ (this.activeTool).width += direction * 21;
+        } else if (!e.ctrlKey) {
+          /** @type { Eraser } */ (this.activeTool).width += direction * 7;
+        }
+        break;
+      }
+    }
+  }
+
 
   // ---- User handling ----
   /** @return { ScratchetUser } */
@@ -80,7 +122,7 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   updateUserIndicator() {
-    userListButton.textContent = this.users.size;
+    ui.setUserIndicator(this.users.size);
   }
   appendUserList() {
     if (userListWrapper.childElementCount > 0) {
@@ -103,20 +145,45 @@ class ScratchetRoom extends ScratchetCanvas {
     controls3D.changeState(this.state);
     controls3D.changeEventTarget(this.canvas);
 
-    this.canvas.classList.remove('inactive');
+    this.displayCanvas();
     this.roomListNode.classList.add('current');
 
     this.setRoomNameInput();
-    // NOTE z-index is not strictly necessary, but might prove handy for future styling
-    // Remove if room switch styling is complete and z-index is not needed
     this.canvas.style.zIndex = ScratchetRoom.canvasZIndex++;
+
+    this.updateScaleSlider();
+
+    this.activeTool.activate();
   }
   unfocus() {
+    controls3D.changeState(null);
+
     this.canvas.classList.add('inactive');
     this.roomListNode.classList.remove('current');
   }
 
+  displayCanvas() {
+    this.canvas.classList.remove('inactive');
+  }
+
+  async removeSelf() {
+    await this.removeCanvas();
+    this.unfocus();
+    this.roomListNode.remove();
+    this.userListNode.remove();
+  }
+
   // ---- Room UI helpers ----
+  removeCanvas() {
+    return new Promise(resolve => {
+      this.canvas.classList.add('remove');
+      setTimeout(() => {
+        this.canvas.remove();
+        resolve();
+      }, getCanvasAnimDurationRemove());
+    });
+  }
+
   setRoomNameInput() {
     roomNameInput.textContent = this.roomName;
   }

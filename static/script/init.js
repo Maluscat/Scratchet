@@ -1,8 +1,6 @@
 'use strict';
 const canvasContainer = document.getElementById('canvas-container');
 
-const clearDrawingButton = document.getElementById('clear-drawing-button');
-
 const usernameInput = document.getElementById('username-input');
 const userListButton = document.getElementById('user-list-button');
 const userListWrapper = document.getElementById('user-list-wrapper');
@@ -21,22 +19,30 @@ const redoButton = document.getElementById('redo-button');
 
 const OVERLAY_INPUT_INVALID_DURATION = 365;
 const HIT_BORDER_DURATION = 200;
+const CANVAS_ANIM_DURATION = {
+  REMOVE: 260,
+  INOUT: 600
+};
+
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
+
 const SEND_FULL_METADATA_INTERVAL = 1000;
+const BULK_INIT_SEPARATOR_LEN = 2;
+
 // Metadata length in a payload of the specified mode, excluding the extra server metadata
 const META_LEN = {
   NORMAL: 5,
   ERASE: 2,
 };
+// Length of additional metadata to and from the server
+const EXTRA_META_LEN_SEND = 1; // room code
+const EXTRA_META_LEN_RECEIVE = EXTRA_META_LEN_SEND + 1; // room code + userID
+
 const META_FLAGS = {
   LAST_HUE: 0b0010,
   LAST_WIDTH: 0b0001
 };
-const BULK_INIT_SEPARATOR_LEN = 2;
-// Length of additional metadata to and from the server
-const EXTRA_META_LEN_SEND = 1; // room code
-const EXTRA_META_LEN_RECEIVE = EXTRA_META_LEN_SEND + 1; // room code + userID
 
 /*
  * data/socketData: bulk data received via socket
@@ -44,27 +50,6 @@ const EXTRA_META_LEN_RECEIVE = EXTRA_META_LEN_SEND + 1; // room code + userID
  * posDataWrapper: wrapper for 1...n posData, used as pointer: [posData1, posData2, ...]
  * metadata: currently: [hue, width, lastPosX, lastPosY]
  */
-
-const hueSlider = new Slider89(document.getElementById('hue-slider'), {
-  range: [0, 360],
-  precision: 0,
-  structure: `
-    <thumb>
-      <:indicator class=[slider-hue-indicator] style=[background-color: ${makeHSLString('$value')};]>
-    </thumb>
-  `
-}, true);
-
-const widthSlider = new Slider89(document.getElementById('width-slider'), {
-  range: [1, 80],
-  value: 25,
-  precision: 0,
-  structure: `
-    <thumb>
-      <:value "$value" class=[slider-width-value]>
-    </thumb>
-  `
-}, true);
 
 const controller = new ScratchetController();
 const controls3D = new Controls3D(null, null, {
@@ -76,8 +61,12 @@ const controls3D = new Controls3D(null, null, {
     rot: null
   },
   dontInvertTranY: true,
-  skipScaleKeyModifier: true,
-  useProportionalScale: true
+  keyModifier: {
+    scale: {
+      x: [ ['ctrlKey'] ],
+      y: [ ['ctrlKey'] ],
+    }
+  }
 });
 const ui = new UIHandler();
 
@@ -94,8 +83,19 @@ import('./Global.mjs').then(module => {
   sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
   sock.addEventListener('open', controller.socketOpen.bind(controller))
   sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
+
+  controller.init();
 });
 
+
+
+// ---- Animation timing getters ----
+function getCanvasAnimDurationRemove() {
+  return ui.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.REMOVE;
+}
+function getCanvasAnimDurationInOut() {
+  return ui.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.INOUT;
+}
 
 
 // ---- Metadata helper functions ----

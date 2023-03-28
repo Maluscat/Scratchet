@@ -5,9 +5,22 @@ class ScratchetController extends ScratchetBufferController {
 
   /** @type { Map<number, ScratchetRoom> } */
   rooms = new Map();
+  activeIntervals = new Set();
 
   constructor() {
     super();
+    // Binding functions to themselves to be able to remove them from events
+    this.pointerUp = this.pointerUp.bind(this);
+    this.mouseWheel = this.mouseWheel.bind(this);
+    this.windowResized = this.windowResized.bind(this);
+    this.scaleCanvasAtCenter = this.scaleCanvasAtCenter.bind(this);
+
+    this.clearDrawing = this.clearDrawing.bind(this);
+    this.copyRoomLink = this.copyRoomLink.bind(this);
+    this.requestNewRoom = this.requestNewRoom.bind(this);
+    this.leaveCurrentRoom = this.leaveCurrentRoom.bind(this);
+    this.toolButtonClick = this.toolButtonClick.bind(this);
+
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
       this.globalUsername = persistentUsername;
@@ -15,48 +28,66 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   init() {
-    // These are events that need to access initialized properties like `activeRoom`
-    hueSlider.addEvent('change:value', this.changeHue.bind(this));
-    widthSlider.addEvent('change:value', this.changeWidth.bind(this));
+    ui.registerInputHandler(
+      usernameInput,
+      this.changeOwnUsername.bind(this),
+      Global.Validator.MAX_USERNAME_LENGTH,
+      Global.Validator.validateUsername);
 
-    usernameInput.addEventListener('input', e => {
-      ui.handleOverlayInputChange(e, Global.Validator.validateUsername);
-    });
-    usernameInput.addEventListener('beforeinput', e => {
-      ui.handleOverlayInputBeforeChange(e, Global.Validator.MAX_USERNAME_LENGTH);
-    });
-    usernameInput.addEventListener('blur', e => {
-      ui.handleOverlayInputSubmit(e, this.changeOwnUsername.bind(this));
-    });
-
-    roomNameInput.addEventListener('input', e => {
-      ui.handleOverlayInputChange(e, Global.Validator.validateRoomName);
-    });
-    roomNameInput.addEventListener('beforeinput', e => {
-      ui.handleOverlayInputBeforeChange(e, Global.Validator.MAX_ROOM_NAME_LENGTH);
-    });
-    roomNameInput.addEventListener('blur', e => {
-      ui.handleOverlayInputSubmit(e, this.changeCurrentRoomName.bind(this));
-    });
+    ui.registerInputHandler(
+      roomNameInput,
+      this.changeCurrentRoomName.bind(this),
+      Global.Validator.MAX_ROOM_NAME_LENGTH,
+      Global.Validator.validateRoomName);
 
     undoButton.addEventListener('click', this.invokeUndo.bind(this));
     redoButton.addEventListener('click', this.invokeRedo.bind(this));
 
-    clearDrawingButton.addEventListener('click', this.clearDrawing.bind(this));
-    copyRoomLinkButton.addEventListener('click', this.copyRoomLink.bind(this));
-    newRoomButton.addEventListener('click', this.requestNewRoom.bind(this));
-
-    // Set the join room input to the same width as the copy room link overlay
+    // Set the join room input to the same width as the copy room link overlay, with a dummy value
+    copyRoomLinkContent.textContent = ScratchetRoom.createRoomCodeLink('0000');
     copyRoomLinkOverlay.classList.add('active');
     joinRoomOverlayInput.style.maxWidth =
       (copyRoomLinkContent.offsetWidth / parseFloat(getComputedStyle(copyRoomLinkContent).fontSize)) + 'em';
     copyRoomLinkOverlay.classList.remove('active');
+    copyRoomLinkContent.textContent = '';
+  }
 
-    setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL);
-    setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL);
+  activate() {
+    ui.activateUI();
+
+    window.addEventListener('pointerup', this.pointerUp);
+    window.addEventListener('wheel', this.mouseWheel, { passive: false });
+    window.addEventListener('resize', this.windowResized);
+
+    this.activeIntervals.add(
+      setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL));
+    this.activeIntervals.add(
+      setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL));
+  }
+
+  deactivate() {
+    for (const intervalID of this.activeIntervals) {
+      clearInterval(intervalID);
+    }
+    this.activeIntervals.clear();
+
+    window.removeEventListener('pointerup', this.pointerUp);
+    window.removeEventListener('wheel', this.mouseWheel);
+    window.removeEventListener('resize', this.windowResized);
+
+    ui.deactivateUI();
+
+    this.activeRoom = null;
+    roomNameInput.textContent = '';
+    ui.setUserIndicator(0);
   }
 
   // ---- Event handling ----
+  pointerUp() {
+    this.sendPositions();
+    this.activeRoom.finalizeDraw();
+  }
+
   windowResized() {
     for (const room of this.rooms.values()) {
       room.setDimensions();
@@ -64,15 +95,21 @@ class ScratchetController extends ScratchetBufferController {
     }
   }
 
-  // -> Utility overlay
-  changeHue(slider) {
-    this.activeRoom.setStrokeStyle(slider.value);
-    this.activeRoom.hue = slider.value;
+  scaleCanvasAtCenter(scaleAmount) {
+    this.activeRoom.setTransformWithNewState({
+      scale: { x: scaleAmount, y: scaleAmount }
+    }, null, true);
   }
-  changeWidth(slider) {
-    this.activeRoom.setLineWidth(slider.value);
-    this.activeRoom.width = slider.value
-    document.documentElement.style.setProperty('--strokeWidth', slider.value + 'px');
+
+  mouseWheel(e) {
+    if (e.deltaY !== 0) {
+      const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
+      this.activeRoom.scrollAction(e, direction);
+    }
+  }
+
+  toolButtonClick(toolName) {
+    this.activeRoom.activateTool(toolName);
   }
 
   clearDrawing() {
@@ -82,6 +119,11 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   // -> Room overlay
+  leaveCurrentRoom() {
+    sendMessage('leave', null, this.activeRoom.roomCode);
+    this.removeRoom(this.activeRoom);
+  }
+
   requestNewRoom() {
     sendMessage('newRoom', { username: this.globalUsername });
   }
@@ -106,7 +148,7 @@ class ScratchetController extends ScratchetBufferController {
 
     await navigator.clipboard.writeText(this.activeRoom.roomCodeLink);
 
-    if (matchMedia('(hover: hover)').matches) {
+    if (window.matchMedia('(hover: hover)').matches) {
       copyRoomLinkOverlay.classList.add('copied');
       dispatchTimeout();
     } else {
@@ -166,13 +208,17 @@ class ScratchetController extends ScratchetBufferController {
   }
   resetUsernameInput() {
     usernameInput.classList.remove('invalid');
-    this.activeRoom.setUsernameInput();
+    if (this.activeRoom != null) {
+      this.activeRoom.setUsernameInput();
+    } else {
+      usernameInput.textContent = this.globalUsername;
+    }
   }
   setOwnUsername(username, isInitial) {
-    if (isInitial || username !== this.activeRoom.getOwnUser().name) {
+    if (isInitial || this.activeRoom == null || username !== this.activeRoom.getOwnUser().name) {
       this.globalUsername = username;
       localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
-      if (!isInitial) {
+      if (!isInitial && this.activeRoom != null) {
         this.activeRoom.getOwnUser().setName(username);
         sendMessage('changeName', username, this.activeRoom.roomCode);
       }
@@ -198,6 +244,7 @@ class ScratchetController extends ScratchetBufferController {
     }
 
     const newRoom = new ScratchetRoom(roomCode, roomName, this.globalUsername, peers);
+    document.body.classList.remove('initial-load');
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
     roomList.appendChild(newRoom.roomListNode);
@@ -207,6 +254,26 @@ class ScratchetController extends ScratchetBufferController {
     if (activate) {
       this.switchActiveRoom(newRoom);
     }
+  }
+  async removeRoom(room) {
+    this.rooms.delete(room.roomCode);
+
+    /** @type {ScratchetRoom} */
+    let firstRoom;
+    if (this.rooms.size > 0) {
+      firstRoom = this.rooms.values().next().value;
+      firstRoom.displayCanvas();
+    } else {
+      this.deactivate();
+    }
+
+    ui.blockCanvasInOutAnimation();
+    await room.removeSelf();
+
+    if (firstRoom) {
+      this.switchActiveRoom(firstRoom);
+    }
+    this.updateRoomIndicator();
   }
 
   switchActiveRoom(room) {
@@ -221,13 +288,10 @@ class ScratchetController extends ScratchetBufferController {
     room.appendUserList();
 
     copyRoomLinkContent.textContent = room.roomCodeLink;
-
-    hueSlider.value = room.hue;
-    widthSlider.value = room.width;
   }
 
   updateRoomIndicator() {
-    roomListButton.textContent = this.rooms.size;
+    ui.setRoomIndicator(this.rooms.size);
   }
 
   // ---- Canvas helpers ----
@@ -308,7 +372,7 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   ownUserGetJoinData(value) {
-    const isInitial = !this.activeRoom;
+    const isDeactivated = !this.activeRoom;
 
     // For async reasons, the real user ID is solely used for the username
     this.defaultUsername = value.defaultName;
@@ -316,8 +380,8 @@ class ScratchetController extends ScratchetBufferController {
     this.addNewRoom(value.roomCode, value.roomName, value.peers, true);
 
     // NOTE: Needs to be called after `addNewRoom` to wait for the room activation
-    if (isInitial) {
-      this.init();
+    if (isDeactivated) {
+      this.activate();
     }
   }
 

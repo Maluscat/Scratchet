@@ -1,0 +1,179 @@
+// main: main.less
+@main-color: hsl(0, 0%, 95%);
+@main-color--inactive: hsl(0, 0%, 85%);
+
+@canvas-color: hsl(0, 0%, 8%);
+@background-color: hsl(0, 0%, 18.5%);
+@draw-indicator-color: hsl(0, 0%, 90%);
+
+@slider-thumb-color: hsl(0, 0%, 31%);
+@slider-thumb-color--hover: hsl(0, 0%, 34%);
+
+@general-border-radius: 1.4rem;
+
+@invalid-color: #B83232;
+@invalid-overlay-bg: saturate(@overlay-bg, 20%);
+
+@high-z-index: 100000000;
+
+@overlay-margin: .85rem;
+@overlay-gap: .45rem;
+@overlay-padding: .2rem;
+
+@overlay-border-dims: 2px;
+@overlay-button-dims: 2.72rem;
+@overlay-svg-dims: 1.05em;
+
+@config-bar-height: 2.4rem;
+@slider-thumb-dims: 1.75rem;
+@slider-width-thumb-width: 2.5rem;
+
+@overlay-bg: lighten(@canvas-color, 10%);
+@overlay-bg--inactive: darken(@overlay-bg, 6%);
+
+// -- Panel --
+@panel-border-dims: 4px;
+@panel-backdrop-blur: blur(22px);
+
+@panel-border-radius-with-border: calc(@general-border-radius + @panel-border-dims);
+
+@panel-bg-base: lighten(@canvas-color, 8%);
+@panel-bg: fade(@panel-bg-base, 67.5%);
+@panel-btn-bg: lighten(@panel-bg-base, 9.5%);
+
+// -- Prompt --
+@prompt-header-bg: lighten(@panel-bg, 7%);
+
+// -- Scale slider --
+@scaleSlider-height: .95rem;
+@scaleSlider-width: 7.5rem;
+
+// -- Utility wheel --
+body > .utility-wheel {
+  --utilWheel-wheel-size: calc(8rem + 24vw);
+  --utilWheel-center-size: 6.75rem;
+  --utilWheel-gradient-stop: 20.5em;
+  --utilWheel-border-color: hsl(0, 0%, 55%);
+  --utilWheel-section-color: hsl(0, 0%, 21%);
+}
+@utilWheel-background-blur: blur(14px);
+
+@utilWheel-content-gap: 1rem;
+@utilWheel-content-size: 19.65em;
+@utilWheel-svg-dims: 2.35em;
+
+@utilWheel-default-gradient: fade(@canvas-color, 65%);
+
+// -- Toolbar --
+@toolbar-bg: fade(@overlay-bg, 45%);
+
+@toolbar-button-shrink-factor: 0.835;
+
+@toolbar-button-dims: @overlay-button-dims * @toolbar-button-shrink-factor;
+@toolbar-svg-dims: (@overlay-svg-dims + .05em) * @toolbar-button-shrink-factor;
+@toolbar-padding: (@overlay-button-dims * (1 - @toolbar-button-shrink-factor) / 2);
+
+
+// -- Utility mixins --
+.generalBorder(@border-size) {
+  border: @border-size solid @canvas-color;
+}
+
+.buttonStyle(@base-color) {
+  &:hover {
+    background-color: lighten(@base-color, 4%) !important;
+  }
+  &:active {
+    background-color: lighten(@base-color, 3%) !important;
+  }
+}
+
+.surroundingTextShadow(@color, @start: 1px, @end: @start, @increment: .25px, @current: @start) {
+  & when (@current <= @end) {
+    text-shadow+:
+      @current 0 @color,
+      -@current 0 @color,
+      0 @current @color,
+      0 -@current @color,
+      @current @current @color,
+      -@current @current @color,
+      @current -@current @color,
+      -@current -@current @color;
+    .surroundingTextShadow(@color, @start, @end, @increment, @current + @increment);
+  }
+}
+
+
+// -- Canvas animations --
+@canvas-anim-inactive-scale: .9175;
+
+// NOTE: Remember to update CANVAS_ANIM_DURATION (init.js) when changing these values
+@canvas-anim-duration-inOut: .6s;
+@canvas-anim-duration-remove: .26s;
+
+
+.canvasKeyframes {
+  .translateIn(@translateX, @translateY) {
+    @keyframes translateIn {
+      0% {
+        scale: @canvas-anim-inactive-scale;
+        z-index: 0;
+        pointer-events: none;
+        border-radius: @general-border-radius;
+      }
+      49.9% {
+        z-index: 0;
+      }
+      50% {
+        z-index: (@high-z-index + 7);
+        transform: translate(@translateX, @translateY);
+      }
+      85% {
+        border-radius: @general-border-radius;
+      }
+      100% {
+        pointer-events: none;
+      }
+    }
+  }
+  .translateOut(@translateX, @translateY) {
+    @keyframes translateOut {
+      0% {
+        border-radius: 0;
+        visibility: visible;
+      }
+      2% {
+        border-radius: @general-border-radius;
+      }
+      50% {
+        transform: translate(@translateX, @translateY);
+      }
+      100% {
+        scale: @canvas-anim-inactive-scale;
+        visibility: visible;
+      }
+    }
+  }
+  .remove() {
+    @keyframes canvasRemove {
+      0% {
+        border-radius: 0;
+        visibility: visible;
+      }
+      2% {
+        border-radius: @general-border-radius;
+      }
+      47% {
+        transform: scale(.925);
+        filter: none;
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.125);
+        opacity: 0;
+        filter: blur(12px);
+        visibility: visible;
+      }
+    }
+  }
+}

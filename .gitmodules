@@ -1,0 +1,10 @@
+[submodule "controls3d"]
+	path = static/library/controls3d
+	url = https://gitlab.com/Hallo89/controls3d.git
+[submodule "slider89"]
+	path = static/library/slider89
+	url = https://github.com/Hallo89/Slider89.git
+	branch = project-rewrite
+[submodule "utility-wheel"]
+	path = static/library/utility-wheel
+	url = https://gitlab.com/Hallo89/utility-wheel.git

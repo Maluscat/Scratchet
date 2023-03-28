@@ -1,9 +1,5 @@
 // out: ../main.css
-
-@background-color: hsl(0, 0%, 8%);
-@draw-indicator-color: hsl(0, 0%, 90%);
-
-@invalid-color: #B83232;
+@import 'var.less';
 
 * {
   box-sizing: border-box;
@@ -24,9 +20,13 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  color: hsl(0, 0%, 95%);
+  color: @main-color;
+  // This is to prevent a gray flash before the first room has been loaded
+  &.initial-load {
+    background-color: @canvas-color;
+  }
   > *:not(#canvas-container) {
-    z-index: 2147483647;
+    z-index: (@high-z-index + 10);
   }
 }
 
@@ -35,10 +35,52 @@ canvas, #canvas-container {
   height: 100%;
 }
 
+#canvas-container {
+  transition: filter .05s ease-in-out;
+  body.active-utility-wheel & {
+    filter: @utilWheel-background-blur;
+  }
+}
+
 canvas {
   position: absolute;
+  background-color: @canvas-color;
+  outline: 6px solid @background-color;
+  border-radius: 0;
+  &:not(.inactive):not(.remove):not(:only-child) {
+    @media not (prefers-reduced-motion) {
+      animation: translateIn @canvas-anim-duration-inOut ease;
+    }
+    .canvasKeyframes.translateIn(72.5%, 0);
+    @media (orientation: portrait) {
+      .canvasKeyframes.translateIn(0, 72.5%);
+    }
+
+    #canvas-container.block-inout-animation & {
+      animation-duration: 0s;
+    }
+  }
+
+  &.inactive, &.remove {
+    visibility: hidden;
+    pointer-events: none;
+    border-radius: @general-border-radius;
+  }
   &.inactive {
-    display: none;
+    @media not (prefers-reduced-motion) {
+      animation: translateOut @canvas-anim-duration-inOut ease;
+    }
+    .canvasKeyframes.translateOut(-30%, 0);
+    @media (orientation: portrait) {
+      .canvasKeyframes.translateOut(0, -30%);
+    }
+  }
+  &.remove {
+    @media not (prefers-reduced-motion) {
+      outline-width: 25vmax;
+      animation: canvasRemove @canvas-anim-duration-remove ease !important;
+    }
+    .canvasKeyframes.remove();
   }
 }
 
@@ -51,28 +93,50 @@ button, input {
   border: none;
 }
 button {
+  .buttonStyle(@overlay-bg);
   cursor: pointer;
-  &:hover {
-    background-color: lighten(@overlay-bg, 4%) !important;
-  }
-  &:active {
-    background-color: lighten(@overlay-bg, 3%) !important;
-  }
 }
 
 input:invalid {
-  border-color: hsl(4, 60%, 48%) !important;
-  background-color: saturate(@overlay-bg, 20%) !important;
+  border-color: @invalid-color !important;
+  background-color: @invalid-overlay-bg !important;
 }
 
-@overlay-margin: 1em;
-@overlay-gap: .5em;
-@overlay-bg: hsl(0, 0%, 18%);
-@slider-dims: 1.6em;
+// ---- Positioning ----
+.button-group,
+.horizontal {
+  gap: @overlay-gap;
+}
+
+.button-group {
+  display: inline-flex;
+  flex-direction: column;
+  &.right {
+    align-items: flex-end;
+  }
+}
+
+.horizontal, .button-wrapper {
+  display: flex;
+  align-items: center;
+}
+.horizontal {
+  flex-direction: row;
+}
+
+// ---- Global overrides ----
+.has-pointer-events {
+  pointer-events: auto !important;
+}
+
+.no-border {
+  border: none !important;
+}
+
+// ---- Overlays & groups ----
 .overlay {
   position: absolute;
   pointer-events: none;
-  user-select: none;
   &.bottom {
     bottom: @overlay-margin;
   }
@@ -85,54 +149,81 @@ input:invalid {
   &.right {
     right: @overlay-margin;
   }
-  > *:not(:last-child) {
-    margin-bottom: @overlay-gap;
+
+  &.self-centered {
+    align-self: center;
   }
+
   .button,
   .hover-overlay,
   .overlay-input:focus,
   .sl89-track {
-    border: 2px solid @background-color;
+    .generalBorder(@overlay-border-dims);
+    z-index: (@high-z-index + 9);
+    user-select: none;
     background-color: @overlay-bg;
     box-sizing: content-box;
-    padding: .155em;
+    padding: @overlay-padding;
+    transition: transform .075s ease;
   }
   .button,
   .overlay-input,
-  .has-pointer-events,
   .sl89-thumb,
   .sl89-track,
   .slider-hue-indicator {
     border-radius: 100px;
     pointer-events: auto;
   }
+
+  body.inactive & {
+    .sl89-thumb,
+    .sl89-thumb * {
+      pointer-events: none;
+    }
+    .overlay-input:not(.persistent),
+    .floating-overlay-wrapper {
+      display: none;
+    }
+    .button:not(.persistent),
+    .sl89-track {
+      pointer-events: none;
+      transform: scale(.915);
+      background-color: @overlay-bg--inactive !important;
+      color: @main-color--inactive !important;
+    }
+  }
 }
 
+.panel {
+  .generalBorder(@panel-border-dims);
+  display: inline-flex;
+  flex-direction: column;
+  background-color: @panel-bg;
+  border-radius: @panel-border-radius-with-border;
+  backdrop-filter: @panel-backdrop-blur;
+  .button {
+    .buttonStyle(@panel-btn-bg);
+    background-color: @panel-btn-bg;
+  }
+}
+
+.overlay-input,
+.utility-wheel .uw-section-content {
+  .surroundingTextShadow(@canvas-color, 1px, 2px, .25px);
+}
 .overlay-input {
-  @extra-padding: .4em;
+  @extra-padding: .4rem;
+  z-index: @high-z-index !important;
+  white-space: nowrap;
+  font-size: 1.025em;
   background-color: transparent;
+  padding-top: @overlay-padding;
+  padding-bottom: @overlay-padding;
+  // Overwriting `.overlay.overlay-input:focus` styles (see above)
   padding-left: @extra-padding !important;
   padding-right: @extra-padding !important;
-  white-space: nowrap;
-  // Reverting the changed position caused by the extra padding
-  margin: 0 -@extra-padding;
-  text-shadow:
-    1px 0 @background-color,
-    -1px 0 @background-color,
-    0 1px @background-color,
-    0 -1px @background-color,
-    1px 1px @background-color,
-    -1px 1px @background-color,
-    1px -1px @background-color,
-    -1px -1px @background-color,
-    1.25px 0 @background-color,
-    -1.25px 0 @background-color,
-    0 1.25px @background-color,
-    0 -1.25px @background-color,
-    1.25px 1.25px @background-color,
-    -1.25px 1.25px @background-color,
-    1.25px -1.25px @background-color,
-    -1.25px -1.25px @background-color;
+  // Lessen the changed position caused by the extra padding
+  margin: 0 -(@extra-padding / 2);
   &.invalid {
     outline: 3px solid @invalid-color;
     transition: outline .1s ease-out;
@@ -142,57 +233,53 @@ input:invalid {
   }
 }
 
-.horizontal-group {
-  display: flex;
-  align-items: center;
-  > *:not(:last-child) {
-    margin-right: @overlay-gap;
-  }
-}
-
 .button-group {
-  &.right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
   .button {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    width: 2.4em;
-    height: 2.4em;
+    font-size: 1.25rem;
+    width: @overlay-button-dims;
+    height: @overlay-button-dims;
     > svg {
-      width: 1.15em;
-      height: 1.15em;
-      &.plus-icon {
-        width: .825em;
-        height: .825em;
-      }
+      width: @overlay-svg-dims;
+      height: @overlay-svg-dims;
     }
   }
 }
 
 .button-wrapper {
-  display: flex;
-  align-items: center;
   position: relative;
   @media (hover: hover) {
     &:hover .hover-overlay:not(.no-hover) {
       display: block;
     }
   }
-  .hover-overlay.active {
-    display: block;
+  .floating-overlay-wrapper {
+    // Creating a hoverable but still invisible area 
+    @floating-padding: (@overlay-button-dims / 2) + @overlay-padding;
+    padding: 0 @floating-padding;
+    margin: 0 -@floating-padding;
+    z-index: (@high-z-index + 8);
+
+    position: absolute;
+    top: 0;
+    .overlay.left & {
+      left: 100%;
+    }
+    .overlay.right & {
+      right: 100%
+    }
   }
   .hover-overlay {
     display: none;
     padding: .375em .8em;
     margin: 0 .15em;
-    border-radius: 1.4em;
+    border-radius: @general-border-radius;
     white-space: nowrap;
-    z-index: 1;
+    &.active {
+      display: block;
+    }
     > ul {
       margin: 0;
       list-style: none;
@@ -206,24 +293,39 @@ input:invalid {
       }
     }
   }
-  &.absolute .hover-overlay {
-    position: absolute;
-    top: 0;
-    .overlay.left & {
-      left: 100%;
-    }
-    .overlay.right & {
-      right: 100%
-    }
-  }
 }
 
 .sl89-thumb {
-  background-color: hsl(0, 0%, 31%);
-  width: @slider-dims;
-  height: @slider-dims;
+  background-color: @slider-thumb-color;
+  width: @slider-thumb-dims;
+  height: @slider-thumb-dims;
   &:hover {
-    background-color: hsl(0, 0%, 34%);
+    background-color: @slider-thumb-color--hover;
+  }
+}
+
+body > .utility-wheel {
+  font-size: .935rem;
+  z-index: (@high-z-index + 11) !important;
+  .uw-section-target {
+    background: radial-gradient(at 0 0, @utilWheel-default-gradient, transparent calc(var(--utilWheel-wheel-size) * .81));
+  }
+  .uw-section-content {
+    width: @utilWheel-content-size;
+    height: @utilWheel-content-size;
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: @utilWheel-content-gap;
+      > svg {
+        width: @utilWheel-svg-dims;
+        height: @utilWheel-svg-dims;
+      }
+    }
+    &.uw-bottom .wrapper > svg {
+      order: -1;
+    }
   }
 }
 
@@ -237,11 +339,15 @@ input:invalid {
   position: absolute;
   left: 0;
   top: 0;
-  border-radius: 100px;
+  border-radius: 1000px;
   outline: calc(@draw-indicator-border-size / var(--scale)) solid @draw-indicator-color;
   pointer-events: none;
   &.erase {
     background-color: @draw-indicator-color;
+  }
+  body.inactive &,
+  body.active-utility-wheel & {
+    display: none;
   }
 }
 
@@ -300,17 +406,67 @@ input:invalid {
   }
 }
 
-#utility-overlay {
-  > .button,
-  .sl89-track {
-    width: 12em;
-    height: @slider-dims;
+#prompt-wrapper {
+  &:not(.active) {
+    display: none;
+  }
+  .header {
+    font-size: 1.15rem;
+    padding: 1em 1.5em;
+    width: 100%;
+    font-weight: bold;
+    text-align: center;
+    background-color: @prompt-header-bg;
+    border-top-left-radius: @general-border-radius;
+    border-top-right-radius: @general-border-radius;
+  }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: @overlay-gap;
+    padding: 1.2em 1.65em;
+    width: 100%;
+  }
+  .button {
+    padding: .475em 1em;
   }
 }
 
-#hue-slider {
+#toolbar {
+  width: min-content;
+  gap: calc(@toolbar-padding - @overlay-border-dims);
+  border-radius: 100px;
+  padding: @toolbar-padding;
+  .button {
+    width: @toolbar-button-dims;
+    height: @toolbar-button-dims;
+    &.active {
+      background-color: @panel-btn-bg;
+    }
+    &:not(.active) {
+      background-color: transparent;
+      border: none;
+      margin: @overlay-border-dims;
+    }
+    > svg {
+      width: @toolbar-svg-dims;
+      height: @toolbar-svg-dims;
+    }
+  }
+}
+
+#tool-config-bar {
+  min-height: @config-bar-height;
+  .sl89-track {
+    height: @config-bar-height;
+    box-sizing: border-box;
+    width: 12em;
+  }
+}
+
+.hue-slider {
   .slider-hue-indicator {
-    border: 4px solid @background-color;
+    border: 4px solid @canvas-color;
     height: 100%;
   }
   .sl89-track {
@@ -327,8 +483,9 @@ input:invalid {
     );
   }
 }
-#width-slider {
+.width-slider {
   .sl89-thumb {
+    width: @slider-width-thumb-width;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -391,5 +548,28 @@ input:invalid {
     visibility: visible;
     opacity: 1;
     transform: none;
+  }
+}
+
+#scale-slider {
+  display: flex;
+  align-items: center;
+  gap: (@overlay-gap / 2);
+  height: @scaleSlider-height;
+  .scale-button, .sl89-track, .sl89-thumb {
+    height: 100%;
+  }
+  .scale-button {
+    padding: .185em .5em;
+    font-size: .775rem;
+  }
+  .sl89-track {
+    width: @scaleSlider-width;
+    padding: 0;
+  }
+  .sl89-thumb {
+    body.initial-load & {
+      visibility: hidden;
+    }
   }
 }

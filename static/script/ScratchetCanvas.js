@@ -1,7 +1,12 @@
 'use strict';
 class ScratchetCanvas extends ScratchetCanvasControls {
-  pressedMouseBtn = -1;
   lastPos = new Array(2);
+
+  isDrawing = false;
+
+  tools;
+  /** @type { ScratchetTool } */
+  activeTool;
 
   /**
    * Contains the posDataWrappers to draw in sequential order.
@@ -34,17 +39,18 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    */
   undoEraseIndexes = new Array();
 
-  width = 25;
-  hue = 0;
-
   /**
    * @param { HTMLCanvasElement } canvas
    */
   constructor(canvas) {
     super(canvas);
 
+    this.tools = {
+      brush: new Brush(this.setLineWidth.bind(this), this.setStrokeStyle.bind(this)),
+      eraser: new Eraser(),
+    };
+
     canvas.addEventListener('pointerdown', this.canvasDown.bind(this));
-    window.addEventListener('pointerup', this.pointerUp.bind(this));
     canvas.addEventListener('pointermove', this.canvasDraw.bind(this));
 
     this.setStrokeStyle();
@@ -65,26 +71,29 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   canvasDown(e) {
-    this.pressedMouseBtn = e.button;
-    if (this.pressedMouseBtn === 2) {
-      ui.toggleDrawIndicatorEraseMode();
-      controller.initializeSendBufferErase();
-    } else if (this.pressedMouseBtn === 0) {
-      const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
+    if (e.button === 0) {
+      this.isDrawing = true;
 
-      this.setLastPos(posX, posY);
-      controller.initializeSendBufferNormal(posX, posY);
+      // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
+      switch (this.activeTool.constructor) {
+        case Brush: {
+          const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
+
+          this.setLastPos(posX, posY);
+          controller.initializeSendBufferNormal(posX, posY);
+          break;
+        }
+        case Eraser: {
+          ui.toggleDrawIndicatorEraseMode();
+          controller.initializeSendBufferErase();
+          break;
+        }
+      }
     }
+
     if (e.pointerType !== 'touch') {
       this.canvasDraw(e);
     }
-  }
-
-  pointerUp() {
-    controller.sendPositions();
-    this.pressedMouseBtn = -1;
-    ui.toggleDrawIndicatorEraseMode(true);
-    this.redrawCanvas();
   }
 
   canvasDraw(e) {
@@ -93,27 +102,40 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.setCurrentMousePos(e.clientX, e.clientY);
     ui.moveDrawIndicator(e.clientX, e.clientY);
 
-    if (this.pressedMouseBtn === 0 || this.pressedMouseBtn === 2) {
+    if (this.isDrawing) {
       controller.sendPositionsIfMetaHasChanged();
 
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
-      if (this.pressedMouseBtn === 2) {
-        if (this.erasePos(posX, posY, this.getOwnUser(), true)) {
-          this.redrawCanvas();
-          controller.sendCompleteMetaDataNextTime();
+      switch (this.activeTool.constructor) {
+        case Brush: {
+          this.ctx.beginPath();
+          this.ctx.moveTo(...this.lastPos);
+          this.ctx.lineTo(posX, posY);
+          this.ctx.stroke();
+
+          this.setLastPos(posX, posY);
+
           controller.addToSendBuffer(posX, posY);
+          break;
         }
-      } else {
-        this.ctx.beginPath();
-        this.ctx.moveTo(...this.lastPos);
-        this.ctx.lineTo(posX, posY);
-        this.ctx.stroke();
-
-        this.setLastPos(posX, posY);
-
-        controller.addToSendBuffer(posX, posY);
+        case Eraser: {
+          if (this.erasePos(posX, posY, this.getOwnUser(), true)) {
+            this.redrawCanvas();
+            controller.sendCompleteMetaDataNextTime();
+            controller.addToSendBuffer(posX, posY);
+          }
+          break;
+        }
       }
+    }
+  }
+
+  finalizeDraw() {
+    if (this.isDrawing === true) {
+      this.isDrawing = false;
+      ui.toggleDrawIndicatorEraseMode(true);
+      this.redrawCanvas();
     }
   }
 
@@ -472,10 +494,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.posBuffer.splice(this.posBuffer.indexOf(item), 1);
   }
 
-  setLineWidth(width = this.width) {
+  setLineWidth(width = this.tools.brush.width) {
     this.ctx.lineWidth = width;
   }
-  setStrokeStyle(hue = this.hue, hasReducedAlpha) {
+  setStrokeStyle(hue = this.tools.brush.hue, hasReducedAlpha) {
     this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
   }
 }
