@@ -252,11 +252,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   erasePos(targetPosX, targetPosY, user, saveRedo = false, eraserWidth = this.tools.eraser.width) {
     let hasChanged = false;
     for (const posDataWrapper of user.posCache) {
-      const redoPosData = new Array(META_LEN.NORMAL);
+      const redoWrapper = new Array();
 
       for (let i = 0; i < posDataWrapper.length; i++) {
         const posData = posDataWrapper[i];
         let startIdx = META_LEN.NORMAL;
+        let isErasing = false;
 
         // Also check and potentially overwrite the moveTo anchor
         if (posIsInEraseRange(posData[2], posData[3], posData[1])) {
@@ -266,44 +267,47 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           hasChanged = true;
         }
 
+        // j is used as the endIndex
         for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
           if (posIsInEraseRange(posData[j], posData[j + 1], posData[1])) {
-            // j is used as the endIndex
-            if (startIdx !== -1) {
+            if (!isErasing) {
               if (startIdx !== j) {
                 const newPosData = createNewPosData(posData, startIdx, j);
                 posDataWrapper.push(newPosData);
+                hasChanged = true;
               }
-              if (saveRedo) {
-                redoPosData.push(posData[j], posData[j + 1]);
-              }
-              hasChanged = true;
-              startIdx = -1;
+              isErasing = true;
+              startIdx = j;
             }
-          } else if (startIdx === -1) {
+          } else if (isErasing) {
+            if (startIdx !== j) {
+              const eraseData = createNewPosData(posData, startIdx, j);
+              redoWrapper.push(eraseData);
+            }
+            isErasing = false;
             startIdx = j;
           }
         }
 
-        // Cleanup; If the last position in posData stayed intact
-        // (Which the above loop skipped)
-        if (startIdx !== -1 && posData.length > startIdx) {
-          if (startIdx > META_LEN.NORMAL) {
-            const newPosData = createNewPosData(posData, startIdx);
-            posDataWrapper[i] = newPosData;
+        // The last section needs to be handled manually.
+        // This is the same procedure as in the loop above
+        if (startIdx > META_LEN.NORMAL) {
+          const lastData = createNewPosData(posData, startIdx);
+          if (isErasing) {
+            redoWrapper.push(lastData);
+          } else {
+            posDataWrapper[i] = lastData;
             hasChanged = true;
           }
-        } else {
+        }
+
+        // Remove the initial posData if the last vector in it has been erased
+        if (isErasing) {
           posDataWrapper.splice(i, 1);
         }
-        // Perhaps find another way to check whether something has been erased?
-        if (saveRedo && redoPosData.length > META_LEN.NORMAL) {
-          for (let i = 0; i < META_LEN.NORMAL - 1; i++) {
-            redoPosData[i] = posData[i];
-          }
-          redoPosData[META_LEN.NORMAL - 1] = 0;
-          console.log(redoPosData);
-          this.undoEraseBuffer.push(redoPosData);
+
+        if (saveRedo && redoWrapper.length > 0) {
+          this.undoEraseBuffer.push(redoWrapper);
         }
       }
 
