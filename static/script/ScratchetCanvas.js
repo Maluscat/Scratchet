@@ -249,7 +249,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
     this.redrawCanvas();
   }
-  erasePos(targetPosX, targetPosY, user, saveRedo = false, eraserWidth = this.width) {
+  erasePos(targetPosX, targetPosY, user, saveRedo = false, eraserWidth = this.tools.eraser.width) {
     let hasChanged = false;
     for (const posDataWrapper of user.posCache) {
       const redoPosData = new Array(META_LEN.NORMAL);
