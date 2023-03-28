@@ -51,6 +51,8 @@ class UIHandler {
       createRoom: controller.requestNewRoom,
       joinRoom: this.focusJoinRoomOverlay,
       clear: controller.clearDrawing,
+      undo: controller.invokeUndo,
+      redo: controller.invokeRedo,
       _tools: controller.toolButtonClick
     });
 

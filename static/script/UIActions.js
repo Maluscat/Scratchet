@@ -25,6 +25,14 @@ class UIActions {
       },
       shortTitle: 'Clear drawing',
       button: document.getElementById('clear-drawing-button')
+    },
+    undo: {
+      shortTitle: 'Undo',
+      button: document.getElementById('undo-button')
+    },
+    redo: {
+      shortTitle: 'Redo',
+      button: document.getElementById('redo-button')
     }
   };
 

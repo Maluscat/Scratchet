@@ -15,6 +15,8 @@ class ScratchetController extends ScratchetBufferController {
     this.windowResized = this.windowResized.bind(this);
     this.scaleCanvasAtCenter = this.scaleCanvasAtCenter.bind(this);
 
+    this.invokeUndo = this.invokeUndo.bind(this);
+    this.invokeRedo = this.invokeRedo.bind(this);
     this.clearDrawing = this.clearDrawing.bind(this);
     this.copyRoomLink = this.copyRoomLink.bind(this);
     this.requestNewRoom = this.requestNewRoom.bind(this);
@@ -39,9 +41,6 @@ class ScratchetController extends ScratchetBufferController {
       this.changeCurrentRoomName.bind(this),
       Global.Validator.MAX_ROOM_NAME_LENGTH,
       Global.Validator.validateRoomName);
-
-    undoButton.addEventListener('click', this.invokeUndo.bind(this));
-    redoButton.addEventListener('click', this.invokeRedo.bind(this));
 
     // Set the join room input to the same width as the copy room link overlay, with a dummy value
     copyRoomLinkContent.textContent = ScratchetRoom.createRoomCodeLink('0000');
