@@ -274,8 +274,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
               if (startIdx !== j) {
                 const newPosData = createNewPosData(posData, startIdx, j);
                 posDataWrapper.push(newPosData);
-                hasChanged = true;
               }
+              // This needs to be at this level to accomodate for the cleanup
+              hasChanged = true;
               isErasing = true;
               startIdx = j;
             }
@@ -297,7 +298,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
             redoWrapper.push(lastData);
           } else {
             posDataWrapper[i] = lastData;
-            hasChanged = true;
           }
         }
 
