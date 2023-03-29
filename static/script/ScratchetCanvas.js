@@ -304,6 +304,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         // Remove the initial posData if the last vector in it has been erased
         if (isErasing) {
           posDataWrapper.splice(i, 1);
+          hasChanged = true;
         }
 
         if (saveRedo && redoWrapper.length > 0) {
