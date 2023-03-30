@@ -29,7 +29,7 @@ const BULK_INIT_SEPARATOR_LEN = 2;
 
 // Metadata length in a payload of the specified mode, excluding the extra server metadata
 const META_LEN = {
-  NORMAL: 5,
+  NORMAL: 3,
   ERASE: 2,
 };
 // Length of additional metadata to and from the server

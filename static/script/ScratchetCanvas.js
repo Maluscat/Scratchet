@@ -80,7 +80,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
           this.setLastPos(posX, posY);
-          controller.initializeSendBufferNormal(posX, posY);
+          controller.initializeSendBufferNormal();
           break;
         }
         case Eraser: {
@@ -180,7 +180,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   drawFromPosDataWrapper(posDataWrapper) {
     for (const posData of posDataWrapper) {
-      this.ctx.moveTo(posData[2], posData[3]);
+      this.ctx.moveTo(posData[META_LEN.NORMAL], posData[META_LEN.NORMAL + 1]);
       let i = META_LEN.NORMAL;
       for (; i < posData.length - 4; i += 6) {
         this.ctx.bezierCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3], posData[i + 4], posData[i + 5]);
@@ -259,14 +259,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         let startIdx = META_LEN.NORMAL;
         let isErasing = false;
 
-        // Also check and potentially overwrite the moveTo anchor
-        if (posIsInEraseRange(posData[2], posData[3], posData[1])) {
-          // TODO save these into redoPosData too
-          posData[2] = posData[5];
-          posData[3] = posData[6];
-          hasChanged = true;
-        }
-
         // j is used as the endIndex
         for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
           if (posIsInEraseRange(posData[j], posData[j + 1], posData[1])) {
@@ -337,8 +329,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         const newPosData = new Int16Array((endIdx - startIdx) + META_LEN.NORMAL);
         newPosData[0] = originalPosData[0];
         newPosData[1] = originalPosData[1];
-        newPosData[2] = originalPosData[startIdx];
-        newPosData[3] = originalPosData[startIdx + 1];
         for (let i = 0; i < newPosData.length - META_LEN.NORMAL; i++) {
           newPosData[i + META_LEN.NORMAL] = originalPosData[startIdx + i];
         }
@@ -443,12 +433,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
     }
 
-    clientPosData[4] = flag;
+    clientPosData[2] = flag;
 
     return clientPosData;
   }
   convertClientDataToServerData(posData) {
-    const flag = posData[4];
+    const flag = posData[2];
     let extraLen = getExtraMetaLengthFromFlag(flag);
 
     const serverPosData = new Int16Array(posData.length - extraLen);

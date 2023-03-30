@@ -13,6 +13,7 @@ class ScratchetBufferController {
    */
   liveClientBuffer = new Array();
 
+  sendReady = false;
   willSendCompleteMetaData = true;
   /** @type { ScratchetRoom } */
   activeRoom;
@@ -23,6 +24,7 @@ class ScratchetBufferController {
     if (this.getBufferMode() >= 0) {
       this.liveClientBuffer.push(posX, posY);
     }
+    this.sendReady = true;
   }
 
   initializeSendBufferNormal(lastPosX, lastPosY) {
@@ -41,17 +43,23 @@ class ScratchetBufferController {
       this.sendBuffer.push(this.lastWidth);
     }
 
-    this.sendBuffer.push(lastPosX, lastPosY);
     this.sendBuffer[0] = this.activeRoom.roomCode;
     this.sendBuffer[1] = flag;
 
-    this.liveClientBuffer = [hue, width, lastPosX, lastPosY, flag];
+    this.liveClientBuffer = [hue, width, flag];
+
+    if (lastPosX && lastPosY) {
+      this.sendBuffer.push(lastPosX, lastPosY);
+      this.liveClientBuffer.push(lastPosX, lastPosY);
+    }
   }
   initializeSendBufferErase() {
     this.sendBuffer = [this.activeRoom.roomCode, Global.MODE.ERASE, this.activeRoom.tools.eraser.width];
   }
 
   resetSendBuffer() {
+    this.sendReady = false;
+
     if (this.getBufferMode() === Global.MODE.ERASE) {
       this.initializeSendBufferErase();
     } else {
@@ -71,8 +79,8 @@ class ScratchetBufferController {
       this.sendBuffer[2] = this.activeRoom.tools.eraser.width;
     } else if (mode !== this.getNormalModeFlag(this.activeRoom.tools.brush.hue, this.activeRoom.tools.brush.width)) {
       this.initializeSendBufferNormal(
-        this.liveClientBuffer[2],
-        this.liveClientBuffer[3],
+        this.liveClientBuffer[META_LEN.NORMAL],
+        this.liveClientBuffer[META_LEN.NORMAL + 1],
       );
     }
   }
@@ -80,12 +88,9 @@ class ScratchetBufferController {
   // ---- Send handling ----
   sendPositions() {
     if (this.sendBuffer.length === 0) return;
-    const mode = this.getBufferMode();
+    if (this.sendReady) {
+      const mode = this.getBufferMode();
 
-    if (mode === Global.MODE.ERASE
-          && this.sendBuffer.length > (META_LEN.ERASE + EXTRA_META_LEN_SEND)
-        || mode >= 0
-          && this.liveClientBuffer.length > META_LEN.NORMAL) {
       const posData = new Int16Array(this.sendBuffer);
       sock.send(posData.buffer);
 
