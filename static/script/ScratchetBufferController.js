@@ -15,6 +15,7 @@ class ScratchetBufferController {
 
   sendReady = false;
   willSendCompleteMetaData = true;
+
   /** @type { ScratchetRoom } */
   activeRoom;
 
@@ -27,12 +28,13 @@ class ScratchetBufferController {
     this.sendReady = true;
   }
 
-  initializeSendBufferNormal(lastPosX, lastPosY) {
+  initializeSendBufferNormal(initialPosX, initialPosY) {
     const hue = this.activeRoom.tools.brush.hue;
     const width = this.activeRoom.tools.brush.width;
     const flag = this.getNormalModeFlag(hue, width);
 
-    this.sendBuffer = new Array(2);
+    this.sendBuffer = [this.activeRoom.roomCode, flag];
+    this.liveClientBuffer = [hue, width, flag];
 
     if ((flag & META_FLAGS.LAST_HUE) === 0) {
       this.lastHue = hue;
@@ -43,14 +45,9 @@ class ScratchetBufferController {
       this.sendBuffer.push(this.lastWidth);
     }
 
-    this.sendBuffer[0] = this.activeRoom.roomCode;
-    this.sendBuffer[1] = flag;
-
-    this.liveClientBuffer = [hue, width, flag];
-
-    if (lastPosX && lastPosY) {
-      this.sendBuffer.push(lastPosX, lastPosY);
-      this.liveClientBuffer.push(lastPosX, lastPosY);
+    if (initialPosX && initialPosY) {
+      this.sendBuffer.push(initialPosX, initialPosY);
+      this.liveClientBuffer.push(initialPosX, initialPosY);
     }
   }
   initializeSendBufferErase() {
