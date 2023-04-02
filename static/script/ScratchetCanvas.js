@@ -144,53 +144,52 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     // TODO skip unseen points
     this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
 
-    let hasChanged = true;
-    for (var i = 0; i < this.posBuffer.length; i++) {
-      const posDataWrapper = this.posBuffer[i];
-      const nextWrapper = this.posBuffer[i + 1];
-      let isFromHighlightedUser = false;
+    if (this.recurseThroughPosWrapper(this.drawPosWrapper.bind(this), this.posBuffer, userHighlight)) {
+      this.ctx.stroke();
 
-      if (userHighlight != null) {
-        isFromHighlightedUser = !userHighlight.posCache.has(posDataWrapper);
-      }
-      if (hasChanged) {
-        // ASSUMPTION: all posData in posDataWrapper have the same width and hue
-        // because only the eraser can form multiple posData inside one wrapper
-        this.setStrokeStyle(getClientMetaHue(posDataWrapper[0]), isFromHighlightedUser);
-        this.setLineWidth(getClientMetaWidth(posDataWrapper[0]));
-
-        this.ctx.beginPath();
-        hasChanged = false;
-      }
-
-      this.drawFromPosDataWrapper(posDataWrapper);
-
-      if (!nextWrapper
-          || getClientMetaHue(nextWrapper[0]) !== getClientMetaHue(posDataWrapper[0])
-          || getClientMetaWidth(nextWrapper[0]) !== getClientMetaWidth(posDataWrapper[0])
-            /* This forces a stroke when changing from one user to another with highlight enabled */
-          || userHighlight != null && (!userHighlight.posCache.has(nextWrapper) !== isFromHighlightedUser)) {
-        this.ctx.stroke();
-        hasChanged = true;
-      }
+      this.setStrokeStyle();
+      this.setLineWidth();
     }
-    this.setStrokeStyle();
-    this.setLineWidth();
   }
 
-  drawFromPosDataWrapper(posDataWrapper) {
-    for (const posData of posDataWrapper) {
-      this.ctx.moveTo(posData[META_LEN.NORMAL], posData[META_LEN.NORMAL + 1]);
-      let i = META_LEN.NORMAL;
-      for (; i < posData.length - 4; i += 6) {
-        this.ctx.bezierCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3], posData[i + 4], posData[i + 5]);
+  drawPosWrapper(posData, prevData, posDataWrapper, userHighlight) {
+    let isFromHighlightedUser = false;
+
+    if (userHighlight != null) {
+      isFromHighlightedUser = !userHighlight.posCache.has(posDataWrapper);
+    }
+    if (!prevData
+        || getClientMetaHue(posData) !== getClientMetaHue(prevData)
+        || getClientMetaWidth(posData) !== getClientMetaWidth(prevData)
+          /* This forces a stroke when changing from one user to another with highlight enabled */
+        || userHighlight != null && (!userHighlight.posCache.has(posData) !== isFromHighlightedUser)) {
+
+      if (prevData) {
+        this.ctx.stroke();
       }
-      // Draw the finishing points of the wrapper in case the wrapper hasn't fully been drawn above
-      if (i === posData.length - 4) {
-        this.ctx.quadraticCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3]);
-      } else if (i === posData.length - 2) {
-        this.ctx.lineTo(posData[i], posData[i + 1]);
-      }
+
+      // ASSUMPTION: all posData in posDataWrapper have the same width and hue
+      // because only the eraser can form multiple posData inside one wrapper
+      this.setStrokeStyle(getClientMetaHue(posData), isFromHighlightedUser);
+      this.setLineWidth(getClientMetaWidth(posData));
+
+      this.ctx.beginPath();
+    }
+
+    this.drawFromPosData(posData);
+  }
+
+  drawFromPosData(posData) {
+    this.ctx.moveTo(posData[META_LEN.NORMAL], posData[META_LEN.NORMAL + 1]);
+    let i = META_LEN.NORMAL;
+    for (; i < posData.length - 4; i += 6) {
+      this.ctx.bezierCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3], posData[i + 4], posData[i + 5]);
+    }
+    // Draw the finishing points of the wrapper in case the wrapper hasn't fully been drawn above
+    if (i === posData.length - 4) {
+      this.ctx.quadraticCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3]);
+    } else if (i === posData.length - 2) {
+      this.ctx.lineTo(posData[i], posData[i + 1]);
     }
   }
 
