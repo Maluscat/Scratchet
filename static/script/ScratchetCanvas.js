@@ -460,7 +460,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     return serverPosData;
   }
 
-  // ---- Helper functions ----
+  // ---- PosData helper functions ----
   /**
    * Simple binary search. Returns the desired position of the input number.
    * (Inspired by https://stackoverflow.com/a/50612218).
@@ -485,10 +485,48 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
     return end + 1;
   }
+
+  /**
+   * Call `callback` on every posData inside `posWrapper` which can be nested infinetely deep.
+   * @param {
+       (posData: Int16Array, prevData: Int16Array, posDataWrapper: any[], ...extraArgs: any[]) => any
+     } callback
+   * @param { Array } posWrapper
+   * @param { any[] } extraArgs Additional arguments to appy to `callback`.
+   * @return { Int16Array | false } The last posData or false if empty.
+   */
+  recurseThroughPosWrapper(callback, posWrapper, ...extraArgs) {
+    return this.#recurseThroughPosWrapperHelper(callback, posWrapper, null, null, 0, ...extraArgs);
+  }
+  #recurseThroughPosWrapperHelper(callback, posWrapper, prevPosDataWrapper, topWrapper, level = 0, ...extraArgs) {
+    if (posWrapper.length === 0) return false;
+
+    if (level === 1) {
+      topWrapper = posWrapper;
+    }
+
+    if (Array.isArray(posWrapper)) {
+      for (const childWrapper of posWrapper) {
+        const result = this.#recurseThroughPosWrapperHelper(
+          callback, childWrapper, prevPosDataWrapper, topWrapper, level + 1, ...extraArgs
+        );
+        if (result) {
+          prevPosDataWrapper = result;
+        }
+      }
+      return prevPosDataWrapper;
+    } else {
+      callback(posWrapper, prevPosDataWrapper, topWrapper, ...extraArgs);
+      return posWrapper;
+    }
+  }
+
   deleteFromPosBuffer(item) {
     this.posBuffer.splice(this.posBuffer.indexOf(item), 1);
   }
 
+
+  // ---- Misc helper functions ----
   setLineWidth(width = this.tools.brush.width) {
     this.ctx.lineWidth = width;
   }
