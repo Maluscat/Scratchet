@@ -152,19 +152,19 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
   }
 
-  drawPosWrapper(posData, prevData, posDataWrapper, userHighlight) {
+  drawPosWrapper(posData, { prevPosData, prevPosDataWrapper, wrapperStack }, userHighlight) {
     let isFromHighlightedUser = false;
 
     if (userHighlight != null) {
-      isFromHighlightedUser = !userHighlight.posCache.has(posDataWrapper);
+      isFromHighlightedUser = !userHighlight.posCache.has(wrapperStack[1]);
     }
-    if (!prevData
-        || getClientMetaHue(posData) !== getClientMetaHue(prevData)
-        || getClientMetaWidth(posData) !== getClientMetaWidth(prevData)
+    if (!prevPosData
+        || getClientMetaHue(posData) !== getClientMetaHue(prevPosData)
+        || getClientMetaWidth(posData) !== getClientMetaWidth(prevPosData)
           /* This forces a stroke when changing from one user to another with highlight enabled */
-        || userHighlight != null && (!userHighlight.posCache.has(posData) !== isFromHighlightedUser)) {
+        || userHighlight != null && (!userHighlight.posCache.has(prevPosDataWrapper) !== isFromHighlightedUser)) {
 
-      if (prevData) {
+      if (prevPosData) {
         this.ctx.stroke();
       }
 
@@ -486,37 +486,53 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   /**
+   * @typedef { Object } recurseCallbackData
+   * @prop { [] } wrapperStack
+   * @prop { [] } prevPosDataWrapper
+   * @prop { Int16Array } prevPosData
+   * @prop { number } index
+   */
+
+  /**
    * Call `callback` on every posData inside `posWrapper` which can be nested infinetely deep.
-   * @param {
-       (posData: Int16Array, prevData: Int16Array, posDataWrapper: any[], ...extraArgs: any[]) => any
-     } callback
+   * @param { (posData: Int16Array, data: recurseCallbackData, ...extraArgs: any[]) => any } callback
    * @param { Array } posWrapper
    * @param { any[] } extraArgs Additional arguments to appy to `callback`.
-   * @return { Int16Array | false } The last posData or false if empty.
+   * @return { any[] | false } [ last pos wrapper, last pos data ] or false if empty.
    */
   recurseThroughPosWrapper(callback, posWrapper, ...extraArgs) {
-    return this.#recurseThroughPosWrapperHelper(callback, posWrapper, null, null, 0, ...extraArgs);
+    return this.#recurseThroughPosWrapperHelper(callback, null, null, [posWrapper], 0, 0, ...extraArgs);
   }
-  #recurseThroughPosWrapperHelper(callback, posWrapper, prevPosDataWrapper, topWrapper, level = 0, ...extraArgs) {
-    if (posWrapper.length === 0) return false;
+  #recurseThroughPosWrapperHelper(
+    callback,
+    prevPosDataWrapper,
+    prevPosData,
+    wrapperStack = [],
+    i = 0,
+    level = 0,
+    ...extraArgs
+  ) {
+    if (wrapperStack[level].length === 0) return false;
 
-    if (level === 1) {
-      topWrapper = posWrapper;
-    }
+    if (Array.isArray(wrapperStack[level]) || wrapperStack[level] instanceof Set) {
+      wrapperStack[level].forEach((childWrapper, i) => {
+        wrapperStack.push(childWrapper);
 
-    if (Array.isArray(posWrapper)) {
-      for (const childWrapper of posWrapper) {
         const result = this.#recurseThroughPosWrapperHelper(
-          callback, childWrapper, prevPosDataWrapper, topWrapper, level + 1, ...extraArgs
+          callback, prevPosDataWrapper, prevPosData, wrapperStack, i, level + 1, ...extraArgs
         );
         if (result) {
-          prevPosDataWrapper = result;
+          prevPosDataWrapper = result[0];
+          prevPosData = result[1];
         }
-      }
-      return prevPosDataWrapper;
+
+        wrapperStack.pop();
+      });
+
+      return (prevPosDataWrapper) ? [ prevPosDataWrapper, prevPosData ] : false;
     } else {
-      callback(posWrapper, prevPosDataWrapper, topWrapper, ...extraArgs);
-      return posWrapper;
+      callback(wrapperStack[level], { wrapperStack, prevPosDataWrapper, prevPosData, index: i }, ...extraArgs);
+      return [ wrapperStack[1], wrapperStack[level] ];
     }
   }
 
