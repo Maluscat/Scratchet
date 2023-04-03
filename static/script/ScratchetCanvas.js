@@ -248,67 +248,75 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
     this.redrawCanvas();
   }
+
   erasePos(targetPosX, targetPosY, user, saveRedo = false, eraserWidth = this.tools.eraser.width) {
     let hasChanged = false;
-    for (const posDataWrapper of user.posCache) {
-      const redoWrapper = new Array();
+    let redoWrapper;
+    let lastWrapper;
+    this.recurseThroughPosWrapper(erasePosData.bind(this), user.posCache);
 
-      for (let i = 0; i < posDataWrapper.length; i++) {
-        const posData = posDataWrapper[i];
-        let startIdx = META_LEN.NORMAL;
-        let isErasing = false;
+    return hasChanged;
 
-        // j is used as the endIndex
-        for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
-          if (posIsInEraseRange(posData[j], posData[j + 1], posData[1])) {
-            if (!isErasing) {
-              if (startIdx !== j) {
-                const newPosData = createNewPosData(posData, startIdx, j);
-                posDataWrapper.push(newPosData);
-              }
-              // This needs to be at this level to accomodate for the cleanup
-              hasChanged = true;
-              isErasing = true;
-              startIdx = j;
-            }
-          } else if (isErasing) {
+    function erasePosData(posData, { wrapperStack, index }) {
+      const posWrapper = wrapperStack.at(-2);
+      let startIdx = META_LEN.NORMAL;
+      let isErasing = false;
+
+      if (posWrapper !== lastWrapper) {
+        redoWrapper = [];
+      }
+
+      // j is used as the endIndex
+      for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
+        if (posIsInEraseRange(posData[j], posData[j + 1], posData[1])) {
+          if (!isErasing) {
             if (startIdx !== j) {
-              const eraseData = createNewPosData(posData, startIdx, j);
-              redoWrapper.push(eraseData);
+              const newPosData = createNewPosData(posData, startIdx, j);
+              posWrapper.push(newPosData);
             }
-            isErasing = false;
+            // This needs to be at this level to accomodate for the cleanup
+            hasChanged = true;
+            isErasing = true;
             startIdx = j;
           }
-        }
-
-        // The last section needs to be handled manually.
-        // This is the same procedure as in the loop above
-        if (startIdx > META_LEN.NORMAL) {
-          const lastData = createNewPosData(posData, startIdx);
-          if (isErasing) {
-            redoWrapper.push(lastData);
-          } else {
-            posDataWrapper[i] = lastData;
+        } else if (isErasing) {
+          if (startIdx !== j) {
+            const eraseData = createNewPosData(posData, startIdx, j);
+            redoWrapper.push(eraseData);
           }
+          isErasing = false;
+          startIdx = j;
         }
+      }
 
-        // Remove the initial posData if the last vector in it has been erased
+      // The last section needs to be handled manually.
+      // This is the same procedure as in the loop above
+      if (startIdx > META_LEN.NORMAL) {
+        const lastData = createNewPosData(posData, startIdx);
         if (isErasing) {
-          posDataWrapper.splice(i, 1);
-          hasChanged = true;
-        }
-
-        if (saveRedo && redoWrapper.length > 0) {
-          this.undoEraseBuffer.push(redoWrapper);
+          redoWrapper.push(lastData);
+        } else {
+          posWrapper[index] = lastData;
         }
       }
 
-      if (posDataWrapper.length === 0) {
-        this.deleteFromPosBuffer(posDataWrapper);
-        user.posCache.delete(posDataWrapper);
+      // Remove the initial posData if the last vector in it has been erased
+      if (isErasing) {
+        posWrapper.splice(index, 1);
+        hasChanged = true;
       }
+
+      if (saveRedo && redoWrapper.length > 0) {
+        this.undoEraseBuffer.push(redoWrapper);
+      }
+
+      if (posWrapper.length === 0) {
+        this.deleteFromPosBuffer(posWrapper);
+        user.posCache.delete(posWrapper);
+      }
+
+      lastWrapper = posWrapper;
     }
-    return hasChanged;
 
     function posIsInEraseRange(testPosX, testPosY, strokeWidth) {
       const distance = Math.sqrt(
