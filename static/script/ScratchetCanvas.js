@@ -145,7 +145,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     let hasDrawn = false;
     this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
 
-    for (const { posData, prevPosData, prevPosDataWrapper, wrapperStack } of this.recurseThroughPosWrapper(this.posBuffer)) {
+    for (const { posData, prevPosData, prevPosDataWrapper, wrapperStack } of this.iteratePosWrapper(this.posBuffer)) {
       hasDrawn = true;
       let isFromHighlightedUser = false;
 
@@ -283,7 +283,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     let redoWrapper;
     let lastWrapper;
 
-    for (const { posData, wrapperStack, index } of this.recurseThroughPosWrapper(user.posCache)) {
+    for (const { posData, wrapperStack, index } of this.iteratePosWrapper(user.posCache)) {
       const posWrapper = wrapperStack.at(-2);
       let startIdx = META_LEN.NORMAL;
       let isErasing = false;
@@ -535,24 +535,24 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    * @param { Iterable } posWrapper
    * @return { Generator<recursePosWrapperYield> }
    */
-  *recurseThroughPosWrapper(posWrapper) {
-    yield* this.#recurseThroughPosWrapperHelper([posWrapper]);
+  *iteratePosWrapper(posWrapper) {
+    yield* this.#iteratePosWrapperGen([posWrapper]);
   }
-  *#recurseThroughPosWrapperHelper(
+  *#iteratePosWrapperGen(
     wrapperStack,
     prevPosDataWrapper,
     prevPosData,
-    i = 0,
-    level = 0
+    index = 0
   ) {
-    if (wrapperStack[level].length === 0) return;
+    const posData = wrapperStack.at(-1);
+    if (posData.length === 0) return;
 
-    if (Array.isArray(wrapperStack[level]) || wrapperStack[level] instanceof Set) {
+    if (Array.isArray(posData) || posData instanceof Set) {
       let i = 0;
-      for (const childWrapper of wrapperStack[level]) {
+      for (const childWrapper of posData) {
         wrapperStack.push(childWrapper);
 
-        for (const result of this.#recurseThroughPosWrapperHelper(wrapperStack, prevPosDataWrapper, prevPosData, i, level + 1)) {
+        for (const result of this.#iteratePosWrapperGen(wrapperStack, prevPosDataWrapper, prevPosData, i)) {
           prevPosDataWrapper = result.wrapperStack[1];
           prevPosData = result.posData;
           yield result;
@@ -563,11 +563,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
     } else {
       yield {
-        posData: wrapperStack[level],
+        posData,
         wrapperStack,
         prevPosDataWrapper,
         prevPosData,
-        index: i
+        index
       };
     }
   }
