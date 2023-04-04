@@ -83,7 +83,7 @@ class UIActions {
     const action = this.actions[actionName];
     if (action.prompt && (!e || e.type !== 'dblclick' && !e.shiftKey && !e.ctrlKey)) {
       ui.dispatchPrompt(action.prompt.caption, action.fn);
-    } else {
+    } else if (!e || e.type !== 'dblclick' || action.prompt) {
       ui.removePrompt();
       action.fn();
     }
