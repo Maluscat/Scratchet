@@ -1,5 +1,6 @@
 'use strict';
 class ScratchetCanvas extends ScratchetCanvasControls {
+  /** @type {[number, number]} */
   lastPos = new Array(2);
 
   hasErased = false;
@@ -150,6 +151,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   // ---- Canvas handling ----
+  /** @param {ScratchetUser} [userHighlight] */
   redrawCanvas(userHighlight) {
     // TODO skip unseen points
     let hasDrawn = false;
