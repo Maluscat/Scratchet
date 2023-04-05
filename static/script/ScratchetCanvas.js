@@ -2,6 +2,7 @@
 class ScratchetCanvas extends ScratchetCanvasControls {
   lastPos = new Array(2);
 
+  hasErased = false;
   isDrawing = false;
 
   tools;
@@ -138,9 +139,13 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   finalizeDraw() {
     if (this.isDrawing === true) {
-      this.isDrawing = false;
+      if (this.hasErased) {
+        this.undoEraseIndex++;
+        this.hasErased = false;
+      }
       ui.toggleDrawIndicatorEraseMode(true);
       this.redrawCanvas();
+      this.isDrawing = false;
     }
   }
 
@@ -341,6 +346,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
 
       lastWrapper = posWrapper;
+    }
+
+    if (hasChanged) {
+      this.hasErased = true;
     }
 
     return hasChanged;
