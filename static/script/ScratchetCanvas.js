@@ -181,33 +181,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
   }
 
-  drawPosWrapper(posData, { prevPosData, prevPosDataWrapper, wrapperStack }, userHighlight) {
-    let isFromHighlightedUser = false;
-
-    if (userHighlight != null) {
-      isFromHighlightedUser = !userHighlight.posCache.has(wrapperStack[1]);
-    }
-    if (!prevPosData
-        || getClientMetaHue(posData) !== getClientMetaHue(prevPosData)
-        || getClientMetaWidth(posData) !== getClientMetaWidth(prevPosData)
-          /* This forces a stroke when changing from one user to another with highlight enabled */
-        || userHighlight != null && (!userHighlight.posCache.has(prevPosDataWrapper) !== isFromHighlightedUser)) {
-
-      if (prevPosData) {
-        this.ctx.stroke();
-      }
-
-      // ASSUMPTION: all posData in posDataWrapper have the same width and hue
-      // because only the eraser can form multiple posData inside one wrapper
-      this.setStrokeStyle(getClientMetaHue(posData), isFromHighlightedUser);
-      this.setLineWidth(getClientMetaWidth(posData));
-
-      this.ctx.beginPath();
-    }
-
-    this.drawFromPosData(posData);
-  }
-
   drawFromPosData(posData) {
     this.ctx.moveTo(posData[META_LEN.NORMAL], posData[META_LEN.NORMAL + 1]);
     let i = META_LEN.NORMAL;
