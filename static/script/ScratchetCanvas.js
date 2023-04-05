@@ -285,22 +285,24 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           }
         } else if (isErasing) {
           if (startIdx !== j) {
-            const eraseData = createNewPosData(posData, startIdx, j);
+            const start = (startIdx > META_LEN.NORMAL) ? startIdx - 2 : startIdx;
+            const eraseData = createNewPosData(posData, start, j + 2);
             redoWrapper.push(eraseData);
           }
           isErasing = false;
           startIdx = j;
         }
-      }
 
-      // The last section needs to be handled manually.
-      // This is the same procedure as in the loop above
-      if (startIdx > META_LEN.NORMAL) {
-        const lastData = createNewPosData(posData, startIdx);
-        if (isErasing) {
-          redoWrapper.push(lastData);
-        } else {
-          posWrapper[index] = lastData;
+        // The last section needs to be handled manually.
+        // This is the same procedure as in the loop above
+        if (startIdx > META_LEN.NORMAL) {
+          if (isErasing) {
+            const eraseData = createNewPosData(posData, startIdx - 2);
+            redoWrapper.push(eraseData);
+          } else {
+            const newPosData = createNewPosData(posData, startIdx);
+            posWrapper[index] = newPosData;
+          }
         }
       }
 
@@ -310,13 +312,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         hasChanged = true;
       }
 
-      if (saveRedo && redoWrapper.length > 0) {
-        this.undoEraseBuffer.push(redoWrapper);
-      }
-
-      if (posWrapper.length === 0) {
-        this.deleteFromPosBuffer(posWrapper);
-        user.posCache.delete(posWrapper);
+      if (hasChanged && redoWrapper.length > 0) {
+        this.addToUndoEraseQueue(user, redoWrapper, posWrapper);
       }
 
       lastWrapper = posWrapper;
@@ -348,6 +345,27 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         }
         return newPosData;
       }
+    }
+  }
+
+  addToUndoEraseQueue(user, eraseWrapper, targetWrapper) {
+    let infoWrapper;
+    if (this.undoEraseQueue.length === this.undoEraseIndex + 1) {
+      infoWrapper = this.undoEraseQueue.at(-1);
+    } else {
+      infoWrapper = []
+      this.undoEraseQueue.push(infoWrapper);
+    }
+
+    const lastInfo = infoWrapper.at(-1);
+    if (lastInfo?.target === targetWrapper) {
+      lastInfo.wrapper.push(...eraseWrapper);
+    } else {
+      infoWrapper.push({
+        bufferIndex: user.posCache.size - 1,
+        wrapper: eraseWrapper,
+        target: targetWrapper
+      });
     }
   }
 
