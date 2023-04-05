@@ -154,11 +154,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   /** @param {ScratchetUser} [userHighlight] */
   redrawCanvas(userHighlight) {
     // TODO skip unseen points
-    let hasDrawn = false;
+    let prevPosData;
+    let prevPosDataWrapper;
+
     this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
 
-    for (const { posData, prevPosData, prevPosDataWrapper, wrapperStack } of ScratchetCanvas.iteratePosWrapper(this.posBuffer)) {
-      hasDrawn = true;
+    for (const { posData, wrapperStack } of ScratchetCanvas.iteratePosWrapper(this.posBuffer)) {
       let isFromHighlightedUser = false;
 
       if (userHighlight != null) {
@@ -183,9 +184,14 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
 
       this.drawFromPosData(posData);
+
+      prevPosData = posData;
+      if (wrapperStack[1] !== prevPosDataWrapper) {
+        prevPosDataWrapper = wrapperStack[1];
+      }
     }
 
-    if (hasDrawn) {
+    if (prevPosData) {
       this.ctx.stroke();
 
       this.setStrokeStyle();
@@ -582,12 +588,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   static *iteratePosWrapper(posWrapper) {
     yield* this.#iteratePosWrapperGen([posWrapper]);
   }
-  static *#iteratePosWrapperGen(
-    wrapperStack,
-    prevPosDataWrapper,
-    prevPosData,
-    index = 0
-  ) {
+  static *#iteratePosWrapperGen(wrapperStack, index = 0) {
     const posData = wrapperStack.at(-1);
     if (posData.length === 0) return;
 
@@ -596,23 +597,13 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       for (const childWrapper of posData) {
         wrapperStack.push(childWrapper);
 
-        for (const result of this.#iteratePosWrapperGen(wrapperStack, prevPosDataWrapper, prevPosData, i)) {
-          prevPosDataWrapper = result.wrapperStack[1];
-          prevPosData = result.posData;
-          yield result;
-        }
+        yield* this.#iteratePosWrapperGen(wrapperStack, i);
 
         wrapperStack.pop();
         i++;
       }
     } else {
-      yield {
-        posData,
-        wrapperStack,
-        prevPosDataWrapper,
-        prevPosData,
-        index
-      };
+      yield { posData, wrapperStack, index };
     }
   }
 }
