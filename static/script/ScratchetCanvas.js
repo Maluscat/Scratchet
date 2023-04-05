@@ -162,13 +162,13 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       let isFromHighlightedUser = false;
 
       if (userHighlight != null) {
-        isFromHighlightedUser = !userHighlight.posCache.has(wrapperStack[1]);
+        isFromHighlightedUser = !userHighlight.posCache.includes(wrapperStack[1]);
       }
       if (!prevPosData
           || getClientMetaHue(posData) !== getClientMetaHue(prevPosData)
           || getClientMetaWidth(posData) !== getClientMetaWidth(prevPosData)
             /* This forces a stroke when changing from one user to another with highlight enabled */
-          || userHighlight != null && (!userHighlight.posCache.has(prevPosDataWrapper) !== isFromHighlightedUser)) {
+          || userHighlight != null && (!userHighlight.posCache.includes(prevPosDataWrapper) !== isFromHighlightedUser)) {
 
         if (prevPosData) {
           this.ctx.stroke();
@@ -217,7 +217,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   /** @param {ScratchetUser} user */
   undoPoint(user) {
     if (this.undoEraseIndex > 0
-        && user.posCache.size - 1 === this.undoEraseQueue[this.undoEraseIndex - 1].at(-1).bufferIndex) {
+        && user.posCache.length - 1 === this.undoEraseQueue[this.undoEraseIndex - 1].at(-1).bufferIndex) {
 
       for (const info of this.undoEraseQueue[this.undoEraseIndex - 1]) {
         info.target.push(info.wrapper);
@@ -226,10 +226,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       this.undoEraseIndex--;
       this.redrawCanvas();
     } else if (this.posBuffer.length > 0) {
-      const posDataWrapper = Array.from(user.posCache).at(-1);
+      const posDataWrapper = user.posCache.pop();
       this.redoBuffer.push(posDataWrapper);
       this.deleteFromPosBuffer(posDataWrapper);
-      user.posCache.delete(posDataWrapper);
 
       this.redrawCanvas();
     }
@@ -237,7 +236,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   /** @param {ScratchetUser} user */
   redoPoint(user) {
     if (this.undoEraseIndex < this.undoEraseQueue.length
-        && user.posCache.size - 1 === this.undoEraseQueue[this.undoEraseIndex].at(-1).bufferIndex) {
+        && user.posCache.length - 1 === this.undoEraseQueue[this.undoEraseIndex].at(-1).bufferIndex) {
 
       for (const info of this.undoEraseQueue[this.undoEraseIndex]) {
         info.target.splice(info.target.indexOf(info.wrapper), 1);
@@ -248,7 +247,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     } else if (this.redoBuffer.length > 0) {
       const posDataWrapper = this.redoBuffer.pop();
       this.addToBuffer(posDataWrapper);
-      user.posCache.add(posDataWrapper);
+      user.posCache.push(posDataWrapper);
 
       this.redrawCanvas();
     }
@@ -397,7 +396,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       lastInfo.wrapper.push(...eraseWrapper);
     } else {
       infoWrapper.push({
-        bufferIndex: user.posCache.size - 1,
+        bufferIndex: user.posCache.length - 1,
         wrapper: eraseWrapper,
         target: targetWrapper
       });
@@ -406,7 +405,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   sendJoinedUserBuffer() {
     const userCache = this.getOwnUser().posCache;
-    if (userCache.size > 0) {
+    if (userCache.length > 0) {
       const joinedBuffer = [this.roomCode];
       for (const posDataWrapper of userCache) {
         const wrapperDestIndex = this.posBuffer.indexOf(posDataWrapper);
@@ -422,11 +421,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   clearUserBufferAndRedraw(user) {
-    if (user.posCache.size > 0) {
+    if (user.posCache.length > 0) {
       for (const posDataWrapper of user.posCache) {
         this.deleteFromPosBuffer(posDataWrapper);
       }
-      user.posCache.clear();
+      user.posCache = [];
       this.redrawCanvas();
     }
   }
@@ -452,7 +451,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       this.addToBuffer(posDataWrapper);
     }
     this.clearRedoBuffer();
-    user.posCache.add(posDataWrapper);
+    user.posCache.push(posDataWrapper);
   }
 
   /**
@@ -483,12 +482,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
 
     if (extraLen > 0) {
-      if (user.posCache.size === 0) {
+      if (user.posCache.length === 0) {
         return false;
       }
 
-      const posCacheArr = Array.from(user.posCache);
-      const lastPosData = posCacheArr[posCacheArr.length - 1][0];
+      const lastPosData = user.posCache[user.posCache.length - 1][0];
 
       // Get width/hue of the last package
       if (flag & META_FLAGS.LAST_WIDTH) {
