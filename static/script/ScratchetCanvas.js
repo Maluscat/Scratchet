@@ -157,7 +157,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     let hasDrawn = false;
     this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
 
-    for (const { posData, prevPosData, prevPosDataWrapper, wrapperStack } of this.iteratePosWrapper(this.posBuffer)) {
+    for (const { posData, prevPosData, prevPosDataWrapper, wrapperStack } of ScratchetCanvas.iteratePosWrapper(this.posBuffer)) {
       hasDrawn = true;
       let isFromHighlightedUser = false;
 
@@ -291,7 +291,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     let redoWrapper;
     let lastWrapper;
 
-    for (const { posData, wrapperStack, index } of this.iteratePosWrapper(user.posCache)) {
+    for (const { posData, wrapperStack, index } of ScratchetCanvas.iteratePosWrapper(user.posCache)) {
       const posWrapper = wrapperStack.at(-2);
       let startIdx = META_LEN.NORMAL;
       let isErasing = false;
@@ -551,6 +551,21 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     return end + 1;
   }
 
+  deleteFromPosBuffer(item) {
+    this.posBuffer.splice(this.posBuffer.indexOf(item), 1);
+  }
+
+
+  // ---- Misc helper functions ----
+  setLineWidth(width = this.tools.brush.width) {
+    this.ctx.lineWidth = width;
+  }
+  setStrokeStyle(hue = this.tools.brush.hue, hasReducedAlpha) {
+    this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
+  }
+
+
+  // ---- Static helper functions ----
   /**
    * @typedef { Object } recursePosWrapperYield
    * @prop { Int16Array } posData
@@ -564,10 +579,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    * @param { Iterable } posWrapper
    * @return { Generator<recursePosWrapperYield> }
    */
-  *iteratePosWrapper(posWrapper) {
+  static *iteratePosWrapper(posWrapper) {
     yield* this.#iteratePosWrapperGen([posWrapper]);
   }
-  *#iteratePosWrapperGen(
+  static *#iteratePosWrapperGen(
     wrapperStack,
     prevPosDataWrapper,
     prevPosData,
@@ -599,18 +614,5 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         index
       };
     }
-  }
-
-  deleteFromPosBuffer(item) {
-    this.posBuffer.splice(this.posBuffer.indexOf(item), 1);
-  }
-
-
-  // ---- Misc helper functions ----
-  setLineWidth(width = this.tools.brush.width) {
-    this.ctx.lineWidth = width;
-  }
-  setStrokeStyle(hue = this.tools.brush.hue, hasReducedAlpha) {
-    this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
   }
 }
