@@ -27,21 +27,26 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   redoBuffer = new Array();
 
   /**
-   * - Contains points that were erased so that they can be redone.
-   * - This only needs to be done for the erase because {@link posBuffer}
-   * already is its own undo buffer naturally.
-   * - Is used in conjunction with {@link undoEraseIndexes}.
+   * @typedef { Object } undoEraseInfo
+   * @prop { number } bufferIndex At which buffer length the info object is applied to.
+   * @prop { Array<Array> } wrapper The posData points.
+   * @prop { Array<Array> } target The target posWrapper for {@link undoEraseInfo.wrapper}.
    */
-  undoEraseBuffer = new Array();
-  /**
-   * Contains one {@link posBuffer} index for every {@link undoEraseBuffer} entry.
-   * This is necessary to ensure correct undo ordering.
-   */
-  undoEraseIndexes = new Array();
 
   /**
-   * @param { HTMLCanvasElement } canvas
+   * Contains information of erased points so that they can be redone.
+   * - One info wrapper is exactly one undo/redo step.
+   * - Every info wrapper contains multiple {@link undoEraseInfo} objects.
+   * - Is used in conjunction with {@link undoEraseIndex}.
+   * @type { Array<Array<undoEraseInfo>> }
    */
+  undoEraseQueue = new Array();
+  /**
+   * {@link undoEraseQueue} at this index is the current valid eraser undo/redo step.
+   */
+  undoEraseIndex = 0;
+
+  /** @param { HTMLCanvasElement } canvas */
   constructor(canvas) {
     super(canvas);
 
