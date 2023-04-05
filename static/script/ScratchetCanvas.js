@@ -209,26 +209,50 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   // ---- Undo/redo ----
   /** @param {ScratchetUser} user */
   undoPoint(user) {
-    if (user.posCache.size > 0) {
-      const posData = Array.from(user.posCache).at(-1);
-      user.posCache.delete(posData);
-      this.deleteFromPosBuffer(posData);
-      this.redoBuffer.push(posData);
+    if (this.undoEraseIndex > 0
+        && user.posCache.size - 1 === this.undoEraseQueue[this.undoEraseIndex - 1].at(-1).bufferIndex) {
+
+      for (const info of this.undoEraseQueue[this.undoEraseIndex - 1]) {
+        info.target.push(info.wrapper);
+      }
+
+      this.undoEraseIndex--;
+      this.redrawCanvas();
+    } else if (this.posBuffer.length > 0) {
+      const posDataWrapper = Array.from(user.posCache).at(-1);
+      this.redoBuffer.push(posDataWrapper);
+      this.deleteFromPosBuffer(posDataWrapper);
+      user.posCache.delete(posDataWrapper);
+
       this.redrawCanvas();
     }
   }
   /** @param {ScratchetUser} user */
   redoPoint(user) {
-    if (this.redoBuffer.length > 0) {
-      const posData = this.redoBuffer.pop();
-      user.posCache.add(posData);
-      this.addToBuffer(posData);
+    if (this.undoEraseIndex < this.undoEraseQueue.length
+        && user.posCache.size - 1 === this.undoEraseQueue[this.undoEraseIndex].at(-1).bufferIndex) {
+
+      for (const info of this.undoEraseQueue[this.undoEraseIndex]) {
+        info.target.splice(info.target.indexOf(info.wrapper), 1);
+      }
+
+      this.undoEraseIndex++;
+      this.redrawCanvas();
+    } else if (this.redoBuffer.length > 0) {
+      const posDataWrapper = this.redoBuffer.pop();
+      this.addToBuffer(posDataWrapper);
+      user.posCache.add(posDataWrapper);
+
       this.redrawCanvas();
     }
   }
 
+  // TODO bind this to a user
   clearRedoBuffer() {
     this.redoBuffer = new Array();
+    if (this.undoEraseIndex < this.undoEraseQueue.length) {
+      this.undoEraseQueue.splice(this.undoEraseIndex);
+    }
   }
 
   // ---- Buffer functions ----
