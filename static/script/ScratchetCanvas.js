@@ -3,6 +3,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   /** @type {[number, number]} */
   lastPos = new Array(2);
 
+  ownUser;
+
   hasErased = false;
   isDrawing = false;
 
@@ -24,10 +26,14 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    */
   initPosIndexes = new Array();
 
-  /** @param { HTMLCanvasElement } canvas */
-  constructor(canvas) {
+  /**
+    * @param { HTMLCanvasElement } canvas
+    * @param { ScratchetUser } ownUser
+    */
+  constructor(canvas, ownUser) {
     super(canvas);
 
+    this.ownUser = ownUser;
     this.tools = {
       brush: new Brush(this.setLineWidth.bind(this), this.setStrokeStyle.bind(this)),
       eraser: new Eraser(),
@@ -103,7 +109,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           break;
         }
         case Eraser: {
-          if (this.erasePos(posX, posY, this.getOwnUser(), true)) {
+          if (this.erasePos(posX, posY, this.ownUser, true)) {
             this.redrawCanvas();
             controller.sendCompleteMetaDataNextTime();
             controller.addToSendBuffer(posX, posY);
@@ -117,7 +123,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   finalizeOwnDraw() {
     if (this.isDrawing === true) {
       if (this.hasErased) {
-        this.getOwnUser().undoEraseIndex++;
+        this.ownUser.undoEraseIndex++;
         this.hasErased = false;
       }
       ui.toggleDrawIndicatorEraseMode(true);
@@ -317,7 +323,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   sendJoinedUserBuffer() {
-    const userCache = this.getOwnUser().posCache;
+    const userCache = this.ownUser.posCache;
     if (userCache.length > 0) {
       const joinedBuffer = [this.roomCode];
       for (const posDataWrapper of userCache) {

@@ -93,7 +93,7 @@ class ScratchetBufferController {
 
       if (mode >= 0) {
         this.activeRoom.addClientDataToBuffer(
-          new Int16Array(this.liveClientBuffer), this.activeRoom.getOwnUser());
+          new Int16Array(this.liveClientBuffer), this.activeRoom.ownUser);
         // posBufferServer needs to be checked due to asynchronities
         // between willSendCompleteMetaData and sendPositions
         // And to ensure that it only resets on normal mode

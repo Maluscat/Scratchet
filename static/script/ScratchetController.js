@@ -112,7 +112,7 @@ class ScratchetController extends ScratchetBufferController {
   }
 
   clearDrawing() {
-    this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.getOwnUser());
+    this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.ownUser);
     this.sendCompleteMetaDataNextTime();
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
@@ -194,10 +194,10 @@ class ScratchetController extends ScratchetBufferController {
 
   // -> Utility overlay
   invokeUndo() {
-    this.activeRoom.getOwnUser().undo(this.activeRoom);
+    this.activeRoom.ownUser.undo(this.activeRoom);
   }
   invokeRedo() {
-    this.activeRoom.getOwnUser().redo(this.activeRoom);
+    this.activeRoom.ownUser.redo(this.activeRoom);
   }
 
   // ---- Username handling ----
@@ -214,11 +214,11 @@ class ScratchetController extends ScratchetBufferController {
     }
   }
   setOwnUsername(username, isInitial) {
-    if (isInitial || this.activeRoom == null || username !== this.activeRoom.getOwnUser().name) {
+    if (isInitial || this.activeRoom == null || username !== this.activeRoom.ownUser.name) {
       this.globalUsername = username;
       localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
       if (!isInitial && this.activeRoom != null) {
-        this.activeRoom.getOwnUser().setName(username);
+        this.activeRoom.ownUser.setName(username);
         sendMessage('changeName', username, this.activeRoom.roomCode);
       }
     }

@@ -14,7 +14,9 @@ class ScratchetRoom extends ScratchetCanvas {
   userListNode;
 
   constructor(roomCode, roomName, globalUsername, peers) {
-    super(ScratchetRoom.createCanvas());
+    const ownUser = new ScratchetUser(globalUsername, CURRENT_USER_ID);
+
+    super(ScratchetRoom.createCanvas(), ownUser);
 
     // Set active tool by current active class
     for (const tool of Object.values(this.tools)) {
@@ -29,7 +31,7 @@ class ScratchetRoom extends ScratchetCanvas {
     this.roomListNode = ScratchetRoom.createRoomListNode();
     this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
 
-    this.addUser(CURRENT_USER_ID, globalUsername)
+    this.#addUserObject(ownUser);
     for (const [ userID, username ] of peers) {
       this.addUser(userID, username);
     }
@@ -73,10 +75,6 @@ class ScratchetRoom extends ScratchetCanvas {
 
 
   // ---- User handling ----
-  /** @return { ScratchetUser } */
-  getOwnUser() {
-    return this.users.get(CURRENT_USER_ID);
-  }
   /**
    * @param { number } userID
    * @return { ScratchetUser }
@@ -94,12 +92,7 @@ class ScratchetRoom extends ScratchetCanvas {
 
   addUser(userID, username) {
     const user = new ScratchetUser(username, userID);
-
-    this.users.set(userID, user);
-    this.userListNode.appendChild(user.listNode);
-    this.updateUserIndicator();
-
-    this.sendJoinedUserBuffer();
+    this.#addUserObject(user);
   }
   removeUser(userID) {
     if (!this.hasUser(userID)) {
@@ -116,9 +109,17 @@ class ScratchetRoom extends ScratchetCanvas {
     return user;
   }
 
+  #addUserObject(user) {
+    this.users.set(user.userID, user);
+    this.userListNode.appendChild(user.listNode);
+    this.updateUserIndicator();
+
+    this.sendJoinedUserBuffer();
+  }
+
   // ---- User UI helpers ----
   setUsernameInput() {
-    usernameInput.textContent = this.getOwnUser().name;
+    usernameInput.textContent = this.ownUser.name;
   }
 
   updateUserIndicator() {
