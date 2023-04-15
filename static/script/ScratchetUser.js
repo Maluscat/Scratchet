@@ -32,7 +32,7 @@ class ScratchetUser {
    */
   redoBuffer = new Array();
 
-  constructor(username, userID) {
+  constructor(userID, username) {
     this.userID = userID;
     this.name = username;
     this.listNode = this.createUserListNode(username, userID === CURRENT_USER_ID);
