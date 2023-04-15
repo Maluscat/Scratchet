@@ -23,30 +23,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    * when all peer data should have arrived
    */
   initPosIndexes = new Array();
-  /**
-   * Contains points which were undone so that they can be redone.
-   */
-  redoBuffer = new Array();
-
-  /**
-   * @typedef { Object } undoEraseInfo
-   * @prop { number } bufferIndex At which buffer length the info object is applied to.
-   * @prop { Array<Array> } wrapper The posData points.
-   * @prop { Array<Array> } target The target posWrapper for {@link undoEraseInfo.wrapper}.
-   */
-
-  /**
-   * Contains information of erased points so that they can be redone.
-   * - One info wrapper is exactly one undo/redo step.
-   * - Every info wrapper contains multiple {@link undoEraseInfo} objects.
-   * - Is used in conjunction with {@link undoEraseIndex}.
-   * @type { Array<Array<undoEraseInfo>> }
-   */
-  undoEraseQueue = new Array();
-  /**
-   * {@link undoEraseQueue} at this index is the current valid eraser undo/redo step.
-   */
-  undoEraseIndex = 0;
 
   /** @param { HTMLCanvasElement } canvas */
   constructor(canvas) {
@@ -141,7 +117,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   finalizeDraw() {
     if (this.isDrawing === true) {
       if (this.hasErased) {
-        this.undoEraseIndex++;
+        this.getOwnUser().undoEraseIndex++;
         this.hasErased = false;
       }
       ui.toggleDrawIndicatorEraseMode(true);
@@ -217,54 +193,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   setLastPos(posX, posY) {
     this.lastPos[0] = posX;
     this.lastPos[1] = posY;
-  }
-
-  // ---- Undo/redo ----
-  /** @param {ScratchetUser} user */
-  undoPoint(user) {
-    if (this.undoEraseIndex > 0
-        && user.posCache.length - 1 === this.undoEraseQueue[this.undoEraseIndex - 1].at(-1).bufferIndex) {
-
-      for (const info of this.undoEraseQueue[this.undoEraseIndex - 1]) {
-        info.target.push(info.wrapper);
-      }
-
-      this.undoEraseIndex--;
-      this.redrawCanvas();
-    } else if (this.posBuffer.length > 0) {
-      const posDataWrapper = user.posCache.pop();
-      this.redoBuffer.push(posDataWrapper);
-      this.deleteFromPosBuffer(posDataWrapper);
-
-      this.redrawCanvas();
-    }
-  }
-  /** @param {ScratchetUser} user */
-  redoPoint(user) {
-    if (this.undoEraseIndex < this.undoEraseQueue.length
-        && user.posCache.length - 1 === this.undoEraseQueue[this.undoEraseIndex].at(-1).bufferIndex) {
-
-      for (const info of this.undoEraseQueue[this.undoEraseIndex]) {
-        info.target.splice(info.target.indexOf(info.wrapper), 1);
-      }
-
-      this.undoEraseIndex++;
-      this.redrawCanvas();
-    } else if (this.redoBuffer.length > 0) {
-      const posDataWrapper = this.redoBuffer.pop();
-      this.addToBuffer(posDataWrapper);
-      user.posCache.push(posDataWrapper);
-
-      this.redrawCanvas();
-    }
-  }
-
-  // TODO bind this to a user
-  clearRedoBuffer() {
-    this.redoBuffer = new Array();
-    if (this.undoEraseIndex < this.undoEraseQueue.length) {
-      this.undoEraseQueue.splice(this.undoEraseIndex);
-    }
   }
 
   // ---- Buffer functions ----
@@ -349,7 +277,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
 
       if (hasChanged && redoWrapper.length > 0) {
-        this.addToUndoEraseQueue(user, redoWrapper, posWrapper);
+        user.addToUndoEraseQueue(redoWrapper, posWrapper);
       }
 
       lastWrapper = posWrapper;
@@ -385,27 +313,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         }
         return newPosData;
       }
-    }
-  }
-
-  addToUndoEraseQueue(user, eraseWrapper, targetWrapper) {
-    let infoWrapper;
-    if (this.undoEraseQueue.length === this.undoEraseIndex + 1) {
-      infoWrapper = this.undoEraseQueue.at(-1);
-    } else {
-      infoWrapper = []
-      this.undoEraseQueue.push(infoWrapper);
-    }
-
-    const lastInfo = infoWrapper.at(-1);
-    if (lastInfo?.target === targetWrapper) {
-      lastInfo.wrapper.push(...eraseWrapper);
-    } else {
-      infoWrapper.push({
-        bufferIndex: user.posCache.length - 1,
-        wrapper: eraseWrapper,
-        target: targetWrapper
-      });
     }
   }
 
@@ -456,7 +363,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     } else {
       this.addToBuffer(posDataWrapper);
     }
-    this.clearRedoBuffer();
+    user.clearRedoBuffer();
     user.posCache.push(posDataWrapper);
   }
 

@@ -194,10 +194,10 @@ class ScratchetController extends ScratchetBufferController {
 
   // -> Utility overlay
   invokeUndo() {
-    this.activeRoom.undoPoint(this.activeRoom.getOwnUser());
+    this.activeRoom.getOwnUser().undo(this.activeRoom);
   }
   invokeRedo() {
-    this.activeRoom.redoPoint(this.activeRoom.getOwnUser());
+    this.activeRoom.getOwnUser().redo(this.activeRoom);
   }
 
   // ---- Username handling ----
