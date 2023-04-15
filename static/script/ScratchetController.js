@@ -84,7 +84,7 @@ class ScratchetController extends ScratchetBufferController {
   // ---- Event handling ----
   pointerUp() {
     this.sendPositions();
-    this.activeRoom.finalizeDraw();
+    this.activeRoom.finalizeOwnDraw();
   }
 
   windowResized() {

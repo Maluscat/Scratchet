@@ -88,7 +88,7 @@ class ScratchetUser {
     } else if (this.redoBuffer.length > 0) {
       const posDataWrapper = this.redoBuffer.pop();
       this.posCache.push(posDataWrapper);
-      room.addToBuffer(posDataWrapper);
+      room.addToPosBuffer(posDataWrapper);
       room.redrawCanvas();
     }
   }

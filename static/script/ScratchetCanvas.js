@@ -114,7 +114,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
   }
 
-  finalizeDraw() {
+  finalizeOwnDraw() {
     if (this.isDrawing === true) {
       if (this.hasErased) {
         this.getOwnUser().undoEraseIndex++;
@@ -359,9 +359,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     const posDataWrapper = createPosDataWrapper(posData);
     if (wrapperDestIndex != null && this.initPosIndexes) {
       const insertIndex = this.getPosDataIndex(wrapperDestIndex);
-      this.addToBuffer(posDataWrapper, wrapperDestIndex, insertIndex);
+      this.addToPosBuffer(posDataWrapper, wrapperDestIndex, insertIndex);
     } else {
-      this.addToBuffer(posDataWrapper);
+      this.addToPosBuffer(posDataWrapper);
     }
     user.clearRedoBuffer();
     user.posCache.push(posDataWrapper);
@@ -374,7 +374,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
    * @param {number} [initIndex = Infinity] The init index of the posDataWrapper.
    * @param {number} [insertIndex = Infinity] The array index to insert value at.
    */
-  addToBuffer(value, initIndex = Infinity, insertIndex = Infinity) {
+  addToPosBuffer(value, initIndex = Infinity, insertIndex = Infinity) {
     // insertIndex === Infinity is equivalent to `Array.push`
     if (this.initPosIndexes) {
       this.initPosIndexes.splice(insertIndex, 0, initIndex);
