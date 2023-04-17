@@ -255,8 +255,9 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           }
         } else if (isErasing) {
           if (startIdx !== j) {
-            const start = (startIdx > META_LEN.NORMAL) ? startIdx - 2 : startIdx;
-            const eraseData = createNewPosData(posData, start, j + 2);
+            const eraseData = (startIdx === META_LEN.NORMAL)
+              ? posData
+              : createNewPosData(posData, startIdx - 2, j + 2);
             redoWrapper.push(eraseData);
           }
           isErasing = false;
@@ -266,14 +267,14 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
       // The last section needs to be handled manually.
       // This is the same procedure as in the loop above
-      if (startIdx > META_LEN.NORMAL) {
-        if (isErasing) {
-          const eraseData = createNewPosData(posData, startIdx - 2);
-          redoWrapper.push(eraseData);
-        } else {
-          const newPosData = createNewPosData(posData, startIdx);
-          posWrapper[index] = newPosData;
-        }
+      if (isErasing) {
+        const eraseData = (startIdx === META_LEN.NORMAL)
+          ? posData
+          : createNewPosData(posData, startIdx - 2);
+        redoWrapper.push(eraseData);
+      } else if (startIdx > META_LEN.NORMAL) {
+        const newPosData = createNewPosData(posData, startIdx);
+        posWrapper[index] = newPosData;
       }
 
       // Remove the initial posData if the last vector in it has been erased
