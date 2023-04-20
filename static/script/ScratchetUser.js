@@ -93,10 +93,14 @@ class ScratchetUser {
     }
   }
 
-  clearRedoBuffer() {
-    this.redoBuffer = new Array();
+  clearRedoBuffer(undoEraseOffsetEnd = 0) {
+    if (this.redoBuffer.length > 0) {
+      this.redoBuffer = new Array();
+    }
     if (this.undoEraseIndex < this.undoEraseQueue.length) {
-      this.undoEraseQueue.splice(this.undoEraseIndex);
+      this.undoEraseQueue.splice(
+        this.undoEraseIndex,
+        this.undoEraseQueue.length - 1 - undoEraseOffsetEnd);
     }
   }
 

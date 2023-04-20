@@ -68,6 +68,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         case Brush: {
           const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
+          this.ownUser.clearRedoBuffer();
+
           this.setLastPos(posX, posY);
           controller.initializeSendBufferNormal();
           break;
@@ -110,6 +112,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         }
         case Eraser: {
           if (this.erasePos(posX, posY, this.ownUser, true)) {
+            if (!this.hasErased) {
+              this.ownUser.clearRedoBuffer(-1);
+              this.hasErased = true;
+            }
             this.redrawCanvas();
             controller.sendCompleteMetaDataNextTime();
             controller.addToSendBuffer(posX, posY);
@@ -220,6 +226,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   handleEraseData(data, user) {
+    user.clearRedoBuffer();
     for (let i = META_LEN.ERASE; i < data.length; i += 2) {
       this.erasePos(data[i], data[i + 1], user, false, getClientMetaWidth(data));
     }
@@ -288,10 +295,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
 
       lastWrapper = posWrapper;
-    }
-
-    if (hasChanged) {
-      this.hasErased = true;
     }
 
     return hasChanged;
