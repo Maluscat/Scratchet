@@ -262,9 +262,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           }
         } else if (isErasing) {
           if (startIdx !== j) {
-            const eraseData = (startIdx === META_LEN.NORMAL)
-              ? posData
-              : createNewPosData(posData, startIdx - 2, j + 2);
+            // REMINDER: j is never posData.length
+            const eraseData = createNewPosData(posData, Math.max(META_LEN.NORMAL, startIdx - 2), j + 2);
             redoWrapper.push(eraseData);
           }
           isErasing = false;
