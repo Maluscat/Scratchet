@@ -1,9 +1,10 @@
 'use strict';
 /**
- * @typedef { Object } undoEraseInfo
+ * @typedef { Object } UndoEraseInfo
  * @prop { number } bufferIndex At which buffer length the info object is applied to.
  * @prop { Array<Array> } wrapper The posData points.
- * @prop { Array<Array> } target The target posWrapper for {@link undoEraseInfo.wrapper}.
+ * @prop { Array<Array> } target The target posWrapper for {@link UndoEraseInfo.wrapper}.
+ * @prop { Array<Int16Array> } initialData All posData of {@link UndoEraseInfo.target} before the erase.
  */
 
 class ScratchetUser {
@@ -17,9 +18,9 @@ class ScratchetUser {
   /**
    * Contains information of erased points so that they can be redone.
    * - One info wrapper is exactly one undo/redo step.
-   * - Every info wrapper contains multiple {@link undoEraseInfo} objects.
+   * - Every info wrapper contains multiple {@link UndoEraseInfo} objects.
    * - Is used in conjunction with {@link undoEraseIndex}.
-   * @type { Array<Array<undoEraseInfo>> }
+   * @type { Array<Array<UndoEraseInfo>> }
    */
   undoEraseQueue = new Array();
   /**
@@ -98,13 +99,23 @@ class ScratchetUser {
       this.redoBuffer = new Array();
     }
     if (this.undoEraseIndex < this.undoEraseQueue.length) {
-      this.undoEraseQueue.splice(
+      const removedPosData = this.undoEraseQueue.splice(
         this.undoEraseIndex,
         this.undoEraseQueue.length - 1 - undoEraseOffsetEnd);
+
+      for (let i = removedPosData.length - 1; i >= 0; i--) {
+        const infoWrapper = removedPosData[i];
+
+        for (let j = infoWrapper.length - 1; j >= 0; j--) {
+          const info = infoWrapper[j];
+
+          info.target.splice(0, Infinity, ...info.initialData);
+        }
+      }
     }
   }
 
-  addToUndoEraseQueue(eraseWrapper, targetWrapper) {
+  addToUndoEraseQueue(eraseWrapper, targetWrapper, initialPosData) {
     let infoWrapper;
     if (this.undoEraseQueue.length === this.undoEraseIndex + 1) {
       infoWrapper = this.undoEraseQueue.at(-1);
@@ -117,11 +128,12 @@ class ScratchetUser {
     if (lastInfo?.target === targetWrapper) {
       lastInfo.wrapper.push(...eraseWrapper);
     } else {
-      infoWrapper.push({
+      infoWrapper.push(/** @type {UndoEraseInfo} */ ({
         bufferIndex: this.posCache.length - 1,
+        initialData: initialPosData,
         wrapper: eraseWrapper,
         target: targetWrapper
-      });
+      }));
     }
   }
 

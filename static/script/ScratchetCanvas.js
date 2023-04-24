@@ -240,6 +240,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
     for (const { posData, wrapperStack, index } of ScratchetCanvas.iteratePosWrapper(user.posCache)) {
       const posWrapper = wrapperStack.at(-2);
+      const initialPosData = [ ...posWrapper ];
       let startIdx = META_LEN.NORMAL;
       let isErasing = false;
 
@@ -290,7 +291,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       }
 
       if (hasChanged && redoWrapper.length > 0) {
-        user.addToUndoEraseQueue(redoWrapper, posWrapper);
+        user.addToUndoEraseQueue(redoWrapper, posWrapper, initialPosData);
       }
 
       lastWrapper = posWrapper;
