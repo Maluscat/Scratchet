@@ -111,7 +111,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           break;
         }
         case Eraser: {
-          if (this.ownUser.erasePos(posX, posY, this.tools.eraser.width, true)) {
+          if (this.ownUser.eraseAtPos(posX, posY, this.tools.eraser.width)) {
             if (!this.hasErased) {
               this.ownUser.clearRedoBuffer(-1);
               this.hasErased = true;
@@ -232,7 +232,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   handleEraseData(data, user) {
     user.clearRedoBuffer();
     for (let i = META_LEN.ERASE; i < data.length; i += 2) {
-      user.erasePos(data[i], data[i + 1], getClientMetaWidth(data));
+      user.eraseAtPos(data[i], data[i + 1], getClientMetaWidth(data));
     }
     this.redrawCanvas();
   }

@@ -23,7 +23,7 @@ class UserErase {
    */
   undoEraseIndex = 0;
 
-  erasePos(targetPosX, targetPosY, eraserWidth, saveRedo = false) {
+  eraseAtPos(posX, posY, eraserWidth) {
     let hasChanged = false;
     let redoWrapper;
     let lastWrapper;
@@ -31,16 +31,17 @@ class UserErase {
     for (const { posData, wrapperStack, index } of ScratchetCanvas.iteratePosWrapper(this.posCache)) {
       const posWrapper = wrapperStack.at(-2);
       const initialPosData = [ ...posWrapper ];
-      let startIdx = META_LEN.NORMAL;
-      let isErasing = false;
 
       if (posWrapper !== lastWrapper) {
         redoWrapper = [];
       }
 
+      let startIdx = META_LEN.NORMAL;
+      let isErasing = false;
+
       // j is used as the endIndex
       for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
-        if (this.#posIsInEraseRange(posData[j], posData[j + 1], targetPosX, targetPosY, eraserWidth, posData[1])) {
+        if (this.#posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
             if (startIdx !== j) {
               const newPosData = this.#createNewPosData(posData, startIdx, j);
@@ -54,7 +55,8 @@ class UserErase {
         } else if (isErasing) {
           if (startIdx !== j) {
             // REMINDER: j is never posData.length
-            const eraseData = this.#createNewPosData(posData, Math.max(META_LEN.NORMAL, startIdx - 2), j + 2);
+            const eraseData =
+              this.#createNewPosData(posData, Math.max(META_LEN.NORMAL, startIdx - 2), j + 2);
             redoWrapper.push(eraseData);
           }
           isErasing = false;
@@ -63,7 +65,7 @@ class UserErase {
       }
 
       // The last section needs to be handled manually.
-      // This is the same procedure as in the loop above
+      // This is the same procedure as in the loop above.
       if (isErasing) {
         const eraseData = (startIdx === META_LEN.NORMAL)
           ? posData
@@ -90,10 +92,10 @@ class UserErase {
     return hasChanged;
   }
 
-  #posIsInEraseRange(testPosX, testPosY, targetPosX, targetPosY, eraserWidth, strokeWidth) {
+  #posIsInEraseRange(testPosX, testPosY, erasePosX, erasePosY, eraserWidth, strokeWidth) {
     const distance = Math.sqrt(
-          Math.pow(targetPosX - testPosX, 2)
-        + Math.pow(targetPosY - testPosY, 2))
+          Math.pow(erasePosX - testPosX, 2)
+        + Math.pow(erasePosY - testPosY, 2))
       - (eraserWidth / 2)
       - (strokeWidth / 2);
     return distance <= 0;
@@ -136,5 +138,4 @@ class UserErase {
       }));
     }
   }
-
 }
