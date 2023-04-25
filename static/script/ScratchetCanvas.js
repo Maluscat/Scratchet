@@ -111,7 +111,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           break;
         }
         case Eraser: {
-          if (this.erasePos(posX, posY, this.ownUser, true)) {
+          if (this.ownUser.erasePos(posX, posY, this.tools.eraser.width, true)) {
             if (!this.hasErased) {
               this.ownUser.clearRedoBuffer(-1);
               this.hasErased = true;
@@ -225,105 +225,16 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.addServerDataToBuffer(posData, user, wrapperDestIndex);
   }
 
+  /**
+   * @param { Int16Array } data
+   * @param { ScratchetUser } user
+   */
   handleEraseData(data, user) {
     user.clearRedoBuffer();
     for (let i = META_LEN.ERASE; i < data.length; i += 2) {
-      this.erasePos(data[i], data[i + 1], user, false, getClientMetaWidth(data));
+      user.erasePos(data[i], data[i + 1], getClientMetaWidth(data));
     }
     this.redrawCanvas();
-  }
-
-  erasePos(targetPosX, targetPosY, user, saveRedo = false, eraserWidth = this.tools.eraser.width) {
-    let hasChanged = false;
-    let redoWrapper;
-    let lastWrapper;
-
-    for (const { posData, wrapperStack, index } of ScratchetCanvas.iteratePosWrapper(user.posCache)) {
-      const posWrapper = wrapperStack.at(-2);
-      const initialPosData = [ ...posWrapper ];
-      let startIdx = META_LEN.NORMAL;
-      let isErasing = false;
-
-      if (posWrapper !== lastWrapper) {
-        redoWrapper = [];
-      }
-
-      // j is used as the endIndex
-      for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
-        if (posIsInEraseRange(posData[j], posData[j + 1], posData[1])) {
-          if (!isErasing) {
-            if (startIdx !== j) {
-              const newPosData = createNewPosData(posData, startIdx, j);
-              posWrapper.push(newPosData);
-            }
-            // This needs to be at this level to accomodate for the cleanup
-            hasChanged = true;
-            isErasing = true;
-            startIdx = j;
-          }
-        } else if (isErasing) {
-          if (startIdx !== j) {
-            // REMINDER: j is never posData.length
-            const eraseData = createNewPosData(posData, Math.max(META_LEN.NORMAL, startIdx - 2), j + 2);
-            redoWrapper.push(eraseData);
-          }
-          isErasing = false;
-          startIdx = j;
-        }
-      }
-
-      // The last section needs to be handled manually.
-      // This is the same procedure as in the loop above
-      if (isErasing) {
-        const eraseData = (startIdx === META_LEN.NORMAL)
-          ? posData
-          : createNewPosData(posData, startIdx - 2);
-        redoWrapper.push(eraseData);
-      } else if (startIdx > META_LEN.NORMAL) {
-        const newPosData = createNewPosData(posData, startIdx);
-        posWrapper[index] = newPosData;
-      }
-
-      // Remove the initial posData if the last vector in it has been erased
-      if (isErasing) {
-        posWrapper.splice(index, 1);
-        hasChanged = true;
-      }
-
-      if (hasChanged && redoWrapper.length > 0) {
-        user.addToUndoEraseQueue(redoWrapper, posWrapper, initialPosData);
-      }
-
-      lastWrapper = posWrapper;
-    }
-
-    return hasChanged;
-
-
-    function posIsInEraseRange(testPosX, testPosY, strokeWidth) {
-      const distance = Math.sqrt(
-            Math.pow(targetPosX - testPosX, 2)
-          + Math.pow(targetPosY - testPosY, 2))
-        - (eraserWidth / 2)
-        - (strokeWidth / 2);
-      return distance <= 0;
-    }
-
-    // Create new Int16Array from a start index to end index of posData
-    function createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
-      // The first sub array retains its original metadata, so we can just excerpt it
-      if (startIdx === META_LEN.NORMAL) {
-        return originalPosData.subarray(0, endIdx);
-      } else {
-        const newPosData = new Int16Array((endIdx - startIdx) + META_LEN.NORMAL);
-        newPosData[0] = originalPosData[0];
-        newPosData[1] = originalPosData[1];
-        for (let i = 0; i < newPosData.length - META_LEN.NORMAL; i++) {
-          newPosData[i + META_LEN.NORMAL] = originalPosData[startIdx + i];
-        }
-        return newPosData;
-      }
-    }
   }
 
   sendJoinedUserBuffer() {
