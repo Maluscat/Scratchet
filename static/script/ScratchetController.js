@@ -1,14 +1,15 @@
 'use strict';
-class ScratchetController extends ScratchetBufferController {
+class ScratchetController {
   globalUsername;
   defaultUsername;
 
   /** @type { Map<number, ScratchetRoom> } */
   rooms = new Map();
-  activeIntervals = new Set();
+
+  /** @type { ScratchetRoom } */
+  activeRoom;
 
   constructor() {
-    super();
     // Binding functions to themselves to be able to remove them from events
     this.pointerUp = this.pointerUp.bind(this);
     this.mouseWheel = this.mouseWheel.bind(this);
@@ -57,19 +58,9 @@ class ScratchetController extends ScratchetBufferController {
     window.addEventListener('pointerup', this.pointerUp);
     window.addEventListener('wheel', this.mouseWheel, { passive: false });
     window.addEventListener('resize', this.windowResized);
-
-    this.activeIntervals.add(
-      setInterval(this.sendPositions.bind(this), Global.SEND_INTERVAL));
-    this.activeIntervals.add(
-      setInterval(this.sendCompleteMetaDataNextTime.bind(this), SEND_FULL_METADATA_INTERVAL));
   }
 
   deactivate() {
-    for (const intervalID of this.activeIntervals) {
-      clearInterval(intervalID);
-    }
-    this.activeIntervals.clear();
-
     window.removeEventListener('pointerup', this.pointerUp);
     window.removeEventListener('wheel', this.mouseWheel);
     window.removeEventListener('resize', this.windowResized);
@@ -83,7 +74,7 @@ class ScratchetController extends ScratchetBufferController {
 
   // ---- Event handling ----
   pointerUp() {
-    this.sendPositions();
+    this.activeRoom.sendBuffer.sendPositions();
     this.activeRoom.finalizeOwnDraw();
   }
 
@@ -113,7 +104,7 @@ class ScratchetController extends ScratchetBufferController {
 
   clearDrawing() {
     this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.ownUser);
-    this.sendCompleteMetaDataNextTime();
+    this.activeRoom.sendBuffer.sendCompleteMetaDataNextTime();
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
 
@@ -378,7 +369,6 @@ class ScratchetController extends ScratchetBufferController {
     this.setOwnUsername(value.username, true);
     this.addNewRoom(value.roomCode, value.roomName, value.peers, true);
 
-    // NOTE: Needs to be called after `addNewRoom` to wait for the room activation
     if (isDeactivated) {
       this.activate();
     }

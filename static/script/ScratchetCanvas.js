@@ -9,6 +9,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   isDrawing = false;
 
   tools;
+  /** @type { CanvasSendBuffer } */
+  sendBuffer;
   /** @type { ScratchetTool } */
   activeTool;
 
@@ -34,6 +36,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     super(canvas);
 
     this.ownUser = ownUser;
+    this.sendBuffer = new CanvasSendBuffer(this);
     this.tools = {
       brush: new Brush(this.setLineWidth.bind(this), this.setStrokeStyle.bind(this)),
       eraser: new Eraser(),
@@ -71,12 +74,12 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           this.ownUser.clearRedoBuffer();
 
           this.setLastPos(posX, posY);
-          controller.initializeSendBufferNormal();
+          this.sendBuffer.initializeSendBufferNormal();
           break;
         }
         case Eraser: {
           ui.toggleDrawIndicatorEraseMode();
-          controller.initializeSendBufferErase();
+          this.sendBuffer.initializeSendBufferErase();
           break;
         }
       }
@@ -94,7 +97,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     ui.moveDrawIndicator(e.clientX, e.clientY);
 
     if (this.isDrawing) {
-      controller.sendPositionsIfMetaHasChanged();
+      this.sendBuffer.sendPositionsIfMetaHasChanged();
 
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
@@ -107,7 +110,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
           this.setLastPos(posX, posY);
 
-          controller.addToSendBuffer(posX, posY);
+          this.sendBuffer.addToSendBuffer(posX, posY);
           break;
         }
         case Eraser: {
@@ -117,8 +120,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
               this.hasErased = true;
             }
             this.redrawCanvas();
-            controller.sendCompleteMetaDataNextTime();
-            controller.addToSendBuffer(posX, posY);
+            this.sendBuffer.sendCompleteMetaDataNextTime();
+            this.sendBuffer.addToSendBuffer(posX, posY);
           }
           break;
         }

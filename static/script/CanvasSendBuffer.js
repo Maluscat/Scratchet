@@ -13,11 +13,35 @@ class CanvasSendBuffer {
    */
   liveClientBuffer = new Array();
 
+  activeIntervals = new Set();
+
   sendReady = false;
   willSendCompleteMetaData = true;
 
-  /** @type { ScratchetRoom } */
-  activeRoom;
+  room;
+
+  /** @param { ScratchetCanvas } room */
+  constructor(room) {
+    this.room = room;
+
+    this.sendPositions = this.sendPositions.bind(this);
+    this.sendCompleteMetaDataNextTime = this.sendCompleteMetaDataNextTime.bind(this);
+  }
+
+
+  // ---- Timings ----
+  activateTimers() {
+    this.activeIntervals.add(
+      setInterval(this.sendPositions, Global.SEND_INTERVAL));
+    this.activeIntervals.add(
+      setInterval(this.sendCompleteMetaDataNextTime, SEND_FULL_METADATA_INTERVAL));
+  }
+  clearTimers() {
+    for (const intervalID of this.activeIntervals) {
+      clearInterval(intervalID);
+    }
+    this.activeIntervals.clear();
+  }
 
   // ---- Send buffer handling ----
   addToSendBuffer(posX, posY) {
@@ -29,11 +53,11 @@ class CanvasSendBuffer {
   }
 
   initializeSendBufferNormal(initialPosX, initialPosY) {
-    const hue = this.activeRoom.tools.brush.hue;
-    const width = this.activeRoom.tools.brush.width;
+    const hue = this.room.tools.brush.hue;
+    const width = this.room.tools.brush.width;
     const flag = this.getNormalModeFlag(hue, width);
 
-    this.sendBuffer = [this.activeRoom.roomCode, flag];
+    this.sendBuffer = [this.room.roomCode, flag];
     this.liveClientBuffer = [hue, width, flag];
 
     if ((flag & META_FLAGS.LAST_HUE) === 0) {
@@ -51,7 +75,7 @@ class CanvasSendBuffer {
     }
   }
   initializeSendBufferErase() {
-    this.sendBuffer = [this.activeRoom.roomCode, Global.MODE.ERASE, this.activeRoom.tools.eraser.width];
+    this.sendBuffer = [this.room.roomCode, Global.MODE.ERASE, this.room.tools.eraser.width];
   }
 
   resetSendBuffer() {
@@ -73,8 +97,8 @@ class CanvasSendBuffer {
   updateInitializedSendBufferMeta() {
     const mode = this.getBufferMode();
     if (mode === Global.MODE.ERASE) {
-      this.sendBuffer[2] = this.activeRoom.tools.eraser.width;
-    } else if (mode !== this.getNormalModeFlag(this.activeRoom.tools.brush.hue, this.activeRoom.tools.brush.width)) {
+      this.sendBuffer[2] = this.room.tools.eraser.width;
+    } else if (mode !== this.getNormalModeFlag(this.room.tools.brush.hue, this.room.tools.brush.width)) {
       this.initializeSendBufferNormal(
         this.liveClientBuffer[META_LEN.NORMAL],
         this.liveClientBuffer[META_LEN.NORMAL + 1],
@@ -92,8 +116,8 @@ class CanvasSendBuffer {
       sock.send(posData.buffer);
 
       if (mode >= 0) {
-        this.activeRoom.addClientDataToBuffer(
-          new Int16Array(this.liveClientBuffer), this.activeRoom.ownUser);
+        this.room.addClientDataToBuffer(
+          new Int16Array(this.liveClientBuffer), this.room.ownUser);
         // posBufferServer needs to be checked due to asynchronities
         // between willSendCompleteMetaData and sendPositions
         // And to ensure that it only resets on normal mode
@@ -109,10 +133,10 @@ class CanvasSendBuffer {
 
   sendPositionsIfMetaHasChanged() {
     if (this.getBufferMode() === Global.MODE.ERASE
-          && this.activeRoom.tools.eraser.width !== getClientMetaWidth(this.sendBuffer, EXTRA_META_LEN_SEND)
+          && this.room.tools.eraser.width !== getClientMetaWidth(this.sendBuffer, EXTRA_META_LEN_SEND)
         || (this.getBufferMode() >= 0
-          && this.activeRoom.tools.brush.width !== getClientMetaWidth(this.liveClientBuffer)
-          || this.activeRoom.tools.brush.hue !== getClientMetaHue(this.liveClientBuffer))) {
+          && this.room.tools.brush.width !== getClientMetaWidth(this.liveClientBuffer)
+          || this.room.tools.brush.hue !== getClientMetaHue(this.liveClientBuffer))) {
       this.sendPositions();
     }
   }
