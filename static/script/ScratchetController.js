@@ -379,9 +379,15 @@ class ScratchetController {
     console.info('connected!');
 
     const initValue = {};
+
+    const potentialRoomCode = this.getPotentialRoomCodeFromURL();
+    if (potentialRoomCode) {
+      initValue.roomCode = potentialRoomCode;
+    }
     if (this.globalUsername) {
       initValue.username = this.globalUsername;
     }
+
     sendMessage('connectInit', initValue);
   }
 
@@ -423,5 +429,15 @@ class ScratchetController {
         }
       }
     }
+  }
+
+  // ---- Misc helpers ----
+  getPotentialRoomCodeFromURL() {
+    const rawURLHash = location.hash.slice(1);
+    const roomCode = Global.Validator.validateAndReturnRoomCode(rawURLHash);
+    if (rawURLHash !== '') {
+      window.history.replaceState(false, '', location.pathname);
+    }
+    return roomCode;
   }
 }
