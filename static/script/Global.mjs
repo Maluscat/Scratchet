@@ -15,20 +15,19 @@ const Global = {
 
     JOINROOM_VALIDATE_REGEX: /^(?:(?:https?:\/\/)?\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w*?)*#)?(\d{4})$/,
 
-    validateRoomCode(roomCode) {
+    validateAndReturnRoomCode(roomCode) {
       roomCode = parseInt(roomCode);
+      // NOTE: If the minimum roomCode ist lowered at some point,
+      // make sure that it cannot reach 0.
       if (!Number.isNaN(roomCode) && roomCode >= 1000 && roomCode <= 9999) {
-        return true;
+        return roomCode;
       }
       return false;
     },
 
     validateRoomInputValueToRoomCode(roomInputValue) {
       const match = roomInputValue.match(Global.Validator.JOINROOM_VALIDATE_REGEX);
-      if (match !== null && Global.Validator.validateRoomCode(match[1])) {
-        return parseInt(match[1]);
-      }
-      return false;
+      return Global.Validator.validateAndReturnRoomCode(match?.[1]);
     },
 
     validateRoomName(roomName) {

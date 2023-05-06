@@ -44,7 +44,7 @@ export class SocketRoomHandler {
   }
 
   hasRoom(roomCode?: RoomCode) {
-    if (Global.Validator.validateRoomCode(roomCode)) {
+    if (Global.Validator.validateAndReturnRoomCode(roomCode)) {
       return this.#activeRooms.has(roomCode!);
     }
     return false;
