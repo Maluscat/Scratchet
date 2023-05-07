@@ -189,7 +189,7 @@ class UIHandler {
 
   submitJoinRoomInput(value = joinRoomOverlayInput.value) {
     joinRoomOverlayInput.value = '';
-    return controller.joinRoom(value);
+    return controller.joinRoomFromInput(value);
   }
 
   // ---- General focus handling ----

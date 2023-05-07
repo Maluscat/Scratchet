@@ -14,6 +14,7 @@ class ScratchetController {
     this.pointerUp = this.pointerUp.bind(this);
     this.mouseWheel = this.mouseWheel.bind(this);
     this.windowResized = this.windowResized.bind(this);
+    this.handleURLHashChange = this.handleURLHashChange.bind(this);
     this.scaleCanvasAtCenter = this.scaleCanvasAtCenter.bind(this);
 
     this.invokeUndo = this.invokeUndo.bind(this);
@@ -50,6 +51,8 @@ class ScratchetController {
       (copyRoomLinkContent.offsetWidth / parseFloat(getComputedStyle(copyRoomLinkContent).fontSize)) + 'em';
     copyRoomLinkOverlay.classList.remove('active');
     copyRoomLinkContent.textContent = '';
+
+    window.addEventListener('hashchange', this.handleURLHashChange);
   }
 
   activate() {
@@ -118,16 +121,21 @@ class ScratchetController {
     sendMessage('newRoom', { username: this.globalUsername });
   }
 
-  joinRoom(roomInputValue) {
+  joinRoomFromInput(roomInputValue) {
     const roomCode = Global.Validator.validateRoomInputValueToRoomCode(roomInputValue);
-    if (roomCode && !this.rooms.has(roomCode)) {
+    if (roomCode) {
+      this.joinRoom(roomCode);
+      ui.collapseJoinRoomOverlay();
+    }
+    return !!roomCode;
+  }
+  joinRoom(roomCode) {
+    if (!this.rooms.has(roomCode)) {
       sendMessage('joinRoom', {
         roomCode: roomCode,
         username: this.globalUsername
       });
-      ui.collapseJoinRoomOverlay();
     }
-    return !!roomCode;
   }
 
   async copyRoomLink() {
@@ -380,7 +388,7 @@ class ScratchetController {
 
     const initValue = {};
 
-    const potentialRoomCode = this.getPotentialRoomCodeFromURL();
+    const potentialRoomCode = this.getAndRemovePotentialURLRoomCode();
     if (potentialRoomCode) {
       initValue.roomCode = potentialRoomCode;
     }
@@ -431,8 +439,15 @@ class ScratchetController {
     }
   }
 
-  // ---- Misc helpers ----
-  getPotentialRoomCodeFromURL() {
+  // ---- URL helpers ----
+  handleURLHashChange(e) {
+    const roomCode = this.getAndRemovePotentialURLRoomCode();
+    if (roomCode) {
+      this.joinRoom(roomCode);
+    }
+  }
+
+  getAndRemovePotentialURLRoomCode() {
     const rawURLHash = location.hash.slice(1);
     const roomCode = Global.Validator.validateAndReturnRoomCode(rawURLHash);
     if (rawURLHash !== '') {
