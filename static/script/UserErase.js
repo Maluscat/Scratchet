@@ -27,12 +27,9 @@ class UserErase {
    * @param { number } posX The eraser position.x to check against.
    * @param { number } posY The eraser position.y to check against.
    * @param { number } eraserWidth The eraser diameter.
-   * @param { Function } [beforeFirstChangeCallback] A callback which is called exactly once
-   * as soon as it is clear that a point is in the erase range.
-   * @return { boolean } Indicates whether at least one point was in the erase range.
+   * @param { () => void } [beforeChangeCallback] A callback that is called before a new posData can be created.
    */
-  eraseAtPos(posX, posY, eraserWidth, beforeFirstChangeCallback) {
-    let hasChanged = false;
+  eraseAtPos(posX, posY, eraserWidth, beforeChangeCallback) {
     let redoWrapper;
     let lastWrapper;
 
@@ -51,17 +48,13 @@ class UserErase {
       for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
         if (UserErase.posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
-            if (!hasChanged) {
-              // NOTE: This isn't exactly "before the first erase"
-              // but it is sufficient for my purposes.
-              beforeFirstChangeCallback?.();
-            }
+            // NOTE: This isn't exactly "before erase" but it is sufficient for the given purposes.
+            beforeChangeCallback?.();
             if (startIdx !== j) {
               const newPosData = this.#createNewPosData(posData, startIdx, j);
               posWrapper.push(newPosData);
             }
             // This needs to be at this level to accomodate for the cleanup
-            hasChanged = true;
             isErasing = true;
             startIdx = j;
           }
@@ -92,17 +85,14 @@ class UserErase {
       // Remove the initial posData if the last vector in it has been erased
       if (isErasing) {
         posWrapper.splice(index, 1);
-        hasChanged = true;
       }
 
-      if (hasChanged && redoWrapper.length > 0) {
+      if (redoWrapper.length > 0) {
         this.#addToUndoEraseQueue(redoWrapper, posWrapper, initialPosData);
       }
 
       lastWrapper = posWrapper;
     }
-
-    return hasChanged;
   }
 
   // Create new Int16Array from a start index to end index of posData
