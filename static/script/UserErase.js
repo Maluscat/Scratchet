@@ -41,7 +41,7 @@ class UserErase {
 
       // j is used as the endIndex
       for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
-        if (this.#posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
+        if (UserErase.posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
             if (startIdx !== j) {
               const newPosData = this.#createNewPosData(posData, startIdx, j);
@@ -92,15 +92,6 @@ class UserErase {
     return hasChanged;
   }
 
-  #posIsInEraseRange(testPosX, testPosY, erasePosX, erasePosY, eraserWidth, strokeWidth) {
-    const distance = Math.sqrt(
-          Math.pow(erasePosX - testPosX, 2)
-        + Math.pow(erasePosY - testPosY, 2))
-      - (eraserWidth / 2)
-      - (strokeWidth / 2);
-    return distance <= 0;
-  }
-
   // Create new Int16Array from a start index to end index of posData
   #createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
     // The first sub array retains its original metadata, so we can just excerpt it
@@ -137,5 +128,15 @@ class UserErase {
         target: targetWrapper
       }));
     }
+  }
+
+  // ---- Static helper functions ----
+  static posIsInEraseRange(testPosX, testPosY, erasePosX, erasePosY, eraserWidth, strokeWidth) {
+    const distance = Math.sqrt(
+          Math.pow(erasePosX - testPosX, 2)
+        + Math.pow(erasePosY - testPosY, 2))
+      - (eraserWidth / 2)
+      - (strokeWidth / 2);
+    return distance <= 0;
   }
 }
