@@ -23,6 +23,14 @@ class UserErase {
    */
   undoEraseIndex = 0;
 
+  /**
+   * @param { number } posX The eraser position.x to check against.
+   * @param { number } posY The eraser position.y to check against.
+   * @param { number } eraserWidth The eraser diameter.
+   * @param { Function } [beforeFirstChangeCallback] A callback which is called exactly once
+   * as soon as it is clear that a point is in the erase range.
+   * @return { boolean } Indicates whether at least one point was in the erase range.
+   */
   eraseAtPos(posX, posY, eraserWidth, beforeFirstChangeCallback) {
     let hasChanged = false;
     let redoWrapper;
