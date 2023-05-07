@@ -23,7 +23,7 @@ class UserErase {
    */
   undoEraseIndex = 0;
 
-  eraseAtPos(posX, posY, eraserWidth) {
+  eraseAtPos(posX, posY, eraserWidth, beforeFirstChangeCallback) {
     let hasChanged = false;
     let redoWrapper;
     let lastWrapper;
@@ -43,6 +43,11 @@ class UserErase {
       for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
         if (UserErase.posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
+            if (!hasChanged) {
+              // NOTE: This isn't exactly "before the first erase"
+              // but it is sufficient for my purposes.
+              beforeFirstChangeCallback?.();
+            }
             if (startIdx !== j) {
               const newPosData = this.#createNewPosData(posData, startIdx, j);
               posWrapper.push(newPosData);

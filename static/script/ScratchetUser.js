@@ -71,14 +71,14 @@ class ScratchetUser extends UserErase {
     }
   }
 
-  clearRedoBuffer(undoEraseOffsetEnd = 0) {
+  clearRedoBuffer() {
     if (this.redoBuffer.length > 0) {
       this.redoBuffer = new Array();
     }
     if (this.undoEraseIndex < this.undoEraseQueue.length) {
       const removedPosData = this.undoEraseQueue.splice(
         this.undoEraseIndex,
-        this.undoEraseQueue.length - 1 - undoEraseOffsetEnd);
+        this.undoEraseQueue.length);
 
       for (let i = removedPosData.length - 1; i >= 0; i--) {
         const infoWrapper = removedPosData[i];

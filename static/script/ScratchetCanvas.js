@@ -114,11 +114,14 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           break;
         }
         case Eraser: {
-          if (this.ownUser.eraseAtPos(posX, posY, this.tools.eraser.width)) {
-            if (!this.hasErased) {
-              this.ownUser.clearRedoBuffer(-1);
-              this.hasErased = true;
-            }
+          const hasChanged = this.ownUser.eraseAtPos(posX, posY, this.tools.eraser.width,
+            () => {
+              if (!this.hasErased) {
+                this.ownUser.clearRedoBuffer();
+                this.hasErased = true;
+              }
+            });
+          if (hasChanged) {
             this.redrawCanvas();
             this.sendBuffer.sendCompleteMetaDataNextTime();
             this.sendBuffer.addToSendBuffer(posX, posY);
