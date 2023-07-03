@@ -8,6 +8,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   hasErased = false;
   isDrawing = false;
 
+  startUndoEraseLen;
+
   tools;
   /** @type { CanvasSendBuffer } */
   sendBuffer;
@@ -118,6 +120,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
             () => {
               if (!this.hasErased) {
                 this.ownUser.clearRedoBuffer();
+                this.startUndoEraseLen = this.ownUser.undoEraseQueue.length;
                 this.hasErased = true;
               }
             });
@@ -135,7 +138,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   finalizeOwnDraw() {
     if (this.isDrawing === true) {
       if (this.hasErased) {
-        this.ownUser.undoEraseIndex++;
+        const undoEraseGroupLen = this.ownUser.undoEraseQueue.length - this.startUndoEraseLen;
+        this.ownUser.undoEraseIndex += undoEraseGroupLen;
         this.hasErased = false;
       }
       ui.toggleDrawIndicatorEraseMode(true);

@@ -15,7 +15,7 @@ class UserErase {
    * - One info wrapper is exactly one undo/redo step.
    * - Every info wrapper contains multiple {@link UndoEraseInfo} objects.
    * - Is used in conjunction with {@link undoEraseIndex}.
-   * @type { Array<Array<UndoEraseInfo>> }
+   * @type { Array<UndoEraseInfo> }
    */
   undoEraseQueue = new Array();
   /**
@@ -112,19 +112,11 @@ class UserErase {
   }
 
   #addToUndoEraseQueue(eraseWrapper, targetWrapper, initialPosData) {
-    let infoWrapper;
-    if (this.undoEraseQueue.length === this.undoEraseIndex + 1) {
-      infoWrapper = this.undoEraseQueue.at(-1);
-    } else {
-      infoWrapper = [];
-      this.undoEraseQueue.push(infoWrapper);
-    }
-
-    const lastInfo = infoWrapper.at(-1);
+    const lastInfo = this.undoEraseQueue.at(-1);
     if (lastInfo?.target === targetWrapper) {
       lastInfo.wrapper.push(...eraseWrapper);
     } else {
-      infoWrapper.push(/** @type {UndoEraseInfo} */ ({
+      this.undoEraseQueue.push(/** @type {UndoEraseInfo} */ ({
         bufferIndex: this.posCache.length - 1,
         initialData: initialPosData,
         wrapper: eraseWrapper,
