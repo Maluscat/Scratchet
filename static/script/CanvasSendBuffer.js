@@ -52,10 +52,10 @@ class CanvasSendBuffer {
     this.sendReady = true;
   }
 
-  initializeSendBufferNormal(initialPosX, initialPosY) {
+  initializeSendBufferBrush(initialPosX, initialPosY) {
     const hue = this.room.tools.brush.hue;
     const width = this.room.tools.brush.width;
-    const flag = this.getNormalModeFlag(hue, width);
+    const flag = this.getBrushModeFlag(hue, width);
 
     this.sendBuffer = [this.room.roomCode, flag];
     this.liveClientBuffer = [hue, width, flag];
@@ -84,7 +84,7 @@ class CanvasSendBuffer {
     if (this.getBufferMode() === Global.MODE.ERASE) {
       this.initializeSendBufferErase();
     } else {
-      this.initializeSendBufferNormal(
+      this.initializeSendBufferBrush(
         this.liveClientBuffer.at(-2),
         this.liveClientBuffer.at(-1),
       );
@@ -98,10 +98,10 @@ class CanvasSendBuffer {
     const mode = this.getBufferMode();
     if (mode === Global.MODE.ERASE) {
       this.sendBuffer[2] = this.room.tools.eraser.width;
-    } else if (mode !== this.getNormalModeFlag(this.room.tools.brush.hue, this.room.tools.brush.width)) {
-      this.initializeSendBufferNormal(
-        this.liveClientBuffer[META_LEN.NORMAL],
-        this.liveClientBuffer[META_LEN.NORMAL + 1],
+    } else if (mode !== this.getBrushModeFlag(this.room.tools.brush.hue, this.room.tools.brush.width)) {
+      this.initializeSendBufferBrush(
+        this.liveClientBuffer[META_LEN.BRUSH],
+        this.liveClientBuffer[META_LEN.BRUSH + 1],
       );
     }
   }
@@ -146,7 +146,7 @@ class CanvasSendBuffer {
   }
 
   // ---- Helper functions ----
-  getNormalModeFlag(hue, width) {
+  getBrushModeFlag(hue, width) {
     let flag = 0;
     if (!this.willSendCompleteMetaData && getClientMetaHue(this.liveClientBuffer) === hue) {
       flag |= META_FLAGS.LAST_HUE;

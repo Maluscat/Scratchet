@@ -76,7 +76,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           this.ownUser.clearRedoBuffer();
 
           this.setLastPos(posX, posY);
-          this.sendBuffer.initializeSendBufferNormal();
+          this.sendBuffer.initializeSendBufferBrush();
           break;
         }
         case Eraser: {
@@ -198,8 +198,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   drawFromPosData(posData) {
-    this.ctx.moveTo(posData[META_LEN.NORMAL], posData[META_LEN.NORMAL + 1]);
-    let i = META_LEN.NORMAL;
+    this.ctx.moveTo(posData[META_LEN.BRUSH], posData[META_LEN.BRUSH + 1]);
+    let i = META_LEN.BRUSH;
     for (; i < posData.length - 4; i += 6) {
       this.ctx.bezierCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3], posData[i + 4], posData[i + 5]);
     }
@@ -321,7 +321,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     const clientPosData = new Int16Array(posData.length + extraLen);
     clientPosData.set(posData, extraLen);
     // Shift items to the left
-    for (let i = extraLen; i < META_LEN.NORMAL - 1; i++) {
+    for (let i = extraLen; i < META_LEN.BRUSH - 1; i++) {
       clientPosData[i] = clientPosData[i + 1];
     }
 
@@ -353,7 +353,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     const serverPosData = new Int16Array(posData.length - extraLen);
     serverPosData.set(posData.subarray(extraLen));
     // Shift items to the right
-    for (let i = META_LEN.NORMAL - extraLen - 1 - 1; i >= 0; i--) {
+    for (let i = META_LEN.BRUSH - extraLen - 1 - 1; i >= 0; i--) {
       serverPosData[i + 1] = serverPosData[i];
     }
 

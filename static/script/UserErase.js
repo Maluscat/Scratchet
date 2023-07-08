@@ -41,11 +41,11 @@ class UserErase {
         redoWrapper = [];
       }
 
-      let startIdx = META_LEN.NORMAL;
+      let startIdx = META_LEN.BRUSH;
       let isErasing = false;
 
       // j is used as the endIndex
-      for (let j = META_LEN.NORMAL; j < posData.length; j += 2) {
+      for (let j = META_LEN.BRUSH; j < posData.length; j += 2) {
         if (UserErase.posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
             // NOTE: This isn't exactly "before erase" but it is sufficient for the given purposes.
@@ -62,7 +62,7 @@ class UserErase {
           if (startIdx !== j) {
             // REMINDER: j is never posData.length
             const eraseData =
-              this.#createNewPosData(posData, Math.max(META_LEN.NORMAL, startIdx - 2), j + 2);
+              this.#createNewPosData(posData, Math.max(META_LEN.BRUSH, startIdx - 2), j + 2);
             redoWrapper.push(eraseData);
           }
           isErasing = false;
@@ -73,11 +73,11 @@ class UserErase {
       // The last section needs to be handled manually.
       // This is the same procedure as in the loop above.
       if (isErasing) {
-        const eraseData = (startIdx === META_LEN.NORMAL)
+        const eraseData = (startIdx === META_LEN.BRUSH)
           ? posData
           : this.#createNewPosData(posData, startIdx - 2);
         redoWrapper.push(eraseData);
-      } else if (startIdx > META_LEN.NORMAL) {
+      } else if (startIdx > META_LEN.BRUSH) {
         const newPosData = this.#createNewPosData(posData, startIdx);
         posWrapper[index] = newPosData;
       }
@@ -98,14 +98,14 @@ class UserErase {
   // Create new Int16Array from a start index to end index of posData
   #createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
     // The first sub array retains its original metadata, so we can just excerpt it
-    if (startIdx === META_LEN.NORMAL) {
+    if (startIdx === META_LEN.BRUSH) {
       return originalPosData.subarray(0, endIdx);
     } else {
-      const newPosData = new Int16Array((endIdx - startIdx) + META_LEN.NORMAL);
+      const newPosData = new Int16Array((endIdx - startIdx) + META_LEN.BRUSH);
       newPosData[0] = originalPosData[0];
       newPosData[1] = originalPosData[1];
-      for (let i = 0; i < newPosData.length - META_LEN.NORMAL; i++) {
-        newPosData[i + META_LEN.NORMAL] = originalPosData[startIdx + i];
+      for (let i = 0; i < newPosData.length - META_LEN.BRUSH; i++) {
+        newPosData[i + META_LEN.BRUSH] = originalPosData[startIdx + i];
       }
       return newPosData;
     }
