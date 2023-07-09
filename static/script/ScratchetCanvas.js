@@ -9,6 +9,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   isDrawing = false;
 
   startUndoEraseLen;
+  ownUserUndoErase = {
+    groups: [],
+    groupIndex: 0
+  };
 
   tools;
   /** @type { CanvasSendBuffer } */
@@ -112,7 +116,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
           this.setLastPos(posX, posY);
 
-          this.sendBuffer.addToSendBuffer(posX, posY);
+          this.sendBuffer.addToSendBufferBrush(posX, posY);
           break;
         }
         case Eraser: {
@@ -127,7 +131,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           if (this.hasErased) {
             this.redrawCanvas();
             this.sendBuffer.sendCompleteMetaDataNextTime();
-            this.sendBuffer.addToSendBuffer(posX, posY);
+            this.sendBuffer.addToSendBufferErase(posX, posY);
           }
           break;
         }
@@ -139,6 +143,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     if (this.isDrawing === true) {
       if (this.hasErased) {
         const undoEraseGroupLen = this.ownUser.undoEraseQueue.length - this.startUndoEraseLen;
+        // this.ownUserUndoErase.groups.push(undoEraseGroupLen);
+        // this.ownUserUndoErase.groupIndex++;
         this.ownUser.undoEraseIndex += undoEraseGroupLen;
         this.hasErased = false;
       }
@@ -146,6 +152,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
       this.redrawCanvas();
       this.isDrawing = false;
     }
+  }
+
+  // ---- User handling ----
+  undo() {
+    this.ownUser.undo(this);
   }
 
   // ---- Canvas handling ----

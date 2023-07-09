@@ -43,16 +43,48 @@ class CanvasSendBuffer {
     this.activeIntervals.clear();
   }
 
-  // ---- Send buffer handling ----
-  addToSendBuffer(posX, posY) {
+  // ---- Send buffer adding ----
+  addToSendBufferBrush(posX, posY) {
+    this.#ensureSendBufferInitialization(0);
+    this.#addToSendBufferAndLiveBufferBrush(posX, posY);
+    this.sendReady = true;
+  }
+  addToSendBufferErase(posX, posY) {
+    this.#ensureSendBufferInitialization(Global.MODE.ERASE);
     this.sendBuffer.push(posX, posY);
-    if (this.getBufferMode() >= 0) {
-      this.liveClientBuffer.push(posX, posY);
-    }
     this.sendReady = true;
   }
 
-  initializeSendBufferBrush(initialPosX, initialPosY) {
+  #addToSendBufferAndLiveBufferBrush(posX, posY) {
+    this.liveClientBuffer.push(posX, posY);
+    this.sendBuffer.push(posX, posY);
+  }
+
+
+  // ---- Send buffer helpers ----
+  #ensureSendBufferInitialization(mode) {
+    const currentMode = this.getBufferMode();
+    if (mode === currentMode || mode >= 0 && currentMode >= 0) return;
+    this.sendPositions();
+
+    this.initializeSendBuffer(mode);
+  }
+
+  initializeSendBuffer(mode) {
+    switch (mode) {
+      case Global.MODE.ERASE: {
+        this.initializeSendBufferErase();
+        break;
+      }
+      default: {
+        this.initializeSendBufferBrush();
+        break;
+      }
+    }
+  }
+
+  // ---- Send buffer initialization ----
+  initializeSendBufferBrush() {
     const hue = this.room.tools.brush.hue;
     const width = this.room.tools.brush.width;
     const flag = this.getBrushModeFlag(hue, width);
@@ -68,11 +100,6 @@ class CanvasSendBuffer {
       this.lastWidth = width;
       this.sendBuffer.push(this.lastWidth);
     }
-
-    if (initialPosX && initialPosY) {
-      this.sendBuffer.push(initialPosX, initialPosY);
-      this.liveClientBuffer.push(initialPosX, initialPosY);
-    }
   }
   initializeSendBufferErase() {
     this.sendBuffer = [this.room.roomCode, Global.MODE.ERASE, this.room.tools.eraser.width];
@@ -81,28 +108,33 @@ class CanvasSendBuffer {
   resetSendBuffer() {
     this.sendReady = false;
 
-    if (this.getBufferMode() === Global.MODE.ERASE) {
-      this.initializeSendBufferErase();
-    } else {
-      this.initializeSendBufferBrush(
-        this.liveClientBuffer.at(-2),
-        this.liveClientBuffer.at(-1),
-      );
+    const mode = this.getBufferMode();
+    const lastPos = [
+      this.liveClientBuffer.at(-2),
+      this.liveClientBuffer.at(-1),
+    ];
+    this.initializeSendBuffer(mode);
+
+    if (mode >= 0) {
+      this.#addToSendBufferAndLiveBufferBrush(...lastPos);
     }
   }
   /**
    * Update the {@link sendBuffer} metadata in place
-   * with the ASSUMPTION that the buffer is in its initialized state.
+   * with the ASSUMPTION that the buffer is in its initialized state
+   * (Thus, also {@link sendReady} = false).
    */
   updateInitializedSendBufferMeta() {
     const mode = this.getBufferMode();
     if (mode === Global.MODE.ERASE) {
       this.sendBuffer[2] = this.room.tools.eraser.width;
     } else if (mode !== this.getBrushModeFlag(this.room.tools.brush.hue, this.room.tools.brush.width)) {
-      this.initializeSendBufferBrush(
+      const lastPos = [
         this.liveClientBuffer[META_LEN.BRUSH],
-        this.liveClientBuffer[META_LEN.BRUSH + 1],
-      );
+        this.liveClientBuffer[META_LEN.BRUSH + 1]
+      ];
+      this.initializeSendBuffer(mode);
+      this.#addToSendBufferAndLiveBufferBrush(...lastPos);
     }
   }
 
