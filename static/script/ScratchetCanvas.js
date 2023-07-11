@@ -15,8 +15,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   };
 
   tools;
-  /** @type { CanvasSendBuffer } */
-  sendBuffer;
+  /** @type { CanvasSendHandler } */
+  sendHandler;
   /** @type { ScratchetTool } */
   activeTool;
 
@@ -42,7 +42,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     super(canvas);
 
     this.ownUser = ownUser;
-    this.sendBuffer = new CanvasSendBuffer(this);
+    this.sendHandler = new CanvasSendHandler(this);
     this.tools = {
       brush: new Brush(this.setLineWidth.bind(this), this.setStrokeStyle.bind(this)),
       eraser: new Eraser(),
@@ -81,14 +81,14 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
           this.setLastPos(posX, posY);
           // TODO Temp
-          this.sendBuffer.activeBuffer = this.sendBuffer.brush;
-          this.sendBuffer.brush.reset();
+          this.sendHandler.activeBuffer = this.sendHandler.brush;
+          this.sendHandler.brush.reset();
           break;
         }
         case Eraser: {
           ui.toggleDrawIndicatorEraseMode();
-          this.sendBuffer.activeBuffer = this.sendBuffer.erase;
-          this.sendBuffer.erase.reset();
+          this.sendHandler.activeBuffer = this.sendHandler.erase;
+          this.sendHandler.erase.reset();
           break;
         }
       }
@@ -106,7 +106,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     ui.moveDrawIndicator(e.clientX, e.clientY);
 
     if (this.isDrawing) {
-      this.sendBuffer.sendPositionsIfMetaHasChanged();
+      this.sendHandler.sendPositionsIfMetaHasChanged();
 
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
@@ -119,7 +119,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
           this.setLastPos(posX, posY);
 
-          this.sendBuffer.brush.add(posX, posY);
+          this.sendHandler.brush.add(posX, posY);
           break;
         }
         case Eraser: {
@@ -133,8 +133,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
             });
           if (this.hasErased) {
             this.redrawCanvas();
-            this.sendBuffer.brush.sendCompleteMetaDataNextTime();
-            this.sendBuffer.erase.add(posX, posY);
+            this.sendHandler.brush.sendCompleteMetaDataNextTime();
+            this.sendHandler.erase.add(posX, posY);
           }
           break;
         }

@@ -77,7 +77,7 @@ class ScratchetController {
 
   // ---- Event handling ----
   pointerUp() {
-    this.activeRoom.sendBuffer.sendPositions();
+    this.activeRoom.sendHandler.sendPositions();
     this.activeRoom.finalizeOwnDraw();
   }
 
@@ -107,7 +107,7 @@ class ScratchetController {
 
   clearDrawing() {
     this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.ownUser);
-    this.activeRoom.sendBuffer.brush.sendCompleteMetaDataNextTime();
+    this.activeRoom.sendHandler.brush.sendCompleteMetaDataNextTime();
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
 

@@ -155,12 +155,12 @@ class ScratchetRoom extends ScratchetCanvas {
     this.updateScaleSlider();
     this.activeTool.activate();
 
-    this.sendBuffer.activateTimers();
+    this.sendHandler.activateTimers();
   }
   unfocus() {
     controls3D.changeState(null);
 
-    this.sendBuffer.clearTimers();
+    this.sendHandler.clearTimers();
 
     this.canvas.classList.add('inactive');
     this.roomListNode.classList.remove('current');

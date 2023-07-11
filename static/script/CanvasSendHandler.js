@@ -1,5 +1,5 @@
 'use strict';
-class CanvasSendBuffer {
+class CanvasSendHandler {
   activeIntervals = new Set();
 
   /** @type { SendBuffer | null } */

@@ -1,6 +1,6 @@
 class BrushBuffer extends SendBuffer {
   /**
-   * A buffer collecting the same drawn positions as {@link sendBuffer}
+   * A buffer collecting the same drawn positions as {@link buffer}
    * but which is added to the client pos buffer on send.
    * @type { number[] }
    */
