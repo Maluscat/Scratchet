@@ -107,7 +107,7 @@ class ScratchetController {
 
   clearDrawing() {
     this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.ownUser);
-    this.activeRoom.sendBuffer.sendCompleteMetaDataNextTime();
+    this.activeRoom.sendBuffer.brush.sendCompleteMetaDataNextTime();
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
 
