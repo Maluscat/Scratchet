@@ -1,9 +1,12 @@
 class EraseBuffer extends SendBuffer {
+  constructor(room) {
+    super(room);
+    this.buffer = [ Global.MODE.ERASE ];
+  }
+
   reset() {
-    this.buffer.splice(2);
-    this.buffer[0] = this.room.roomCode;
-    this.buffer[1] = Global.MODE.ERASE;
-    this.buffer[2] = this.room.tools.eraser.width;
+    this.buffer.splice(1);
+    this.buffer[1] = this.room.tools.eraser.width;
   }
   resetMeta() {
     if (this.didMetaChange()) {

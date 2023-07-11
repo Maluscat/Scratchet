@@ -16,7 +16,7 @@ class ScratchetRoom extends ScratchetCanvas {
   constructor(roomCode, roomName, globalUsername, peers) {
     const ownUser = new ScratchetUser(CURRENT_USER_ID, globalUsername);
 
-    super(ScratchetRoom.createCanvas(), ownUser);
+    super(ScratchetRoom.createCanvas(), ownUser, roomCode);
 
     // Set active tool by current active class
     for (const tool of Object.values(this.tools)) {

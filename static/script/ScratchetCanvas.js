@@ -38,11 +38,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     * @param { HTMLCanvasElement } canvas
     * @param { ScratchetUser } ownUser
     */
-  constructor(canvas, ownUser) {
+  constructor(canvas, ownUser, roomCode) {
     super(canvas);
 
     this.ownUser = ownUser;
-    this.sendHandler = new CanvasSendHandler(this);
+    this.sendHandler = new CanvasSendHandler(this, roomCode);
     this.tools = {
       brush: new Brush(this.setLineWidth.bind(this), this.setStrokeStyle.bind(this)),
       eraser: new Eraser(),

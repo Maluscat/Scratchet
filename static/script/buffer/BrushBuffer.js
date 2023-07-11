@@ -11,6 +11,8 @@ class BrushBuffer extends SendBuffer {
 
   constructor(room) {
     super(room);
+    this.buffer = [ 0 ];
+
     this.sendCompleteMetaDataNextTime = this.sendCompleteMetaDataNextTime.bind(this);
   }
 
@@ -24,9 +26,7 @@ class BrushBuffer extends SendBuffer {
     this.buffer.splice(1);
     this.liveClientBuffer.splice(3);
 
-    // TODO Prepend the room code dynamically to the ArrayBuffer on send
-    this.buffer[0] = this.room.roomCode;
-    this.buffer.push(flag);
+    this.buffer[0] = flag;
 
     if ((flag & META_FLAGS.LAST_HUE) === 0) {
       this.buffer.push(hue);

@@ -4,6 +4,7 @@ class CanvasSendHandler {
 
   /** @type { SendBuffer | null } */
   activeBuffer = null;
+  roomCode;
 
   /** @type { BrushBuffer } */
   brush;
@@ -11,9 +12,11 @@ class CanvasSendHandler {
   erase;
 
   /** @param { ScratchetCanvas } room */
-  constructor(room) {
+  constructor(room, roomCode) {
     this.brush = new BrushBuffer(room);
     this.erase = new EraseBuffer(room);
+
+    this.roomCode = roomCode;
 
     this.sendPositions = this.sendPositions.bind(this);
   }
@@ -38,8 +41,10 @@ class CanvasSendHandler {
   sendPositions() {
     if (!this.activeBuffer || this.activeBuffer.buffer.length === 0) return;
     if (this.activeBuffer.ready) {
-      const data = new Int16Array(this.activeBuffer.buffer);
-      sock.send(data.buffer);
+      const sendData = new Int16Array(this.activeBuffer.buffer.length + 1);
+      sendData.set(this.activeBuffer.buffer, 1);
+      sendData[0] = this.roomCode;
+      sock.send(sendData.buffer);
 
       this.activeBuffer.update();
     } else {
