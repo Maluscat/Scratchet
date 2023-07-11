@@ -19,7 +19,7 @@ class EraseBuffer extends SendBuffer {
   }
 
   didMetaChange() {
-    return this.room.tools.eraser.width !== getClientMetaWidth(this.buffer, EXTRA_META_LEN_SEND)
+    return this.room.tools.eraser.width !== getClientMetaWidth(this.buffer);
   }
 
   add(posX, posY) {

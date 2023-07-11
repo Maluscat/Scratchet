@@ -32,9 +32,8 @@ const META_LEN = {
   BRUSH: 3,
   ERASE: 2,
 };
-// Length of additional metadata to and from the server
-const EXTRA_META_LEN_SEND = 1; // room code
-const EXTRA_META_LEN_RECEIVE = EXTRA_META_LEN_SEND + 1; // room code + userID
+// Length of additional metadata when received from the server
+const EXTRA_SERVER_META_LEN = 2; // room code + userID
 
 const META_FLAGS = {
   LAST_HUE: 0b0010,
@@ -97,11 +96,11 @@ function getCanvasAnimDurationInOut() {
 
 // ---- Metadata helper functions ----
 function getReceivedServerMetaMode(receivedServerDataWithMetadata) {
-  return receivedServerDataWithMetadata[EXTRA_META_LEN_RECEIVE];
+  return receivedServerDataWithMetadata[EXTRA_SERVER_META_LEN];
 }
 // Server data without extra server metadata
 function getPendingServerMetaMode(pendingServerDataWithMetadata) {
-  return pendingServerDataWithMetadata[EXTRA_META_LEN_SEND];
+  return pendingServerDataWithMetadata[0];
 }
 
 function getClientMetaHue(clientDataWithMetadata) {
@@ -110,9 +109,9 @@ function getClientMetaHue(clientDataWithMetadata) {
   }
   return false;
 }
-function getClientMetaWidth(clientDataWithMetadata, offset = 0) {
+function getClientMetaWidth(clientDataWithMetadata) {
   // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
-  return clientDataWithMetadata[1 + offset];
+  return clientDataWithMetadata[1];
 }
 
 // ---- Generic helper functions ----
