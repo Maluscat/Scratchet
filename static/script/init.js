@@ -16,10 +16,10 @@ const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
 const OVERLAY_INPUT_INVALID_DURATION = 365;
 const HIT_BORDER_DURATION = 200;
-const CANVAS_ANIM_DURATION = {
+const CANVAS_ANIM_DURATION = /** @type const */ ({
   REMOVE: 260,
   INOUT: 600
-};
+});
 
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
@@ -28,17 +28,17 @@ const SEND_FULL_METADATA_INTERVAL = 1000;
 const BULK_INIT_SEPARATOR_LEN = 2;
 
 // Metadata length in a payload of the specified mode, excluding the extra server metadata
-const META_LEN = {
+const META_LEN = /** @type const */ ({
   BRUSH: 3,
   ERASE: 2,
-};
+});
 // Length of additional metadata when received from the server
 const EXTRA_SERVER_META_LEN = 2; // room code + userID
 
-const META_FLAGS = {
+const META_FLAGS = /** @type const */ ({
   LAST_HUE: 0b0010,
   LAST_WIDTH: 0b0001
-};
+});
 
 /*
  * data/socketData: bulk data received via socket
