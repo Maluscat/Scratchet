@@ -44,12 +44,24 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     this.ownUser = ownUser;
     this.sendHandler = new CanvasSendHandler(this, roomCode);
     this.tools = {
-      brush: new Brush(this.setLineWidth.bind(this), this.setStrokeStyle.bind(this)),
-      eraser: new Eraser(),
+      brush: new Brush(
+        val => {
+          this.setLineWidth(val);
+          this.sendHandler.brush.updateWidth(val);
+        },
+        val => {
+          this.setStrokeStyle(val);
+          this.sendHandler.brush.updateHue(val);
+        }),
+      eraser: new Eraser(val => this.sendHandler.erase.updateWidth(val)),
     };
 
     canvas.addEventListener('pointerdown', this.canvasDown.bind(this));
     canvas.addEventListener('pointermove', this.canvasDraw.bind(this));
+
+    this.sendHandler.brush.updateHue(this.tools.brush.hue);
+    this.sendHandler.brush.updateWidth(this.tools.brush.width);
+    this.sendHandler.erase.updateWidth(this.tools.eraser.width);
 
     this.setStrokeStyle();
     this.setLineWidth();
@@ -106,8 +118,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     ui.moveDrawIndicator(e.clientX, e.clientY);
 
     if (this.isDrawing) {
-      this.sendHandler.sendPositionsIfMetaHasChanged();
-
       const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
       switch (this.activeTool.constructor) {

@@ -5,24 +5,24 @@ class SendBuffer {
    */
   buffer = [];
 
-  /** @type { ScratchetCanvas } */
-  room;
+  sendFn;
 
   ready = false;
 
-  /** @param { ScratchetCanvas } room */
-  constructor(room) {
-    this.room = room;
+  /** @param { () => boolean } sendFn */
+  constructor(sendFn) {
+    this.sendFn = sendFn;
   }
 
   // ---- ABSTRACT ----
   reset() {}
-  resetMeta() {}
   update() {}
   add(...data) {}
 
-  didMetaChange() {
-    return false;
+  sendOrUpdate() {
+    if (!this.sendFn()) {
+      this.update();
+    }
   }
 
   // ---- Utility functions ----

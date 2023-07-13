@@ -1,16 +1,16 @@
 class EraseBuffer extends SendBuffer {
-  constructor(room) {
-    super(room);
+  #nextWidth;
+
+  constructor(...args) {
+    super(...args);
     this.buffer = [ Global.MODE.ERASE ];
   }
 
   reset() {
     this.buffer.splice(1);
-    this.buffer[1] = this.room.tools.eraser.width;
-  }
-  resetMeta() {
-    if (this.didMetaChange()) {
-      this.reset();
+    if (this.#nextWidth) {
+      this.buffer[1] = this.#nextWidth;
+      this.#nextWidth = null;
     }
   }
   update() {
@@ -18,8 +18,11 @@ class EraseBuffer extends SendBuffer {
     this.reset();
   }
 
-  didMetaChange() {
-    return this.room.tools.eraser.width !== getClientMetaWidth(this.buffer);
+  updateWidth(width) {
+    if (width !== this.buffer[1]) {
+      this.#nextWidth = width;
+      this.sendOrUpdate();
+    }
   }
 
   add(posX, posY) {

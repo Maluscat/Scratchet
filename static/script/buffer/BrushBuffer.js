@@ -6,11 +6,17 @@ class BrushBuffer extends SendBuffer {
    */
   liveClientBuffer = [];
 
+  /** @type { ScratchetRoom } */
+  room;
+
   willSendCompleteMetaData = true;
+  #nextHue;
+  #nextWidth;
 
 
-  constructor(room) {
-    super(room);
+  constructor(room, ...args) {
+    super(...args);
+    this.room = room;
     this.buffer = [ 0 ];
 
     this.sendCompleteMetaDataNextTime = this.sendCompleteMetaDataNextTime.bind(this);
@@ -19,8 +25,9 @@ class BrushBuffer extends SendBuffer {
 
   // ---- Buffer operations ----
   reset() {
-    const hue = this.room.tools.brush.hue;
-    const width = this.room.tools.brush.width;
+    const hue = this.#nextHue ?? this.liveClientBuffer[0];
+    const width = this.#nextWidth ?? this.liveClientBuffer[1];
+
     const flag = this.getNextFlag(hue, width);
 
     this.buffer.splice(1);
@@ -38,24 +45,27 @@ class BrushBuffer extends SendBuffer {
     this.liveClientBuffer[0] = hue;
     this.liveClientBuffer[1] = width;
     this.liveClientBuffer[2] = flag;
-  }
-  // TODO this is still not perfect, especially paired with the EraseBuffer
-  resetMeta() {
-    if (this.getMode() !== this.getNextFlag(this.room.tools.brush.hue, this.room.tools.brush.width)) {
-      this.reset();
-    }
+
+    this.#nextHue = null;
+    this.#nextWidth = null;
   }
 
   update() {
-    this.ready = false;
-    this.sendClientBuffer();
+    if (this.ready) {
+      this.ready = false;
+      this.sendClientBuffer();
+    }
 
-    const lastPos = [
-      this.liveClientBuffer.at(-2),
-      this.liveClientBuffer.at(-1),
-    ];
-    this.reset();
-    this.#addPos(...lastPos);
+    if (this.liveClientBuffer.length > META_LEN.BRUSH) {
+      const lastPos = [
+        this.liveClientBuffer.at(-2),
+        this.liveClientBuffer.at(-1),
+      ];
+      this.reset();
+      this.#addPos(...lastPos);
+    } else {
+      this.reset();
+    }
   }
 
   sendClientBuffer() {
@@ -68,9 +78,18 @@ class BrushBuffer extends SendBuffer {
     }
   }
 
-  didMetaChange() {
-    return this.room.tools.brush.width !== getClientMetaWidth(this.liveClientBuffer)
-        || this.room.tools.brush.hue !== getClientMetaHue(this.liveClientBuffer);
+  // ---- Metadata handlers ----
+  updateHue(hue) {
+    if (hue !== this.liveClientBuffer[0]) {
+      this.#nextHue = hue;
+      this.sendOrUpdate();
+    }
+  }
+  updateWidth(width) {
+    if (width !== this.liveClientBuffer[1]) {
+      this.#nextWidth = width;
+      this.sendOrUpdate();
+    }
   }
 
   // ---- Adding to the buffer ----
