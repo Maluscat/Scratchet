@@ -41,8 +41,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   constructor(canvas, ownUser, roomCode) {
     super(canvas);
 
+    this.addOwnClientDataToBuffer = this.addOwnClientDataToBuffer.bind(this);
+
     this.ownUser = ownUser;
-    this.sendHandler = new CanvasSendHandler(this, roomCode);
+    this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
+
     this.tools = {
       brush: new Brush(
         val => {
@@ -308,6 +311,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     user.setColorIndicator(getClientMetaHue(posData));
     this.addServerDataToBuffer(posData, user);
     this.redrawCanvas();
+  }
+
+  addOwnClientDataToBuffer(posData) {
+    this.addClientDataToBuffer(posData, this.ownUser);
   }
 
   addClientDataToBuffer(posData, user, wrapperDestIndex) {

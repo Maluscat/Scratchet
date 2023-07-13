@@ -11,13 +11,12 @@ class CanvasSendHandler {
   /** @type { EraseBuffer } */
   erase;
 
-  /** @param { ScratchetCanvas } room */
-  constructor(room, roomCode) {
+  constructor(roomCode, sendClientFn) {
     this.roomCode = roomCode;
 
     this.sendPositions = this.sendPositions.bind(this);
 
-    this.brush = new BrushBuffer(room, this.sendPositions);
+    this.brush = new BrushBuffer(sendClientFn, this.sendPositions);
     this.erase = new EraseBuffer(this.sendPositions);
   }
 

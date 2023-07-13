@@ -6,17 +6,17 @@ class BrushBuffer extends SendBuffer {
    */
   liveClientBuffer = [];
 
-  /** @type { ScratchetRoom } */
-  room;
+  /** @type { (Int16Array) => void } */
+  sendClientFn;
 
   willSendCompleteMetaData = true;
   #nextHue;
   #nextWidth;
 
 
-  constructor(room, ...args) {
+  constructor(sendClientFn, ...args) {
     super(...args);
-    this.room = room;
+    this.sendClientFn = sendClientFn;
     this.buffer = [ 0 ];
 
     this.sendCompleteMetaDataNextTime = this.sendCompleteMetaDataNextTime.bind(this);
@@ -53,7 +53,8 @@ class BrushBuffer extends SendBuffer {
   update() {
     if (this.ready) {
       this.ready = false;
-      this.sendClientBuffer();
+      this.sendClientFn(new Int16Array(this.liveClientBuffer));
+      this.resetCompleteMetadataIfSatisfied();
     }
 
     if (this.liveClientBuffer.length > META_LEN.BRUSH) {
@@ -65,16 +66,6 @@ class BrushBuffer extends SendBuffer {
       this.#addPos(...lastPos);
     } else {
       this.reset();
-    }
-  }
-
-  sendClientBuffer() {
-    // TODO perhaps outsource this to the actual room / intermediate helper function
-    const clientArr = new Int16Array(this.liveClientBuffer);
-    this.room.addClientDataToBuffer(clientArr, this.room.ownUser);
-
-    if (this.willSendCompleteMetaData && this.getMode() === 0) {
-      this.willSendCompleteMetaData = false;
     }
   }
 
@@ -115,6 +106,11 @@ class BrushBuffer extends SendBuffer {
     return flag;
   }
 
+  resetCompleteMetadataIfSatisfied() {
+    if (this.willSendCompleteMetaData && this.getMode() === 0) {
+      this.willSendCompleteMetaData = false;
+    }
+  }
   sendCompleteMetaDataNextTime() {
     this.willSendCompleteMetaData = true;
   }
