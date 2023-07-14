@@ -95,15 +95,10 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           this.ownUser.clearRedoBuffer();
 
           this.setLastPos(posX, posY);
-          // TODO Temp
-          this.sendHandler.activeBuffer = this.sendHandler.brush;
-          this.sendHandler.brush.reset();
           break;
         }
         case Eraser: {
           ui.toggleDrawIndicatorEraseMode();
-          this.sendHandler.activeBuffer = this.sendHandler.erase;
-          this.sendHandler.erase.reset();
           break;
         }
       }
@@ -132,7 +127,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
           this.setLastPos(posX, posY);
 
-          this.sendHandler.brush.add(posX, posY);
+          this.sendHandler.addData('brush', posX, posY);
           break;
         }
         case Eraser: {
@@ -147,7 +142,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           if (this.hasErased) {
             this.redrawCanvas();
             this.sendHandler.brush.sendCompleteMetaDataNextTime();
-            this.sendHandler.erase.add(posX, posY);
+            this.sendHandler.addData('erase', posX, posY);
           }
           break;
         }
