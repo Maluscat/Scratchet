@@ -7,7 +7,7 @@ class EraseBuffer extends SendBuffer {
   }
 
   reset() {
-    this.buffer.splice(1);
+    this.buffer.splice(2);
     if (this.#nextWidth) {
       this.buffer[1] = this.#nextWidth;
       this.#nextWidth = null;
