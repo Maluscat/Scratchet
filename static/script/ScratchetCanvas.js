@@ -95,6 +95,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           this.ownUser.clearRedoBuffer();
 
           this.setLastPos(posX, posY);
+          this.sendHandler.brush.reset();
           break;
         }
         case Eraser: {

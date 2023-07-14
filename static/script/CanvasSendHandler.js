@@ -71,7 +71,6 @@ class CanvasSendHandler {
     const sendData = new Int16Array(this.activeBuffer.buffer.length + 1);
     sendData.set(this.activeBuffer.buffer, 1);
     sendData[0] = this.roomCode;
-    console.log(sendData);
     return sendData.buffer;
   }
 }
