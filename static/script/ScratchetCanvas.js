@@ -152,6 +152,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   finalizeOwnDraw() {
+    this.sendHandler.send();
     if (this.isDrawing === true) {
       if (this.hasErased) {
         const undoEraseGroupLen = this.ownUser.undoEraseQueue.length - this.startUndoEraseLen;

@@ -77,7 +77,6 @@ class ScratchetController {
 
   // ---- Event handling ----
   pointerUp() {
-    this.activeRoom.sendHandler.send();
     this.activeRoom.finalizeOwnDraw();
   }
 
