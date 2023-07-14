@@ -12,9 +12,9 @@ class UserErase {
 
   /**
    * Contains information of erased points so that they can be redone.
-   * - One info wrapper is exactly one undo/redo step.
-   * - Every info wrapper contains multiple {@link UndoEraseInfo} objects.
    * - Is used in conjunction with {@link undoEraseIndex}.
+   * - Grouping info into chunks is done as part of the canvas
+   *   as it is only needed for the current user.
    * @type { Array<UndoEraseInfo> }
    */
   undoEraseQueue = new Array();
