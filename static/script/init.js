@@ -115,6 +115,10 @@ function getClientMetaWidth(clientDataWithMetadata) {
 }
 
 // ---- Generic helper functions ----
+function isEqualFloat(val0, val1) {
+  return Math.abs(val0 - val1) < 0.00000000001;
+}
+
 function getExtraMetaLengthFromFlag(flag) {
   let extraLen = 0;
   if (flag & META_FLAGS.LAST_WIDTH) extraLen++;

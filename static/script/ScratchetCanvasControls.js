@@ -66,7 +66,7 @@ class ScratchetCanvasControls {
 
     this.redrawCanvas();
 
-    if (ui.scaleSlider.value !== this.state.scale.x) {
+    if (!isEqualFloat(ui.scaleSlider.value, this.state.scale.x)) {
       this.updateScaleSlider();
     }
   }
