@@ -14,7 +14,7 @@ class ScratchetRoom extends ScratchetCanvas {
   userListNode;
 
   constructor(roomCode, roomName, globalUsername, peers) {
-    const ownUser = new ScratchetUser(CURRENT_USER_ID, globalUsername);
+    const ownUser = new OwnUser(CURRENT_USER_ID, globalUsername);
 
     super(ScratchetRoom.createCanvas(), ownUser, roomCode);
 

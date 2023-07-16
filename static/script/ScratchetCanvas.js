@@ -36,7 +36,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   /**
     * @param { HTMLCanvasElement } canvas
-    * @param { ScratchetUser } ownUser
+    * @param { OwnUser } ownUser
     */
   constructor(canvas, ownUser, roomCode) {
     super(canvas);
