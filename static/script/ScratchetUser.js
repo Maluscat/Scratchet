@@ -1,6 +1,6 @@
 'use strict';
 class ScratchetUser extends UserErase {
-  userID;
+  /** @type { string } */
   name;
 
   listNode;
@@ -9,11 +9,10 @@ class ScratchetUser extends UserErase {
   /** Contains points which were undone so that they can be redone. */
   redoBuffer = new Array();
 
-  constructor(userID, username) {
+  constructor(username, isOwnUser = false) {
     super();
-    this.userID = userID;
     this.name = username;
-    this.listNode = this.createUserListNode(username, userID === CURRENT_USER_ID);
+    this.listNode = this.createUserListNode(username, isOwnUser);
   }
 
   setName(newUsername) {

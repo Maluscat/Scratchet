@@ -14,7 +14,7 @@ class ScratchetRoom extends ScratchetCanvas {
   userListNode;
 
   constructor(roomCode, roomName, globalUsername, peers) {
-    const ownUser = new OwnUser(CURRENT_USER_ID, globalUsername);
+    const ownUser = new OwnUser(globalUsername, true);
 
     super(ScratchetRoom.createCanvas(), ownUser, roomCode);
 
@@ -31,7 +31,7 @@ class ScratchetRoom extends ScratchetCanvas {
     this.roomListNode = ScratchetRoom.createRoomListNode();
     this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
 
-    this.#addUserObject(ownUser);
+    this.#addUserObject(CURRENT_USER_ID, ownUser);
     for (const [ userID, username ] of peers) {
       this.addUser(userID, username);
     }
@@ -92,7 +92,7 @@ class ScratchetRoom extends ScratchetCanvas {
 
   addUser(userID, username) {
     const user = new ScratchetUser(userID, username);
-    this.#addUserObject(user);
+    this.#addUserObject(userID, user);
   }
   removeUser(userID) {
     if (!this.hasUser(userID)) {
@@ -109,8 +109,8 @@ class ScratchetRoom extends ScratchetCanvas {
     return user;
   }
 
-  #addUserObject(user) {
-    this.users.set(user.userID, user);
+  #addUserObject(userID, user) {
+    this.users.set(userID, user);
     this.userListNode.appendChild(user.listNode);
     this.updateUserIndicator();
 
