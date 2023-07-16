@@ -6,6 +6,11 @@ class OwnUser extends ScratchetUser {
   };
 
 
+  clearRedoBuffer() {
+    this.brushUndo.groups.splice(this.brushUndo.groupIndex);
+    super.clearRedoBuffer();
+  }
+
   // ---- Undo Brush grouping ----
   addBrushUndoGroup(initialLength) {
     const count = this.posCache.length - initialLength;
