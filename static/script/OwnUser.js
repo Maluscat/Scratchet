@@ -38,6 +38,11 @@ class OwnUser extends ScratchetUser {
       this.undoData.groups.push(count);
       this.undoData.groupIndex++;
     }
+
+    this.clearUndoGroupCaptureData();
+  }
+
+  clearUndoGroupCaptureData() {
     this.#captureBuffer = null;
     this.#captureStartLen = null;
   }
