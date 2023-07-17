@@ -16,11 +16,20 @@ class OwnUser extends ScratchetUser {
     super.clearRedoBuffer();
   }
 
-  // ---- Undo data grouping ----
-  startUndoGroupCapture(buffer) {
+
+  // ---- Undo data group capturing ----
+  startBrushGroupCapture() {
+    this.#startUndoGroupCapture(this.posCache);
+  }
+  startEraseGroupCapture() {
+    this.#startUndoGroupCapture(this.undoEraseQueue);
+  }
+
+  #startUndoGroupCapture(buffer) {
     this.#captureBuffer = buffer;
     this.#captureStartLen = buffer.length;
   }
+
   captureUndoGroup() {
     if (!this.#captureBuffer) return;
 
@@ -33,6 +42,7 @@ class OwnUser extends ScratchetUser {
     this.#captureStartLen = null;
   }
 
+  // ---- Undo data helpers ----
   getNextUndoGroup() {
     return this.undoData.groups[this.undoData.groupIndex];
   }
