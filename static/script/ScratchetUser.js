@@ -34,38 +34,48 @@ class ScratchetUser extends UserErase {
 
   // ---- Undo/Redo ----
   /** @param {ScratchetCanvas} room */
-  undo(room) {
-    if (this.undoEraseIndex > 0
-        && this.posCache.length - 1 === this.undoEraseQueue[this.undoEraseIndex - 1].bufferIndex) {
+  undo(room, count) {
+    if (this.undoEraseIndex === 0 && this.posCache.length === 0) return;
 
-      const info = this.undoEraseQueue[this.undoEraseIndex - 1];
-      info.target.push(info.wrapper);
+    for (let i = 0; i < count; i++) {
+      const eraseInfo = this.undoEraseQueue[this.undoEraseIndex - 1];
+      if (this.undoEraseIndex > 0 && this.posCache.length - 1 === eraseInfo.bufferIndex) {
+        eraseInfo.target.push(eraseInfo.wrapper);
 
-      this.undoEraseIndex--;
-      room.redrawCanvas();
-    } else if (room.posBuffer.length > 0) {
-      const posDataWrapper = this.posCache.pop();
-      this.redoBuffer.push(posDataWrapper);
-      room.deleteFromPosBuffer(posDataWrapper);
-      room.redrawCanvas();
+        this.undoEraseIndex--;
+
+      } else if (this.posCache.length > 0) {
+        const posDataWrapper = this.posCache.pop();
+        this.redoBuffer.push(posDataWrapper);
+        room.deleteFromPosBuffer(posDataWrapper);
+      } else break;
     }
+
+    room.redrawCanvas();
   }
   /** @param {ScratchetCanvas} room */
-  redo(room) {
-    if (this.undoEraseIndex < this.undoEraseQueue.length
-        && this.posCache.length - 1 === this.undoEraseQueue[this.undoEraseIndex].bufferIndex) {
-
-      const info = this.undoEraseQueue[this.undoEraseIndex];
-      info.target.splice(info.target.indexOf(info.wrapper), 1);
-
-      this.undoEraseIndex++;
-      room.redrawCanvas();
-    } else if (this.redoBuffer.length > 0) {
-      const posDataWrapper = this.redoBuffer.pop();
-      this.posCache.push(posDataWrapper);
-      room.addToPosBuffer(posDataWrapper);
-      room.redrawCanvas();
+  redo(room, count) {
+    if (this.undoEraseIndex === this.undoEraseQueue.length && this.redoBuffer.length === 0) {
+      return;
     }
+
+    for (let i = 0; i < count; i++) {
+      const eraseInfo = this.undoEraseQueue[this.undoEraseIndex];
+      if (this.undoEraseIndex < this.undoEraseQueue.length
+          && this.posCache.length - 1 === eraseInfo.bufferIndex) {
+
+        eraseInfo.target.splice(eraseInfo.target.indexOf(eraseInfo.wrapper), 1);
+
+        this.undoEraseIndex++;
+
+      } else if (this.redoBuffer.length > 0) {
+        const posDataWrapper = this.redoBuffer.pop();
+        this.posCache.push(posDataWrapper);
+        room.addToPosBuffer(posDataWrapper);
+      } else break;
+    }
+
+    room.redrawCanvas();
   }
 
   clearRedoBuffer() {
