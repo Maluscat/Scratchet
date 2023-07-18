@@ -122,6 +122,7 @@ class UserErase {
         wrapper: eraseWrapper,
         target: targetWrapper
       }));
+      this.undoEraseIndex++;
     }
   }
 
