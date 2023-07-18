@@ -8,12 +8,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   hasErased = false;
   isDrawing = false;
 
-  startUndoEraseLen;
-  ownUserUndoErase = {
-    groups: [],
-    groupIndex: 0
-  };
-
   tools;
   /** @type { CanvasSendHandler } */
   sendHandler;
@@ -86,6 +80,8 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   canvasDown(e) {
     if (e.button === 0) {
       this.isDrawing = true;
+      // This is potentially not necessary – It's a safety measure.
+      this.ownUser.clearUndoGroupCaptureData();
 
       // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
       switch (this.activeTool.constructor) {
@@ -93,6 +89,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
           this.ownUser.clearRedoBuffer();
+          this.ownUser.startBrushGroupCapture();
 
           this.setLastPos(posX, posY);
           this.sendHandler.brush.reset();
@@ -136,7 +133,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
             () => {
               if (!this.hasErased) {
                 this.ownUser.clearRedoBuffer();
-                this.startUndoEraseLen = this.ownUser.undoEraseQueue.length;
+                this.ownUser.startEraseGroupCapture();
                 this.hasErased = true;
               }
             });
@@ -154,16 +151,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   finalizeOwnDraw() {
     this.sendHandler.send();
     if (this.isDrawing === true) {
-      if (this.hasErased) {
-        const undoEraseGroupLen = this.ownUser.undoEraseQueue.length - this.startUndoEraseLen;
-        // this.ownUserUndoErase.groups.push(undoEraseGroupLen);
-        // this.ownUserUndoErase.groupIndex++;
-        this.ownUser.undoEraseIndex += undoEraseGroupLen;
-        this.hasErased = false;
-      }
-      ui.toggleDrawIndicatorEraseMode(true);
+      this.ownUser.captureUndoGroup();
       this.redrawCanvas();
       this.isDrawing = false;
+      this.hasErased = false;
+      ui.toggleDrawIndicatorEraseMode(true);
     }
   }
 
