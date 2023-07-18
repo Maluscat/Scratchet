@@ -168,8 +168,11 @@ class ScratchetCanvas extends ScratchetCanvasControls {
   }
 
   // ---- User handling ----
-  undo() {
+  ownUndo() {
     this.ownUser.undo(this);
+  }
+  ownRedo() {
+    this.ownUser.redo(this);
   }
 
   // ---- Canvas handling ----

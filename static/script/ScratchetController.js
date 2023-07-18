@@ -192,10 +192,10 @@ class ScratchetController {
 
   // -> Utility overlay
   invokeUndo() {
-    this.activeRoom.ownUser.undo(this.activeRoom);
+    this.activeRoom.ownUndo();
   }
   invokeRedo() {
-    this.activeRoom.ownUser.redo(this.activeRoom);
+    this.activeRoom.ownRedo();
   }
 
   // ---- Username handling ----
