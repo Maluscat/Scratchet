@@ -88,7 +88,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
         case Brush: {
           const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
 
-          this.ownUser.clearRedoBuffer();
           this.ownUser.startBrushGroupCapture();
 
           this.setLastPos(posX, posY);
@@ -132,7 +131,6 @@ class ScratchetCanvas extends ScratchetCanvasControls {
           this.ownUser.eraseAtPos(posX, posY, this.tools.eraser.width,
             () => {
               if (!this.hasErased) {
-                this.ownUser.clearRedoBuffer();
                 this.ownUser.startEraseGroupCapture();
                 this.hasErased = true;
               }

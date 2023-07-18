@@ -42,6 +42,7 @@ class OwnUser extends ScratchetUser {
   }
 
   #startUndoGroupCapture(buffer) {
+    this.clearRedoBuffer();
     this.#captureBuffer = buffer;
     this.#captureStartLen = buffer.length;
   }
