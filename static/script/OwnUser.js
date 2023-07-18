@@ -11,8 +11,24 @@ class OwnUser extends ScratchetUser {
   #captureStartLen;
 
 
+  // ---- Super shims ----
+  undo(room) {
+    if (this.undoData.groupIndex > 0) {
+      this.undoData.groupIndex--;
+      const count = this.getNextUndoGroup();
+      super.undo(room, count);
+    }
+  }
+  redo(room) {
+    if (this.undoData.groupIndex < this.undoData.groups.length) {
+      const count = this.getNextUndoGroup();
+      this.undoData.groupIndex++;
+      super.redo(room, count);
+    }
+  }
+
   clearRedoBuffer() {
-    this.undoData.groups.splice(this.undoData.groupIndex);
+    this.clearUndoDataAtCurrentIndex();
     super.clearRedoBuffer();
   }
 
@@ -50,5 +66,9 @@ class OwnUser extends ScratchetUser {
   // ---- Undo data helpers ----
   getNextUndoGroup() {
     return this.undoData.groups[this.undoData.groupIndex];
+  }
+
+  clearUndoDataAtCurrentIndex() {
+    this.undoData.groups.splice(this.undoData.groupIndex);
   }
 }
