@@ -39,9 +39,9 @@ class ScratchetUser extends UserErase {
 
     for (let i = 0; i < count; i++) {
       const eraseInfo = this.undoEraseQueue[this.undoEraseIndex - 1];
-      if (this.undoEraseIndex > 0 && this.posCache.length - 1 === eraseInfo.bufferIndex) {
-        eraseInfo.target.push(eraseInfo.wrapper);
+      if (eraseInfo?.bufferIndex === this.posCache.length - 1) {
 
+        eraseInfo.target.push(eraseInfo.wrapper);
         this.undoEraseIndex--;
 
       } else if (this.posCache.length > 0) {
@@ -61,11 +61,9 @@ class ScratchetUser extends UserErase {
 
     for (let i = 0; i < count; i++) {
       const eraseInfo = this.undoEraseQueue[this.undoEraseIndex];
-      if (this.undoEraseIndex < this.undoEraseQueue.length
-          && this.posCache.length - 1 === eraseInfo.bufferIndex) {
+      if (eraseInfo?.bufferIndex === this.posCache.length - 1) {
 
         eraseInfo.target.splice(eraseInfo.target.indexOf(eraseInfo.wrapper), 1);
-
         this.undoEraseIndex++;
 
       } else if (this.redoBuffer.length > 0) {
@@ -83,9 +81,7 @@ class ScratchetUser extends UserErase {
       this.redoBuffer = new Array();
     }
     if (this.undoEraseIndex < this.undoEraseQueue.length) {
-      const removedEraseInfo = this.undoEraseQueue.splice(
-        this.undoEraseIndex,
-        this.undoEraseQueue.length);
+      const removedEraseInfo = this.undoEraseQueue.splice(this.undoEraseIndex);
 
       for (let i = removedEraseInfo.length - 1; i >= 0; i--) {
         const info = removedEraseInfo[i];
