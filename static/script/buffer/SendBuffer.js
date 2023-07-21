@@ -16,8 +16,12 @@ class SendBuffer {
 
   // ---- ABSTRACT ----
   reset() {}
-  update() {}
   add(...data) {}
+
+  update() {
+    this.ready = false;
+    this.reset();
+  }
 
   sendOrUpdate() {
     if (!this.sendFn()) {

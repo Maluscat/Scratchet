@@ -13,10 +13,6 @@ class EraseBuffer extends SendBuffer {
       this.#nextWidth = null;
     }
   }
-  update() {
-    this.ready = false;
-    this.reset();
-  }
 
   updateWidth(width) {
     if (width !== this.buffer[1]) {
