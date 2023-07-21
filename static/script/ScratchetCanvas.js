@@ -159,10 +159,16 @@ class ScratchetCanvas extends ScratchetCanvasControls {
 
   // ---- User handling ----
   ownUndo() {
-    this.ownUser.undo(this);
+    const count = this.ownUser.undo(this);
+    if (count > 0) {
+      this.sendHandler.addData('undo', count);
+    }
   }
   ownRedo() {
-    this.ownUser.redo(this);
+    const count = this.ownUser.redo(this);
+    if (count > 0) {
+      this.sendHandler.addData('redo', count);
+    }
   }
 
   // ---- Canvas handling ----

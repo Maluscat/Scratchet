@@ -17,14 +17,18 @@ class OwnUser extends ScratchetUser {
       this.undoData.groupIndex--;
       const count = this.getNextUndoGroup();
       super.undo(room, count);
+      return count;
     }
+    return 0;
   }
   redo(room) {
     if (this.undoData.groupIndex < this.undoData.groups.length) {
       const count = this.getNextUndoGroup();
       this.undoData.groupIndex++;
       super.redo(room, count);
+      return count;
     }
+    return 0;
   }
 
   clearRedoBuffer() {
