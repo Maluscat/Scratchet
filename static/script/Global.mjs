@@ -6,6 +6,8 @@ const Global = {
   MODE: {
     BULK_INIT: -1,
     ERASE: -2,
+    UNDO: -3,
+    REDO: -4,
   },
 
   Validator: {

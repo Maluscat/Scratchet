@@ -24,6 +24,8 @@ class CanvasSendHandler {
 
     this.buffers.brush = new BrushBuffer(sendClientFn, this.send);
     this.buffers.erase = new EraseBuffer(this.send);
+    this.buffers.undo = new UndoBuffer(this.send);
+    this.buffers.redo = new RedoBuffer(this.send);
   }
 
 
