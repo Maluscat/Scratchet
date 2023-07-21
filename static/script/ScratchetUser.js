@@ -33,7 +33,11 @@ class ScratchetUser extends UserErase {
   }
 
   // ---- Undo/Redo ----
-  /** @param {ScratchetCanvas} room */
+  // TODO The `room` parameter needs to be removed.
+  /**
+   * @param { ScratchetCanvas } room
+   * @param { number } count
+   */
   undo(room, count) {
     if (this.undoEraseIndex === 0 && this.posCache.length === 0) return;
 
@@ -53,7 +57,10 @@ class ScratchetUser extends UserErase {
 
     room.redrawCanvas();
   }
-  /** @param {ScratchetCanvas} room */
+  /**
+   * @param { ScratchetCanvas } room
+   * @param { number } count
+   */
   redo(room, count) {
     if (this.undoEraseIndex === this.undoEraseQueue.length && this.redoBuffer.length === 0) {
       return;

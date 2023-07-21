@@ -317,6 +317,12 @@ class ScratchetController {
       case Global.MODE.ERASE:
         targetRoom.handleEraseData(data, targetUser);
         break;
+      case Global.MODE.UNDO:
+        targetRoom.undo(data, targetUser);
+        break;
+      case Global.MODE.REDO:
+        targetRoom.redo(data, targetUser);
+        break;
       default:
         targetRoom.addServerDataToBufferAndDraw(data, targetUser);
     }

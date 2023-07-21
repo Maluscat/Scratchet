@@ -171,6 +171,23 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     }
   }
 
+  /**
+   * @param { Int16Array } data
+   * @param { ScratchetUser } user
+   */
+  undo(data, user) {
+    const count = data[1];
+    user.undo(this, count);
+  }
+  /**
+   * @param { Int16Array } data
+   * @param { ScratchetUser } user
+   */
+  redo(data, user) {
+    const count = data[1];
+    user.redo(this, count);
+  }
+
   // ---- Canvas handling ----
   /** @param {ScratchetUser} [userHighlight] */
   redrawCanvas(userHighlight) {
