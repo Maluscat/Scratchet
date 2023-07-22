@@ -54,15 +54,15 @@ class ScratchetCanvasControls {
         : this.currentMousePos);
 
     // TODO Convert to scaleMax and move the canvas around somehow (undrawable sections other color + border)?
-    this.limitStateScale();
+    this.#limitStateScale();
 
-    this.translateViewTowardCursor(transformOrigin);
-    this.limitStateTran();
+    this.#translateViewTowardCursor(transformOrigin);
+    this.#limitStateTran();
 
     this.ctx.setTransform(this.getScaleX(), 0, 0, this.getScaleY(), this.state.tran.x, this.state.tran.y);
     ui.resizeDrawIndicator(this.getScaleX());
 
-    this.scaleByDevicePixelRatio();
+    this.#scaleByDevicePixelRatio();
 
     this.redrawCanvas();
 
@@ -121,7 +121,7 @@ class ScratchetCanvasControls {
   }
 
   // ---- Helper functions ----
-  getScaleDelta() {
+  #getScaleDelta() {
     const currentTransform = this.ctx.getTransform();
     const dpr = ScratchetCanvasControls.getDevicePixelRatio();
 
@@ -134,7 +134,7 @@ class ScratchetCanvasControls {
   }
 
   // ---- Transformation functions ----
-  scaleByDevicePixelRatio() {
+  #scaleByDevicePixelRatio() {
     const dpr = ScratchetCanvasControls.getDevicePixelRatio();
     this.ctx.scale(dpr, dpr);
   }
@@ -142,15 +142,15 @@ class ScratchetCanvasControls {
   /**
    * Zoom towards the mouse position.
    */
-  translateViewTowardCursor(mousePos) {
-    const [deltaScaleX, deltaScaleY] = this.getScaleDelta();
+  #translateViewTowardCursor(mousePos) {
+    const [deltaScaleX, deltaScaleY] = this.#getScaleDelta();
     const [posX, posY] = this.getPosWithTransformFloat(mousePos[0], mousePos[1]);
 
     this.state.tran.x -= deltaScaleX * posX;
     this.state.tran.y -= deltaScaleY * posY;
   }
 
-  limitStateScale() {
+  #limitStateScale() {
     if (this.state.scale.x < this.minScale) {
       this.state.scale.x = this.minScale;
     } else if (this.state.scale.x > ScratchetCanvasControls.MAX_SCALE) {
@@ -164,7 +164,7 @@ class ScratchetCanvasControls {
     }
   }
 
-  limitStateTran() {
+  #limitStateTran() {
     const viewStopX = (ScratchetCanvasControls.VIEW_WIDTH * this.getScaleX()) - this.canvas.width;
     const viewStopY = (ScratchetCanvasControls.VIEW_HEIGHT * this.getScaleY()) - this.canvas.height;
 
