@@ -66,8 +66,8 @@ export class SocketRoomHandler {
   createNewRoomCode() {
     let roomCode: RoomCode;
     do {
-      // Generate random number of interval [1000, 9999]
-      roomCode = Math.floor(Math.random() * 9000 + 1000);
+      // Generate a random number in the interval [0001, 9999]
+      roomCode = Math.floor(Math.random() * 9000 + 1);
     } while (this.#activeRooms.has(roomCode));
     return roomCode;
   }

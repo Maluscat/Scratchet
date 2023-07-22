@@ -206,7 +206,7 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   static createRoomCodeLink(roomCode) {
-    return `${location.origin + location.pathname}#${roomCode}`;
+    return `${location.origin + location.pathname}#${roomCode.toString().padStart(4, 0)}`;
   }
 
   static createCanvas() {

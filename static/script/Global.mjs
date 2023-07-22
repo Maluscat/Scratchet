@@ -19,9 +19,7 @@ const Global = {
 
     validateAndReturnRoomCode(roomCode) {
       roomCode = parseInt(roomCode);
-      // NOTE: If the minimum roomCode ist lowered at some point,
-      // make sure that it cannot reach 0.
-      if (!Number.isNaN(roomCode) && roomCode >= 1000 && roomCode <= 9999) {
+      if (!Number.isNaN(roomCode) && roomCode >= 1 && roomCode <= 9999) {
         return roomCode;
       }
       return false;
