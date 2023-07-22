@@ -1,5 +1,5 @@
 'use strict';
-class ScratchetCanvas extends ScratchetCanvasControls {
+class ScratchetCanvas extends CanvasViewTransform {
   /** @type {[number, number]} */
   lastPos = new Array(2);
 
@@ -195,7 +195,7 @@ class ScratchetCanvas extends ScratchetCanvasControls {
     let prevPosData;
     let prevPosDataWrapper;
 
-    this.ctx.clearRect(0, 0, ScratchetCanvasControls.VIEW_WIDTH, ScratchetCanvasControls.VIEW_HEIGHT);
+    this.ctx.clearRect(0, 0, CanvasViewTransform.VIEW_WIDTH, CanvasViewTransform.VIEW_HEIGHT);
 
     for (const { posData, wrapperStack } of ScratchetCanvas.iteratePosWrapper(this.posBuffer)) {
       let isFromHighlightedUser = false;

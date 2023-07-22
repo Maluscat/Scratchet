@@ -57,7 +57,7 @@ class UIHandler {
     });
 
     this.scaleSlider = new Slider89(infoOverlay, {
-      range: [ 0, ScratchetCanvasControls.MAX_SCALE ],
+      range: [ 0, CanvasViewTransform.MAX_SCALE ],
       _percent: '100%',
       events: {
         // TODO change this to the 'update' event once it is shipped in Slider89
@@ -66,7 +66,7 @@ class UIHandler {
         }],
         'change:value': [(slider) => {
           slider._percent =
-            Math.round(ScratchetCanvasControls.scaleInterpolateFn(slider.value) * 100) + '%';
+            Math.round(CanvasViewTransform.scaleInterpolateFn(slider.value) * 100) + '%';
         }]
       },
       structure: `

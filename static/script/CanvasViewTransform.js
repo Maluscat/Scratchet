@@ -1,9 +1,9 @@
 'use strict';
-class ScratchetCanvasControls {
+class CanvasViewTransform {
   static VIEW_WIDTH = 8191;
   static VIEW_HEIGHT = 8191;
 
-  static MAX_SCALE = ScratchetCanvasControls.scaleInterpolateFnInverse(20); // 2000 %
+  static MAX_SCALE = CanvasViewTransform.scaleInterpolateFnInverse(20); // 2000 %
   minScale = 0;
 
   canvas;
@@ -29,17 +29,17 @@ class ScratchetCanvasControls {
       },
       // Start at the view center
       tran: {
-        x: -((ScratchetCanvasControls.VIEW_WIDTH + 1) / 2 - this.canvas.width / 2),
-        y: -((ScratchetCanvasControls.VIEW_HEIGHT + 1) / 2 - this.canvas.height / 2)
+        x: -((CanvasViewTransform.VIEW_WIDTH + 1) / 2 - this.canvas.width / 2),
+        y: -((CanvasViewTransform.VIEW_HEIGHT + 1) / 2 - this.canvas.height / 2)
       }
     });
   }
 
   getScaleX() {
-    return ScratchetCanvasControls.scaleInterpolateFn(this.state.scale.x);
+    return CanvasViewTransform.scaleInterpolateFn(this.state.scale.x);
   }
   getScaleY() {
-    return ScratchetCanvasControls.scaleInterpolateFn(this.state.scale.y);
+    return CanvasViewTransform.scaleInterpolateFn(this.state.scale.y);
   }
 
   // NOTE Remember to apply the device pixel ratio when working with deltas and positions
@@ -50,7 +50,7 @@ class ScratchetCanvasControls {
     const transformOrigin = (drawInfo?.touches)
       ? Controls3D.computeTouchesMidpoint(...drawInfo.touches)
       : (useCenterOrigin
-        ? ScratchetCanvasControls.getViewportCenter()
+        ? CanvasViewTransform.getViewportCenter()
         : this.currentMousePos);
 
     // TODO Convert to scaleMax and move the canvas around somehow (undrawable sections other color + border)?
@@ -78,14 +78,14 @@ class ScratchetCanvasControls {
   }
 
   setDimensions() {
-    const dpr = ScratchetCanvasControls.getDevicePixelRatio();
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
     this.canvas.height = this.canvas.clientHeight * dpr;
     this.canvas.width = this.canvas.clientWidth * dpr;
 
-    this.minScale = ScratchetCanvasControls.scaleInterpolateFnInverse(
+    this.minScale = CanvasViewTransform.scaleInterpolateFnInverse(
       Math.max(
-        this.canvas.width / ScratchetCanvasControls.VIEW_WIDTH,
-        this.canvas.height / ScratchetCanvasControls.VIEW_HEIGHT));
+        this.canvas.width / CanvasViewTransform.VIEW_WIDTH,
+        this.canvas.height / CanvasViewTransform.VIEW_HEIGHT));
 
     ui.scaleSlider.range[0] = this.minScale;
 
@@ -104,7 +104,7 @@ class ScratchetCanvasControls {
 
   getPosWithTransformFloat(posX, posY) {
     const currentTransform = this.ctx.getTransform();
-    const dpr = ScratchetCanvasControls.getDevicePixelRatio();
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
     return [
       (posX * dpr - currentTransform.e) / currentTransform.a,
       (posY * dpr - currentTransform.f) / currentTransform.d
@@ -123,7 +123,7 @@ class ScratchetCanvasControls {
   // ---- Helper functions ----
   #getScaleDelta() {
     const currentTransform = this.ctx.getTransform();
-    const dpr = ScratchetCanvasControls.getDevicePixelRatio();
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
 
     const DELTA_PRECISION = 1000000;
     // These should always be equivalent, but computed separately in case of discrepancies
@@ -135,7 +135,7 @@ class ScratchetCanvasControls {
 
   // ---- Transformation functions ----
   #scaleByDevicePixelRatio() {
-    const dpr = ScratchetCanvasControls.getDevicePixelRatio();
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
     this.ctx.scale(dpr, dpr);
   }
 
@@ -153,20 +153,20 @@ class ScratchetCanvasControls {
   #limitStateScale() {
     if (this.state.scale.x < this.minScale) {
       this.state.scale.x = this.minScale;
-    } else if (this.state.scale.x > ScratchetCanvasControls.MAX_SCALE) {
-      this.state.scale.x = ScratchetCanvasControls.MAX_SCALE;
+    } else if (this.state.scale.x > CanvasViewTransform.MAX_SCALE) {
+      this.state.scale.x = CanvasViewTransform.MAX_SCALE;
     }
 
     if (this.state.scale.y < this.minScale) {
       this.state.scale.y = this.minScale;
-    } else if (this.state.scale.y > ScratchetCanvasControls.MAX_SCALE) {
-      this.state.scale.y = ScratchetCanvasControls.MAX_SCALE;
+    } else if (this.state.scale.y > CanvasViewTransform.MAX_SCALE) {
+      this.state.scale.y = CanvasViewTransform.MAX_SCALE;
     }
   }
 
   #limitStateTran() {
-    const viewStopX = (ScratchetCanvasControls.VIEW_WIDTH * this.getScaleX()) - this.canvas.width;
-    const viewStopY = (ScratchetCanvasControls.VIEW_HEIGHT * this.getScaleY()) - this.canvas.height;
+    const viewStopX = (CanvasViewTransform.VIEW_WIDTH * this.getScaleX()) - this.canvas.width;
+    const viewStopY = (CanvasViewTransform.VIEW_HEIGHT * this.getScaleY()) - this.canvas.height;
 
     if (this.state.tran.x > 0) {
       this.state.tran.x = 0;
