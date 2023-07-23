@@ -14,6 +14,9 @@ class ScratchetCanvas extends CanvasViewTransform {
   /** @type { ScratchetTool } */
   activeTool;
 
+  /** @type { CanvasView } */
+  view;
+
   /**
    * Contains the posDataWrappers to draw in sequential order.
    */
@@ -34,11 +37,12 @@ class ScratchetCanvas extends CanvasViewTransform {
     */
   constructor(canvas, ownUser, roomCode) {
     super(canvas);
+    this.ownUser = ownUser;
 
     this.addOwnClientDataToBuffer = this.addOwnClientDataToBuffer.bind(this);
 
-    this.ownUser = ownUser;
     this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
+    this.view = new CanvasView(canvas);
 
     this.tools = {
       brush: new Brush(
