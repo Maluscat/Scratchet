@@ -47,11 +47,11 @@ class ScratchetCanvas extends CanvasViewTransform {
     this.tools = {
       brush: new Brush(
         val => {
-          this.setLineWidth(val);
+          this.view.setLineWidth(val);
           this.sendHandler.brush.updateWidth(val);
         },
         val => {
-          this.setStrokeStyle(val);
+          this.view.setStrokeStyle(val);
           this.sendHandler.brush.updateHue(val);
         }),
       eraser: new Eraser(val => this.sendHandler.erase.updateWidth(val)),
@@ -64,8 +64,8 @@ class ScratchetCanvas extends CanvasViewTransform {
     this.sendHandler.brush.updateWidth(this.tools.brush.width);
     this.sendHandler.erase.updateWidth(this.tools.eraser.width);
 
-    this.setStrokeStyle();
-    this.setLineWidth();
+    this.view.setLineWidth(this.tools.brush.width);
+    this.view.setStrokeStyle(this.tools.brush.hue);
 
     this.setTransform();
 
@@ -140,7 +140,7 @@ class ScratchetCanvas extends CanvasViewTransform {
               }
             });
           if (this.hasErased) {
-            this.redrawCanvas();
+            this.redraw();
             this.sendHandler.brush.sendCompleteMetaDataNextTime();
             this.sendHandler.addData('erase', posX, posY);
           }
@@ -154,7 +154,7 @@ class ScratchetCanvas extends CanvasViewTransform {
     this.sendHandler.send();
     if (this.isDrawing === true) {
       this.ownUser.captureUndoGroup();
-      this.redrawCanvas();
+      this.redraw();
       this.isDrawing = false;
       this.hasErased = false;
       ui.toggleDrawIndicatorEraseMode(true);
@@ -192,6 +192,10 @@ class ScratchetCanvas extends CanvasViewTransform {
     user.redo(this, count);
   }
 
+  redraw(userHighlight) {
+    this.view.redraw(this.posBuffer, userHighlight);
+  }
+
 
   // ---- Pos buffer ----
   setLastPos(posX, posY) {
@@ -209,7 +213,7 @@ class ScratchetCanvas extends CanvasViewTransform {
       }
     }
     this.sliceInitDataAndAddToBuffer(data, user, startIndex);
-    this.redrawCanvas();
+    this.redraw();
   }
   sliceInitDataAndAddToBuffer(data, user, startIndex, endIndex = Infinity) {
     const posData = data.subarray(startIndex, endIndex);
@@ -226,7 +230,7 @@ class ScratchetCanvas extends CanvasViewTransform {
     for (let i = META_LEN.ERASE; i < data.length; i += 2) {
       user.eraseAtPos(data[i], data[i + 1], getClientMetaWidth(data));
     }
-    this.redrawCanvas();
+    this.redraw();
   }
 
   sendJoinedUserBuffer() {
@@ -252,7 +256,7 @@ class ScratchetCanvas extends CanvasViewTransform {
         this.deleteFromPosBuffer(posDataWrapper);
       }
       user.posCache = [];
-      this.redrawCanvas();
+      this.redraw();
     }
   }
 
@@ -265,7 +269,7 @@ class ScratchetCanvas extends CanvasViewTransform {
   addServerDataToBufferAndDraw(posData, user) {
     user.setColorIndicator(getClientMetaHue(posData));
     this.addServerDataToBuffer(posData, user);
-    this.redrawCanvas();
+    this.redraw();
   }
 
   addOwnClientDataToBuffer(posData) {

@@ -10,15 +10,18 @@ class CanvasView {
   }
 
 
-  /** @param {ScratchetUser} [userHighlight] */
-  redrawCanvas(userHighlight) {
+  /**
+   * @param { Array } posWrapper
+   * @param { ScratchetUser } [userHighlight]
+   */
+  redraw(posWrapper, userHighlight) {
     // TODO skip unseen points
     let prevPosData;
     let prevPosDataWrapper;
 
     this.ctx.clearRect(0, 0, CanvasViewTransform.VIEW_WIDTH, CanvasViewTransform.VIEW_HEIGHT);
 
-    for (const { posData, wrapperStack } of ScratchetCanvas.iteratePosWrapper(this.posBuffer)) {
+    for (const { posData, wrapperStack } of ScratchetCanvas.iteratePosWrapper(posWrapper)) {
       let isFromHighlightedUser = false;
 
       if (userHighlight != null) {
