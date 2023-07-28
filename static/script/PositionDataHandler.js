@@ -22,13 +22,15 @@ class PositionDataHandler {
 
 
   /**
-   * Simple binary search. Returns the desired position of the input number.
-   * Relies on the existance of {@link initIndexes}.
+   * Simple binary search. Returns the desired position of the input number
+   * or Infinity when {@link initIndexes} is empty.
    * (Inspired by https://stackoverflow.com/a/50612218).
-   * @param {number} wrapperDestIndex The bulk init index to get the position of.
-   * @return {number} An {@link initIndexes} index.
+   * @param { number } wrapperDestIndex The bulk init index to get the position of.
+   * @return { number } An {@link initIndexes} index or Infinity.
    */
-  getPosDataIndex(wrapperDestIndex) {
+  #getPosDataIndex(wrapperDestIndex) {
+    if (!this.initIndexes) return Infinity;
+
     let start = 0;
     let end = this.initIndexes.length - 1;
     while (start <= end) {
@@ -52,14 +54,12 @@ class PositionDataHandler {
   }
 
   /**
-   * Add a posDataWrapper to the {@link buffer} with an optional init index,
-   * at an optional array position.
-   * @param {Array<Array<number>>} value The posDataWrapper to insert.
-   * @param {number} [initIndex = Infinity] The init index of the posDataWrapper.
-   * @param {number} [insertIndex = Infinity] The array index to insert value at.
+   * Add a posDataWrapper to the {@link buffer} with an optional init index.
+   * @param { Array<Array<number>> } value The posDataWrapper to insert.
+   * @param { number } [initIndex = Infinity] The init index of the posDataWrapper.
    */
-  addToBuffer(value, initIndex = Infinity, insertIndex = Infinity) {
-    // insertIndex === Infinity is equivalent to `Array.push`
+  addToBuffer(value, initIndex = Infinity) {
+    const insertIndex = this.#getPosDataIndex(initIndex);
     if (this.initIndexes) {
       this.initIndexes.splice(insertIndex, 0, initIndex);
     }

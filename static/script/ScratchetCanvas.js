@@ -256,12 +256,7 @@ class ScratchetCanvas extends CanvasViewTransform {
 
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = createPosDataWrapper(posData);
-    if (wrapperDestIndex != null && this.initPosIndexes) {
-      const insertIndex = this.getPosDataIndex(wrapperDestIndex);
-      this.addToPosBuffer(posDataWrapper, wrapperDestIndex, insertIndex);
-    } else {
-      this.addToPosBuffer(posDataWrapper);
-    }
+    this.view.posHandler.addToBuffer(posDataWrapper, wrapperDestIndex);
     user.clearRedoBuffer();
     user.posCache.push(posDataWrapper);
   }
