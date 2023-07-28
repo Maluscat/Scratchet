@@ -216,7 +216,7 @@ class ScratchetCanvas extends CanvasViewTransform {
     if (userCache.length > 0) {
       const joinedBuffer = [this.roomCode];
       for (const posDataWrapper of userCache) {
-        const wrapperDestIndex = this.posBuffer.indexOf(posDataWrapper);
+        const wrapperDestIndex = this.view.posHandler.buffer.indexOf(posDataWrapper);
         for (const posData of posDataWrapper) {
           joinedBuffer.push(
             Global.MODE.BULK_INIT,
@@ -231,7 +231,7 @@ class ScratchetCanvas extends CanvasViewTransform {
   clearUserBufferAndRedraw(user) {
     if (user.posCache.length > 0) {
       for (const posDataWrapper of user.posCache) {
-        this.deleteFromPosBuffer(posDataWrapper);
+        this.view.posHandler.deleteFromBuffer(posDataWrapper);
       }
       user.posCache = [];
       this.view.redraw();

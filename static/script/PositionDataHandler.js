@@ -21,6 +21,25 @@ class PositionDataHandler {
   }
 
 
+  deleteFromBuffer(item) {
+    this.buffer.splice(this.buffer.indexOf(item), 1);
+  }
+
+  /**
+   * Add a posDataWrapper to the {@link buffer} with an optional init index.
+   * @param { Array<Array<number>> } value The posDataWrapper to insert.
+   * @param { number } [initIndex = Infinity] The init index of the posDataWrapper.
+   */
+  addToBuffer(value, initIndex = Infinity) {
+    const insertIndex = this.#getPosDataIndex(initIndex);
+    if (this.initIndexes) {
+      this.initIndexes.splice(insertIndex, 0, initIndex);
+    }
+    this.buffer.splice(insertIndex, 0, value);
+  }
+
+
+  // ---- Helper functions ----
   /**
    * Simple binary search. Returns the desired position of the input number
    * or Infinity when {@link initIndexes} is empty.
@@ -47,22 +66,5 @@ class PositionDataHandler {
       }
     }
     return end + 1;
-  }
-
-  deleteFromBuffer(item) {
-    this.buffer.splice(this.buffer.indexOf(item), 1);
-  }
-
-  /**
-   * Add a posDataWrapper to the {@link buffer} with an optional init index.
-   * @param { Array<Array<number>> } value The posDataWrapper to insert.
-   * @param { number } [initIndex = Infinity] The init index of the posDataWrapper.
-   */
-  addToBuffer(value, initIndex = Infinity) {
-    const insertIndex = this.#getPosDataIndex(initIndex);
-    if (this.initIndexes) {
-      this.initIndexes.splice(insertIndex, 0, initIndex);
-    }
-    this.buffer.splice(insertIndex, 0, value);
   }
 }

@@ -51,7 +51,7 @@ class ScratchetUser extends UserErase {
       } else if (this.posCache.length > 0) {
         const posDataWrapper = this.posCache.pop();
         this.redoBuffer.push(posDataWrapper);
-        room.deleteFromPosBuffer(posDataWrapper);
+        room.view.posHandler.deleteFromBuffer(posDataWrapper);
       } else break;
     }
 
@@ -76,7 +76,7 @@ class ScratchetUser extends UserErase {
       } else if (this.redoBuffer.length > 0) {
         const posDataWrapper = this.redoBuffer.pop();
         this.posCache.push(posDataWrapper);
-        room.addToPosBuffer(posDataWrapper);
+        room.view.posHandler.addToBuffer(posDataWrapper);
       } else break;
     }
 

@@ -15,7 +15,7 @@ class CanvasView {
   /** @param { ScratchetUser } [userHighlight] */
   redraw(userHighlight) {
     // TODO skip unseen points
-    const posWrapper = this.posHandler.posBuffer;
+    const posWrapper = this.posHandler.buffer;
     let prevPosData;
     let prevPosDataWrapper;
 
