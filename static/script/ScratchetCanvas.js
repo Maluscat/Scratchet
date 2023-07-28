@@ -123,7 +123,7 @@ class ScratchetCanvas extends CanvasViewTransform {
               }
             });
           if (this.hasErased) {
-            this.redraw();
+            this.view.redraw();
             this.sendHandler.brush.sendCompleteMetaDataNextTime();
             this.sendHandler.addData('erase', posX, posY);
           }
@@ -137,7 +137,7 @@ class ScratchetCanvas extends CanvasViewTransform {
     this.sendHandler.send();
     if (this.isDrawing === true) {
       this.ownUser.captureUndoGroup();
-      this.redraw();
+      this.view.redraw();
       this.isDrawing = false;
       this.hasErased = false;
       ui.toggleDrawIndicatorEraseMode(true);
@@ -175,10 +175,6 @@ class ScratchetCanvas extends CanvasViewTransform {
     user.redo(this, count);
   }
 
-  redraw(userHighlight) {
-    this.view.redraw(this.posBuffer, userHighlight);
-  }
-
 
   // ---- Pos buffer ----
   setLastPos(posX, posY) {
@@ -196,7 +192,7 @@ class ScratchetCanvas extends CanvasViewTransform {
       }
     }
     this.sliceInitDataAndAddToBuffer(data, user, startIndex);
-    this.redraw();
+    this.view.redraw();
   }
   sliceInitDataAndAddToBuffer(data, user, startIndex, endIndex = Infinity) {
     const posData = data.subarray(startIndex, endIndex);
@@ -213,7 +209,7 @@ class ScratchetCanvas extends CanvasViewTransform {
     for (let i = META_LEN.ERASE; i < data.length; i += 2) {
       user.eraseAtPos(data[i], data[i + 1], getClientMetaWidth(data));
     }
-    this.redraw();
+    this.view.redraw();
   }
 
   sendJoinedUserBuffer() {
@@ -239,7 +235,7 @@ class ScratchetCanvas extends CanvasViewTransform {
         this.deleteFromPosBuffer(posDataWrapper);
       }
       user.posCache = [];
-      this.redraw();
+      this.view.redraw();
     }
   }
 
@@ -252,7 +248,7 @@ class ScratchetCanvas extends CanvasViewTransform {
   addServerDataToBufferAndDraw(posData, user) {
     user.setColorIndicator(getClientMetaHue(posData));
     this.addServerDataToBuffer(posData, user);
-    this.redraw();
+    this.view.redraw();
   }
 
   addOwnClientDataToBuffer(posData) {

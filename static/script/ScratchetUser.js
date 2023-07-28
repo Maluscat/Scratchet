@@ -55,7 +55,7 @@ class ScratchetUser extends UserErase {
       } else break;
     }
 
-    room.redraw();
+    room.view.redraw();
   }
   /**
    * @param { ScratchetCanvas } room
@@ -80,7 +80,7 @@ class ScratchetUser extends UserErase {
       } else break;
     }
 
-    room.redraw();
+    room.view.redraw();
   }
 
   clearRedoBuffer() {
@@ -102,7 +102,7 @@ class ScratchetUser extends UserErase {
     controller.highlightUser(this);
   }
   listNodeMouseLeave() {
-    controller.activeRoom.redraw();
+    controller.activeRoom.view.redraw();
   }
 
   // ---- Helper functions ----

@@ -12,12 +12,10 @@ class CanvasView {
   }
 
 
-  /**
-   * @param { Array } posWrapper
-   * @param { ScratchetUser } [userHighlight]
-   */
-  redraw(posWrapper, userHighlight) {
+  /** @param { ScratchetUser } [userHighlight] */
+  redraw(userHighlight) {
     // TODO skip unseen points
+    const posWrapper = this.posHandler.posBuffer;
     let prevPosData;
     let prevPosDataWrapper;
 
