@@ -2,11 +2,13 @@ class CanvasView {
   canvas;
   ctx;
 
+  posHandler;
 
   /** @param { HTMLCanvasElement } canvas */
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.posHandler = new PositionDataHandler();
   }
 
 
