@@ -1,23 +1,18 @@
 'use strict';
-class CanvasViewTransform {
+class CanvasViewTransform extends CanvasView {
   static VIEW_WIDTH = 8191;
   static VIEW_HEIGHT = 8191;
 
   static MAX_SCALE = CanvasViewTransform.scaleInterpolateFnInverse(20); // 2000 %
   minScale = 0;
 
-  canvas;
-  ctx;
   currentMousePos = [0, 0];
 
   state;
 
-  /**
-   * @param { HTMLCanvasElement } canvas
-   */
+  /** @param { HTMLCanvasElement } canvas */
   constructor(canvas) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
+    super(canvas);
 
     // TODO this probably needs to be integrated into setTransform
     this.setDimensions();

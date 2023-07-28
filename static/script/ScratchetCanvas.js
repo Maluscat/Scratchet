@@ -14,7 +14,6 @@ class ScratchetCanvas extends CanvasViewTransform {
   /** @type { ScratchetTool } */
   activeTool;
 
-  /** @type { CanvasView } */
   view;
 
 
@@ -29,7 +28,7 @@ class ScratchetCanvas extends CanvasViewTransform {
     this.addOwnClientDataToBuffer = this.addOwnClientDataToBuffer.bind(this);
 
     this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
-    this.view = new CanvasView(canvas);
+    this.view = new CanvasViewTransform(canvas);
 
     this.tools = {
       brush: new Brush(
