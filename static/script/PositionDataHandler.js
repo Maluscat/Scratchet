@@ -21,8 +21,14 @@ class PositionDataHandler {
   }
 
 
-  deleteFromBuffer(item) {
-    this.buffer.splice(this.buffer.indexOf(item), 1);
+  /** @param { Array } posWrapper */
+  getPosIndex(posWrapper) {
+    return this.buffer.indexOf(posWrapper);
+  }
+
+  /** @param { Array } posWrapper */
+  deleteFromBuffer(posWrapper) {
+    this.buffer.splice(this.buffer.indexOf(posWrapper), 1);
   }
 
   /**
@@ -31,7 +37,7 @@ class PositionDataHandler {
    * @param { number } [initIndex = Infinity] The init index of the posDataWrapper.
    */
   addToBuffer(value, initIndex = Infinity) {
-    const insertIndex = this.#getPosDataIndex(initIndex);
+    const insertIndex = this.#getBufferInitInsertIndex(initIndex);
     if (this.initIndexes) {
       this.initIndexes.splice(insertIndex, 0, initIndex);
     }
@@ -47,7 +53,7 @@ class PositionDataHandler {
    * @param { number } wrapperDestIndex The bulk init index to get the position of.
    * @return { number } An {@link initIndexes} index or Infinity.
    */
-  #getPosDataIndex(wrapperDestIndex) {
+  #getBufferInitInsertIndex(wrapperDestIndex) {
     if (!this.initIndexes) return Infinity;
 
     let start = 0;
