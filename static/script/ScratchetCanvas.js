@@ -1,5 +1,5 @@
 'use strict';
-class ScratchetCanvas extends CanvasViewTransform {
+class ScratchetCanvas {
   /** @type {[number, number]} */
   lastPos = new Array(2);
 
@@ -22,7 +22,6 @@ class ScratchetCanvas extends CanvasViewTransform {
     * @param { OwnUser } ownUser
     */
   constructor(canvas, ownUser, roomCode) {
-    super(canvas);
     this.ownUser = ownUser;
 
     this.addOwnClientDataToBuffer = this.addOwnClientDataToBuffer.bind(this);
@@ -52,8 +51,7 @@ class ScratchetCanvas extends CanvasViewTransform {
 
     this.view.setLineWidth(this.tools.brush.width);
     this.view.setStrokeStyle(this.tools.brush.hue);
-
-    this.setTransform();
+    this.view.setTransform();
   }
 
   // ---- Event functions ----
@@ -72,7 +70,7 @@ class ScratchetCanvas extends CanvasViewTransform {
       // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
       switch (this.activeTool.constructor) {
         case Brush: {
-          const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
+          const [posX, posY] = this.view.getPosWithTransform(e.clientX, e.clientY);
 
           this.ownUser.startBrushGroupCapture();
 
@@ -95,18 +93,18 @@ class ScratchetCanvas extends CanvasViewTransform {
   canvasDraw(e) {
     if (controls3D.touchIsActive) return;
 
-    this.setCurrentMousePos(e.clientX, e.clientY);
+    this.view.setCurrentMousePos(e.clientX, e.clientY);
     ui.moveDrawIndicator(e.clientX, e.clientY);
 
     if (this.isDrawing) {
-      const [posX, posY] = this.getPosWithTransform(e.clientX, e.clientY);
+      const [posX, posY] = this.view.getPosWithTransform(e.clientX, e.clientY);
 
       switch (this.activeTool.constructor) {
         case Brush: {
-          this.ctx.beginPath();
-          this.ctx.moveTo(...this.lastPos);
-          this.ctx.lineTo(posX, posY);
-          this.ctx.stroke();
+          this.view.ctx.beginPath();
+          this.view.ctx.moveTo(...this.lastPos);
+          this.view.ctx.lineTo(posX, posY);
+          this.view.ctx.stroke();
 
           this.setLastPos(posX, posY);
 

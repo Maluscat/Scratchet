@@ -82,13 +82,13 @@ class ScratchetController {
 
   windowResized() {
     for (const room of this.rooms.values()) {
-      room.setDimensions();
-      room.setTransform();
+      room.view.setDimensions();
+      room.view.setTransform();
     }
   }
 
   scaleCanvasAtCenter(scaleAmount) {
-    this.activeRoom.setTransformWithNewState({
+    this.activeRoom.view.setTransformWithNewState({
       scale: { x: scaleAmount, y: scaleAmount }
     }, null, true);
   }

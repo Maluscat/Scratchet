@@ -143,16 +143,16 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   focus() {
-    controls3D.changeState(this.state);
-    controls3D.changeEventTarget(this.canvas);
+    controls3D.changeState(this.view.state);
+    controls3D.changeEventTarget(this.view.canvas);
 
     this.displayCanvas();
     this.roomListNode.classList.add('current');
 
     this.setRoomNameInput();
-    this.canvas.style.zIndex = ScratchetRoom.canvasZIndex++;
+    this.view.canvas.style.zIndex = ScratchetRoom.canvasZIndex++;
 
-    this.updateScaleSlider();
+    this.view.updateScaleSlider();
     this.activeTool.activate();
 
     this.sendHandler.activateTimers();
@@ -162,12 +162,12 @@ class ScratchetRoom extends ScratchetCanvas {
 
     this.sendHandler.clearTimers();
 
-    this.canvas.classList.add('inactive');
+    this.view.canvas.classList.add('inactive');
     this.roomListNode.classList.remove('current');
   }
 
   displayCanvas() {
-    this.canvas.classList.remove('inactive');
+    this.view.canvas.classList.remove('inactive');
   }
 
   async removeSelf() {
@@ -180,9 +180,9 @@ class ScratchetRoom extends ScratchetCanvas {
   // ---- Room UI helpers ----
   removeCanvas() {
     return new Promise(resolve => {
-      this.canvas.classList.add('remove');
+      this.view.canvas.classList.add('remove');
       setTimeout(() => {
-        this.canvas.remove();
+        this.view.canvas.remove();
         resolve();
       }, getCanvasAnimDurationRemove());
     });
