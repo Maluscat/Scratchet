@@ -3,6 +3,8 @@
  */
 
 class CanvasView {
+  static BEZIER_CONTROL_MOD = .4;
+
   canvas;
   ctx;
 
@@ -79,6 +81,40 @@ class CanvasView {
     }
   }
 
+  /**
+   * Get the bézier control points needed for a smooth line between three points.
+   * The control points correspond to the center point (the second parameter).
+   * @param { Position } startPos
+   * @param { Position } computePos
+   * @param { Position } endPos
+   * @return { [ Position, Position ] } Both control points of `computePos`.
+   */
+  getBezierControlPoints(startPos, computePos, endPos) {
+    const distanceStartCompute = CanvasView.getPosDistance(startPos, computePos);
+    const distanceComputeEnd = CanvasView.getPosDistance(computePos, endPos);
+    const distanceTotal = distanceStartCompute + distanceComputeEnd;
+
+    const scaleFactor1 = CanvasView.BEZIER_CONTROL_MOD * distanceStartCompute / distanceTotal;
+    const scaleFactor2 = CanvasView.BEZIER_CONTROL_MOD * distanceComputeEnd / distanceTotal;
+
+    return [
+      computeControlPoint(-scaleFactor1),
+      computeControlPoint(scaleFactor2)
+    ];
+
+
+    /**
+     * @param { number } factor The scale factor to apply.
+     * @return { Position }
+     */
+    function computeControlPoint(factor) {
+      return [
+        computePos[0] + factor * (endPos[0] - startPos[0]),
+        computePos[1] + factor * (endPos[1] - startPos[1]),
+      ];
+    }
+  }
+
 
   // ---- Misc helper functions ----
   setLineWidth(width) {
@@ -87,6 +123,7 @@ class CanvasView {
   setStrokeStyle(hue, hasReducedAlpha) {
     this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
   }
+
 
   // ---- Static helper functions ----
   /**
