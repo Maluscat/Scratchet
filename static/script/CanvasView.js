@@ -1,3 +1,7 @@
+/**
+ * @typedef { [ number, number ] } Position
+ */
+
 class CanvasView {
   canvas;
   ctx;
