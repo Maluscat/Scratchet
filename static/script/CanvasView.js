@@ -87,4 +87,15 @@ class CanvasView {
   setStrokeStyle(hue, hasReducedAlpha) {
     this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
   }
+
+  // ---- Static helper functions ----
+  /**
+   * Returns the distance between two position vectors.
+   * @param { Position } pos0
+   * @param { Position } pos1
+   * @return { number } The distance between {@link pos0} and {@link pos1}
+   */
+  static getPosDistance(pos0, pos1) {
+    return Math.sqrt(Math.pow(pos1[0] - pos0[0], 2) + Math.pow(pos1[1] - pos0[1], 2));
+  }
 }
