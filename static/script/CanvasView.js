@@ -28,7 +28,7 @@ class CanvasView {
 
     this.ctx.clearRect(0, 0, CanvasViewTransform.VIEW_WIDTH, CanvasViewTransform.VIEW_HEIGHT);
 
-    for (const { posData, wrapperStack } of ScratchetCanvas.iteratePosWrapper(posWrapper)) {
+    for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(posWrapper)) {
       let isFromHighlightedUser = false;
 
       if (userHighlight != null) {

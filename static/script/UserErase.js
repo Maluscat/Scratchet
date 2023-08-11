@@ -33,7 +33,7 @@ class UserErase {
     let redoWrapper;
     let lastWrapper;
 
-    for (const { posData, wrapperStack, index } of ScratchetCanvas.iteratePosWrapper(this.posCache)) {
+    for (const { posData, wrapperStack, index } of PositionDataHandler.iteratePosWrapper(this.posCache)) {
       const posWrapper = wrapperStack.at(-2);
       const initialPosData = [ ...posWrapper ];
 

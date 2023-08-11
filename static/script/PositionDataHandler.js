@@ -89,4 +89,40 @@ class PositionDataHandler {
     return getClientMetaHue(posData0) !== getClientMetaHue(posData1)
         || getClientMetaWidth(posData0) !== getClientMetaWidth(posData1)
   }
+
+
+  /**
+   * @typedef { Object } recursePosWrapperYield
+   * @prop { Int16Array } posData
+   * @prop { Array } wrapperStack
+   * @prop { Array } prevPosDataWrapper
+   * @prop { Int16Array } prevPosData
+   * @prop { number } index
+   */
+
+  /**
+   * @param { Iterable } posWrapper
+   * @return { Generator<recursePosWrapperYield> }
+   */
+  static *iteratePosWrapper(posWrapper) {
+    yield* this.#iteratePosWrapperGen([posWrapper]);
+  }
+  static *#iteratePosWrapperGen(wrapperStack, index = 0) {
+    const posData = wrapperStack.at(-1);
+    if (posData.length === 0) return;
+
+    if (Array.isArray(posData) || posData instanceof Set) {
+      let i = 0;
+      for (const childWrapper of posData) {
+        wrapperStack.push(childWrapper);
+
+        yield* this.#iteratePosWrapperGen(wrapperStack, i);
+
+        wrapperStack.pop();
+        i++;
+      }
+    } else {
+      yield { posData, wrapperStack, index };
+    }
+  }
 }
