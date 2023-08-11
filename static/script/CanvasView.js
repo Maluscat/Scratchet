@@ -103,12 +103,9 @@ class CanvasView {
 
       if (posQueue.length < 6) continue;
 
-      /** @type Position */
-      const startPos = [ posQueue[0], posQueue[1] ];
-      /** @type Position */
-      const computePos = [ posQueue[2], posQueue[3] ];
-      /** @type Position */
-      const endPos = [ posQueue[4], posQueue[5] ];
+      const startPos = getQueuePos(0);
+      const computePos = getQueuePos(1);
+      const endPos = getQueuePos(2);
 
       const [ cp1, cp2 ] = this.getBezierControlPoints(startPos, computePos, endPos);
 
@@ -118,6 +115,16 @@ class CanvasView {
     }
 
     return lastCp;
+
+
+    /**
+     * @param { number } offset
+     * @return { Position }
+     */
+    function getQueuePos(offset) {
+      offset *= 2;
+      return [ posQueue[offset], posQueue[offset + 1] ];
+    }
   }
 
 
