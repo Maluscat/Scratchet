@@ -77,4 +77,11 @@ class PositionDataHandler {
     }
     return end + 1;
   }
+
+
+  // ---- Static helper functions ----
+  static posDataIsNotContinuous(posData0, posData1) {
+    return posData0.at(-2) !== posData1[META_LEN.BRUSH]
+        || posData0.at(-1) !== posData1[META_LEN.BRUSH + 1];
+  }
 }
