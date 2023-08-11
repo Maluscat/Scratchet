@@ -84,4 +84,9 @@ class PositionDataHandler {
     return posData0.at(-2) !== posData1[META_LEN.BRUSH]
         || posData0.at(-1) !== posData1[META_LEN.BRUSH + 1];
   }
+
+  static posDataMetaHasChanged(posData0, posData1) {
+    return getClientMetaHue(posData0) !== getClientMetaHue(posData1)
+        || getClientMetaWidth(posData0) !== getClientMetaWidth(posData1)
+  }
 }

@@ -35,8 +35,7 @@ class CanvasView {
         isFromHighlightedUser = !userHighlight.posCache.includes(wrapperStack[1]);
       }
       if (!prevPosData
-          || getClientMetaHue(posData) !== getClientMetaHue(prevPosData)
-          || getClientMetaWidth(posData) !== getClientMetaWidth(prevPosData)
+          || PositionDataHandler.posDataMetaHasChanged(posData, prevPosData)
             /* This forces a stroke when changing from one user to another with highlight enabled */
           || userHighlight != null && (!userHighlight.posCache.includes(prevPosDataWrapper) !== isFromHighlightedUser)) {
 
