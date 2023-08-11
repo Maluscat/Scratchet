@@ -47,14 +47,14 @@ class PositionDataHandler {
 
   // ---- Helper functions ----
   /**
-   * Simple binary search. Returns the desired position of the input number
-   * or Infinity when {@link initIndexes} is empty.
+   * Simple binary search. Returns the desired position of the input number.
+   * This includes Infinity if the position is always at the end.
    * (Inspired by https://stackoverflow.com/a/50612218).
    * @param { number } wrapperDestIndex The bulk init index to get the position of.
    * @return { number } An {@link initIndexes} index or Infinity.
    */
   #getBufferInitInsertIndex(wrapperDestIndex) {
-    if (!this.initIndexes) return Infinity;
+    if (!this.initIndexes || wrapperDestIndex === Infinity) return Infinity;
 
     let start = 0;
     let end = this.initIndexes.length - 1;
