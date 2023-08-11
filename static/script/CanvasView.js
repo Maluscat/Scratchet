@@ -67,18 +67,62 @@ class CanvasView {
     }
   }
 
-  drawFromPosData(posData) {
-    this.ctx.moveTo(posData[META_LEN.BRUSH], posData[META_LEN.BRUSH + 1]);
-    let i = META_LEN.BRUSH;
-    for (; i < posData.length - 4; i += 6) {
-      this.ctx.bezierCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3], posData[i + 4], posData[i + 5]);
+  // NOTE: Make it as portable/adoptable as possible for future purposes!
+  /**
+   * @param { Int16Array } posData
+   * @param { number[] } posQueue
+   * @param { [ number, number ] } lastCp
+   */
+  drawFromPosData(posData, posQueue, lastCp) {
+    if (posQueue.length === 0) {
+      lastCp = [ posData[META_LEN.BRUSH], posData[META_LEN.BRUSH + 1] ];
+      this.ctx.moveTo(...lastCp);
     }
-    // Draw the finishing points of the wrapper in case the wrapper hasn't fully been drawn above
-    if (i === posData.length - 4) {
-      this.ctx.quadraticCurveTo(posData[i], posData[i + 1], posData[i + 2], posData[i + 3]);
-    } else if (i === posData.length - 2) {
-      this.ctx.lineTo(posData[i], posData[i + 1]);
+
+    for (let i = META_LEN.BRUSH; i < posData.length; i += 2) {
+      if (posQueue.length === 6) {
+        posQueue.shift();
+        posQueue.shift();
+      }
+      // Avoid two consecutive equal positions
+      if (posData[i] === posQueue.at(-2) && posData[i + 1] === posQueue.at(-1)) {
+        continue;
+      }
+
+      posQueue.push(posData[i], posData[i + 1]);
+
+      if (posQueue.length < 6) continue;
+
+      /** @type Position */
+      const startPos = [ posQueue[0], posQueue[1] ];
+      /** @type Position */
+      const computePos = [ posQueue[2], posQueue[3] ];
+      /** @type Position */
+      const endPos = [ posQueue[4], posQueue[5] ];
+
+      const [ cp1, cp2 ] = this.getBezierControlPoints(startPos, computePos, endPos);
+
+      this.ctx.bezierCurveTo(...lastCp, ...cp1, ...computePos);
+
+      lastCp = cp2;
     }
+
+    return lastCp;
+  }
+
+
+  /**
+   * Draw the finishing points of a line.
+   * @param { Int16Array } posData
+   * @param { Position } lastCp
+   */
+  drawFromPosDataFinish(posData, lastCp) {
+    this.ctx.bezierCurveTo(
+      ...lastCp,
+      posData.at(-2),
+      posData.at(-1),
+      posData.at(-2),
+      posData.at(-1));
   }
 
   /**
