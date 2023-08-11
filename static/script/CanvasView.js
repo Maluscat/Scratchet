@@ -54,10 +54,10 @@ class CanvasView {
 
       if (prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData)) {
         posQueue = [];
-        this.drawFromPosDataFinish(prevPosData, lastCp);
+        this.#drawFromPosDataEnd(prevPosData, lastCp);
       }
 
-      lastCp = this.drawFromPosData(posData, posQueue, lastCp);
+      lastCp = this.#drawFromPosData(posData, posQueue, lastCp);
 
       prevPosData = posData;
 
@@ -67,7 +67,7 @@ class CanvasView {
     }
 
     if (prevPosData) {
-      this.drawFromPosDataFinish(prevPosData, lastCp);
+      this.#drawFromPosDataEnd(prevPosData, lastCp);
 
       this.ctx.stroke();
 
@@ -76,13 +76,16 @@ class CanvasView {
     }
   }
 
-  // NOTE: Make it as portable/adoptable as possible for future purposes!
   /**
+   * Draw a smooth line from the given posData. `posQueue` collects every
+   * Position in consecutive order to allow carrying them over.
    * @param { Int16Array } posData
-   * @param { number[] } posQueue
-   * @param { [ number, number ] } lastCp
+   * @param { number[] } posQueue Collects every {@link Position} in consecutive order.
+   * @param { Position } lastCp The control point of the last pass.
+   * @return { Position } The second control point of the center {@link Position}.
    */
-  drawFromPosData(posData, posQueue, lastCp) {
+  #drawFromPosData(posData, posQueue, lastCp) {
+    // If this is the first pass of a new line
     if (posQueue.length === 0) {
       lastCp = [ posData[META_LEN.BRUSH], posData[META_LEN.BRUSH + 1] ];
       this.ctx.moveTo(...lastCp);
@@ -90,8 +93,7 @@ class CanvasView {
 
     for (let i = META_LEN.BRUSH; i < posData.length; i += 2) {
       if (posQueue.length === 6) {
-        posQueue.shift();
-        posQueue.shift();
+        posQueue.splice(0, 2);
       }
       // Avoid two consecutive equal positions
       if (posData[i] === posQueue.at(-2) && posData[i + 1] === posQueue.at(-1)) {
@@ -121,11 +123,11 @@ class CanvasView {
 
 
   /**
-   * Draw the finishing points of a line.
+   * Draw the finishing points of a given posData.
    * @param { Int16Array } posData
    * @param { Position } lastCp
    */
-  drawFromPosDataFinish(posData, lastCp) {
+  #drawFromPosDataEnd(posData, lastCp) {
     this.ctx.bezierCurveTo(
       ...lastCp,
       posData.at(-2),
