@@ -28,7 +28,11 @@ class PositionDataHandler {
 
   /** @param { Array } posWrapper */
   deleteFromBuffer(posWrapper) {
-    this.buffer.splice(this.buffer.indexOf(posWrapper), 1);
+    const index = this.buffer.indexOf(posWrapper);
+    if (this.initIndexes) {
+      this.initIndexes.splice(index, 1);
+    }
+    this.buffer.splice(index, 1);
   }
 
   /**
