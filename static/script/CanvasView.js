@@ -3,7 +3,7 @@
  */
 
 class CanvasView {
-  static BEZIER_CONTROL_MOD = .4;
+  static BEZIER_CONTROL_MOD = .35;
 
   canvas;
   ctx;
@@ -20,8 +20,9 @@ class CanvasView {
 
   /** @param { ScratchetUser } [userHighlight] */
   redraw(userHighlight) {
-    // TODO skip unseen points
     const posWrapper = this.posHandler.buffer;
+    let posQueue = [];
+    let lastCp;
     let prevPosData;
     let prevPosDataWrapper;
 
@@ -51,15 +52,23 @@ class CanvasView {
         this.ctx.beginPath();
       }
 
-      this.drawFromPosData(posData);
+      if (prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData)) {
+        posQueue = [];
+        this.drawFromPosDataFinish(prevPosData, lastCp);
+      }
+
+      lastCp = this.drawFromPosData(posData, posQueue, lastCp);
 
       prevPosData = posData;
+
       if (wrapperStack[1] !== prevPosDataWrapper) {
         prevPosDataWrapper = wrapperStack[1];
       }
     }
 
     if (prevPosData) {
+      this.drawFromPosDataFinish(prevPosData, lastCp);
+
       this.ctx.stroke();
 
       this.setStrokeStyle();
