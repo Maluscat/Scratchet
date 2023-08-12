@@ -91,14 +91,14 @@ class CanvasView {
     }
 
     for (let i = META_LEN.BRUSH; i < posData.length; i += 2) {
-      if (posQueue.length === 6) {
-        posQueue.splice(0, 2);
-      }
       // Avoid two consecutive equal positions
       if (posData[i] === posQueue.at(-2) && posData[i + 1] === posQueue.at(-1)) {
         continue;
       }
 
+      if (posQueue.length === 6) {
+        posQueue.splice(0, 2);
+      }
       posQueue.push(posData[i], posData[i + 1]);
 
       if (posQueue.length < 6) continue;
