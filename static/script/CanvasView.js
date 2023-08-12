@@ -34,6 +34,12 @@ class CanvasView {
       if (userHighlight != null) {
         isFromHighlightedUser = !userHighlight.posCache.includes(wrapperStack[1]);
       }
+
+      if (prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData)) {
+        posQueue = [];
+        this.#drawFromPosDataEnd(prevPosData, lastCp);
+      }
+
       if (!prevPosData
           || PositionDataHandler.posDataMetaHasChanged(posData, prevPosData)
             /* This forces a stroke when changing from one user to another with highlight enabled */
@@ -49,11 +55,6 @@ class CanvasView {
         this.setLineWidth(getClientMetaWidth(posData));
 
         this.ctx.beginPath();
-      }
-
-      if (prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData)) {
-        posQueue = [];
-        this.#drawFromPosDataEnd(prevPosData, lastCp);
       }
 
       lastCp = this.#drawFromPosData(posData, posQueue, lastCp);
