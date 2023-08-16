@@ -29,19 +29,22 @@ class CanvasView {
     this.ctx.clearRect(0, 0, CanvasViewTransform.VIEW_WIDTH, CanvasViewTransform.VIEW_HEIGHT);
 
     for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(posWrapper)) {
+      const metaHasChanged = prevPosData && PositionDataHandler.posDataMetaHasChanged(prevPosData, posData);
+      const isNotContinuous = prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData);
       let isFromHighlightedUser = false;
 
       if (userHighlight != null) {
         isFromHighlightedUser = !userHighlight.posCache.includes(wrapperStack[1]);
       }
 
-      if (prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData)) {
-        posQueue = [];
+      if (metaHasChanged || isNotContinuous) {
         this.#drawFromPosDataEnd(prevPosData, lastCp);
+        posQueue = [];
+        lastCp = null;
       }
 
-      if (!prevPosData
-          || PositionDataHandler.posDataMetaHasChanged(posData, prevPosData)
+      if (metaHasChanged
+          || !prevPosData
             /* This forces a stroke when changing from one user to another with highlight enabled */
           || userHighlight != null && (!userHighlight.posCache.includes(prevPosDataWrapper) !== isFromHighlightedUser)) {
 
@@ -60,7 +63,6 @@ class CanvasView {
       lastCp = this.#drawFromPosData(posData, posQueue, lastCp);
 
       prevPosData = posData;
-
       if (wrapperStack[1] !== prevPosDataWrapper) {
         prevPosDataWrapper = wrapperStack[1];
       }
