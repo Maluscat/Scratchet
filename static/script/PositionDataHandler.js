@@ -95,17 +95,17 @@ class PositionDataHandler {
    * @typedef { Object } recursePosWrapperYield
    * @prop { Int16Array } posData
    * @prop { Array } wrapperStack
-   * @prop { Array } prevPosDataWrapper
-   * @prop { Int16Array } prevPosData
    * @prop { number } index
    */
 
   /**
-   * @param { Iterable } posWrapper
+   * @param { Iterable[] } posWrappers
    * @return { Generator<recursePosWrapperYield> }
    */
-  static *iteratePosWrapper(posWrapper) {
-    yield* this.#iteratePosWrapperGen([posWrapper]);
+  static *iteratePosWrapper(...posWrappers) {
+    for (const posWrapper of posWrappers) {
+      yield* this.#iteratePosWrapperGen([posWrapper]);
+    }
   }
   static *#iteratePosWrapperGen(wrapperStack, index = 0) {
     const posData = wrapperStack.at(-1);
