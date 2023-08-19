@@ -31,7 +31,7 @@ class BrushBuffer extends SendBuffer {
     const flag = this.getNextFlag(hue, width);
 
     this.buffer.splice(1);
-    this.liveClientBuffer.splice(3);
+    this.liveClientBuffer.splice(META_LEN.BRUSH);
 
     this.buffer[0] = flag;
 
