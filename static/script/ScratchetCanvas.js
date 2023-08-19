@@ -1,8 +1,5 @@
 'use strict';
 class ScratchetCanvas {
-  /** @type {[number, number]} */
-  lastPos = new Array(2);
-
   ownUser;
 
   hasErased = false;
@@ -70,12 +67,8 @@ class ScratchetCanvas {
       // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
       switch (this.activeTool.constructor) {
         case Brush: {
-          const [posX, posY] = this.view.getPosWithTransform(e.clientX, e.clientY);
-
-          this.ownUser.startBrushGroupCapture();
-
-          this.setLastPos(posX, posY);
           this.sendHandler.brush.reset();
+          this.ownUser.startBrushGroupCapture();
           break;
         }
         case Eraser: {
@@ -101,14 +94,8 @@ class ScratchetCanvas {
 
       switch (this.activeTool.constructor) {
         case Brush: {
-          this.view.ctx.beginPath();
-          this.view.ctx.moveTo(...this.lastPos);
-          this.view.ctx.lineTo(posX, posY);
-          this.view.ctx.stroke();
-
-          this.setLastPos(posX, posY);
-
           this.sendHandler.addData('brush', posX, posY);
+          this.view.redraw();
           break;
         }
         case Eraser: {
@@ -172,12 +159,6 @@ class ScratchetCanvas {
     user.redo(this, count);
   }
 
-
-  // ---- Pos buffer ----
-  setLastPos(posX, posY) {
-    this.lastPos[0] = posX;
-    this.lastPos[1] = posY;
-  }
 
   // ---- Buffer functions ----
   handleBulkInitData(data, user) {
@@ -250,6 +231,7 @@ class ScratchetCanvas {
 
   addOwnClientDataToBuffer(posData) {
     this.addClientDataToBuffer(posData, this.ownUser);
+    this.view.redraw();
   }
 
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
