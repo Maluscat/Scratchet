@@ -111,7 +111,7 @@ class PositionDataHandler {
     const posData = wrapperStack.at(-1);
     if (posData.length === 0) return;
 
-    if (Array.isArray(posData) || posData instanceof Set) {
+    if (Array.isArray(posData) && typeof posData[0] !== 'number' || posData instanceof Set) {
       let i = 0;
       for (const childWrapper of posData) {
         wrapperStack.push(childWrapper);
