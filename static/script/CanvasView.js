@@ -10,8 +10,14 @@ class CanvasView {
 
   posHandler;
 
-  /** @param { HTMLCanvasElement } canvas */
-  constructor(canvas) {
+  #additionalData = [];
+
+  /**
+   * @param { HTMLCanvasElement } canvas
+   * @param { number[][] } additionalData
+   */
+  constructor(canvas, additionalData) {
+    this.#additionalData = additionalData;
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.posHandler = new PositionDataHandler();
@@ -28,7 +34,8 @@ class CanvasView {
 
     this.ctx.clearRect(0, 0, CanvasViewTransform.VIEW_WIDTH, CanvasViewTransform.VIEW_HEIGHT);
 
-    for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(posWrapper)) {
+    for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(posWrapper, ...this.#additionalData)) {
+
       const metaHasChanged = prevPosData && PositionDataHandler.posDataMetaHasChanged(prevPosData, posData);
       const isNotContinuous = prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData);
       let isFromHighlightedUser = false;

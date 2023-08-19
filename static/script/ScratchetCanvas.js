@@ -24,7 +24,7 @@ class ScratchetCanvas {
     this.addOwnClientDataToBuffer = this.addOwnClientDataToBuffer.bind(this);
 
     this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
-    this.view = new CanvasViewTransform(canvas);
+    this.view = new CanvasViewTransform(canvas, [ this.sendHandler.brush.liveClientBuffer ]);
 
     this.tools = {
       brush: new Brush(
@@ -119,6 +119,7 @@ class ScratchetCanvas {
 
   finalizeOwnDraw() {
     this.sendHandler.send();
+    this.sendHandler.brush.reset();
     if (this.isDrawing === true) {
       this.ownUser.captureUndoGroup();
       this.view.redraw();

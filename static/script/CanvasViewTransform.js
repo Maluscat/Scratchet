@@ -11,8 +11,8 @@ class CanvasViewTransform extends CanvasView {
   state;
 
   /** @param { HTMLCanvasElement } canvas */
-  constructor(canvas) {
-    super(canvas);
+  constructor(canvas, ...superArgs) {
+    super(canvas, ...superArgs);
 
     // TODO this probably needs to be integrated into setTransform
     this.setDimensions();
