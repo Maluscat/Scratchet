@@ -1,8 +1,5 @@
 'use strict';
 class CanvasViewTransform extends CanvasView {
-  static VIEW_WIDTH = 8191;
-  static VIEW_HEIGHT = 8191;
-
   static MAX_SCALE = CanvasViewTransform.scaleInterpolateFnInverse(20); // 2000 %
   minScale = 0;
 
@@ -24,8 +21,8 @@ class CanvasViewTransform extends CanvasView {
       },
       // Start at the view center
       tran: {
-        x: -((CanvasViewTransform.VIEW_WIDTH + 1) / 2 - this.canvas.width / 2),
-        y: -((CanvasViewTransform.VIEW_HEIGHT + 1) / 2 - this.canvas.height / 2)
+        x: -((CanvasView.WIDTH + 1) / 2 - this.canvas.width / 2),
+        y: -((CanvasView.HEIGHT + 1) / 2 - this.canvas.height / 2)
       }
     });
   }
@@ -79,8 +76,8 @@ class CanvasViewTransform extends CanvasView {
 
     this.minScale = CanvasViewTransform.scaleInterpolateFnInverse(
       Math.max(
-        this.canvas.width / CanvasViewTransform.VIEW_WIDTH,
-        this.canvas.height / CanvasViewTransform.VIEW_HEIGHT));
+        this.canvas.width / CanvasView.WIDTH,
+        this.canvas.height / CanvasView.HEIGHT));
 
     ui.scaleSlider.range[0] = this.minScale;
 
@@ -160,8 +157,8 @@ class CanvasViewTransform extends CanvasView {
   }
 
   #limitStateTran() {
-    const viewStopX = (CanvasViewTransform.VIEW_WIDTH * this.getScaleX()) - this.canvas.width;
-    const viewStopY = (CanvasViewTransform.VIEW_HEIGHT * this.getScaleY()) - this.canvas.height;
+    const viewStopX = (CanvasView.WIDTH * this.getScaleX()) - this.canvas.width;
+    const viewStopY = (CanvasView.HEIGHT * this.getScaleY()) - this.canvas.height;
 
     if (this.state.tran.x > 0) {
       this.state.tran.x = 0;

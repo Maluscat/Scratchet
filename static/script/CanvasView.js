@@ -3,6 +3,9 @@
  */
 
 class CanvasView {
+  static WIDTH = 8191;
+  static HEIGHT = 8191;
+
   static BEZIER_CONTROL_MOD = .35;
 
   canvas;
@@ -32,7 +35,7 @@ class CanvasView {
     let prevPosData;
     let prevPosDataWrapper;
 
-    this.ctx.clearRect(0, 0, CanvasViewTransform.VIEW_WIDTH, CanvasViewTransform.VIEW_HEIGHT);
+    this.ctx.clearRect(0, 0, CanvasView.WIDTH, CanvasView.HEIGHT);
 
     for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(posWrapper, ...this.#additionalData)) {
 
