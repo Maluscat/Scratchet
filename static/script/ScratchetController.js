@@ -293,7 +293,7 @@ class ScratchetController {
 
   // ---- Canvas helpers ----
   highlightUser(user) {
-    this.activeRoom.view.redraw(user);
+    this.activeRoom.view.update(user);
   }
 
   // ---- Socket receive handling ----

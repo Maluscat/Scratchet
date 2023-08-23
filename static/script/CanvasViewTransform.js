@@ -56,7 +56,7 @@ class CanvasViewTransform extends CanvasView {
 
     this.#scaleByDevicePixelRatio();
 
-    this.redraw();
+    this.update();
 
     if (!Slider89.floatIsEqual(ui.scaleSlider.value, this.state.scale.x)) {
       this.updateScaleSlider();

@@ -95,7 +95,7 @@ class ScratchetCanvas {
       switch (this.activeTool.constructor) {
         case Brush: {
           this.sendHandler.addData('brush', posX, posY);
-          this.view.redraw();
+          this.view.update();
           break;
         }
         case Eraser: {
@@ -107,7 +107,7 @@ class ScratchetCanvas {
               }
             });
           if (this.hasErased) {
-            this.view.redraw();
+            this.view.update();
             this.sendHandler.brush.sendCompleteMetaDataNextTime();
             this.sendHandler.addData('erase', posX, posY);
           }
@@ -122,7 +122,7 @@ class ScratchetCanvas {
     this.sendHandler.brush.reset();
     if (this.isDrawing === true) {
       this.ownUser.captureUndoGroup();
-      this.view.redraw();
+      this.view.update();
       this.isDrawing = false;
       this.hasErased = false;
       ui.toggleDrawIndicatorEraseMode(true);
@@ -171,7 +171,7 @@ class ScratchetCanvas {
       }
     }
     this.sliceInitDataAndAddToBuffer(data, user, startIndex);
-    this.view.redraw();
+    this.view.update();
   }
   sliceInitDataAndAddToBuffer(data, user, startIndex, endIndex = Infinity) {
     const posData = data.subarray(startIndex, endIndex);
@@ -188,7 +188,7 @@ class ScratchetCanvas {
     for (let i = META_LEN.ERASE; i < data.length; i += 2) {
       user.eraseAtPos(data[i], data[i + 1], getClientMetaWidth(data));
     }
-    this.view.redraw();
+    this.view.update();
   }
 
   sendJoinedUserBuffer() {
@@ -214,7 +214,7 @@ class ScratchetCanvas {
         this.view.posHandler.deleteFromBuffer(posDataWrapper);
       }
       user.posCache = [];
-      this.view.redraw();
+      this.view.update();
     }
   }
 
@@ -227,12 +227,12 @@ class ScratchetCanvas {
   addServerDataToBufferAndDraw(posData, user) {
     user.setColorIndicator(getClientMetaHue(posData));
     this.addServerDataToBuffer(posData, user);
-    this.view.redraw();
+    this.view.update();
   }
 
   addOwnClientDataToBuffer(posData) {
     this.addClientDataToBuffer(posData, this.ownUser);
-    this.view.redraw();
+    this.view.update();
   }
 
   addClientDataToBuffer(posData, user, wrapperDestIndex) {

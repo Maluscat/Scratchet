@@ -26,9 +26,13 @@ class CanvasView {
     this.posHandler = new PositionDataHandler();
   }
 
+  /** @param { ScratchetUser } [userHighlight] */
+  update(userHighlight) {
+    this.#redraw(userHighlight);
+  }
 
   /** @param { ScratchetUser } [userHighlight] */
-  redraw(userHighlight) {
+  #redraw(userHighlight) {
     const posWrapper = this.posHandler.buffer;
     let posQueue = [];
     let lastCp;
