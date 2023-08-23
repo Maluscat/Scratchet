@@ -28,6 +28,10 @@ class CanvasView {
 
   /** @param { ScratchetUser } [userHighlight] */
   update(userHighlight) {
+    const drawStartPos = this.getPosWithTransform(0, 0);
+    const drawEndPos = this.getPosWithTransform(this.canvas.width, this.canvas.height);
+
+    this.ctx.clearRect(...drawStartPos, ...drawEndPos);
     this.#redraw(userHighlight);
   }
 
@@ -38,8 +42,6 @@ class CanvasView {
     let lastCp;
     let prevPosData;
     let prevPosDataWrapper;
-
-    this.ctx.clearRect(0, 0, CanvasView.WIDTH, CanvasView.HEIGHT);
 
     for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(posWrapper, ...this.#additionalData)) {
 
