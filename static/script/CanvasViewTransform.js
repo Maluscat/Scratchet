@@ -94,24 +94,6 @@ class CanvasViewTransform extends CanvasView {
     this.currentMousePos[1] = posY;
   }
 
-  getPosWithTransformFloat(posX, posY) {
-    const currentTransform = this.ctx.getTransform();
-    const dpr = CanvasViewTransform.getDevicePixelRatio();
-    return [
-      (posX * dpr - currentTransform.e) / currentTransform.a,
-      (posY * dpr - currentTransform.f) / currentTransform.d
-    ];
-  }
-  /**
-   * Returns floored position data based on the current transform.
-   * Floored is useful in order to mitigate discrepancies between client and peers
-   * because transmitted (position) data is always floored in the TypedArray.
-   */
-  getPosWithTransform(posX, posY) {
-    return this.getPosWithTransformFloat(posX, posY)
-      .map(pos => Math.floor(pos));
-  }
-
   // ---- Helper functions ----
   #getScaleDelta() {
     const currentTransform = this.ctx.getTransform();

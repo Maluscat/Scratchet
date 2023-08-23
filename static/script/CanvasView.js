@@ -203,6 +203,29 @@ class CanvasView {
   }
 
 
+  // ---- Transform helper functions ----
+  getPosWithTransformFloat(posX, posY) {
+    const currentTransform = this.ctx.getTransform();
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
+    return [
+      (posX * dpr - currentTransform.e) / currentTransform.a,
+      (posY * dpr - currentTransform.f) / currentTransform.d
+    ];
+  }
+  /**
+   * Returns floored position data based on the current transform.
+   * Floored is useful in order to mitigate discrepancies between client and peers
+   * because transmitted (position) data is always floored in the TypedArray.
+   * @param { number } posX
+   * @param { number } posY
+   * @return { Position }
+   */
+  getPosWithTransform(posX, posY) {
+    return this.getPosWithTransformFloat(posX, posY)
+      .map(pos => Math.floor(pos));
+  }
+
+
   // ---- Static helper functions ----
   /**
    * Returns the distance between two position vectors.
