@@ -29,11 +29,9 @@ class ScratchetCanvas {
     this.tools = {
       brush: new Brush(
         val => {
-          this.view.setLineWidth(val);
           this.sendHandler.brush.updateWidth(val);
         },
         val => {
-          this.view.setStrokeStyle(val);
           this.sendHandler.brush.updateHue(val);
         }),
       eraser: new Eraser(val => this.sendHandler.erase.updateWidth(val)),
@@ -46,8 +44,6 @@ class ScratchetCanvas {
     this.sendHandler.brush.updateWidth(this.tools.brush.width);
     this.sendHandler.erase.updateWidth(this.tools.eraser.width);
 
-    this.view.setLineWidth(this.tools.brush.width);
-    this.view.setStrokeStyle(this.tools.brush.hue);
     this.view.setTransform();
   }
 
