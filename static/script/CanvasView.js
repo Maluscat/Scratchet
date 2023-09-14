@@ -36,18 +36,20 @@ class CanvasView {
     const drawEndPos = this.getPosWithTransform(this.canvas.width, this.canvas.height);
 
     this.ctx.clearRect(...drawStartPos, ...drawEndPos);
-    this.#redraw(userHighlight);
+    this.#redraw([ this.posHandler.buffer, ...this.#additionalData ], userHighlight);
   }
 
-  /** @param { ScratchetUser } [userHighlight] */
-  #redraw(userHighlight) {
-    const posWrapper = this.posHandler.buffer;
+  /**
+   * @param { number[][] } posWrappers
+   * @param { ScratchetUser } [userHighlight]
+   */
+  #redraw(posWrappers, userHighlight) {
     let posQueue = [];
     let lastCp;
     let prevPosData;
     let prevPosDataWrapper;
 
-    for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(posWrapper, ...this.#additionalData)) {
+    for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(...posWrappers)) {
 
       const metaHasChanged = prevPosData && PositionDataHandler.posDataMetaHasChanged(prevPosData, posData);
       const isNotContinuous = prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData);
