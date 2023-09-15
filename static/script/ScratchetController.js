@@ -35,14 +35,14 @@ class ScratchetController {
     ui.registerInputHandler(
       usernameInput,
       this.changeOwnUsername.bind(this),
-      Global.Validator.MAX_USERNAME_LENGTH,
-      Global.Validator.validateUsername);
+      Validator.MAX_USERNAME_LENGTH,
+      Validator.validateUsername);
 
     ui.registerInputHandler(
       roomNameInput,
       this.changeCurrentRoomName.bind(this),
-      Global.Validator.MAX_ROOM_NAME_LENGTH,
-      Global.Validator.validateRoomName);
+      Validator.MAX_ROOM_NAME_LENGTH,
+      Validator.validateRoomName);
 
     // Set the join room input to the same width as the copy room link overlay, with a dummy value
     copyRoomLinkContent.textContent = ScratchetRoom.createRoomCodeLink('0000');
@@ -121,7 +121,7 @@ class ScratchetController {
   }
 
   joinRoomFromInput(roomInputValue) {
-    const roomCode = Global.Validator.validateRoomInputValueToRoomCode(roomInputValue);
+    const roomCode = Validator.validateRoomInputValueToRoomCode(roomInputValue);
     if (roomCode) {
       this.joinRoom(roomCode);
       ui.collapseJoinRoomOverlay();
@@ -167,7 +167,7 @@ class ScratchetController {
 
   changeCurrentRoomName(newRoomName) {
     newRoomName = newRoomName.trim();
-    if (Global.Validator.validateRoomName(newRoomName)) {
+    if (Validator.validateRoomName(newRoomName)) {
       this.setCurrentRoomName(newRoomName);
     } else {
       this.resetRoomNameInput();
@@ -183,7 +183,7 @@ class ScratchetController {
     newUsername = newUsername.trim();
     if (newUsername === '') {
       this.resetUsernameToDefault();
-    } else if (Global.Validator.validateUsername(newUsername)) {
+    } else if (Validator.validateUsername(newUsername)) {
       this.setOwnUsername(newUsername);
     } else {
       this.resetUsernameInput();
@@ -454,7 +454,7 @@ class ScratchetController {
 
   getAndRemovePotentialURLRoomCode() {
     const rawURLHash = location.hash.slice(1);
-    const roomCode = Global.Validator.validateAndReturnRoomCode(rawURLHash);
+    const roomCode = Validator.validateAndReturnRoomCode(rawURLHash);
     if (rawURLHash !== '') {
       window.history.replaceState(false, '', location.pathname);
     }

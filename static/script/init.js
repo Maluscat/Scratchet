@@ -1,4 +1,7 @@
 'use strict';
+/** @typedef { import('./shared/Global.mjs') } ScratchetGlobal */
+/** @typedef { import('./shared/Validator.mjs') } Validator */
+
 const canvasContainer = document.getElementById('canvas-container');
 
 const usernameInput = document.getElementById('username-input');
@@ -66,15 +69,24 @@ const controls3D = new Controls3D(null, null, {
 });
 const ui = new UIHandler();
 
-var Global;
+/** @type { WebSocket } */
 let sock;
+
+/** @type { ScratchetGlobal } */
+var Global;
+/** @type { Validator } */
+var Validator;
 
 
 // ---- Wait for modules ----
-import('./Global.mjs').then(module => {
-  Global = module.default;
+Promise.all([
+  import('./shared/Global.mjs'),
+  import('./shared/Validator.mjs'),
+]).then(([ MetaModule, ValidatorModule ]) => {
+  Global = MetaModule;
+  Validator = ValidatorModule;
 
-  joinRoomOverlayInput.pattern = Global.Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
+  joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
 
   sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
   sock.addEventListener('open', controller.socketOpen.bind(controller))
