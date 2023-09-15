@@ -5,7 +5,7 @@ import { app, router } from 'router';
 import { SocketUser } from 'SocketUser';
 import { SocketRoomHandler } from 'SocketRoomHandler';
 import { ScratchetError } from 'ScratchetError';
-import Global from 'Global';
+import * as Global from 'Global';
 
 
 interface ReceivedEventInterfaceStructure {

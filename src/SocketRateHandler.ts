@@ -1,7 +1,7 @@
-import Global from 'Global';
+import { SEND_INTERVAL } from 'Global';
 
 // This is just an estimated good upper limit
-const UPPER_RATE_LIMIT_PER_SECOND = Math.floor((1000 / Global.SEND_INTERVAL) * 2);
+const UPPER_RATE_LIMIT_PER_SECOND = Math.floor((1000 / SEND_INTERVAL) * 2);
 
 const TEST_INTERVAL = 250;
 

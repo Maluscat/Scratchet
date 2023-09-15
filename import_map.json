@@ -1,6 +1,8 @@
 {
   "imports": {
-    "Global": "./static/script/Global.mjs",
+    "Global": "./static/script/shared/Global.mjs",
+    "Validator": "./static/script/shared/Validator.mjs",
+
     "main": "./main.ts",
     "router": "./src/router.ts",
     "SocketRoom": "./src/SocketRoom.ts",

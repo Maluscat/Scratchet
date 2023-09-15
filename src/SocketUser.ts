@@ -2,7 +2,7 @@ import type { SocketRoom } from 'SocketRoom';
 
 import { SocketRateHandler } from 'SocketRateHandler';
 import { ScratchetError } from 'ScratchetError';
-import Global from 'Global';
+import { validateUsername } from 'Validator';
 
 export type SocketID = number;
 export type RoomCode = number;
@@ -90,7 +90,7 @@ export class SocketUser {
 
   // ---- Helper functions ----
   getUsernameFromValidation(username?: Username): Username {
-    if (Global.Validator.validateUsername(username)) {
+    if (validateUsername(username)) {
       return username!;
     }
     return this.defaultName;

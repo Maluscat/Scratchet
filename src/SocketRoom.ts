@@ -3,7 +3,7 @@ import type { SocketID, RoomCode, RoomName, Username } from 'SocketUser';
 import { SocketUser } from 'SocketUser';
 import { ScratchetError } from 'ScratchetError';
 import { roomHandler } from 'main';
-import Global from 'Global';
+import { validateRoomName } from 'Validator';
 
 export interface ConnectionData {
   roomCode?: RoomCode;
@@ -128,7 +128,7 @@ export class SocketRoom {
 
   // ---- Helper functions ----
   setName(newRoomName: RoomName) {
-    if (Global.Validator.validateRoomName(newRoomName)) {
+    if (validateRoomName(newRoomName)) {
       this.roomName = newRoomName;
     }
   }
