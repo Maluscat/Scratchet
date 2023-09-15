@@ -298,7 +298,7 @@ class ScratchetController {
 
   // ---- Socket receive handling ----
   parseSocketData(data) {
-    const mode = getReceivedServerMetaMode(data);
+    const mode = Meta.getReceivedServerMode(data);
     const userID = data[0];
     const roomCode = data[1];
     data = data.subarray(2);

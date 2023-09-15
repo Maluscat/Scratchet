@@ -31,6 +31,6 @@ class SendBuffer {
 
   // ---- Utility functions ----
   getMode() {
-    return getPendingServerMetaMode(this.buffer);
+    return Meta.getPendingServerMode(this.buffer);
   }
 }

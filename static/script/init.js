@@ -30,19 +30,6 @@ const CURRENT_USER_ID = -1;
 const SEND_FULL_METADATA_INTERVAL = 1000;
 const BULK_INIT_SEPARATOR_LEN = 2;
 
-// Metadata length in a payload of the specified mode, excluding the extra server metadata
-const META_LEN = /** @type const */ ({
-  BRUSH: 3,
-  ERASE: 2,
-});
-// Length of additional metadata when received from the server
-const EXTRA_SERVER_META_LEN = 2; // room code + userID
-
-const META_FLAGS = /** @type const */ ({
-  LAST_HUE: 0b0010,
-  LAST_WIDTH: 0b0001
-});
-
 /*
  * data/socketData: bulk data received via socket
  * posData: self-contained metadata & position packet: [...metadata, pos1X, pos1Y, pos2X, pos2Y, ...]
@@ -106,31 +93,11 @@ function getCanvasAnimDurationInOut() {
 }
 
 
-// ---- Metadata helper functions ----
-function getReceivedServerMetaMode(receivedServerDataWithMetadata) {
-  return receivedServerDataWithMetadata[EXTRA_SERVER_META_LEN];
-}
-// Server data without extra server metadata
-function getPendingServerMetaMode(pendingServerDataWithMetadata) {
-  return pendingServerDataWithMetadata[0];
-}
-
-function getClientMetaHue(clientDataWithMetadata) {
-  if (clientDataWithMetadata[0] >= 0) {
-    return clientDataWithMetadata[0];
-  }
-  return false;
-}
-function getClientMetaWidth(clientDataWithMetadata) {
-  // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
-  return clientDataWithMetadata[1];
-}
-
 // ---- Generic helper functions ----
 function getExtraMetaLengthFromFlag(flag) {
   let extraLen = 0;
-  if (flag & META_FLAGS.LAST_WIDTH) extraLen++;
-  if (flag & META_FLAGS.LAST_HUE) extraLen++;
+  if (flag & Meta.FLAGS.LAST_WIDTH) extraLen++;
+  if (flag & Meta.FLAGS.LAST_HUE) extraLen++;
   return extraLen;
 }
 

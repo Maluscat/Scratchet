@@ -78,8 +78,8 @@ class CanvasView {
 
         // ASSUMPTION: all posData in posDataWrapper have the same width and hue
         // because only the eraser can form multiple posData inside one wrapper
-        this.setStrokeStyle(getClientMetaHue(posData), isFromHighlightedUser);
-        this.setLineWidth(getClientMetaWidth(posData));
+        this.setStrokeStyle(Meta.getClientHue(posData), isFromHighlightedUser);
+        this.setLineWidth(Meta.getClientWidth(posData));
 
         this.ctx.beginPath();
       }
@@ -113,11 +113,11 @@ class CanvasView {
   #drawFromPosData(posData, posQueue, lastCp) {
     // If this is the first pass of a new line
     if (posQueue.length === 0) {
-      lastCp = [ posData[META_LEN.BRUSH], posData[META_LEN.BRUSH + 1] ];
+      lastCp = [ posData[Meta.LEN.BRUSH], posData[Meta.LEN.BRUSH + 1] ];
       this.ctx.moveTo(...lastCp);
     }
 
-    for (let i = META_LEN.BRUSH; i < posData.length; i += 2) {
+    for (let i = Meta.LEN.BRUSH; i < posData.length; i += 2) {
       // Avoid two consecutive equal positions
       if (posData[i] === posQueue.at(-2) && posData[i + 1] === posQueue.at(-1)) {
         continue;

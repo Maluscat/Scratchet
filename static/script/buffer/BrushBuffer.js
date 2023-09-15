@@ -31,14 +31,14 @@ class BrushBuffer extends SendBuffer {
     const flag = this.getNextFlag(hue, width);
 
     this.buffer.splice(1);
-    this.liveClientBuffer.splice(META_LEN.BRUSH);
+    this.liveClientBuffer.splice(Meta.LEN.BRUSH);
 
     this.buffer[0] = flag;
 
-    if ((flag & META_FLAGS.LAST_HUE) === 0) {
+    if ((flag & Meta.FLAGS.LAST_HUE) === 0) {
       this.buffer.push(hue);
     }
-    if ((flag & META_FLAGS.LAST_WIDTH) === 0) {
+    if ((flag & Meta.FLAGS.LAST_WIDTH) === 0) {
       this.buffer.push(width);
     }
 
@@ -57,7 +57,7 @@ class BrushBuffer extends SendBuffer {
       this.resetCompleteMetadataIfSatisfied();
     }
 
-    if (this.liveClientBuffer.length > META_LEN.BRUSH) {
+    if (this.liveClientBuffer.length > Meta.LEN.BRUSH) {
       const lastPos = [
         this.liveClientBuffer.at(-2),
         this.liveClientBuffer.at(-1),
@@ -97,11 +97,11 @@ class BrushBuffer extends SendBuffer {
   // ---- Helper functions ----
   getNextFlag(hue, width) {
     let flag = 0;
-    if (!this.willSendCompleteMetaData && getClientMetaHue(this.liveClientBuffer) === hue) {
-      flag |= META_FLAGS.LAST_HUE;
+    if (!this.willSendCompleteMetaData && Meta.getClientHue(this.liveClientBuffer) === hue) {
+      flag |= Meta.FLAGS.LAST_HUE;
     }
-    if (!this.willSendCompleteMetaData && getClientMetaWidth(this.liveClientBuffer) === width) {
-      flag |= META_FLAGS.LAST_WIDTH;
+    if (!this.willSendCompleteMetaData && Meta.getClientWidth(this.liveClientBuffer) === width) {
+      flag |= Meta.FLAGS.LAST_WIDTH;
     }
     return flag;
   }

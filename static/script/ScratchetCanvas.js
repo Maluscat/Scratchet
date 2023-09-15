@@ -181,8 +181,8 @@ class ScratchetCanvas {
    */
   handleEraseData(data, user) {
     user.clearRedoBuffer();
-    for (let i = META_LEN.ERASE; i < data.length; i += 2) {
-      user.eraseAtPos(data[i], data[i + 1], getClientMetaWidth(data));
+    for (let i = Meta.LEN.ERASE; i < data.length; i += 2) {
+      user.eraseAtPos(data[i], data[i + 1], Meta.getClientWidth(data));
     }
     this.view.update();
   }
@@ -221,7 +221,7 @@ class ScratchetCanvas {
     }
   }
   addServerDataToBufferAndDraw(posData, user) {
-    user.setColorIndicator(getClientMetaHue(posData));
+    user.setColorIndicator(Meta.getClientHue(posData));
     this.addServerDataToBuffer(posData, user);
     this.view.update();
   }
@@ -246,7 +246,7 @@ class ScratchetCanvas {
     const clientPosData = new Int16Array(posData.length + extraLen);
     clientPosData.set(posData, extraLen);
     // Shift items to the left
-    for (let i = extraLen; i < META_LEN.BRUSH - 1; i++) {
+    for (let i = extraLen; i < Meta.LEN.BRUSH - 1; i++) {
       clientPosData[i] = clientPosData[i + 1];
     }
 
@@ -258,12 +258,12 @@ class ScratchetCanvas {
       const lastPosData = user.posCache[user.posCache.length - 1][0];
 
       // Get width/hue of the last package
-      if (flag & META_FLAGS.LAST_WIDTH) {
+      if (flag & Meta.FLAGS.LAST_WIDTH) {
         clientPosData[0] = clientPosData[1];
-        clientPosData[1] = getClientMetaWidth(lastPosData);
+        clientPosData[1] = Meta.getClientWidth(lastPosData);
       }
-      if (flag & META_FLAGS.LAST_HUE) {
-        clientPosData[0] = getClientMetaHue(lastPosData);
+      if (flag & Meta.FLAGS.LAST_HUE) {
+        clientPosData[0] = Meta.getClientHue(lastPosData);
       }
     }
 
@@ -278,15 +278,15 @@ class ScratchetCanvas {
     const serverPosData = new Int16Array(posData.length - extraLen);
     serverPosData.set(posData.subarray(extraLen));
     // Shift items to the right
-    for (let i = META_LEN.BRUSH - extraLen - 1 - 1; i >= 0; i--) {
+    for (let i = Meta.LEN.BRUSH - extraLen - 1 - 1; i >= 0; i--) {
       serverPosData[i + 1] = serverPosData[i];
     }
 
-    if ((flag & META_FLAGS.LAST_WIDTH) === 0) {
-      serverPosData[extraLen--] = getClientMetaWidth(posData);
+    if ((flag & Meta.FLAGS.LAST_WIDTH) === 0) {
+      serverPosData[extraLen--] = Meta.getClientWidth(posData);
     }
-    if ((flag & META_FLAGS.LAST_HUE) === 0) {
-      serverPosData[extraLen--] = getClientMetaHue(posData);
+    if ((flag & Meta.FLAGS.LAST_HUE) === 0) {
+      serverPosData[extraLen--] = Meta.getClientHue(posData);
     }
 
     serverPosData[0] = flag;
