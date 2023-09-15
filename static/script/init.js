@@ -94,25 +94,6 @@ function getCanvasAnimDurationInOut() {
 
 
 // ---- Generic helper functions ----
-function getExtraMetaLengthFromFlag(flag) {
-  let extraLen = 0;
-  if (flag & Meta.FLAGS.LAST_WIDTH) extraLen++;
-  if (flag & Meta.FLAGS.LAST_HUE) extraLen++;
-  return extraLen;
-}
-
-function createPosDataWrapper(posData) {
-  return [ posData ];
-}
-
-function makeHSLString(hue, hasReducedAlpha) {
-  if (hasReducedAlpha) {
-    return `hsla(${hue}, 75%, 70%, .1)`;
-  } else {
-    return `hsl(${hue}, 75%, 70%)`;
-  }
-}
-
 function sendMessage(event, value, roomCode) {
   const dataObj = {
     evt: event

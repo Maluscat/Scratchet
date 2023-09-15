@@ -29,7 +29,7 @@ class Brush extends ScratchetTool {
       precision: 0,
       structure: `
         <thumb>
-          <:indicator class=[slider-hue-indicator] style=[background-color: ${makeHSLString('$value')};]>
+          <:indicator class=[slider-hue-indicator] style=[background-color: ${Meta.makeHSLString('$value')};]>
         </thumb>
       `
     });

@@ -21,7 +21,7 @@ class ScratchetUser extends UserErase {
   }
 
   setColorIndicator(hue) {
-    this.listNode.style.color = makeHSLString(hue);
+    this.listNode.style.color = Meta.makeHSLString(hue);
 
     if (this.activeTimeout != null) {
       clearTimeout(this.activeTimeout);

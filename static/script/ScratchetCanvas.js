@@ -232,7 +232,7 @@ class ScratchetCanvas {
   }
 
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
-    const posDataWrapper = createPosDataWrapper(posData);
+    const posDataWrapper = Meta.createPosDataWrapper(posData);
     this.view.posHandler.addToBuffer(posDataWrapper, wrapperDestIndex);
     user.clearRedoBuffer();
     user.posCache.push(posDataWrapper);
@@ -241,7 +241,7 @@ class ScratchetCanvas {
   // ---- Protocol converter ----
   convertServerDataToClientData(posData, user) {
     const flag = posData[0];
-    const extraLen = getExtraMetaLengthFromFlag(flag);
+    const extraLen = Meta.getExtraLengthFromFlag(flag);
 
     const clientPosData = new Int16Array(posData.length + extraLen);
     clientPosData.set(posData, extraLen);
@@ -273,7 +273,7 @@ class ScratchetCanvas {
   }
   convertClientDataToServerData(posData) {
     const flag = posData[2];
-    let extraLen = getExtraMetaLengthFromFlag(flag);
+    let extraLen = Meta.getExtraLengthFromFlag(flag);
 
     const serverPosData = new Int16Array(posData.length - extraLen);
     serverPosData.set(posData.subarray(extraLen));
