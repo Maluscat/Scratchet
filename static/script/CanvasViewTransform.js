@@ -27,11 +27,15 @@ class CanvasViewTransform extends CanvasView {
     });
   }
 
-  getScaleX() {
-    return CanvasViewTransform.scaleInterpolateFn(this.state.scale.x);
-  }
-  getScaleY() {
-    return CanvasViewTransform.scaleInterpolateFn(this.state.scale.y);
+  /**
+   * Returns the interpolated (i.e. "real") scale of {@link state}.
+   * @return { Position }
+   */
+  getScale() {
+    return [
+      CanvasViewTransform.scaleInterpolateFn(this.state.scale.x),
+      CanvasViewTransform.scaleInterpolateFn(this.state.scale.y),
+    ];
   }
 
   // NOTE Remember to apply the device pixel ratio when working with deltas and positions
@@ -47,12 +51,13 @@ class CanvasViewTransform extends CanvasView {
 
     // TODO Convert to scaleMax and move the canvas around somehow (undrawable sections other color + border)?
     this.#limitStateScale();
+    const [scaleX, scaleY] = this.getScale();
 
     this.#translateViewTowardCursor(transformOrigin);
     this.#limitStateTran();
 
-    this.ctx.setTransform(this.getScaleX(), 0, 0, this.getScaleY(), this.state.tran.x, this.state.tran.y);
-    ui.resizeDrawIndicator(this.getScaleX());
+    this.ctx.setTransform(scaleX, 0, 0, scaleY, this.state.tran.x, this.state.tran.y);
+    ui.resizeDrawIndicator(scaleX);
 
     this.#scaleByDevicePixelRatio();
 
@@ -97,13 +102,14 @@ class CanvasViewTransform extends CanvasView {
   // ---- Helper functions ----
   #getScaleDelta() {
     const currentTransform = this.ctx.getTransform();
+    const [scaleX, scaleY] = this.getScale();
     const dpr = CanvasViewTransform.getDevicePixelRatio();
 
     const DELTA_PRECISION = 1000000;
     // These should always be equivalent, but computed separately in case of discrepancies
     return [
-      Math.round((dpr * this.getScaleX() - currentTransform.a) * DELTA_PRECISION) / DELTA_PRECISION,
-      Math.round((dpr * this.getScaleY() - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION
+      Math.round((dpr * scaleX - currentTransform.a) * DELTA_PRECISION) / DELTA_PRECISION,
+      Math.round((dpr * scaleY - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION
     ];
   }
 
@@ -139,8 +145,10 @@ class CanvasViewTransform extends CanvasView {
   }
 
   #limitStateTran() {
-    const viewStopX = (CanvasView.WIDTH * this.getScaleX()) - this.canvas.width;
-    const viewStopY = (CanvasView.HEIGHT * this.getScaleY()) - this.canvas.height;
+    const [scaleX, scaleY] = this.getScale();
+
+    const viewStopX = (CanvasView.WIDTH * scaleX) - this.canvas.width;
+    const viewStopY = (CanvasView.HEIGHT * scaleY) - this.canvas.height;
 
     if (this.state.tran.x > 0) {
       this.state.tran.x = 0;
