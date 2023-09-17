@@ -120,15 +120,15 @@ class CanvasViewTransform extends CanvasView {
 
   // ---- Helper functions ----
   #getScaleDelta() {
-    const currentTransform = this.ctx.getTransform();
     const [scaleX, scaleY] = this.getScale();
+    const [currentScaleX, currentScaleY] = this.getCurrentScale();
     const dpr = CanvasViewTransform.getDevicePixelRatio();
 
     const DELTA_PRECISION = 1000000;
     // These should always be equivalent, but computed separately in case of discrepancies
     return [
-      Math.round((dpr * scaleX - currentTransform.a) * DELTA_PRECISION) / DELTA_PRECISION,
-      Math.round((dpr * scaleY - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION
+      Math.round((dpr * scaleX - currentScaleX) * DELTA_PRECISION) / DELTA_PRECISION,
+      Math.round((dpr * scaleY - currentScaleY) * DELTA_PRECISION) / DELTA_PRECISION
     ];
   }
 
