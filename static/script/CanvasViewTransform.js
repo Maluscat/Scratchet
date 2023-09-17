@@ -5,13 +5,18 @@ class CanvasViewTransform extends CanvasView {
 
   currentMousePos = [0, 0];
 
+  /**
+   * Represents the current transformation state of the canvas.
+   * This is functionally equivalent to `ctx.getTransform()`,
+   * which is not easily accessible as it resides in the worker.
+   */
+  currentState;
   state;
 
   /** @param { HTMLCanvasElement } canvas */
   constructor(canvas, ...superArgs) {
     super(canvas, ...superArgs);
 
-    // TODO this probably needs to be integrated into setTransform
     this.setDimensions();
 
     this.state = new State3D(this.setTransform.bind(this), {
@@ -25,6 +30,8 @@ class CanvasViewTransform extends CanvasView {
         y: -((CanvasView.HEIGHT + 1) / 2 - this.canvas.height / 2)
       }
     });
+
+    this.currentState = new State3D(null, this.state.state);
   }
 
   /**
@@ -35,6 +42,17 @@ class CanvasViewTransform extends CanvasView {
     return [
       CanvasViewTransform.scaleInterpolateFn(this.state.scale.x),
       CanvasViewTransform.scaleInterpolateFn(this.state.scale.y),
+    ];
+  }
+
+  /**
+   * Returns the interpolated (i.e. "real") scale of {@link currentState}.
+   * @return { Position }
+   */
+  getCurrentScale() {
+    return [
+      CanvasViewTransform.scaleInterpolateFn(this.currentState.scale.x),
+      CanvasViewTransform.scaleInterpolateFn(this.currentState.scale.y),
     ];
   }
 
@@ -57,9 +75,10 @@ class CanvasViewTransform extends CanvasView {
     this.#limitStateTran();
 
     this.ctx.setTransform(scaleX, 0, 0, scaleY, this.state.tran.x, this.state.tran.y);
-    ui.resizeDrawIndicator(scaleX);
-
     this.#scaleByDevicePixelRatio();
+    this.currentState.assignNewState(this.state.state);
+
+    ui.resizeDrawIndicator(scaleX);
 
     this.update();
 
