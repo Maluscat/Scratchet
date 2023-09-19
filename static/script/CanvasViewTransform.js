@@ -71,8 +71,8 @@ class CanvasViewTransform extends CanvasView {
 
   setDimensions() {
     const dpr = CanvasViewTransform.getDevicePixelRatio();
-    this.offscreenCanvas.height = this.canvas.clientHeight * dpr;
-    this.offscreenCanvas.width = this.canvas.clientWidth * dpr;
+    this.canvas.height = this.canvas.clientHeight * dpr;
+    this.canvas.width = this.canvas.clientWidth * dpr;
 
     this.minScale = CanvasViewTransform.scaleInterpolateFnInverse(
       Math.max(

@@ -10,9 +10,7 @@ class CanvasView {
 
   canvas;
   ctx;
-  offscreenCanvas;
 
-  drawWorker;
   posHandler;
 
   #additionalData = [];
@@ -23,12 +21,8 @@ class CanvasView {
    */
   constructor(canvas, additionalData) {
     this.#additionalData = additionalData;
-
     this.canvas = canvas;
-    this.offscreenCanvas = this.canvas.transferControlToOffscreen();
-    this.ctx = this.offscreenCanvas.getContext('2d');
-
-    this.drawWorker = new Worker('./script/worker/drawHandler.worker.js');
+    this.ctx = canvas.getContext('2d');
     this.posHandler = new PositionDataHandler();
   }
 
