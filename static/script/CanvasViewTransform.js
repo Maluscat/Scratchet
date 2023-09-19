@@ -74,14 +74,13 @@ class CanvasViewTransform extends CanvasView {
     this.#translateViewTowardCursor(transformOrigin);
     this.#limitStateTran();
 
-    this.ctx.setTransform(scaleX, 0, 0, scaleY, this.state.tran.x, this.state.tran.y);
-    this.#scaleByDevicePixelRatio();
+    this.drawWorker.postMessage({
+      event: 'setTransform',
+      values: [ this.posHandler.buffer, transformOrigin, scaleX, scaleY, this.state.tran.x, this.state.tran.y ]
+    });
     this.currentState.assignNewState(this.state.state);
 
     ui.resizeDrawIndicator(scaleX);
-
-    this.update();
-
     if (!Slider89.floatIsEqual(ui.scaleSlider.value, this.state.scale.x)) {
       this.updateScaleSlider();
     }
@@ -95,18 +94,20 @@ class CanvasViewTransform extends CanvasView {
 
   setDimensions() {
     const dpr = CanvasViewTransform.getDevicePixelRatio();
-    this.offscreenCanvas.height = this.canvas.clientHeight * dpr;
-    this.offscreenCanvas.width = this.canvas.clientWidth * dpr;
+    const width = this.canvas.clientWidth * dpr;
+    const height = this.canvas.clientHeight * dpr;
+
+    this.drawWorker.postMessage({
+      event: 'setDimensions',
+      values: { width, height }
+    });
 
     this.minScale = CanvasViewTransform.scaleInterpolateFnInverse(
       Math.max(
-        this.canvas.width / CanvasView.WIDTH,
-        this.canvas.height / CanvasView.HEIGHT));
+        width / CanvasView.WIDTH,
+        height / CanvasView.HEIGHT));
 
     ui.scaleSlider.range[0] = this.minScale;
-
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
   }
 
   updateScaleSlider() {
