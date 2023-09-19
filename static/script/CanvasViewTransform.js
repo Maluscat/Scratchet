@@ -132,12 +132,19 @@ class CanvasViewTransform extends CanvasView {
     ];
   }
 
-  // ---- Transformation functions ----
-  #scaleByDevicePixelRatio() {
+  // This is not ideal
+  getPosWithTransformFloat(posX, posY) {
     const dpr = CanvasViewTransform.getDevicePixelRatio();
-    this.ctx.scale(dpr, dpr);
+    return PositionDataHandler.getPosWithTransformFloat(
+      dpr, posX, posY, this.state.tran.x, this.state.tran.y, ...this.getCurrentScale());
+  }
+  getPosWithTransform(posX, posY) {
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
+    return PositionDataHandler.getPosWithTransform(
+      dpr, posX, posY, this.state.tran.x, this.state.tran.y, ...this.getCurrentScale());
   }
 
+  // ---- Transformation functions ----
   /**
    * Zoom towards the mouse position.
    */

@@ -91,6 +91,25 @@ class PositionDataHandler {
   }
 
 
+  static getPosWithTransformFloat(dpr, posX, posY, tranX, tranY, scaleX, scaleY) {
+    return [
+      (posX * dpr - tranX) / scaleX,
+      (posY * dpr - tranY) / scaleY
+    ];
+  }
+  /**
+   * Returns floored position data based on the current transform.
+   * Floored is useful in order to mitigate discrepancies between client and peers
+   * because transmitted (position) data is always floored in the TypedArray.
+   * @param { [ number, number, number, number, number, number, number ] } args
+   * @return { Position }
+   */
+  static getPosWithTransform(...args) {
+    return this.getPosWithTransformFloat(...args)
+      .map(pos => Math.floor(pos));
+  }
+
+
   /**
    * @typedef { Object } recursePosWrapperYield
    * @prop { Int16Array } posData
