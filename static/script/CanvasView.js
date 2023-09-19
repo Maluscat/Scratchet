@@ -128,7 +128,7 @@ class CanvasView {
       const computePos = getQueuePos(1);
       const endPos = getQueuePos(2);
 
-      const [ cp1, cp2 ] = this.getBezierControlPoints(startPos, computePos, endPos);
+      const [ cp1, cp2 ] = this.#getBezierControlPoints(startPos, computePos, endPos);
 
       this.ctx.bezierCurveTo(...lastCp, ...cp1, ...computePos);
 
@@ -171,7 +171,7 @@ class CanvasView {
    * @param { Position } endPos
    * @return { [ Position, Position ] } Both control points of `computePos`.
    */
-  getBezierControlPoints(startPos, computePos, endPos) {
+  #getBezierControlPoints(startPos, computePos, endPos) {
     const distanceStartCompute = CanvasView.getPosDistance(startPos, computePos);
     const distanceComputeEnd = CanvasView.getPosDistance(computePos, endPos);
     const distanceTotal = distanceStartCompute + distanceComputeEnd;
