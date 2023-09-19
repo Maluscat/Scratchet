@@ -203,7 +203,7 @@ class CanvasView {
     this.ctx.lineWidth = width;
   }
   setStrokeStyle(hue, hasReducedAlpha) {
-    this.ctx.strokeStyle = makeHSLString(hue, hasReducedAlpha);
+    this.ctx.strokeStyle = Meta.makeHSLString(hue, hasReducedAlpha);
   }
 
 
