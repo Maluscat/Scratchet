@@ -9,6 +9,12 @@
 let offscreenCanvas;
 /** @type { OffscreenCanvasRenderingContext2D } */
 let ctx;
+importScripts(
+  './CanvasDraw.worker.js',
+  './CanvasView.worker.js',
+  '../Meta.js',
+  '../PositionDataHandler.js',
+);
 
 
 self.onmessage = e => {
