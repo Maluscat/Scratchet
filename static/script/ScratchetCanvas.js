@@ -191,9 +191,11 @@ class ScratchetCanvas {
     const userCache = this.ownUser.posCache;
     if (userCache.length > 0) {
       const joinedBuffer = [this.roomCode];
-      for (const posDataWrapper of userCache) {
-        const wrapperDestIndex = this.view.posHandler.getPosIndex(posDataWrapper);
-        for (const posData of posDataWrapper) {
+
+      for (const posWrapper of userCache) {
+        const wrapperDestIndex = this.view.posHandler.getPosIndex(posWrapper);
+
+        for (const { posData } of PositionDataHandler.iteratePosWrapper(posWrapper)) {
           joinedBuffer.push(
             Global.MODE.BULK_INIT,
             wrapperDestIndex,
