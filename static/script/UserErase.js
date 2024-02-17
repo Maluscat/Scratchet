@@ -34,10 +34,10 @@ class UserErase {
     let lastWrapper;
 
     for (const { posData, wrapperStack, index } of PositionDataHandler.iteratePosWrapper(this.posCache)) {
-      const posWrapper = wrapperStack.at(-2);
-      const initialPosData = [ ...posWrapper ];
+      const posDataWrapper = wrapperStack.at(-2);
+      const initialPosData = [ ...posDataWrapper ];
 
-      if (posWrapper !== lastWrapper) {
+      if (posDataWrapper !== lastWrapper) {
         redoWrapper = [];
       }
 
@@ -52,7 +52,7 @@ class UserErase {
             beforeChangeCallback?.();
             if (startIdx !== j) {
               const newPosData = this.#createNewPosData(posData, startIdx, j);
-              posWrapper.push(newPosData);
+              posDataWrapper.push(newPosData);
             }
             // This needs to be at this level to accomodate for the cleanup
             isErasing = true;
@@ -79,19 +79,19 @@ class UserErase {
         redoWrapper.push(eraseData);
       } else if (startIdx > Meta.LEN.BRUSH) {
         const newPosData = this.#createNewPosData(posData, startIdx);
-        posWrapper[index] = newPosData;
+        posDataWrapper[index] = newPosData;
       }
 
       // Remove the initial posData if the last vector in it has been erased
       if (isErasing) {
-        posWrapper.splice(index, 1);
+        posDataWrapper.splice(index, 1);
       }
 
       if (redoWrapper.length > 0) {
-        this.#addToUndoEraseQueue(redoWrapper, posWrapper, initialPosData);
+        this.#addToUndoEraseQueue(redoWrapper, posDataWrapper, initialPosData);
       }
 
-      lastWrapper = posWrapper;
+      lastWrapper = posDataWrapper;
     }
   }
 
