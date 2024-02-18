@@ -47,7 +47,7 @@ class ScratchetUser {
   }
 
   erase(posX, posY, eraserWidth, beforeChangeCallback) {
-    const undoStack = UserErase.eraseAtPos(this.posCache, ...arguments);
+    const undoStack = PositionErase.eraseAtPos(this.posCache, ...arguments);
     this.undoEraseQueue.push(...undoStack);
     this.undoEraseIndex += undoStack.length;
   }

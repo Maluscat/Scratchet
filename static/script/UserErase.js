@@ -7,8 +7,10 @@
  * @prop { Array<Int16Array> } initialData All posData of {@link UndoEraseInfo.target} before the erase.
  */
 
-class UserErase {
+class PositionErase {
   /**
+   * Erase all points in the given buffer that are in range of the eraser
+   * at the given coordinates and size.
    * @param { number[] } buffer The buffer (posWrapper) to operate on.
    * @param { number } posX The eraser position.x to check against.
    * @param { number } posY The eraser position.y to check against.
@@ -33,7 +35,7 @@ class UserErase {
 
       // j is used as the endIndex
       for (let j = Meta.LEN.BRUSH; j < posData.length; j += 2) {
-        if (UserErase.#posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
+        if (this.#posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
             // NOTE: This isn't exactly "before erase" but it is sufficient for the given purposes.
             beforeChangeCallback?.();
@@ -84,6 +86,16 @@ class UserErase {
     return undoStack;
   }
 
+  /**
+   * Add an eraser undo entry to a given array which
+   * can be used to undo the erase step.
+   * @param { UndoEraseInfo[] } stack The stack that the data is pushed into.
+   * @param { number } bufferLen The current length of the user's relevant pos buffer.
+   * @param { Int16Array[] } eraseWrapper A PosData containing the erased points.
+   * @param { Int16Array[][] } targetWrapper A PosDataWrapper that contained the points.
+   * @param { Int16Array[][] } initialPosData A PosDataWrapper containing the intact
+   *                                          points before the erase.
+   */
   static #addToUndoStack(stack, bufferLen, eraseWrapper, targetWrapper, initialPosData) {
     const lastInfo = stack.at(-1);
     if (lastInfo?.target === targetWrapper) {
@@ -99,7 +111,13 @@ class UserErase {
   }
 
   // ---- Helper functions ----
-  // Create new Int16Array from a start index to end index of posData
+  /**
+   * Slice a posData, creating a new Int16Array from the given start and end indexes.
+   * @param { Int16Array } originalPosData The original posData that will be sliced.
+   * @param { number } startIdx The start index of the slice.
+   * @param { number } endIdx The end index of the slice.
+   *                          When omitted, it is set to the posData's length.
+   */
   static #createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
     // The first sub array retains its original metadata, so we can just excerpt it
     if (startIdx === Meta.LEN.BRUSH) {
@@ -115,6 +133,11 @@ class UserErase {
     }
   }
 
+  /**
+   * Test whether the eraser of some size at some point
+   * is in range of a stroke point of some size at some point.
+   * @returns { boolean }
+   */
   static #posIsInEraseRange(testPosX, testPosY, erasePosX, erasePosY, eraserWidth, strokeWidth) {
     const distance = Math.sqrt(
           Math.pow(erasePosX - testPosX, 2)
