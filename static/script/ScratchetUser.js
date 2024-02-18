@@ -1,5 +1,20 @@
 'use strict';
-class ScratchetUser extends UserErase {
+class ScratchetUser {
+  posCache = new Array();
+
+  /**
+   * Contains information of erased points so that they can be redone.
+   * - Is used in conjunction with {@link undoEraseIndex}.
+   * - Grouping info into chunks is done as part of the canvas
+   *   as it is only needed for the current user.
+   * @type { Array<UndoEraseInfo> }
+   */
+  undoEraseQueue = new Array();
+  /**
+   * {@link undoEraseQueue} at this index is the current valid eraser undo/redo step.
+   */
+  undoEraseIndex = 0;
+
   /** @type { string } */
   name;
 
@@ -10,7 +25,6 @@ class ScratchetUser extends UserErase {
   redoBuffer = new Array();
 
   constructor(username, isOwnUser = false) {
-    super();
     this.name = username;
     this.listNode = this.createUserListNode(username, isOwnUser);
   }
@@ -30,6 +44,12 @@ class ScratchetUser extends UserErase {
       this.listNode.style.removeProperty('color');
       this.activeTimeout = null;
     }, Global.SEND_INTERVAL * 1.5);
+  }
+
+  erase(posX, posY, eraserWidth, beforeChangeCallback) {
+    const undoStack = UserErase.eraseAtPos(this.posCache, ...arguments);
+    this.undoEraseQueue.push(...undoStack);
+    this.undoEraseIndex += undoStack.length;
   }
 
   // ---- Undo/Redo ----

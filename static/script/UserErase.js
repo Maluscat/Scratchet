@@ -8,32 +8,19 @@
  */
 
 class UserErase {
-  posCache = new Array();
-
   /**
-   * Contains information of erased points so that they can be redone.
-   * - Is used in conjunction with {@link undoEraseIndex}.
-   * - Grouping info into chunks is done as part of the canvas
-   *   as it is only needed for the current user.
-   * @type { Array<UndoEraseInfo> }
-   */
-  undoEraseQueue = new Array();
-  /**
-   * {@link undoEraseQueue} at this index is the current valid eraser undo/redo step.
-   */
-  undoEraseIndex = 0;
-
-  /**
+   * @param { number[] } buffer The buffer (posWrapper) to operate on.
    * @param { number } posX The eraser position.x to check against.
    * @param { number } posY The eraser position.y to check against.
    * @param { number } eraserWidth The eraser diameter.
    * @param { () => void } [beforeChangeCallback] A callback that is called before a new posData can be created.
    */
-  eraseAtPos(posX, posY, eraserWidth, beforeChangeCallback) {
+  static eraseAtPos(buffer, posX, posY, eraserWidth, beforeChangeCallback) {
+    const undoStack = [];
     let redoWrapper;
     let lastWrapper;
 
-    for (const { posData, wrapperStack, index } of PositionDataHandler.iteratePosWrapper(this.posCache)) {
+    for (const { posData, wrapperStack, index } of PositionDataHandler.iteratePosWrapper(buffer)) {
       const posDataWrapper = wrapperStack.at(-2);
       const initialPosData = [ ...posDataWrapper ];
 
@@ -46,7 +33,7 @@ class UserErase {
 
       // j is used as the endIndex
       for (let j = Meta.LEN.BRUSH; j < posData.length; j += 2) {
-        if (UserErase.posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
+        if (UserErase.#posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
             // NOTE: This isn't exactly "before erase" but it is sufficient for the given purposes.
             beforeChangeCallback?.();
@@ -88,15 +75,32 @@ class UserErase {
       }
 
       if (redoWrapper.length > 0) {
-        this.#addToUndoEraseQueue(redoWrapper, posDataWrapper, initialPosData);
+        this.#addToUndoStack(undoStack, buffer.length, redoWrapper, posDataWrapper, initialPosData);
       }
 
       lastWrapper = posDataWrapper;
     }
+
+    return undoStack;
   }
 
+  static #addToUndoStack(stack, bufferLen, eraseWrapper, targetWrapper, initialPosData) {
+    const lastInfo = stack.at(-1);
+    if (lastInfo?.target === targetWrapper) {
+      lastInfo.wrapper.push(...eraseWrapper);
+    } else {
+      stack.push(/** @type {UndoEraseInfo} */ ({
+        bufferIndex: bufferLen - 1,
+        initialData: initialPosData,
+        wrapper: eraseWrapper,
+        target: targetWrapper
+      }));
+    }
+  }
+
+  // ---- Helper functions ----
   // Create new Int16Array from a start index to end index of posData
-  #createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
+  static #createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
     // The first sub array retains its original metadata, so we can just excerpt it
     if (startIdx === Meta.LEN.BRUSH) {
       return originalPosData.subarray(0, endIdx);
@@ -111,23 +115,7 @@ class UserErase {
     }
   }
 
-  #addToUndoEraseQueue(eraseWrapper, targetWrapper, initialPosData) {
-    const lastInfo = this.undoEraseQueue.at(-1);
-    if (lastInfo?.target === targetWrapper) {
-      lastInfo.wrapper.push(...eraseWrapper);
-    } else {
-      this.undoEraseQueue.push(/** @type {UndoEraseInfo} */ ({
-        bufferIndex: this.posCache.length - 1,
-        initialData: initialPosData,
-        wrapper: eraseWrapper,
-        target: targetWrapper
-      }));
-      this.undoEraseIndex++;
-    }
-  }
-
-  // ---- Static helper functions ----
-  static posIsInEraseRange(testPosX, testPosY, erasePosX, erasePosY, eraserWidth, strokeWidth) {
+  static #posIsInEraseRange(testPosX, testPosY, erasePosX, erasePosY, eraserWidth, strokeWidth) {
     const distance = Math.sqrt(
           Math.pow(erasePosX - testPosX, 2)
         + Math.pow(erasePosY - testPosY, 2))

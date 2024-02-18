@@ -95,7 +95,7 @@ class ScratchetCanvas {
           break;
         }
         case Eraser: {
-          this.ownUser.eraseAtPos(posX, posY, this.tools.eraser.width,
+          this.ownUser.erase(posX, posY, this.tools.eraser.width,
             () => {
               if (!this.hasErased) {
                 this.ownUser.startEraseGroupCapture();
@@ -182,7 +182,7 @@ class ScratchetCanvas {
   handleEraseData(data, user) {
     user.clearRedoBuffer();
     for (let i = Meta.LEN.ERASE; i < data.length; i += 2) {
-      user.eraseAtPos(data[i], data[i + 1], Meta.getClientWidth(data));
+      user.erase(data[i], data[i + 1], Meta.getClientWidth(data));
     }
     this.view.update();
   }
