@@ -62,17 +62,22 @@ class CanvasSendHandler {
   // ---- Send handling ----
   send() {
     if (this.activeBuffer?.ready) {
-      sock.send(this.#getSendData());
+      this.sendData(this.activeBuffer.buffer);
       this.activeBuffer.update();
       return true;
     }
     return false;
   }
 
-  #getSendData() {
-    const sendData = new Int16Array(this.activeBuffer.buffer.length + 1);
-    sendData.set(this.activeBuffer.buffer, 1);
-    sendData[0] = this.roomCode;
-    return sendData.buffer;
+  /**
+   * Directly send a data packet with the mandatory preparation
+   * (e.g. a room code is added).
+   * @param { number[] } data All data that needs to be sent.
+   */
+  sendData(data) {
+    const finalData = new Int16Array(data.length + 1);
+    finalData.set(data, 1);
+    finalData[0] = this.roomCode;
+    sock.send(finalData.buffer);
   }
 }

@@ -190,19 +190,19 @@ class ScratchetCanvas {
   sendJoinedUserBuffer() {
     const userCache = this.ownUser.posCache;
     if (userCache.length > 0) {
-      const joinedBuffer = [this.roomCode];
+      const buffer = [];
 
       for (const posWrapper of userCache) {
         const wrapperDestIndex = this.view.posHandler.getPosIndex(posWrapper);
 
         for (const { posData } of PositionDataHandler.iteratePosWrapper(posWrapper)) {
-          joinedBuffer.push(
+          buffer.push(
             Global.MODE.BULK_INIT,
             wrapperDestIndex,
             ...this.convertClientDataToServerData(posData));
         }
       }
-      sock.send(new Int16Array(joinedBuffer));
+      this.sendHandler.sendData(buffer);
     }
   }
 
