@@ -57,14 +57,12 @@ class ScratchetCanvas {
   canvasDown(e) {
     if (e.button === 0) {
       this.isDrawing = true;
-      // This is potentially not necessary – It's a safety measure.
-      this.ownUser.clearUndoGroupCaptureData();
+      this.ownUser.historyHandler.clear();
 
       // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
       switch (this.activeTool.constructor) {
         case Brush: {
           this.sendHandler.brush.reset();
-          this.ownUser.startBrushGroupCapture();
           break;
         }
         case Eraser: {
@@ -117,7 +115,7 @@ class ScratchetCanvas {
     this.sendHandler.send();
     this.sendHandler.brush.reset();
     if (this.isDrawing === true) {
-      this.ownUser.captureUndoGroup();
+      this.addOwnHistoryGroup();
       this.view.update();
       this.isDrawing = false;
       this.hasErased = false;
@@ -126,6 +124,15 @@ class ScratchetCanvas {
   }
 
   // ---- User handling ----
+  addOwnHistoryGroup() {
+    this.addHistoryGroup(this.ownUser);
+    this.sendHandler.sendHistoryMarker();
+  }
+  /** @param { ScratchetUser } user */
+  addHistoryGroup(user) {
+    user.historyHandler.addGroup();
+  }
+
   ownUndo() {
     const count = this.ownUser.undo(this);
     if (count > 0) {
@@ -180,7 +187,6 @@ class ScratchetCanvas {
    * @param { ScratchetUser } user
    */
   handleEraseData(data, user) {
-    user.clearRedoBuffer();
     for (let i = Meta.LEN.ERASE; i < data.length; i += 2) {
       user.erase(data[i], data[i + 1], Meta.getClientWidth(data));
     }
@@ -236,7 +242,6 @@ class ScratchetCanvas {
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = Meta.createPosDataWrapper(posData);
     this.view.posHandler.addToBuffer(posDataWrapper, wrapperDestIndex);
-    user.clearRedoBuffer();
     user.posCache.push(posDataWrapper);
   }
 
