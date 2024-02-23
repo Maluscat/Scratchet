@@ -46,75 +46,16 @@ class ScratchetUser {
     }, Global.SEND_INTERVAL * 1.5);
   }
 
-  erase(posX, posY, eraserWidth, beforeChangeCallback) {
+  /**
+   * @return { boolean } Whether something has been erased.
+   */
+  erase(posX, posY, eraserWidth) {
     const undoStack = PositionErase.eraseAtPos(this.posCache, ...arguments);
-    this.undoEraseQueue.push(...undoStack);
-    this.undoEraseIndex += undoStack.length;
-  }
-
-  // ---- Undo/Redo ----
-  // TODO The `room` parameter needs to be removed.
-  /**
-   * @param { ScratchetCanvas } room
-   * @param { number } count
-   */
-  undo(room, count) {
-    if (this.undoEraseIndex === 0 && this.posCache.length === 0) return;
-
-    for (let i = 0; i < count; i++) {
-      const eraseInfo = this.undoEraseQueue[this.undoEraseIndex - 1];
-      if (eraseInfo?.bufferIndex === this.posCache.length - 1) {
-
-        eraseInfo.target.push(eraseInfo.wrapper);
-        this.undoEraseIndex--;
-
-      } else if (this.posCache.length > 0) {
-        const posDataWrapper = this.posCache.pop();
-        this.redoBuffer.push(posDataWrapper);
-        room.view.posHandler.deleteFromBuffer(posDataWrapper);
-      } else break;
+    if (undoStack.length > 0) {
+      this.historyHandler.addEraseData(undoStack);
+      return true;
     }
-
-    room.view.update();
-  }
-  /**
-   * @param { ScratchetCanvas } room
-   * @param { number } count
-   */
-  redo(room, count) {
-    if (this.undoEraseIndex === this.undoEraseQueue.length && this.redoBuffer.length === 0) {
-      return;
-    }
-
-    for (let i = 0; i < count; i++) {
-      const eraseInfo = this.undoEraseQueue[this.undoEraseIndex];
-      if (eraseInfo?.bufferIndex === this.posCache.length - 1) {
-
-        eraseInfo.target.splice(eraseInfo.target.indexOf(eraseInfo.wrapper), 1);
-        this.undoEraseIndex++;
-
-      } else if (this.redoBuffer.length > 0) {
-        const posDataWrapper = this.redoBuffer.pop();
-        this.posCache.push(posDataWrapper);
-        room.view.posHandler.addToBuffer(posDataWrapper);
-      } else break;
-    }
-
-    room.view.update();
-  }
-
-  clearRedoBuffer() {
-    if (this.redoBuffer.length > 0) {
-      this.redoBuffer = new Array();
-    }
-    if (this.undoEraseIndex < this.undoEraseQueue.length) {
-      const removedEraseInfo = this.undoEraseQueue.splice(this.undoEraseIndex);
-
-      for (let i = removedEraseInfo.length - 1; i >= 0; i--) {
-        const info = removedEraseInfo[i];
-        info.target.splice(0, Infinity, ...info.initialData);
-      }
-    }
+    return false;
   }
 
   // ---- Events ----
