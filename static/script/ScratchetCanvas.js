@@ -93,13 +93,9 @@ class ScratchetCanvas {
           break;
         }
         case Eraser: {
-          this.ownUser.erase(posX, posY, this.tools.eraser.width,
-            () => {
-              if (!this.hasErased) {
-                this.ownUser.startEraseGroupCapture();
-                this.hasErased = true;
-              }
-            });
+          if (this.ownUser.erase(posX, posY, this.tools.eraser.width)) {
+            this.hasErased = true;
+          }
           if (this.hasErased) {
             this.view.update();
             this.sendHandler.brush.sendCompleteMetaDataNextTime();

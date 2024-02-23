@@ -15,9 +15,8 @@ class PositionErase {
    * @param { number } posX The eraser position.x to check against.
    * @param { number } posY The eraser position.y to check against.
    * @param { number } eraserWidth The eraser diameter.
-   * @param { () => void } [beforeChangeCallback] A callback that is called before a new posData can be created.
    */
-  static eraseAtPos(buffer, posX, posY, eraserWidth, beforeChangeCallback) {
+  static eraseAtPos(buffer, posX, posY, eraserWidth) {
     const undoStack = [];
     let redoWrapper;
     let lastWrapper;
@@ -37,8 +36,6 @@ class PositionErase {
       for (let j = Meta.LEN.BRUSH; j < posData.length; j += 2) {
         if (this.#posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
-            // NOTE: This isn't exactly "before erase" but it is sufficient for the given purposes.
-            beforeChangeCallback?.();
             if (startIdx !== j) {
               const newPosData = this.#createNewPosData(posData, startIdx, j);
               posDataWrapper.push(newPosData);
