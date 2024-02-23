@@ -134,33 +134,23 @@ class ScratchetCanvas {
   }
 
   ownUndo() {
-    const count = this.ownUser.undo(this);
-    if (count > 0) {
-      this.sendHandler.addData('undo', count);
-    }
+    this.undo(this.ownUser, 1);
+    this.sendHandler.addData('undo', 1);
   }
   ownRedo() {
-    const count = this.ownUser.redo(this);
-    if (count > 0) {
-      this.sendHandler.addData('redo', count);
-    }
+    this.redo(this.ownUser, 1);
+    this.sendHandler.addData('redo', 1);
   }
 
-  /**
-   * @param { Int16Array } data
-   * @param { ScratchetUser } user
-   */
-  undo(data, user) {
-    const count = data[1];
-    user.undo(this, count);
+  /** @param { ScratchetUser } user */
+  undo(user, count) {
+    user.historyHandler.undo(count, this.view.posHandler);
+    this.view.update();
   }
-  /**
-   * @param { Int16Array } data
-   * @param { ScratchetUser } user
-   */
-  redo(data, user) {
-    const count = data[1];
-    user.redo(this, count);
+  /** @param { ScratchetUser } user */
+  redo(user, count) {
+    user.historyHandler.redo(count, this.view.posHandler);
+    this.view.update();
   }
 
 

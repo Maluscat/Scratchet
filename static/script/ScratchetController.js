@@ -318,10 +318,13 @@ class ScratchetController {
         targetRoom.handleEraseData(data, targetUser);
         break;
       case Global.MODE.UNDO:
-        targetRoom.undo(data, targetUser);
+        targetRoom.undo(targetUser, data[1]);
         break;
       case Global.MODE.REDO:
-        targetRoom.redo(data, targetUser);
+        targetRoom.redo(targetUser, data[1]);
+        break;
+      case Global.MODE.HISTORY_MARKER:
+        targetRoom.addHistoryGroup(targetUser);
         break;
       default:
         targetRoom.addServerDataToBufferAndDraw(data, targetUser);
