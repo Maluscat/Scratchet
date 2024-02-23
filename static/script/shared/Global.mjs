@@ -6,4 +6,5 @@ export const MODE = {
   ERASE: -2,
   UNDO: -3,
   REDO: -4,
+  HISTORY_MARKER: -5,
 };

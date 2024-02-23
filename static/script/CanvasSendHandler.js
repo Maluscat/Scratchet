@@ -70,6 +70,15 @@ class CanvasSendHandler {
   }
 
   /**
+   * Send a history marker ({@link Global.MODE.HISTORY_MARKER}).
+   * This has its own function because it doesn't make sense
+   * to create a dedicated buffer for it.
+   */
+  sendHistoryMarker() {
+    this.sendData([ Global.MODE.HISTORY_MARKER ]);
+  }
+
+  /**
    * Directly send a data packet with the mandatory preparation
    * (e.g. a room code is added).
    * @param { number[] } data All data that needs to be sent.
