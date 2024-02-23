@@ -24,9 +24,12 @@ class ScratchetUser {
   /** Contains points which were undone so that they can be redone. */
   redoBuffer = new Array();
 
+  historyHandler;
+
   constructor(username, isOwnUser = false) {
     this.name = username;
     this.listNode = this.createUserListNode(username, isOwnUser);
+    this.historyHandler = new HistoryHandler(this.posCache);
   }
 
   setName(newUsername) {
