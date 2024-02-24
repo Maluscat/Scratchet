@@ -66,6 +66,15 @@ class HistoryHandler {
     this.historyIndex++;
   }
 
+  /** Empty the whole history. */
+  empty() {
+    this.historyIndex = 0;
+    this.history = [];
+  }
+  /**
+   * Clears the history up until the current history index,
+   * shaving off any redo data.
+   */
   clear() {
     if (this.historyIndex < this.history.length) {
       for (const group of this.history.splice(this.historyIndex, Infinity)) {

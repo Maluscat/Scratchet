@@ -204,6 +204,7 @@ class ScratchetCanvas {
         this.view.posHandler.deleteFromBuffer(posDataWrapper);
       }
       user.posCache = [];
+      user.historyHandler.empty();
       this.view.update();
     }
   }
