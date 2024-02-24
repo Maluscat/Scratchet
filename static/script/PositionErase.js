@@ -1,7 +1,6 @@
 'use strict';
 /**
  * @typedef { Object } UndoEraseInfo
- * @prop { number } bufferIndex At which buffer length the info object is applied to.
  * @prop { Array<Array> } wrapper The posData points.
  * @prop { Array<Array> } target The target posWrapper for {@link UndoEraseInfo.wrapper}.
  * @prop { Array<Int16Array> } initialData All posData of {@link UndoEraseInfo.target} before the erase.
@@ -74,7 +73,7 @@ class PositionErase {
       }
 
       if (redoWrapper.length > 0) {
-        this.#addToUndoStack(undoStack, buffer.length, redoWrapper, posDataWrapper, initialPosData);
+        this.#addToUndoStack(undoStack, redoWrapper, posDataWrapper, initialPosData);
       }
 
       lastWrapper = posDataWrapper;
@@ -87,19 +86,17 @@ class PositionErase {
    * Add an eraser undo entry to a given array which
    * can be used to undo the erase step.
    * @param { UndoEraseInfo[] } stack The stack that the data is pushed into.
-   * @param { number } bufferLen The current length of the user's relevant pos buffer.
    * @param { Int16Array[] } eraseWrapper A PosData containing the erased points.
    * @param { Int16Array[][] } targetWrapper A PosDataWrapper that contained the points.
    * @param { Int16Array[][] } initialPosData A PosDataWrapper containing the intact
    *                                          points before the erase.
    */
-  static #addToUndoStack(stack, bufferLen, eraseWrapper, targetWrapper, initialPosData) {
+  static #addToUndoStack(stack, eraseWrapper, targetWrapper, initialPosData) {
     const lastInfo = stack.at(-1);
     if (lastInfo?.target === targetWrapper) {
       lastInfo.wrapper.push(...eraseWrapper);
     } else {
       stack.push(/** @type {UndoEraseInfo} */ ({
-        bufferIndex: bufferLen - 1,
         initialData: initialPosData,
         wrapper: eraseWrapper,
         target: targetWrapper
