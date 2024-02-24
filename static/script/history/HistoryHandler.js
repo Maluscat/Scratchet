@@ -12,11 +12,16 @@ class HistoryHandler {
 
   constructor(brushBuffer) {
     this.#brushBuffer = brushBuffer;
-    this.#brushStartingLen = brushBuffer.length;
+    this.#updateBrushLen();
   }
 
 
+  #updateBrushLen() {
+    this.#brushStartingLen = this.#brushBuffer.length;
+  }
+
   undo(count, posHandler) {
+    this.addGroup();
     for (let i = 0; i < count; i++) {
       if (this.historyIndex > 0) {
         const group = this.history[this.historyIndex - 1];
@@ -24,8 +29,10 @@ class HistoryHandler {
         this.historyIndex--;
       }
     }
+    this.#updateBrushLen();
   }
   redo(count, posHandler) {
+    this.addGroup();
     for (let i = 0; i < count; i++) {
       if (this.historyIndex < this.history.length) {
         const group = this.history[this.historyIndex];
@@ -33,6 +40,7 @@ class HistoryHandler {
         this.historyIndex++;
       }
     }
+    this.#updateBrushLen();
   }
 
 
@@ -50,7 +58,7 @@ class HistoryHandler {
     const deltaLen = this.#brushBuffer.length - this.#brushStartingLen;
     if (deltaLen > 0) {
       this.#addToHistory(new BrushGroup(this.#brushBuffer, deltaLen));
-      this.#brushStartingLen = this.#brushBuffer.length;
+      this.#updateBrushLen();
     }
   }
   #addEraserGroup() {
