@@ -203,8 +203,7 @@ class ScratchetCanvas {
       for (const posDataWrapper of user.posCache) {
         this.view.posHandler.deleteFromBuffer(posDataWrapper);
       }
-      user.posCache = [];
-      user.historyHandler.empty();
+      user.emptyBuffer();
       this.view.update();
     }
   }

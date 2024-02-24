@@ -49,6 +49,13 @@ class ScratchetUser {
     }, Global.SEND_INTERVAL * 1.5);
   }
 
+  emptyBuffer() {
+    // We may not assign a new array because the HistoryHandler
+    // holds a reference to it.
+    this.posCache.length = 0;
+    this.historyHandler.empty();
+  }
+
   /**
    * @return { boolean } Whether something has been erased.
    */

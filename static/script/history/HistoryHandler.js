@@ -15,11 +15,7 @@ class HistoryHandler {
     this.#updateBrushLen();
   }
 
-
-  #updateBrushLen() {
-    this.#brushStartingLen = this.#brushBuffer.length;
-  }
-
+  // ---- Undo/Redo ----
   undo(count, posHandler) {
     this.addGroup();
     for (let i = 0; i < count; i++) {
@@ -43,7 +39,7 @@ class HistoryHandler {
     this.#updateBrushLen();
   }
 
-
+  // ---- Group handling ----
   /** @param { UndoEraseInfo[] } data */
   addEraseData(data) {
     this.clear();
@@ -68,14 +64,11 @@ class HistoryHandler {
     }
   }
 
-  #addToHistory(group) {
-    this.clear();
-    this.history.push(group);
-    this.historyIndex++;
-  }
-
+  // ---- History handling ----
   /** Empty the whole history. */
   empty() {
+    this.addGroup();
+    this.#updateBrushLen();
     this.historyIndex = 0;
     this.history = [];
   }
@@ -90,5 +83,16 @@ class HistoryHandler {
         group.cleanup?.();
       }
     }
+  }
+
+  #addToHistory(group) {
+    this.clear();
+    this.history.push(group);
+    this.historyIndex++;
+  }
+
+  // ---- Helper functions ----
+  #updateBrushLen() {
+    this.#brushStartingLen = this.#brushBuffer.length;
   }
 }
