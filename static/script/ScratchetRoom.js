@@ -6,7 +6,9 @@ class ScratchetRoom extends ScratchetCanvas {
   roomListNode;
   roomCodeLink;
 
+  /** @type number */
   roomCode;
+  /** @type string */
   roomName;
 
   /** @type { Map<number, ScratchetUser> } */
@@ -14,8 +16,7 @@ class ScratchetRoom extends ScratchetCanvas {
   userListNode;
 
   constructor(roomCode, roomName, globalUsername, peers) {
-    const ownUser = new ScratchetUser(globalUsername, true);
-    super(ScratchetRoom.createCanvas(), ownUser, roomCode);
+    super(ScratchetRoom.createCanvas(), roomCode, globalUsername);
 
     // Set active tool by current active class
     for (const tool of Object.values(this.tools)) {
@@ -30,7 +31,7 @@ class ScratchetRoom extends ScratchetCanvas {
     this.roomListNode = ScratchetRoom.createRoomListNode();
     this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
 
-    this.#addUserObject(CURRENT_USER_ID, ownUser);
+    this.#addUserObject(CURRENT_USER_ID, this.ownUser);
     for (const [ userID, username ] of peers) {
       this.addUser(userID, username);
     }
@@ -90,7 +91,7 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   addUser(userID, username) {
-    const user = new ScratchetUser(username);
+    const user = new ScratchetUser(username, this.view.posHandler);
     this.#addUserObject(userID, user);
   }
   removeUser(userID) {

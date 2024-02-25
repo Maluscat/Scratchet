@@ -7,32 +7,39 @@ class HistoryHandler {
   #brushBuffer;
   #brushStartingLen;
 
+  #posHandler;
+
   /** @type { UndoEraseInfo[] } */
   #eraseData = [];
 
-  constructor(brushBuffer) {
+  /**
+   * @param { number[][] } brushBuffer Reference to {@link ScratchetUser.posCache}.
+   * @param { PositionDataHandler } posHandler Reference to the room's {@link PositionDataHandler}.
+   */
+  constructor(brushBuffer, posHandler) {
     this.#brushBuffer = brushBuffer;
+    this.#posHandler = posHandler;
     this.#updateBrushLen();
   }
 
   // ---- Undo/Redo ----
-  undo(count, posHandler) {
+  undo(count) {
     this.addGroup();
     for (let i = 0; i < count; i++) {
       if (this.historyIndex > 0) {
         const group = this.history[this.historyIndex - 1];
-        group.undo(posHandler);
+        group.undo(this.#posHandler);
         this.historyIndex--;
       }
     }
     this.#updateBrushLen();
   }
-  redo(count, posHandler) {
+  redo(count) {
     this.addGroup();
     for (let i = 0; i < count; i++) {
       if (this.historyIndex < this.history.length) {
         const group = this.history[this.historyIndex];
-        group.redo(posHandler);
+        group.redo(this.#posHandler);
         this.historyIndex++;
       }
     }

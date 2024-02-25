@@ -26,10 +26,14 @@ class ScratchetUser {
 
   historyHandler;
 
-  constructor(username, isOwnUser = false) {
+  /**
+   * @param { string } username
+   * @param { PositionDataHandler } posHandler
+   */
+  constructor(username, posHandler, isOwnUser = false) {
     this.name = username;
     this.listNode = this.createUserListNode(username, isOwnUser);
-    this.historyHandler = new HistoryHandler(this.posCache);
+    this.historyHandler = new HistoryHandler(this.posCache, posHandler);
   }
 
   setName(newUsername) {

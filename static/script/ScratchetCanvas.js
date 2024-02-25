@@ -16,15 +16,15 @@ class ScratchetCanvas {
 
   /**
     * @param { HTMLCanvasElement } canvas
-    * @param { ScratchetUser } ownUser
+    * @param { number } roomCode
+    * @param { string } globalUsername
     */
-  constructor(canvas, ownUser, roomCode) {
+  constructor(canvas, roomCode, globalUsername) {
     this.addOwnClientDataToBuffer = this.addOwnClientDataToBuffer.bind(this);
-
-    this.ownUser = ownUser;
 
     this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
     this.view = new CanvasViewTransform(canvas, [ this.sendHandler.brush.liveClientBuffer ]);
+    this.ownUser = new ScratchetUser(globalUsername, this.view.posHandler, true);
 
     this.tools = {
       brush: new Brush(
