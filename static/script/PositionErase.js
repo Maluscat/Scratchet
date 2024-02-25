@@ -20,7 +20,7 @@ class PositionErase {
     let redoWrapper;
     let lastWrapper;
 
-    for (const { posData, wrapperStack, index } of PositionDataHandler.iteratePosWrapper(buffer)) {
+    PositionDataHandler.iteratePosWrapper(buffer, ({ posData, wrapperStack, index }) => {
       const posDataWrapper = wrapperStack.at(-2);
       const initialPosData = [ ...posDataWrapper ];
 
@@ -77,7 +77,7 @@ class PositionErase {
       }
 
       lastWrapper = posDataWrapper;
-    }
+    });
 
     return undoStack;
   }

@@ -45,8 +45,7 @@ class CanvasView {
     let prevPosData;
     let prevPosDataWrapper;
 
-    for (const { posData, wrapperStack } of PositionDataHandler.iteratePosWrapper(...posWrappers)) {
-
+    PositionDataHandler.iteratePosWrappers(posWrappers, ({ posData, wrapperStack }) => {
       const metaHasChanged = prevPosData && PositionDataHandler.posDataMetaHasChanged(prevPosData, posData);
       const isNotContinuous = prevPosData && PositionDataHandler.posDataIsNotContinuous(prevPosData, posData);
       let isFromHighlightedUser = false;
@@ -84,7 +83,7 @@ class CanvasView {
       if (wrapperStack[1] !== prevPosDataWrapper) {
         prevPosDataWrapper = wrapperStack[1];
       }
-    }
+    });
 
     if (prevPosData) {
       this.#drawFromPosDataEnd(prevPosData, lastCp);

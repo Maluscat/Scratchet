@@ -99,15 +99,25 @@ class PositionDataHandler {
    */
 
   /**
-   * @param { Iterable[] } posWrappers
-   * @return { Generator<recursePosWrapperYield> }
+   * Recursively iterate over multiple PosWrappers, yielding only their PosData.
+   * @param { number[][] } posWrappers
+   * @param { (yield: recursePosWrapperYield) => void } callback
    */
-  static *iteratePosWrapper(...posWrappers) {
+  static iteratePosWrappers(posWrappers, callback) {
     for (const posWrapper of posWrappers) {
-      yield* this.#iteratePosWrapperGen([posWrapper]);
+      this.#iteratePosWrapperHelper([ posWrapper ], callback);
     }
   }
-  static *#iteratePosWrapperGen(wrapperStack, index = 0) {
+  /**
+   * Recursively iterate over one PosWrapper, yielding only its PosData.
+   * @param { number[] } posWrapper
+   * @param { (yield: recursePosWrapperYield) => void } callback
+   */
+  static iteratePosWrapper(posWrapper, callback) {
+    this.#iteratePosWrapperHelper([ posWrapper ], callback);
+  }
+
+  static #iteratePosWrapperHelper(wrapperStack, callback, index = 0) {
     const posData = wrapperStack.at(-1);
     if (posData.length === 0) return;
 
@@ -116,13 +126,13 @@ class PositionDataHandler {
       for (const childWrapper of posData) {
         wrapperStack.push(childWrapper);
 
-        yield* this.#iteratePosWrapperGen(wrapperStack, i);
+        this.#iteratePosWrapperHelper(wrapperStack, callback, i);
 
         wrapperStack.pop();
         i++;
       }
     } else {
-      yield { posData, wrapperStack, index };
+      callback({ posData, wrapperStack, index });
     }
   }
 }

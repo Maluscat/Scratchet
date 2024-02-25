@@ -187,12 +187,12 @@ class ScratchetCanvas {
       for (const posWrapper of userCache) {
         const wrapperDestIndex = this.view.posHandler.getPosIndex(posWrapper);
 
-        for (const { posData } of PositionDataHandler.iteratePosWrapper(posWrapper)) {
+        PositionDataHandler.iteratePosWrapper(posWrapper, ({ posData }) => {
           buffer.push(
             Global.MODE.BULK_INIT,
             wrapperDestIndex,
             ...this.convertClientDataToServerData(posData));
-        }
+        });
       }
       this.sendHandler.sendData(buffer);
     }
