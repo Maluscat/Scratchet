@@ -31,7 +31,7 @@ class BrushGroup {
   /** @param { PositionDataHandler } posHandler */
   cleanup(posHandler) {
     for (const info of this.#redoData) {
-      this.#userBuffer.splice(this.#userBuffer.indexOf(info.target));
+      this.#userBuffer.splice(this.#userBuffer.indexOf(info.target), 1);
       posHandler.deleteFromBuffer(info.target);
     }
   }

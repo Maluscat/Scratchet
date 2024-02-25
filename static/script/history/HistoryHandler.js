@@ -90,6 +90,7 @@ class HistoryHandler {
         group.cleanup(this.#posHandler);
       }
     }
+    this.#updateBrushLen();
   }
 
   #addToHistory(group) {
