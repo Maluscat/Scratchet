@@ -28,7 +28,7 @@ class HistoryHandler {
     for (let i = 0; i < count; i++) {
       if (this.historyIndex > 0) {
         const group = this.history[this.historyIndex - 1];
-        group.undo(this.#posHandler);
+        group.undo();
         this.historyIndex--;
       }
     }
@@ -39,7 +39,7 @@ class HistoryHandler {
     for (let i = 0; i < count; i++) {
       if (this.historyIndex < this.history.length) {
         const group = this.history[this.historyIndex];
-        group.redo(this.#posHandler);
+        group.redo();
         this.historyIndex++;
       }
     }
@@ -87,7 +87,7 @@ class HistoryHandler {
     if (this.historyIndex < this.history.length) {
       for (const group of this.history.splice(this.historyIndex, Infinity)) {
         // TODO Common group interface
-        group.cleanup?.();
+        group.cleanup(this.#posHandler);
       }
     }
   }
