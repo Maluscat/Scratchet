@@ -140,12 +140,12 @@ class ScratchetCanvas {
 
   /** @param { ScratchetUser } user */
   undo(user, count) {
-    user.historyHandler.undo(count, this.view.posHandler);
+    user.historyHandler.undo(count);
     this.view.update();
   }
   /** @param { ScratchetUser } user */
   redo(user, count) {
-    user.historyHandler.redo(count, this.view.posHandler);
+    user.historyHandler.redo(count);
     this.view.update();
   }
 
