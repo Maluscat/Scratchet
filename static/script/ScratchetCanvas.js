@@ -12,6 +12,7 @@ class ScratchetCanvas {
   activeTool;
 
   view;
+  posHandler;
 
 
   /**
@@ -23,8 +24,9 @@ class ScratchetCanvas {
     this.addOwnClientDataToBuffer = this.addOwnClientDataToBuffer.bind(this);
 
     this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
-    this.view = new CanvasViewTransform(canvas, [ this.sendHandler.brush.liveClientBuffer ]);
-    this.ownUser = new ScratchetUser(globalUsername, this.view.posHandler, true);
+    this.posHandler = new PositionDataHandler();
+    this.view = new CanvasViewTransform(canvas, this.posHandler, [ this.sendHandler.brush.liveClientBuffer ]);
+    this.ownUser = new ScratchetUser(globalUsername, this.posHandler, true);
 
     this.tools = {
       brush: new Brush(
@@ -185,7 +187,7 @@ class ScratchetCanvas {
       const buffer = [];
 
       for (const posWrapper of userCache) {
-        const wrapperDestIndex = this.view.posHandler.getPosIndex(posWrapper);
+        const wrapperDestIndex = this.posHandler.getPosIndex(posWrapper);
 
         PositionDataHandler.iteratePosWrapper(posWrapper, ({ posData }) => {
           buffer.push(

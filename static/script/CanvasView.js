@@ -11,19 +11,19 @@ class CanvasView {
   canvas;
   ctx;
 
-  posHandler;
-
+  #posHandler;
   #additionalData = [];
 
   /**
    * @param { HTMLCanvasElement } canvas
+   * @param { PositionDataHandler } posHandler
    * @param { number[][] } additionalData
    */
-  constructor(canvas, additionalData) {
+  constructor(canvas, posHandler, additionalData) {
     this.#additionalData = additionalData;
+    this.#posHandler = posHandler;
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.posHandler = new PositionDataHandler();
   }
 
   /** @param { ScratchetUser } [userHighlight] */
@@ -32,7 +32,7 @@ class CanvasView {
     const drawEndPos = this.getPosWithTransform(this.canvas.width, this.canvas.height);
 
     this.ctx.clearRect(...drawStartPos, ...drawEndPos);
-    this.#redraw([ this.posHandler.buffer, ...this.#additionalData ], userHighlight);
+    this.#redraw([ this.#posHandler.buffer, ...this.#additionalData ], userHighlight);
   }
 
   /**

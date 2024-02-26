@@ -91,7 +91,7 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   addUser(userID, username) {
-    const user = new ScratchetUser(username, this.view.posHandler);
+    const user = new ScratchetUser(username, this.posHandler);
     this.#addUserObject(userID, user);
   }
   removeUser(userID) {
