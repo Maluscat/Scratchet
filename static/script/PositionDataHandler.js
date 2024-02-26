@@ -91,6 +91,64 @@ class PositionDataHandler {
   }
 
 
+  // ---- Static protocol converter ----
+  static convertServerDataToClientData(posData, user) {
+    const flag = posData[0];
+    const extraLen = Meta.getExtraLengthFromFlag(flag);
+
+    const clientPosData = new Int16Array(posData.length + extraLen);
+    clientPosData.set(posData, extraLen);
+    // Shift items to the left
+    for (let i = extraLen; i < Meta.LEN.BRUSH - 1; i++) {
+      clientPosData[i] = clientPosData[i + 1];
+    }
+
+    if (extraLen > 0) {
+      if (user.posCache.length === 0) {
+        return false;
+      }
+
+      const lastPosData = user.posCache[user.posCache.length - 1][0];
+
+      // Get width/hue of the last package
+      if (flag & Meta.FLAGS.LAST_WIDTH) {
+        clientPosData[0] = clientPosData[1];
+        clientPosData[1] = Meta.getClientWidth(lastPosData);
+      }
+      if (flag & Meta.FLAGS.LAST_HUE) {
+        clientPosData[0] = Meta.getClientHue(lastPosData);
+      }
+    }
+
+    clientPosData[2] = flag;
+
+    return clientPosData;
+  }
+  static convertClientDataToServerData(posData) {
+    const flag = posData[2];
+    let extraLen = Meta.getExtraLengthFromFlag(flag);
+
+    const serverPosData = new Int16Array(posData.length - extraLen);
+    serverPosData.set(posData.subarray(extraLen));
+    // Shift items to the right
+    for (let i = Meta.LEN.BRUSH - extraLen - 1 - 1; i >= 0; i--) {
+      serverPosData[i + 1] = serverPosData[i];
+    }
+
+    if ((flag & Meta.FLAGS.LAST_WIDTH) === 0) {
+      serverPosData[extraLen--] = Meta.getClientWidth(posData);
+    }
+    if ((flag & Meta.FLAGS.LAST_HUE) === 0) {
+      serverPosData[extraLen--] = Meta.getClientHue(posData);
+    }
+
+    serverPosData[0] = flag;
+
+    return serverPosData;
+  }
+
+
+  // ---- Static iterator -----
   /**
    * @typedef { Object } recursePosWrapperYield
    * @prop { Int16Array } posData
