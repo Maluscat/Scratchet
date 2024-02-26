@@ -28,11 +28,10 @@ class BrushGroup {
     }
   }
 
-  /** @param { PositionDataHandler } posHandler */
-  cleanup(posHandler) {
+  /** @param { ScratchetUser } user */
+  cleanup(user) {
     for (const info of this.#redoData) {
-      this.#userBuffer.splice(this.#userBuffer.indexOf(info.target), 1);
-      posHandler.deleteFromBuffer(info.target);
+      user.deleteFromBuffer(info.target);
     }
   }
 

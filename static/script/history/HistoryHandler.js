@@ -4,21 +4,15 @@ class HistoryHandler {
   history = [];
   historyIndex = 0;
 
-  #brushBuffer;
+  #user;
   #brushStartingLen;
-
-  #posHandler;
 
   /** @type { UndoEraseInfo[] } */
   #eraseData = [];
 
-  /**
-   * @param { number[][] } brushBuffer Reference to {@link ScratchetUser.posCache}.
-   * @param { PositionDataHandler } posHandler Reference to the room's {@link PositionDataHandler}.
-   */
-  constructor(brushBuffer, posHandler) {
-    this.#brushBuffer = brushBuffer;
-    this.#posHandler = posHandler;
+  /** @param { ScratchetUser } user Reference to the bound user. */
+  constructor(user) {
+    this.#user = user;
     this.#updateBrushLen();
   }
 
@@ -58,9 +52,9 @@ class HistoryHandler {
     this.#addEraserGroup();
   }
   #addBrushGroup() {
-    const deltaLen = this.#brushBuffer.length - this.#brushStartingLen;
+    const deltaLen = this.#user.posCache.length - this.#brushStartingLen;
     if (deltaLen > 0) {
-      this.#addToHistory(new BrushGroup(this.#brushBuffer, deltaLen));
+      this.#addToHistory(new BrushGroup(this.#user.posCache, deltaLen));
       this.#updateBrushLen();
     }
   }
@@ -87,7 +81,7 @@ class HistoryHandler {
     if (this.historyIndex < this.history.length) {
       for (const group of this.history.splice(this.historyIndex, Infinity)) {
         // TODO Common group interface
-        group.cleanup(this.#posHandler);
+        group.cleanup(this.#user);
       }
     }
     this.#updateBrushLen();
@@ -101,6 +95,6 @@ class HistoryHandler {
 
   // ---- Helper functions ----
   #updateBrushLen() {
-    this.#brushStartingLen = this.#brushBuffer.length;
+    this.#brushStartingLen = this.#user.posCache.length;
   }
 }

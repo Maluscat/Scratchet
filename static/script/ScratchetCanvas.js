@@ -198,12 +198,9 @@ class ScratchetCanvas {
     }
   }
 
+  /** @param { ScratchetUser } user */
   clearUserBufferAndRedraw(user) {
-    if (user.posCache.length > 0) {
-      for (const posDataWrapper of user.posCache) {
-        this.view.posHandler.deleteFromBuffer(posDataWrapper);
-      }
-      user.emptyBuffer();
+    if (user.emptyBuffer()) {
       this.view.update();
     }
   }
@@ -227,7 +224,6 @@ class ScratchetCanvas {
 
   addClientDataToBuffer(posData, user, wrapperDestIndex) {
     const posDataWrapper = Meta.createPosDataWrapper(posData);
-    this.view.posHandler.addToBuffer(posDataWrapper, wrapperDestIndex);
-    user.posCache.push(posDataWrapper);
+    user.addToBuffer(posDataWrapper, wrapperDestIndex);
   }
 }

@@ -25,6 +25,7 @@ class ScratchetUser {
   redoBuffer = new Array();
 
   historyHandler;
+  #posHandler;
 
   /**
    * @param { string } username
@@ -32,9 +33,11 @@ class ScratchetUser {
    */
   constructor(username, posHandler, isOwnUser = false) {
     this.name = username;
+    this.#posHandler = posHandler;
     this.listNode = this.createUserListNode(username, isOwnUser);
-    this.historyHandler = new HistoryHandler(this.posCache, posHandler);
+    this.historyHandler = new HistoryHandler(this);
   }
+
 
   setName(newUsername) {
     this.name = newUsername;
@@ -53,13 +56,6 @@ class ScratchetUser {
     }, Global.SEND_INTERVAL * 1.5);
   }
 
-  emptyBuffer() {
-    // We may not assign a new array because the HistoryHandler
-    // holds a reference to it.
-    this.posCache.length = 0;
-    this.historyHandler.empty();
-  }
-
   /**
    * @return { boolean } Whether something has been erased.
    */
@@ -70,6 +66,28 @@ class ScratchetUser {
       return true;
     }
     return false;
+  }
+
+  // ---- Buffer operations ----
+  addToBuffer(posWrapper, initIndex) {
+    this.posCache.push(posWrapper);
+    this.#posHandler.addToBuffer(posWrapper, initIndex);
+  }
+  deleteFromBuffer(posWrapper) {
+    this.posCache.splice(this.posCache.indexOf(posWrapper), 1);
+    this.#posHandler.deleteFromBuffer(posWrapper);
+  }
+  emptyBuffer() {
+    if (this.posCache.length > 0) {
+      for (const posWrapper of this.posCache) {
+        this.#posHandler.deleteFromBuffer(posWrapper);
+      }
+      // We may not assign a new array because the HistoryHandler
+      // holds a reference to it.
+      this.posCache.length = 0;
+      this.historyHandler.empty();
+      return true;
+    } else return false;
   }
 
   // ---- Events ----
