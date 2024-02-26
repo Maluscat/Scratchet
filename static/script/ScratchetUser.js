@@ -68,6 +68,7 @@ class ScratchetUser {
     return false;
   }
 
+
   // ---- Buffer operations ----
   addToBuffer(posWrapper, initIndex) {
     this.posCache.push(posWrapper);
@@ -89,6 +90,18 @@ class ScratchetUser {
       return true;
     } else return false;
   }
+
+  addServerDataToBuffer(posData, wrapperDestIndex) {
+    posData = PositionDataHandler.convertServerDataToClientData(posData, this);
+    if (posData) {
+      this.addClientDataToBuffer(posData, wrapperDestIndex);
+    }
+  }
+  addClientDataToBuffer(posData, wrapperDestIndex) {
+    const posDataWrapper = Meta.createPosDataWrapper(posData);
+    this.addToBuffer(posDataWrapper, wrapperDestIndex);
+  }
+
 
   // ---- Events ----
   listNodeMouseEnter() {

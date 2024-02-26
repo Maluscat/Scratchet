@@ -167,7 +167,7 @@ class ScratchetCanvas {
   sliceInitDataAndAddToBuffer(data, user, startIndex, endIndex = Infinity) {
     const posData = data.subarray(startIndex, endIndex);
     const wrapperDestIndex = data[startIndex - BULK_INIT_SEPARATOR_LEN + 1];
-    this.addServerDataToBuffer(posData, user, wrapperDestIndex);
+    user.addServerDataToBuffer(posData, wrapperDestIndex);
   }
 
   /**
@@ -206,26 +206,13 @@ class ScratchetCanvas {
       this.view.update();
     }
   }
-
-  addServerDataToBuffer(posData, user, wrapperDestIndex) {
-    posData = PositionDataHandler.convertServerDataToClientData(posData, user);
-    if (posData) {
-      this.addClientDataToBuffer(posData, user, wrapperDestIndex);
-    }
-  }
   addServerDataToBufferAndDraw(posData, user) {
     user.setColorIndicator(Meta.getClientHue(posData));
-    this.addServerDataToBuffer(posData, user);
+    user.addServerDataToBuffer(posData);
     this.view.update();
   }
-
   addOwnClientDataToBuffer(posData) {
-    this.addClientDataToBuffer(posData, this.ownUser);
+    this.ownUser.addClientDataToBuffer(posData);
     this.view.update();
-  }
-
-  addClientDataToBuffer(posData, user, wrapperDestIndex) {
-    const posDataWrapper = Meta.createPosDataWrapper(posData);
-    user.addToBuffer(posDataWrapper, wrapperDestIndex);
   }
 }
