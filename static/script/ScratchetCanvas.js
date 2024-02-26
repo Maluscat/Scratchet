@@ -13,6 +13,7 @@ class ScratchetCanvas {
 
   view;
   posHandler;
+  bulkInitHandler;
 
 
   /**
@@ -25,6 +26,7 @@ class ScratchetCanvas {
 
     this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
     this.posHandler = new PositionDataHandler();
+    this.bulkInitHandler = new BulkInitHandler();
     this.view = new CanvasViewTransform(canvas, this.posHandler, [ this.sendHandler.brush.liveClientBuffer ]);
     this.ownUser = new ScratchetUser(globalUsername, this.posHandler, true);
 
@@ -154,20 +156,8 @@ class ScratchetCanvas {
 
   // ---- Buffer functions ----
   handleBulkInitData(data, user) {
-    let startIndex = BULK_INIT_SEPARATOR_LEN;
-    for (let i = startIndex; i < data.length; i++) {
-      if (data[i] === Global.MODE.BULK_INIT) {
-        this.sliceInitDataAndAddToBuffer(data, user, startIndex, i);
-        startIndex = i + BULK_INIT_SEPARATOR_LEN;
-      }
-    }
-    this.sliceInitDataAndAddToBuffer(data, user, startIndex);
+    this.bulkInitHandler.receive(data, user);
     this.view.update();
-  }
-  sliceInitDataAndAddToBuffer(data, user, startIndex, endIndex = Infinity) {
-    const posData = data.subarray(startIndex, endIndex);
-    const wrapperDestIndex = data[startIndex - BULK_INIT_SEPARATOR_LEN + 1];
-    user.addServerDataToBuffer(posData, wrapperDestIndex);
   }
 
   /**
