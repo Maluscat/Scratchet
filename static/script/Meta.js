@@ -42,6 +42,7 @@ const Meta = {
 
   // ---- Misc functions ----
   createPosDataWrapper(posData) {
+    if (!posData) return [];
     return [ posData ];
   },
 
