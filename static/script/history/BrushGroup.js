@@ -5,44 +5,47 @@
  */
 
 class BrushGroup {
-  /** @type { UndoBrushInfo[] } */
-  #redoData = [];
-  #length;
+  redoData;
 
-  #userBuffer;
-
-  constructor(userBuffer, length) {
-    this.#length = length;
-    this.#userBuffer = userBuffer;
-    this.#prepareBuffer();
+  /**
+   * @param { Array } buffer
+   * @param { number } startIndex Inclusive.
+   * @param { number } endIndex Exclusive.
+   */
+  constructor(buffer, startIndex, endIndex) {
+    this.redoData = BrushGroup.#buildRedoInfo(buffer, startIndex, endIndex);
   }
 
   undo() {
-    for (const info of this.#redoData) {
+    for (const info of this.redoData) {
       info.target.length = 0;
     }
   }
   redo() {
-    for (const info of this.#redoData) {
+    for (const info of this.redoData) {
       info.target.push(info.data);
     }
   }
 
   /** @param { ScratchetUser } user */
   cleanup(user) {
-    for (const info of this.#redoData) {
+    for (const info of this.redoData) {
       user.deleteFromBuffer(info.target);
     }
   }
 
-  #prepareBuffer() {
-    for (let i = this.#userBuffer.length - 1; i >= this.#userBuffer.length - this.#length; i--) {
-      const posWrapper = this.#userBuffer[i];
+  // ---- Static helpers ----
+  static #buildRedoInfo(buffer, startIndex, endIndex) {
+    /** @type { UndoBrushInfo[] } */
+    const redoData = [];
+    for (let i = startIndex; i < endIndex; i++) {
+      const posWrapper = buffer[i];
       const info = {
         data: Array.from(posWrapper),
         target: posWrapper
       };
-      this.#redoData.push(info);
+      redoData.push(info);
     }
+    return redoData;
   }
 }

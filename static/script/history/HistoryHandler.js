@@ -52,9 +52,8 @@ class HistoryHandler {
     this.#addEraserGroup();
   }
   #addBrushGroup() {
-    const deltaLen = this.#user.posCache.length - this.#brushStartingLen;
-    if (deltaLen > 0) {
-      this.#addToHistory(new BrushGroup(this.#user.posCache, deltaLen));
+    if (this.#brushStartingLen < this.#user.posCache.length) {
+      this.#addToHistory(new BrushGroup(this.#user.posCache, this.#brushStartingLen, this.#user.posCache.length));
       this.#updateBrushLen();
     }
   }
