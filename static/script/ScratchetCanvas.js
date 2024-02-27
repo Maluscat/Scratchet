@@ -172,21 +172,35 @@ class ScratchetCanvas {
   }
 
   sendJoinedUserBuffer() {
-    const userCache = this.ownUser.posCache;
-    if (userCache.length > 0) {
+    if (this.ownUser.posCache.length > 0) {
+      const history = this.ownUser.historyHandler;
       const buffer = [];
 
-      for (const posWrapper of userCache) {
-        const wrapperDestIndex = this.posHandler.getPosIndex(posWrapper);
+      // We take advantage of the fact that the data of a brush group is always continuous.
+      this.addBrushGroupsToBuffer(
+        buffer, Global.MODE.BULK_INIT_BRUSH_UNDO, history.getUndoHistory());
+      this.addBrushGroupsToBuffer(
+        buffer, Global.MODE.BULK_INIT_BRUSH_REDO, history.getRedoHistory());
 
-        PositionDataHandler.iteratePosWrapper(posWrapper, ({ posData }) => {
-          buffer.push(
-            Global.MODE.BULK_INIT,
-            wrapperDestIndex,
-            ...PositionDataHandler.convertClientDataToServerData(posData));
-        });
-      }
       this.sendHandler.sendData(buffer);
+    }
+  }
+  addBrushGroupsToBuffer(buffer, groupFlag, groups) {
+    for (const group of groups) {
+      if (group instanceof BrushGroup) {
+        for (const info of group.redoData) {
+          const wrapperDestIndex = this.posHandler.getPosIndex(info.target);
+
+          PositionDataHandler.iteratePosWrapper(info.data, ({ posData }) => {
+            buffer.push(
+              Global.MODE.BULK_INIT,
+              wrapperDestIndex,
+              ...PositionDataHandler.convertClientDataToServerData(posData));
+          });
+        }
+
+        buffer.push(groupFlag);
+      }
     }
   }
 
