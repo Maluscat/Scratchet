@@ -93,6 +93,13 @@ class HistoryHandler {
   }
 
   // ---- Helper functions ----
+  getUndoHistory() {
+    return this.history.slice(0, this.historyIndex);
+  }
+  getRedoHistory() {
+    return this.history.slice(this.historyIndex);
+  }
+
   #updateBrushLen() {
     this.#brushStartingLen = this.#user.posCache.length;
   }
