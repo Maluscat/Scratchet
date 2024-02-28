@@ -1,53 +1,50 @@
 'use strict';
-class UserBulkInit {
+class UserBulkInit extends User {
   #brushRedoCount = 0;
 
-  /**
-   * @param { Array } data
-   * @param { User } user
-   */
-  receive(data, user) {
+  /** @param { Array } data */
+  handleBulkInit(data) {
     let startIndex = 1;
     let mode = Global.MODE.BULK_INIT;
     let i = startIndex;
 
     for (; i < data.length; i++) {
       if (data[i] < 0) {
-        this.bulkInitLoop(mode, data, user, startIndex, i);
+        this.#handleOperation(mode, data, startIndex, i);
         startIndex = i + 1;
         mode = data[i];
       }
     }
-    this.bulkInitLoop(mode, data, user, startIndex, i);
-    user.historyHandler.undo(this.#brushRedoCount);
+    this.#handleOperation(mode, data, startIndex, i);
+    this.historyHandler.undo(this.#brushRedoCount);
     this.#brushRedoCount = 0;
   }
-  bulkInitLoop(mode, data, user, startIndex, i) {
+  #handleOperation(mode, data, startIndex, i) {
     switch (mode) {
       case Global.MODE.BULK_INIT_BRUSH_REDO:
-        this.#incrementBrushRedo(data, user);
+        this.#incrementBrushRedo(data);
       case Global.MODE.BULK_INIT_BRUSH_UNDO:
-        this.#addBrushGroup(data, user);
+        this.#addBrushGroup(data);
         break;
       default:
-        this.#addPosData(data, user, startIndex, i);
+        this.#addPosData(data, startIndex, i);
     }
   }
 
-  #addBrushGroup(data, user) {
-    user.historyHandler.addGroup();
+  #addBrushGroup(data) {
+    this.historyHandler.addGroup();
   }
-  #incrementBrushRedo(data, user) {
+  #incrementBrushRedo(data) {
     this.#brushRedoCount++;
   }
-  #addPosData(data, user, startIndex, endIndex) {
+  #addPosData(data, startIndex, endIndex) {
     const wrapperDestIndex = data[startIndex];
     startIndex += BULK_INIT_SEPARATOR_LEN - 1;
     if (startIndex === endIndex) {
-      user.addClientDataToBuffer(false, wrapperDestIndex);
+      this.addClientDataToBuffer(false, wrapperDestIndex);
     } else {
       const posData = data.subarray(startIndex, endIndex);
-      user.addServerDataToBuffer(posData, wrapperDestIndex);
+      this.addServerDataToBuffer(posData, wrapperDestIndex);
     }
   }
 

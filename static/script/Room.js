@@ -11,7 +11,7 @@ class Room extends RoomController {
   /** @type string */
   roomName;
 
-  /** @type { Map<number, User> } */
+  /** @type { Map<number, UserBulkInit> } */
   users = new Map();
   userListNode;
 
@@ -91,7 +91,7 @@ class Room extends RoomController {
   }
 
   addUser(userID, username) {
-    const user = new User(username, this.posHandler);
+    const user = new UserBulkInit(username, this.posHandler);
     this.#addUserObject(userID, user);
   }
   removeUser(userID) {
@@ -109,6 +109,10 @@ class Room extends RoomController {
     return user;
   }
 
+  /**
+   * @param { number } userID
+   * @param { UserBulkInit } user
+   */
   #addUserObject(userID, user) {
     this.users.set(userID, user);
     this.userListNode.appendChild(user.listNode);

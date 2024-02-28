@@ -1,19 +1,19 @@
 'use strict';
 class RoomController {
+  /** @type UserBulkInit */
   ownUser;
 
   hasErased = false;
   isDrawing = false;
 
   tools;
-  /** @type { CanvasSendHandler } */
+  /** @type CanvasSendHandler */
   sendHandler;
-  /** @type { ScratchetTool } */
+  /** @type ScratchetTool */
   activeTool;
 
   view;
   posHandler;
-  bulkInitHandler;
 
 
   /**
@@ -26,9 +26,8 @@ class RoomController {
 
     this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
     this.posHandler = new PositionDataHandler();
-    this.bulkInitHandler = new UserBulkInit();
     this.view = new CanvasViewTransform(canvas, this.posHandler, [ this.sendHandler.brush.liveClientBuffer ]);
-    this.ownUser = new User(globalUsername, this.posHandler, true);
+    this.ownUser = new UserBulkInit(globalUsername, this.posHandler, true);
 
     this.tools = {
       brush: new Brush(
@@ -156,7 +155,7 @@ class RoomController {
 
   // ---- Buffer functions ----
   handleBulkInitData(data, user) {
-    this.bulkInitHandler.receive(data, user);
+    user.handleBulkInit(data);
     this.view.update();
   }
   sendBulkInitBuffer() {
