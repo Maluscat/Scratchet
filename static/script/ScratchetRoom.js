@@ -114,7 +114,7 @@ class ScratchetRoom extends ScratchetCanvas {
     this.userListNode.appendChild(user.listNode);
     this.updateUserIndicator();
 
-    this.sendJoinedUserBuffer();
+    this.sendBulkInitBuffer();
   }
 
   // ---- User UI helpers ----

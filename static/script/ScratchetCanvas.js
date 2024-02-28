@@ -159,6 +159,12 @@ class ScratchetCanvas {
     this.bulkInitHandler.receive(data, user);
     this.view.update();
   }
+  sendBulkInitBuffer() {
+    if (this.ownUser.posCache.length > 0) {
+      const buffer = BulkInitHandler.getSendableBuffer(this.ownUser, this.posHandler);
+      this.sendHandler.sendData(buffer);
+    }
+  }
 
   /**
    * @param { Int16Array } data
@@ -169,39 +175,6 @@ class ScratchetCanvas {
       user.erase(data[i], data[i + 1], Meta.getClientWidth(data));
     }
     this.view.update();
-  }
-
-  sendJoinedUserBuffer() {
-    if (this.ownUser.posCache.length > 0) {
-      const history = this.ownUser.historyHandler;
-      const buffer = [];
-
-      // We take advantage of the fact that the data of a brush group is always continuous.
-      this.addBrushGroupsToBuffer(
-        buffer, Global.MODE.BULK_INIT_BRUSH_UNDO, history.getUndoHistory());
-      this.addBrushGroupsToBuffer(
-        buffer, Global.MODE.BULK_INIT_BRUSH_REDO, history.getRedoHistory());
-
-      this.sendHandler.sendData(buffer);
-    }
-  }
-  addBrushGroupsToBuffer(buffer, groupFlag, groups) {
-    for (const group of groups) {
-      if (group instanceof BrushGroup) {
-        for (const info of group.redoData) {
-          const wrapperDestIndex = this.posHandler.getPosIndex(info.target);
-
-          PositionDataHandler.iteratePosWrapper(info.data, ({ posData }) => {
-            buffer.push(
-              Global.MODE.BULK_INIT,
-              wrapperDestIndex,
-              ...PositionDataHandler.convertClientDataToServerData(posData));
-          });
-        }
-
-        buffer.push(groupFlag);
-      }
-    }
   }
 
   /** @param { ScratchetUser } user */

@@ -51,4 +51,36 @@ class BulkInitHandler {
       user.addServerDataToBuffer(posData, wrapperDestIndex);
     }
   }
+
+
+  // ---- Build the bulk init data ----
+  static getSendableBuffer(user, posHandler) {
+    const buffer = [];
+
+    // We take advantage of the fact that the data of a brush group is always continuous.
+    this.addBrushGroupsToBuffer(
+      posHandler, buffer, Global.MODE.BULK_INIT_BRUSH_UNDO, user.historyHandler.getUndoHistory());
+    this.addBrushGroupsToBuffer(
+      posHandler, buffer, Global.MODE.BULK_INIT_BRUSH_REDO, user.historyHandler.getRedoHistory());
+
+    return buffer;
+  }
+  static addBrushGroupsToBuffer(posHandler, buffer, groupFlag, groups) {
+    for (const group of groups) {
+      if (group instanceof BrushGroup) {
+        for (const info of group.redoData) {
+          const wrapperDestIndex = posHandler.getPosIndex(info.target);
+
+          PositionDataHandler.iteratePosWrapper(info.data, ({ posData }) => {
+            buffer.push(
+              Global.MODE.BULK_INIT,
+              wrapperDestIndex,
+              ...PositionDataHandler.convertClientDataToServerData(posData));
+          });
+        }
+
+        buffer.push(groupFlag);
+      }
+    }
+  }
 }
