@@ -2,27 +2,11 @@
 class User {
   posCache = new Array();
 
-  /**
-   * Contains information of erased points so that they can be redone.
-   * - Is used in conjunction with {@link undoEraseIndex}.
-   * - Grouping info into chunks is done as part of the canvas
-   *   as it is only needed for the current user.
-   * @type { Array<UndoEraseInfo> }
-   */
-  undoEraseQueue = new Array();
-  /**
-   * {@link undoEraseQueue} at this index is the current valid eraser undo/redo step.
-   */
-  undoEraseIndex = 0;
-
   /** @type { string } */
   name;
 
   listNode;
   activeTimeout;
-
-  /** Contains points which were undone so that they can be redone. */
-  redoBuffer = new Array();
 
   historyHandler;
   #posHandler;
