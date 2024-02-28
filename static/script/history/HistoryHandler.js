@@ -10,7 +10,7 @@ class HistoryHandler {
   /** @type { UndoEraseInfo[] } */
   #eraseData = [];
 
-  /** @param { ScratchetUser } user Reference to the bound user. */
+  /** @param { User } user Reference to the bound user. */
   constructor(user) {
     this.#user = user;
     this.#updateBrushLen();

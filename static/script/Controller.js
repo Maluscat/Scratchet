@@ -1,12 +1,12 @@
 'use strict';
-class ScratchetController {
+class Controller {
   globalUsername;
   defaultUsername;
 
-  /** @type { Map<number, ScratchetRoom> } */
+  /** @type { Map<number, Room> } */
   rooms = new Map();
 
-  /** @type { ScratchetRoom } */
+  /** @type { Room } */
   activeRoom;
 
   constructor() {
@@ -45,7 +45,7 @@ class ScratchetController {
       Validator.validateRoomName);
 
     // Set the join room input to the same width as the copy room link overlay, with a dummy value
-    copyRoomLinkContent.textContent = ScratchetRoom.createRoomCodeLink('0000');
+    copyRoomLinkContent.textContent = Room.createRoomCodeLink('0000');
     copyRoomLinkOverlay.classList.add('active');
     joinRoomOverlayInput.style.maxWidth =
       (copyRoomLinkContent.offsetWidth / parseFloat(getComputedStyle(copyRoomLinkContent).fontSize)) + 'em';
@@ -240,7 +240,7 @@ class ScratchetController {
       throw new Error('@ addNewRoom: No global persistent username has been set');
     }
 
-    const newRoom = new ScratchetRoom(roomCode, roomName, this.globalUsername, peers);
+    const newRoom = new Room(roomCode, roomName, this.globalUsername, peers);
     document.body.classList.remove('initial-load');
 
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
@@ -255,7 +255,7 @@ class ScratchetController {
   async removeRoom(room) {
     this.rooms.delete(room.roomCode);
 
-    /** @type {ScratchetRoom} */
+    /** @type {Room} */
     let firstRoom;
     if (this.rooms.size > 0) {
       firstRoom = this.rooms.values().next().value;

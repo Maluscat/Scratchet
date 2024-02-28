@@ -27,7 +27,7 @@ class BrushGroup {
     }
   }
 
-  /** @param { ScratchetUser } user */
+  /** @param { User } user */
   cleanup(user) {
     for (const info of this.redoData) {
       user.deleteFromBuffer(info.target);

@@ -1,5 +1,5 @@
 'use strict';
-class ScratchetUser {
+class User {
   posCache = new Array();
 
   /**

@@ -37,7 +37,7 @@ const BULK_INIT_SEPARATOR_LEN = 2;
  * metadata: currently: [hue, width, lastPosX, lastPosY]
  */
 
-const controller = new ScratchetController();
+const controller = new Controller();
 const controls3D = new Controls3D(null, null, {
   mod: {
     tran: 1,

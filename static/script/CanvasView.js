@@ -26,7 +26,7 @@ class CanvasView {
     this.ctx = canvas.getContext('2d');
   }
 
-  /** @param { ScratchetUser } [userHighlight] */
+  /** @param { User } [userHighlight] */
   update(userHighlight) {
     const drawStartPos = this.getPosWithTransform(0, 0);
     const drawEndPos = this.getPosWithTransform(this.canvas.width, this.canvas.height);
@@ -37,7 +37,7 @@ class CanvasView {
 
   /**
    * @param { number[][] } posWrappers
-   * @param { ScratchetUser } [userHighlight]
+   * @param { User } [userHighlight]
    */
   #redraw(posWrappers, userHighlight) {
     let posQueue = [];

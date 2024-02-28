@@ -1,5 +1,5 @@
 'use strict';
-class ScratchetRoom extends ScratchetCanvas {
+class Room extends RoomController {
   static canvasZIndex = 1;
 
   nameHandler;
@@ -11,12 +11,12 @@ class ScratchetRoom extends ScratchetCanvas {
   /** @type string */
   roomName;
 
-  /** @type { Map<number, ScratchetUser> } */
+  /** @type { Map<number, User> } */
   users = new Map();
   userListNode;
 
   constructor(roomCode, roomName, globalUsername, peers) {
-    super(ScratchetRoom.createCanvas(), roomCode, globalUsername);
+    super(Room.createCanvas(), roomCode, globalUsername);
 
     // Set active tool by current active class
     for (const tool of Object.values(this.tools)) {
@@ -27,9 +27,9 @@ class ScratchetRoom extends ScratchetCanvas {
 
     this.roomCode = roomCode;
 
-    this.userListNode = ScratchetRoom.createEmptyUserList();
-    this.roomListNode = ScratchetRoom.createRoomListNode();
-    this.roomCodeLink = ScratchetRoom.createRoomCodeLink(roomCode);
+    this.userListNode = Room.createEmptyUserList();
+    this.roomListNode = Room.createRoomListNode();
+    this.roomCodeLink = Room.createRoomCodeLink(roomCode);
 
     this.#addUserObject(CURRENT_USER_ID, this.ownUser);
     for (const [ userID, username ] of peers) {
@@ -77,7 +77,7 @@ class ScratchetRoom extends ScratchetCanvas {
   // ---- User handling ----
   /**
    * @param { number } userID
-   * @return { ScratchetUser }
+   * @return { User }
    */
   getUser(userID) {
     return this.users.get(userID);
@@ -91,7 +91,7 @@ class ScratchetRoom extends ScratchetCanvas {
   }
 
   addUser(userID, username) {
-    const user = new ScratchetUser(username, this.posHandler);
+    const user = new User(username, this.posHandler);
     this.#addUserObject(userID, user);
   }
   removeUser(userID) {
@@ -150,7 +150,7 @@ class ScratchetRoom extends ScratchetCanvas {
     this.roomListNode.classList.add('current');
 
     this.setRoomNameInput();
-    this.view.canvas.style.zIndex = ScratchetRoom.canvasZIndex++;
+    this.view.canvas.style.zIndex = Room.canvasZIndex++;
 
     this.view.updateScaleSlider();
     this.activeTool.activate();

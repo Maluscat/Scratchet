@@ -5,7 +5,7 @@ class BulkInitHandler {
 
   /**
    * @param { Array } data
-   * @param { ScratchetUser } user
+   * @param { User } user
    */
   receive(data, user) {
     let startIndex = 1;

@@ -1,5 +1,5 @@
 'use strict';
-class ScratchetCanvas {
+class RoomController {
   ownUser;
 
   hasErased = false;
@@ -28,7 +28,7 @@ class ScratchetCanvas {
     this.posHandler = new PositionDataHandler();
     this.bulkInitHandler = new BulkInitHandler();
     this.view = new CanvasViewTransform(canvas, this.posHandler, [ this.sendHandler.brush.liveClientBuffer ]);
-    this.ownUser = new ScratchetUser(globalUsername, this.posHandler, true);
+    this.ownUser = new User(globalUsername, this.posHandler, true);
 
     this.tools = {
       brush: new Brush(
@@ -128,7 +128,7 @@ class ScratchetCanvas {
     this.addHistoryGroup(this.ownUser);
     this.sendHandler.sendHistoryMarker();
   }
-  /** @param { ScratchetUser } user */
+  /** @param { User } user */
   addHistoryGroup(user) {
     user.historyHandler.addGroup();
   }
@@ -142,12 +142,12 @@ class ScratchetCanvas {
     this.sendHandler.addData('redo', 1);
   }
 
-  /** @param { ScratchetUser } user */
+  /** @param { User } user */
   undo(user, count) {
     user.historyHandler.undo(count);
     this.view.update();
   }
-  /** @param { ScratchetUser } user */
+  /** @param { User } user */
   redo(user, count) {
     user.historyHandler.redo(count);
     this.view.update();
@@ -168,7 +168,7 @@ class ScratchetCanvas {
 
   /**
    * @param { Int16Array } data
-   * @param { ScratchetUser } user
+   * @param { User } user
    */
   handleEraseData(data, user) {
     for (let i = Meta.LEN.ERASE; i < data.length; i += 2) {
@@ -177,7 +177,7 @@ class ScratchetCanvas {
     this.view.update();
   }
 
-  /** @param { ScratchetUser } user */
+  /** @param { User } user */
   clearUserBufferAndRedraw(user) {
     if (user.emptyBuffer()) {
       this.view.update();
