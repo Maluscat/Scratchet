@@ -20,14 +20,14 @@ class UserBulkInit extends User {
     this.#brushRedoCount = 0;
   }
   #handleOperation(mode, data, startIndex, i) {
-    switch (mode) {
-      case Global.MODE.BULK_INIT_BRUSH_REDO:
+    if (mode === Global.MODE.BULK_INIT_BRUSH_REDO || mode === Global.MODE.BULK_INIT_BRUSH_UNDO) {
+      this.#addBrushGroup(data);
+      if (mode === Global.MODE.BULK_INIT_BRUSH_REDO) {
         this.#incrementBrushRedo(data);
-      case Global.MODE.BULK_INIT_BRUSH_UNDO:
-        this.#addBrushGroup(data);
-        break;
-      default:
-        this.#addPosData(data, startIndex, i);
+      }
+    }
+    if (startIndex < i) {
+      this.#addPosData(data, startIndex, i);
     }
   }
 
@@ -51,7 +51,7 @@ class UserBulkInit extends User {
 
   // ---- Build the bulk init data ----
   static getSendableBuffer(user, posHandler) {
-    const buffer = [];
+    const buffer = [ Global.MODE.BULK_INIT ];
 
     // We take advantage of the fact that the data of a brush group is always continuous.
     this.addBrushGroupsToBuffer(
@@ -69,13 +69,14 @@ class UserBulkInit extends User {
 
           PositionDataHandler.iteratePosWrapper(info.data, ({ posData }) => {
             buffer.push(
-              Global.MODE.BULK_INIT,
               wrapperDestIndex,
-              ...PositionDataHandler.convertClientDataToServerData(posData));
+              ...PositionDataHandler.convertClientDataToServerData(posData),
+              Global.MODE.BULK_INIT
+            );
           });
         }
 
-        buffer.push(groupFlag);
+        buffer[buffer.length - 1] = groupFlag;
       }
     }
   }
