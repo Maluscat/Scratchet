@@ -1,7 +1,6 @@
 'use strict';
-class BulkInitHandler {
+class UserBulkInit {
   #brushRedoCount = 0;
-
 
   /**
    * @param { Array } data

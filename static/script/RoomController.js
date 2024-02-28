@@ -26,7 +26,7 @@ class RoomController {
 
     this.sendHandler = new CanvasSendHandler(roomCode, this.addOwnClientDataToBuffer);
     this.posHandler = new PositionDataHandler();
-    this.bulkInitHandler = new BulkInitHandler();
+    this.bulkInitHandler = new UserBulkInit();
     this.view = new CanvasViewTransform(canvas, this.posHandler, [ this.sendHandler.brush.liveClientBuffer ]);
     this.ownUser = new User(globalUsername, this.posHandler, true);
 
@@ -161,7 +161,7 @@ class RoomController {
   }
   sendBulkInitBuffer() {
     if (this.ownUser.posCache.length > 0) {
-      const buffer = BulkInitHandler.getSendableBuffer(this.ownUser, this.posHandler);
+      const buffer = UserBulkInit.getSendableBuffer(this.ownUser, this.posHandler);
       this.sendHandler.sendData(buffer);
     }
   }
