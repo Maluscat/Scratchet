@@ -90,6 +90,45 @@ class PositionDataHandler {
         || Meta.getClientWidth(posData0) !== Meta.getClientWidth(posData1)
   }
 
+  /**
+   * Slice a posData, creating a new Int16Array from the given
+   * start and end indexes, preserving the metadata.
+   *
+   * *Attention*: It is possible for the return value to be a subarray
+   * of the passed posData, sharing the same data.
+   * @param { Int16Array } posData The original posData that will be sliced.
+   * @param { number } startIndex The start index of the slice.
+   * @param { number } endIndex The end index of the slice.
+   *                            When omitted, it is set to the posData's length.
+   */
+  static slicePosData(posData, startIndex, endIndex = posData.length) {
+    // The first sub array retains its original metadata, so we can just excerpt it
+    if (startIndex === Meta.LEN.BRUSH) {
+      return posData.subarray(0, endIndex);
+    } else {
+      const newPosData = new Int16Array((endIndex - startIndex) + Meta.LEN.BRUSH);
+      newPosData[0] = posData[0];
+      newPosData[1] = posData[1];
+      for (let i = 0; i < newPosData.length - Meta.LEN.BRUSH; i++) {
+        newPosData[i + Meta.LEN.BRUSH] = posData[startIndex + i];
+      }
+      return newPosData;
+    }
+  }
+
+  /**
+   * Test whether one point of a centain size overlaps with another.
+   * It doesn't matter which size belongs to which point.
+   * @returns { boolean }
+   */
+  static positionsOverlap(pos0X, pos0Y, pos1X, pos1Y, width0, width1) {
+    const distance = Math.sqrt(
+          Math.pow(pos1X - pos0X, 2)
+        + Math.pow(pos1Y - pos0Y, 2))
+      - (width0 / 2)
+      - (width1 / 2);
+    return distance <= 0;
+  }
 
   // ---- Static protocol converter ----
   static convertServerDataToClientData(posData, user) {

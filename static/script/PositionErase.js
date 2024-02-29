@@ -33,10 +33,10 @@ class PositionErase {
 
       // j is used as the endIndex
       for (let j = Meta.LEN.BRUSH; j < posData.length; j += 2) {
-        if (this.#posIsInEraseRange(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
+        if (PositionDataHandler.positionsOverlap(posData[j], posData[j + 1], posX, posY, eraserWidth, posData[1])) {
           if (!isErasing) {
             if (startIdx !== j) {
-              const newPosData = this.#createNewPosData(posData, startIdx, j);
+              const newPosData = PositionDataHandler.slicePosData(posData, startIdx, j);
               posDataWrapper.push(newPosData);
             }
             // This needs to be at this level to accomodate for the cleanup
@@ -46,8 +46,8 @@ class PositionErase {
         } else if (isErasing) {
           if (startIdx !== j) {
             // REMINDER: j is never posData.length
-            const eraseData =
-              this.#createNewPosData(posData, Math.max(Meta.LEN.BRUSH, startIdx - 2), j + 2);
+            const eraseData = PositionDataHandler.slicePosData(
+              posData, Math.max(Meta.LEN.BRUSH, startIdx - 2), j + 2);
             redoWrapper.push(eraseData);
           }
           isErasing = false;
@@ -60,10 +60,10 @@ class PositionErase {
       if (isErasing) {
         const eraseData = (startIdx === Meta.LEN.BRUSH)
           ? posData
-          : this.#createNewPosData(posData, startIdx - 2);
+          : PositionDataHandler.slicePosData(posData, startIdx - 2);
         redoWrapper.push(eraseData);
       } else if (startIdx > Meta.LEN.BRUSH) {
-        const newPosData = this.#createNewPosData(posData, startIdx);
+        const newPosData = PositionDataHandler.slicePosData(posData, startIdx);
         posDataWrapper[index] = newPosData;
       }
 
@@ -102,42 +102,5 @@ class PositionErase {
         target: targetWrapper
       }));
     }
-  }
-
-  // ---- Helper functions ----
-  /**
-   * Slice a posData, creating a new Int16Array from the given start and end indexes.
-   * @param { Int16Array } originalPosData The original posData that will be sliced.
-   * @param { number } startIdx The start index of the slice.
-   * @param { number } endIdx The end index of the slice.
-   *                          When omitted, it is set to the posData's length.
-   */
-  static #createNewPosData(originalPosData, startIdx, endIdx = originalPosData.length) {
-    // The first sub array retains its original metadata, so we can just excerpt it
-    if (startIdx === Meta.LEN.BRUSH) {
-      return originalPosData.subarray(0, endIdx);
-    } else {
-      const newPosData = new Int16Array((endIdx - startIdx) + Meta.LEN.BRUSH);
-      newPosData[0] = originalPosData[0];
-      newPosData[1] = originalPosData[1];
-      for (let i = 0; i < newPosData.length - Meta.LEN.BRUSH; i++) {
-        newPosData[i + Meta.LEN.BRUSH] = originalPosData[startIdx + i];
-      }
-      return newPosData;
-    }
-  }
-
-  /**
-   * Test whether the eraser of some size at some point
-   * is in range of a stroke point of some size at some point.
-   * @returns { boolean }
-   */
-  static #posIsInEraseRange(testPosX, testPosY, erasePosX, erasePosY, eraserWidth, strokeWidth) {
-    const distance = Math.sqrt(
-          Math.pow(erasePosX - testPosX, 2)
-        + Math.pow(erasePosY - testPosY, 2))
-      - (eraserWidth / 2)
-      - (strokeWidth / 2);
-    return distance <= 0;
   }
 }
