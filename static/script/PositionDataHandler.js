@@ -218,15 +218,18 @@ class PositionDataHandler {
     const posData = wrapperStack.at(-1);
     if (posData.length === 0) return;
 
-    if (Array.isArray(posData) && typeof posData[0] !== 'number' || posData instanceof Set) {
-      let i = 0;
-      for (const childWrapper of posData) {
-        wrapperStack.push(childWrapper);
+    if (Array.isArray(posData) && typeof posData[0] !== 'number') {
+      // Pinning and continuously checking the length to allow
+      // for in-place modification of the array while looping.
+      const length = posData.length;
+      for (let i = 0; i < length; i++) {
+        if (i >= posData.length) break;
+
+        wrapperStack.push(posData[i]);
 
         this.#iteratePosWrapperHelper(wrapperStack, callback, i);
 
         wrapperStack.pop();
-        i++;
       }
     } else {
       callback({ posData, wrapperStack, index });
