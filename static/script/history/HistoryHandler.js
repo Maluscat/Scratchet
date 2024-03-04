@@ -7,8 +7,8 @@ class HistoryHandler {
   #user;
   #brushStartingLen;
 
-  /** @type { UndoEraseInfo[] } */
-  eraseData = [];
+  /** @type { EraserHistoryData[] } */
+  eraseHistoryStack = [];
 
   /** @param { User } user Reference to the bound user. */
   constructor(user) {
@@ -52,9 +52,9 @@ class HistoryHandler {
     }
   }
   #addEraserGroup() {
-    if (this.eraseData.length > 0) {
-      this.#addToHistory(new EraserGroup(this.eraseData));
-      this.eraseData = [];
+    if (this.eraseHistoryStack.length > 0) {
+      this.#addToHistory(new EraserGroup(this.eraseHistoryStack));
+      this.eraseHistoryStack = [];
     }
   }
 

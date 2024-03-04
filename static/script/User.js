@@ -40,9 +40,15 @@ class User {
     }, Global.SEND_INTERVAL * 1.5);
   }
 
-  /** @return { boolean } Whether something has been erased. */
-  erase(posX, posY, eraserWidth) {
-    return PositionErase.eraseAtPos(this.posCache, this.historyHandler.eraseData, ...arguments);
+  /**
+   * @param { number } posX
+   * @param { number } posY
+   * @param { number } eraserSize
+   * @return { boolean } Whether something has been erased.
+   */
+  erase(posX, posY, eraserSize) {
+    return PositionErase.eraseAtPos(
+      this.posCache, this.historyHandler.eraseHistoryStack, posX, posY, eraserSize);
   }
 
 

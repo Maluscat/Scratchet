@@ -64,7 +64,7 @@ class UserBulkInit extends User {
   static addBrushGroupsToBuffer(posHandler, buffer, groupFlag, groups) {
     for (const group of groups) {
       if (group instanceof BrushGroup) {
-        for (const info of group.redoData) {
+        for (const info of group.historyData) {
           const wrapperDestIndex = posHandler.getPosIndex(info.target);
 
           PositionDataHandler.iteratePosWrapper(info.data, ({ posData }) => {

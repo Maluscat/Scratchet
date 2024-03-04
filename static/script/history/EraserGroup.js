@@ -1,5 +1,5 @@
 /**
- * @typedef { Object } UndoEraseInfo
+ * @typedef { Object } EraserHistoryData
  * @prop { Array<Array> } initialWrapper A copy of the original PosWrapper.
  *                                       Is used to reinstate the target to its original form.
  * @prop { Array<Array> } newWrapper A copy of the PosWrapper after the erase process.
@@ -8,29 +8,29 @@
  */
 
 class EraserGroup {
-  /** @type { UndoEraseInfo[] } */
-  #undoData;
+  /** @type { EraserHistoryData[] } */
+  #historyData;
 
-  /** @param { UndoEraseInfo[] } data */
+  /** @param { EraserHistoryData[] } data */
   constructor(data) {
-    this.#undoData = EraserGroup.#buildUndoInfo(data);
+    this.#historyData = EraserGroup.#buildHistoryData(data);
   }
 
   undo() {
-    for (const info of this.#undoData) {
+    for (const info of this.#historyData) {
       info.target.splice(0, info.target.length, info.initialWrapper);
     }
   }
   redo() {
-    for (const info of this.#undoData) {
+    for (const info of this.#historyData) {
       info.target.splice(0, info.target.length, info.newWrapper);
     }
   }
 
   cleanup = this.undo;
 
-  /** @param { UndoEraseInfo[] } undoOutline */
-  static #buildUndoInfo(undoOutline) {
+  /** @param { EraserHistoryData[] } undoOutline */
+  static #buildHistoryData(undoOutline) {
     for (const info of undoOutline) {
       info.newWrapper = [ ...info.target ];
     }
