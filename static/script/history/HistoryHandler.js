@@ -75,10 +75,16 @@ class HistoryHandler {
   /**
    * Clears the history up until the current history index,
    * shaving off any redo data.
+   *
+   * @privateRemarks
+   * The discarded groups need to be traversed in reverse
+   * to transform any PosWrappers in the correct order.
    */
   clear() {
     if (this.historyIndex < this.history.length) {
-      for (const group of this.history.splice(this.historyIndex, Infinity)) {
+      const discardedGroups = this.history.splice(this.historyIndex, Infinity);
+      for (let i = discardedGroups.length - 1; i >= 0; i--) {
+        const group = discardedGroups[i];
         // TODO Common group interface
         group.cleanup(this.#user);
       }
