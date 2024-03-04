@@ -40,16 +40,9 @@ class User {
     }, Global.SEND_INTERVAL * 1.5);
   }
 
-  /**
-   * @return { boolean } Whether something has been erased.
-   */
+  /** @return { boolean } Whether something has been erased. */
   erase(posX, posY, eraserWidth) {
-    const undoStack = PositionErase.eraseAtPos(this.posCache, ...arguments);
-    if (undoStack.length > 0) {
-      this.historyHandler.addEraseData(undoStack);
-      return true;
-    }
-    return false;
+    return PositionErase.eraseAtPos(this.posCache, this.historyHandler.eraseData, ...arguments);
   }
 
 

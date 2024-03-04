@@ -23,7 +23,7 @@ class BrushGroup {
   }
   redo() {
     for (const info of this.redoData) {
-      info.target.push(info.data);
+      info.target.push(...info.data);
     }
   }
 

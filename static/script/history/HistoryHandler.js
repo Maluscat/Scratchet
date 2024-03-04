@@ -8,7 +8,7 @@ class HistoryHandler {
   #brushStartingLen;
 
   /** @type { UndoEraseInfo[] } */
-  #eraseData = [];
+  eraseData = [];
 
   /** @param { User } user Reference to the bound user. */
   constructor(user) {
@@ -41,12 +41,6 @@ class HistoryHandler {
   }
 
   // ---- Group handling ----
-  /** @param { UndoEraseInfo[] } data */
-  addEraseData(data) {
-    this.clear();
-    this.#eraseData.push(...data);
-  }
-
   addGroup() {
     this.#addBrushGroup();
     this.#addEraserGroup();
@@ -58,9 +52,9 @@ class HistoryHandler {
     }
   }
   #addEraserGroup() {
-    if (this.#eraseData.length > 0) {
-      this.#addToHistory(new EraserGroup(this.#eraseData));
-      this.#eraseData = [];
+    if (this.eraseData.length > 0) {
+      this.#addToHistory(new EraserGroup(this.eraseData));
+      this.eraseData = [];
     }
   }
 
