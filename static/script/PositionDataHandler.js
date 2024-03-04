@@ -103,7 +103,7 @@ class PositionDataHandler {
    */
   static slicePosData(posData, startIndex, endIndex = posData.length) {
     // The first sub array retains its original metadata, so we can just excerpt it
-    if (startIndex === Meta.LEN.BRUSH) {
+    if (startIndex <= Meta.LEN.BRUSH) {
       return posData.subarray(0, endIndex);
     } else {
       const newPosData = new Int16Array((endIndex - startIndex) + Meta.LEN.BRUSH);
