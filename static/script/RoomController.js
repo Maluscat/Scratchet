@@ -60,7 +60,6 @@ class RoomController {
   canvasDown(e) {
     if (e.button === 0) {
       this.isDrawing = true;
-      this.ownUser.historyHandler.clear();
 
       // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
       switch (this.activeTool.constructor) {
