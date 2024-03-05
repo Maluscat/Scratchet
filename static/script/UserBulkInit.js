@@ -4,37 +4,42 @@ class UserBulkInit extends User {
 
   /** @param { Array } data */
   handleBulkInit(data) {
-    let startIndex = 1;
-    let mode = Global.MODE.BULK_INIT;
+    let startIndex = 2;
+    let mode = data[1];
     let i = startIndex;
 
     for (; i < data.length; i++) {
       if (data[i] < 0) {
-        this.#handleOperation(mode, data, startIndex, i);
+        this.#handlePosData(data, startIndex, i);
         startIndex = i + 1;
-        mode = data[i];
+        if (data[i] !== -1) {
+          this.#handleGroup(mode);
+          mode = data[i];
+        }
       }
     }
-    this.#handleOperation(mode, data, startIndex, i);
+    this.#handleGroup(mode);
+
     this.historyHandler.undo(this.#brushRedoCount);
     this.#brushRedoCount = 0;
   }
-  #handleOperation(mode, data, startIndex, i) {
+
+  #handlePosData(data, startIndex, i) {
+    this.#addPosData(data, startIndex, i);
+  }
+  #handleGroup(mode) {
     if (mode === Global.MODE.BULK_INIT_BRUSH_REDO || mode === Global.MODE.BULK_INIT_BRUSH_UNDO) {
-      this.#addBrushGroup(data);
+      this.#addBrushGroup();
       if (mode === Global.MODE.BULK_INIT_BRUSH_REDO) {
-        this.#incrementBrushRedo(data);
+        this.#incrementBrushRedo();
       }
-    }
-    if (startIndex < i) {
-      this.#addPosData(data, startIndex, i);
     }
   }
 
-  #addBrushGroup(data) {
+  #addBrushGroup() {
     this.historyHandler.addGroup();
   }
-  #incrementBrushRedo(data) {
+  #incrementBrushRedo() {
     this.#brushRedoCount++;
   }
   #addPosData(data, startIndex, endIndex) {
@@ -51,7 +56,10 @@ class UserBulkInit extends User {
 
   // ---- Build the bulk init data ----
   static getSendableBuffer(user, posHandler) {
-    const buffer = [ Global.MODE.BULK_INIT ];
+    const buffer = [
+      Global.MODE.BULK_INIT,
+      Global.MODE.BULK_INIT // Will be overridden
+    ];
 
     // We take advantage of the fact that the data of a brush group is always continuous.
     this.addBrushGroupsToBuffer(
@@ -64,6 +72,8 @@ class UserBulkInit extends User {
   static addBrushGroupsToBuffer(posHandler, buffer, groupFlag, groups) {
     for (const group of groups) {
       if (group instanceof BrushGroup) {
+        buffer[buffer.length - 1] = groupFlag;
+
         for (const info of group.historyData) {
           const wrapperDestIndex = posHandler.getPosIndex(info.target);
 
@@ -75,8 +85,6 @@ class UserBulkInit extends User {
             );
           });
         }
-
-        buffer[buffer.length - 1] = groupFlag;
       }
     }
   }
