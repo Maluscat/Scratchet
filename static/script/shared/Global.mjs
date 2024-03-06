@@ -9,4 +9,6 @@ export const MODE = /** @type const */ ({
   HISTORY_MARKER: -5,
   BULK_INIT_BRUSH_UNDO: -10,
   BULK_INIT_BRUSH_REDO: -11,
+  BULK_INIT_ERASE_UNDO: -12,
+  BULK_INIT_ERASE_REDO: -13,
 });

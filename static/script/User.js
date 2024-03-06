@@ -9,7 +9,7 @@ class User {
   activeTimeout;
 
   historyHandler;
-  #posHandler;
+  posHandler;
 
   /**
    * @param { string } username
@@ -17,7 +17,7 @@ class User {
    */
   constructor(username, posHandler, isOwnUser = false) {
     this.name = username;
-    this.#posHandler = posHandler;
+    this.posHandler = posHandler;
     this.listNode = this.createUserListNode(username, isOwnUser);
     this.historyHandler = new HistoryHandler(this);
   }
@@ -55,16 +55,16 @@ class User {
   // ---- Buffer operations ----
   addToBuffer(posWrapper, initIndex) {
     this.posCache.push(posWrapper);
-    this.#posHandler.addToBuffer(posWrapper, initIndex);
+    this.posHandler.addToBuffer(posWrapper, initIndex);
   }
   deleteFromBuffer(posWrapper) {
     this.posCache.splice(this.posCache.indexOf(posWrapper), 1);
-    this.#posHandler.deleteFromBuffer(posWrapper);
+    this.posHandler.deleteFromBuffer(posWrapper);
   }
   emptyBuffer() {
     if (this.posCache.length > 0) {
       for (const posWrapper of this.posCache) {
-        this.#posHandler.deleteFromBuffer(posWrapper);
+        this.posHandler.deleteFromBuffer(posWrapper);
       }
       // We may not assign a new array because the HistoryHandler
       // holds a reference to it.
