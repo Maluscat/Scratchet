@@ -9,20 +9,20 @@
 
 class EraserGroup {
   /** @type { EraserHistoryData[] } */
-  #historyData;
+  historyData;
 
   /** @param { EraserHistoryData[] } data */
   constructor(data) {
-    this.#historyData = EraserGroup.#buildHistoryData(data);
+    this.historyData = EraserGroup.#buildHistoryData(data);
   }
 
   undo() {
-    for (const info of this.#historyData) {
+    for (const info of this.historyData) {
       info.target.splice(0, info.target.length, info.initialWrapper);
     }
   }
   redo() {
-    for (const info of this.#historyData) {
+    for (const info of this.historyData) {
       info.target.splice(0, info.target.length, info.newWrapper);
     }
   }
