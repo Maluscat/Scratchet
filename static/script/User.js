@@ -40,17 +40,6 @@ class User {
     }, Global.SEND_INTERVAL * 1.5);
   }
 
-  /**
-   * @param { number } posX
-   * @param { number } posY
-   * @param { number } eraserSize
-   * @return { boolean } Whether something has been erased.
-   */
-  erase(posX, posY, eraserSize) {
-    return PositionErase.eraseAtPos(
-      this.posCache, this.historyHandler, posX, posY, eraserSize);
-  }
-
 
   // ---- Buffer operations ----
   addToBuffer(posWrapper, initIndex) {
@@ -101,5 +90,63 @@ class User {
     listNode.addEventListener('mouseleave', this.listNodeMouseLeave.bind(this));
 
     return listNode;
+  }
+
+
+  // ---- Eraser ----
+  /**
+   * Erase all points in the given buffer that are in range of the eraser
+   * at the given coordinates and size.
+   * @param { number } posX The eraser position.x to check against.
+   * @param { number } posY The eraser position.y to check against.
+   * @param { number } eraserSize The eraser diameter.
+   */
+  erase(posX, posY, eraserSize) {
+    let hasErased = false;
+
+    PositionDataHandler.iteratePosWrapper(this.posCache, ({ posData, wrapperStack, index }) => {
+      const posDataWrapper = wrapperStack.at(-2);
+      const initialWrapper = [ ...posDataWrapper ];
+
+      let startIdx = Meta.LEN.BRUSH;
+      let isErasing = false;
+
+      // j is used as the endIndex
+      for (let j = Meta.LEN.BRUSH; j < posData.length; j += 2) {
+        if (PositionDataHandler.positionsOverlap(posData[j], posData[j + 1], posX, posY, eraserSize, posData[1])) {
+          if (!isErasing) {
+            if (startIdx !== j) {
+              const newPosData = PositionDataHandler.slicePosData(posData, startIdx, j);
+              posDataWrapper.push(newPosData);
+            }
+            // This needs to be at this level to accomodate for the cleanup
+            isErasing = true;
+            startIdx = j;
+          }
+          hasErased = true;
+        } else if (isErasing) {
+          isErasing = false;
+          startIdx = j;
+        }
+      }
+
+      // The last section needs to be handled manually.
+      // This is the same procedure as in the loop above.
+      if (!isErasing) {
+        if (startIdx > Meta.LEN.BRUSH) {
+          const newPosData = PositionDataHandler.slicePosData(posData, startIdx);
+          posDataWrapper[index] = newPosData;
+        }
+      } else {
+        // Remove the initial posData if the last vector in it has been erased
+        posDataWrapper.splice(index, 1);
+      }
+
+      if (hasErased) {
+        this.historyHandler.addEraseData(posDataWrapper, initialWrapper);
+      }
+    });
+
+    return hasErased;
   }
 }
