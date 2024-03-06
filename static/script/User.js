@@ -48,7 +48,7 @@ class User {
    */
   erase(posX, posY, eraserSize) {
     return PositionErase.eraseAtPos(
-      this.posCache, this.historyHandler.eraseHistoryStack, posX, posY, eraserSize);
+      this.posCache, this.historyHandler, posX, posY, eraserSize);
   }
 
 

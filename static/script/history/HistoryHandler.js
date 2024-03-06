@@ -8,7 +8,7 @@ class HistoryHandler {
   #brushStartingLen;
 
   /** @type { EraserHistoryData[] } */
-  eraseHistoryStack = [];
+  #eraseHistoryStack = [];
 
   /** @param { User } user Reference to the bound user. */
   constructor(user) {
@@ -52,9 +52,9 @@ class HistoryHandler {
     }
   }
   #addEraserGroup() {
-    if (this.eraseHistoryStack.length > 0) {
-      this.#addToHistory(new EraserGroup(this.eraseHistoryStack));
-      this.eraseHistoryStack = [];
+    if (this.#eraseHistoryStack.length > 0) {
+      this.#addToHistory(new EraserGroup(this.#eraseHistoryStack));
+      this.#eraseHistoryStack = [];
     }
   }
 
@@ -102,5 +102,29 @@ class HistoryHandler {
 
   #updateBrushLen() {
     this.#brushStartingLen = this.#user.posCache.length;
+  }
+
+  /**
+   * Add an eraser undo entry to the eraser history stack
+   * without checking whether a compatible entry already exists.
+   * @param { Int16Array[][] } targetWrapper See {@link EraserHistoryData.target}
+   * @param { Int16Array[][] } initialWrapper See {@link EraserHistoryData.initialWrapper}
+   */
+  addEraseDataUnchecked(targetWrapper, initialWrapper) {
+    this.#eraseHistoryStack.push(/** @type EraserHistoryData */ ({
+      initialWrapper,
+      posWrapper: null,
+      target: targetWrapper
+    }));
+  }
+  /**
+   * Add an eraser undo entry to the eraser history stack.
+   * @param { Int16Array[][] } targetWrapper See {@link EraserHistoryData.target}
+   * @param { Int16Array[][] } initialWrapper See {@link EraserHistoryData.initialWrapper}
+   */
+  addEraseData(targetWrapper, initialWrapper) {
+    if (!this.#eraseHistoryStack.some(data => data.target === targetWrapper)) {
+      this.addEraseDataUnchecked(targetWrapper, initialWrapper);
+    }
   }
 }

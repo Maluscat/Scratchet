@@ -4,12 +4,12 @@ class PositionErase {
    * Erase all points in the given buffer that are in range of the eraser
    * at the given coordinates and size.
    * @param { number[] } buffer The buffer (posWrapper) to operate on.
-   * @param { EraserHistoryData[] } historyStack The undo info target array.
+   * @param { HistoryHandler } historyHandler The relevant history handler.
    * @param { number } posX The eraser position.x to check against.
    * @param { number } posY The eraser position.y to check against.
    * @param { number } eraserSize The eraser diameter.
    */
-  static eraseAtPos(buffer, historyStack, posX, posY, eraserSize) {
+  static eraseAtPos(buffer, historyHandler, posX, posY, eraserSize) {
     let hasErased = false;
 
     PositionDataHandler.iteratePosWrapper(buffer, ({ posData, wrapperStack, index }) => {
@@ -51,28 +51,10 @@ class PositionErase {
       }
 
       if (hasErased) {
-        this.#addToUndoStack(historyStack, posDataWrapper, initialWrapper);
+        historyHandler.addEraseData(posDataWrapper, initialWrapper);
       }
     });
 
     return hasErased;
-  }
-
-
-  /**
-   * Add an eraser undo entry to a given array which
-   * can be used to undo the erase step.
-   * @param { EraserHistoryData[] } stack The stack that the data is pushed into.
-   * @param { Int16Array[][] } targetWrapper A PosDataWrapper that contained the points.
-   */
-  static #addToUndoStack(stack, targetWrapper, initialWrapper) {
-    const hasInfo = stack.some(info => info.target === targetWrapper);
-    if (!hasInfo) {
-      stack.push(/** @type EraserHistoryData */ ({
-        initialWrapper,
-        newWrapper: null,
-        target: targetWrapper
-      }));
-    }
   }
 }
