@@ -135,13 +135,17 @@ class UserBulkInit extends User {
     for (const data of group.historyData) {
       const wrapperDestIndex = posHandler.getPosIndex(data.target);
 
-      PositionDataHandler.iteratePosWrapper(data.posWrapper, ({ posData }) => {
-        buffer.push(
-          wrapperDestIndex,
-          ...PositionDataHandler.convertClientDataToServerData(posData),
-          Global.MODE.BULK_INIT
-        );
-      });
+      if (data.posWrapper.length === 0) {
+        buffer.push(wrapperDestIndex, Global.MODE.BULK_INIT);
+      } else {
+        PositionDataHandler.iteratePosWrapper(data.posWrapper, ({ posData }) => {
+          buffer.push(
+            wrapperDestIndex,
+            ...PositionDataHandler.convertClientDataToServerData(posData),
+            Global.MODE.BULK_INIT
+          );
+        });
+      }
     }
   }
 }
