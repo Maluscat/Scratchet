@@ -1,6 +1,8 @@
 /**
+ * NOTE: This extends an imaginary interface that ensures that the properties
+ * `posWrapper` and `target` stay the same over all group history data interfaces.
  * @typedef { object } BrushHistoryData
- * @prop { number[][] } data The PosWrapper containing all points.
+ * @prop { number[][] } posWrapper The PosWrapper containing all points.
  * @prop { Array } target The target wrapper for the data.
  */
 
@@ -23,7 +25,7 @@ class BrushGroup {
   }
   redo() {
     for (const data of this.historyData) {
-      data.target.push(...data.data);
+      data.target.push(...data.posWrapper);
     }
   }
 
@@ -40,10 +42,10 @@ class BrushGroup {
     const redoData = [];
     for (let i = startIndex; i < endIndex; i++) {
       const posWrapper = buffer[i];
-      const info = {
-        data: Array.from(posWrapper),
+      const info = /** @type BrushHistoryData */ ({
+        posWrapper: Array.from(posWrapper),
         target: posWrapper
-      };
+      });
       redoData.push(info);
     }
     return redoData;
