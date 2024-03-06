@@ -100,7 +100,6 @@ class RoomController {
           }
           if (this.hasErased) {
             this.view.update();
-            this.sendHandler.brush.sendCompleteMetaDataNextTime();
             this.sendHandler.addData('erase', posX, posY);
           }
           break;
@@ -183,11 +182,11 @@ class RoomController {
   }
   addServerDataToBufferAndDraw(posData, user) {
     user.setColorIndicator(Meta.getClientHue(posData));
-    user.addServerDataToBuffer(posData);
+    user.addPosDataToBuffer(posData);
     this.view.update();
   }
   addOwnClientDataToBuffer(posData) {
-    this.ownUser.addClientDataToBuffer(posData);
+    this.ownUser.addPosDataToBuffer(posData);
     this.view.update();
   }
 }

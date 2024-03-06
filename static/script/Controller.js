@@ -106,7 +106,6 @@ class Controller {
 
   clearDrawing() {
     this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.ownUser);
-    this.activeRoom.sendHandler.brush.sendCompleteMetaDataNextTime();
     sendMessage('clearUser', null, this.activeRoom.roomCode);
   }
 

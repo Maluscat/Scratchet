@@ -27,7 +27,6 @@ const CANVAS_ANIM_DURATION = /** @type const */ ({
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
 
-const SEND_FULL_METADATA_INTERVAL = 1000;
 const BULK_INIT_SEPARATOR_LEN = 2;
 
 /*

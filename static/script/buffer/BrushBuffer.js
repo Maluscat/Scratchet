@@ -9,17 +9,13 @@ class BrushBuffer extends SendBuffer {
   /** @type { (Int16Array) => void } */
   sendClientFn;
 
-  willSendCompleteMetaData = true;
   #nextHue;
   #nextWidth;
-
 
   constructor(sendClientFn, ...args) {
     super(...args);
     this.sendClientFn = sendClientFn;
     this.buffer = [ 0 ];
-
-    this.sendCompleteMetaDataNextTime = this.sendCompleteMetaDataNextTime.bind(this);
   }
 
 
@@ -28,23 +24,13 @@ class BrushBuffer extends SendBuffer {
     const hue = this.#nextHue ?? this.liveClientBuffer[0];
     const width = this.#nextWidth ?? this.liveClientBuffer[1];
 
-    const flag = this.getNextFlag(hue, width);
+    this.buffer.splice(Meta.LEN.BRUSH);
+    this.buffer[0] = hue;
+    this.buffer[1] = width;
 
-    this.buffer.splice(1);
     this.liveClientBuffer.splice(Meta.LEN.BRUSH);
-
-    this.buffer[0] = flag;
-
-    if ((flag & Meta.FLAGS.LAST_HUE) === 0) {
-      this.buffer.push(hue);
-    }
-    if ((flag & Meta.FLAGS.LAST_WIDTH) === 0) {
-      this.buffer.push(width);
-    }
-
     this.liveClientBuffer[0] = hue;
     this.liveClientBuffer[1] = width;
-    this.liveClientBuffer[2] = flag;
 
     this.#nextHue = null;
     this.#nextWidth = null;
@@ -54,7 +40,6 @@ class BrushBuffer extends SendBuffer {
     if (this.ready) {
       this.ready = false;
       this.sendClientFn(new Int16Array(this.liveClientBuffer));
-      this.resetCompleteMetadataIfSatisfied();
     }
 
     if (this.liveClientBuffer.length > Meta.LEN.BRUSH) {
@@ -92,26 +77,5 @@ class BrushBuffer extends SendBuffer {
   #addPos(posX, posY) {
     this.liveClientBuffer.push(posX, posY);
     this.buffer.push(posX, posY);
-  }
-
-  // ---- Helper functions ----
-  getNextFlag(hue, width) {
-    let flag = 0;
-    if (!this.willSendCompleteMetaData && Meta.getClientHue(this.liveClientBuffer) === hue) {
-      flag |= Meta.FLAGS.LAST_HUE;
-    }
-    if (!this.willSendCompleteMetaData && Meta.getClientWidth(this.liveClientBuffer) === width) {
-      flag |= Meta.FLAGS.LAST_WIDTH;
-    }
-    return flag;
-  }
-
-  resetCompleteMetadataIfSatisfied() {
-    if (this.willSendCompleteMetaData && this.getMode() === 0) {
-      this.willSendCompleteMetaData = false;
-    }
-  }
-  sendCompleteMetaDataNextTime() {
-    this.willSendCompleteMetaData = true;
   }
 }

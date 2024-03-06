@@ -33,8 +33,6 @@ class CanvasSendHandler {
   activateTimers() {
     this.activeIntervals.add(
       setInterval(this.send, Global.SEND_INTERVAL));
-    this.activeIntervals.add(
-      setInterval(this.brush.sendCompleteMetaDataNextTime, SEND_FULL_METADATA_INTERVAL));
   }
   clearTimers() {
     for (const intervalID of this.activeIntervals) {

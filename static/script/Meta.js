@@ -4,12 +4,8 @@ const Meta = {
   EXTRA_SERVER_LEN: 2,
   // Metadata length of a payload of the specified mode, excluding the extra server metadata
   LEN: /** @type const */ ({
-    BRUSH: 3,
+    BRUSH: 2,
     ERASE: 2
-  }),
-  FLAGS: /** @type const */ ({
-    LAST_HUE: 0b0010,
-    LAST_WIDTH: 0b0001
   }),
 
 
@@ -18,6 +14,7 @@ const Meta = {
     return receivedServerDataWithMetadata[this.EXTRA_SERVER_LEN];
   },
   // Server data without extra server metadata
+  // NOTE: Any non-negative integer is the brush mode
   getPendingServerMode(pendingServerDataWithMetadata) {
     return pendingServerDataWithMetadata[0];
   },
@@ -31,13 +28,6 @@ const Meta = {
   getClientWidth(clientDataWithMetadata) {
     // NOTE: This assumes that the width stays at position 1 in both normal & erase mode
     return clientDataWithMetadata[1];
-  },
-
-  getExtraLengthFromFlag(flag) {
-    let extraLen = 0;
-    if (flag & this.FLAGS.LAST_WIDTH) extraLen++;
-    if (flag & this.FLAGS.LAST_HUE) extraLen++;
-    return extraLen;
   },
 
   // ---- Misc functions ----

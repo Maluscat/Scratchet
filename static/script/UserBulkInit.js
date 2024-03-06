@@ -49,7 +49,7 @@ class UserBulkInit extends User {
 
     switch (mode) {
       case Global.MODE.BULK_INIT_BRUSH:
-        this.#addPosData(wrapperDestIndex, posData);
+        this.addPosDataToBuffer(posData, wrapperDestIndex);
         break;
       case Global.MODE.BULK_INIT_ERASE:
         this.#addEraseData(wrapperDestIndex, posData);
@@ -81,15 +81,7 @@ class UserBulkInit extends User {
     this.#eraserData.clear();
   }
 
-  #addPosData(wrapperDestIndex, posData) {
-    if (!posData) {
-      this.addClientDataToBuffer(false, wrapperDestIndex);
-    } else {
-      this.addServerDataToBuffer(posData, wrapperDestIndex);
-    }
-  }
   #addEraseData(wrapperDestIndex, posData) {
-    posData = PositionDataHandler.convertServerDataToClientData(posData, this);
     if (!this.#eraserData.has(wrapperDestIndex)) {
       this.#eraserData.set(wrapperDestIndex, []);
     }
@@ -141,7 +133,7 @@ class UserBulkInit extends User {
         PositionDataHandler.iteratePosWrapper(data.posWrapper, ({ posData }) => {
           buffer.push(
             wrapperDestIndex,
-            ...PositionDataHandler.convertClientDataToServerData(posData),
+            ...posData,
             Global.MODE.BULK_INIT
           );
         });
