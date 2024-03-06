@@ -1,4 +1,19 @@
 'use strict';
+/**
+ * The bulk init buffer is built like this:
+ * 0 | -1             # Initial bulk init flag
+ * 1 | -10/-11        # Brush or eraser flag
+ * 2 | ...PosData
+ * 3 | -1             # Marker to separate multiple PosDatas
+ * 4 | (repeat 2-3)
+ * 5 | ...PosData
+ * 6 | (repeat 1-5)
+ * 7 | -12            # Marker to denote switch from undo to redo
+ * 8 | (repeat 1-5)
+ *
+ * For example:
+ * [ -1, -10, ...PosData, -11, ...PosData, -1, ...PosData, -12, -11, ...PosData, -1 ]
+ */
 class UserBulkInit extends User {
   #redoCount = 0;
 
@@ -56,7 +71,6 @@ class UserBulkInit extends User {
     }
     this.historyHandler.addGroup();
   }
-
   #handleEraseGroup(data) {
     for (const [ wrapperDestIndex, posWrapper ] of this.#eraserData) {
       const target = this.posHandler.getBufferFromInitIndex(wrapperDestIndex);
@@ -100,21 +114,20 @@ class UserBulkInit extends User {
       Global.MODE.BULK_INIT // Will be overridden
     ];
 
-    this.addBrushGroupsToBuffer(posHandler, buffer, user.historyHandler.getUndoHistory());
-    buffer[buffer.length - 1] = Global.MODE.BULK_INIT_HISTORY_MARKER;
-    buffer.push(Global.MODE.BULK_INIT); // Will be overridden
-    this.addBrushGroupsToBuffer(posHandler, buffer, user.historyHandler.getRedoHistory());
+    user.historyHandler.history.forEach((group, i) => {
+      if (i === user.historyHandler.historyIndex) {
+        buffer[buffer.length - 1] = Global.MODE.BULK_INIT_HISTORY_MARKER;
+        buffer.push(Global.MODE.BULK_INIT); // Will be overridden
+      }
 
-    return buffer;
-  }
-  static addBrushGroupsToBuffer(posHandler, buffer, groups) {
-    for (const group of groups) {
       if (group instanceof BrushGroup) {
         this.addPosWrapperToBuffer(posHandler, buffer, group, Global.MODE.BULK_INIT_BRUSH);
       } else if (group instanceof EraserGroup) {
         this.addPosWrapperToBuffer(posHandler, buffer, group, Global.MODE.BULK_INIT_ERASE);
       }
-    }
+    });
+
+    return buffer;
   }
   static addPosWrapperToBuffer(posHandler, buffer, group, flag) {
     buffer[buffer.length - 1] = flag;
