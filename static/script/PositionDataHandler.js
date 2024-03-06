@@ -35,6 +35,13 @@ class PositionDataHandler {
     this.buffer.splice(index, 1);
   }
 
+  getBufferFromInitIndex(initIndex) {
+    const bufferIndex = this.initIndexes.indexOf(initIndex);
+    if (bufferIndex >= 0) {
+      return this.buffer[bufferIndex];
+    } else return false;
+  }
+
   /**
    * Add a posDataWrapper to the {@link buffer} with an optional init index.
    * @param { Array<Array<number>> } value The posDataWrapper to insert.
