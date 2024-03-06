@@ -3,6 +3,7 @@ class UserBulkInit extends User {
   #redoCount = 0;
 
   #eraserData = new Map();
+  #isRedo = false;
 
   /** @param { Array } data */
   handleBulkInit(data) {
@@ -24,23 +25,34 @@ class UserBulkInit extends User {
 
     this.historyHandler.undo(this.#redoCount);
     this.#redoCount = 0;
+    this.#isRedo = false;
   }
 
   #handlePosData(mode, data, startIndex, i) {
+    if (startIndex === i) return;
     const [ wrapperDestIndex, posData ] = this.#getPosInfo(data, startIndex, i);
 
-    if (mode === Global.MODE.BULK_INIT_BRUSH_REDO || mode === Global.MODE.BULK_INIT_BRUSH_UNDO) {
-      this.#addPosData(wrapperDestIndex, posData);
-    } else {
-      this.#addEraseData(wrapperDestIndex, posData);
+    switch (mode) {
+      case Global.MODE.BULK_INIT_BRUSH:
+        this.#addPosData(wrapperDestIndex, posData);
+        break;
+      case Global.MODE.BULK_INIT_ERASE:
+        this.#addEraseData(wrapperDestIndex, posData);
+        break;
     }
   }
   #handleGroup(mode) {
-    if (mode === Global.MODE.BULK_INIT_ERASE_UNDO || mode === Global.MODE.BULK_INIT_ERASE_REDO) {
-      this.#handleEraseGroup();
-    }
-    if (mode === Global.MODE.BULK_INIT_BRUSH_REDO || mode === Global.MODE.BULK_INIT_ERASE_REDO) {
+    if (this.#isRedo) {
       this.#redoCount++;
+    }
+
+    switch (mode) {
+      case Global.MODE.BULK_INIT_HISTORY_MARKER:
+        this.#isRedo = true;
+        break;
+      case Global.MODE.BULK_INIT_ERASE:
+        this.#handleEraseGroup();
+        break;
     }
     this.historyHandler.addGroup();
   }
@@ -88,34 +100,25 @@ class UserBulkInit extends User {
       Global.MODE.BULK_INIT // Will be overridden
     ];
 
-    // We take advantage of the fact that the data of a brush group is always continuous.
-    this.addBrushGroupsToBuffer(
-      posHandler, buffer, user.historyHandler.getUndoHistory(), true);
-    this.addBrushGroupsToBuffer(
-      posHandler, buffer, user.historyHandler.getRedoHistory());
+    this.addBrushGroupsToBuffer(posHandler, buffer, user.historyHandler.getUndoHistory());
+    buffer[buffer.length - 1] = Global.MODE.BULK_INIT_HISTORY_MARKER;
+    buffer.push(Global.MODE.BULK_INIT); // Will be overridden
+    this.addBrushGroupsToBuffer(posHandler, buffer, user.historyHandler.getRedoHistory());
 
     return buffer;
   }
-  static addBrushGroupsToBuffer(posHandler, buffer, groups, isUndo) {
+  static addBrushGroupsToBuffer(posHandler, buffer, groups) {
     for (const group of groups) {
       if (group instanceof BrushGroup) {
-        const groupFlag = isUndo
-          ? Global.MODE.BULK_INIT_BRUSH_UNDO
-          : Global.MODE.BULK_INIT_BRUSH_REDO;
-        buffer[buffer.length - 1] = groupFlag;
-
-        this.addPosWrapperToBuffer(posHandler, buffer, group);
+        this.addPosWrapperToBuffer(posHandler, buffer, group, Global.MODE.BULK_INIT_BRUSH);
       } else if (group instanceof EraserGroup) {
-        const groupFlag = isUndo
-          ? Global.MODE.BULK_INIT_ERASE_UNDO
-          : Global.MODE.BULK_INIT_ERASE_REDO;
-        buffer[buffer.length - 1] = groupFlag;
-
-        this.addPosWrapperToBuffer(posHandler, buffer, group);
+        this.addPosWrapperToBuffer(posHandler, buffer, group, Global.MODE.BULK_INIT_ERASE);
       }
     }
   }
-  static addPosWrapperToBuffer(posHandler, buffer, group) {
+  static addPosWrapperToBuffer(posHandler, buffer, group, flag) {
+    buffer[buffer.length - 1] = flag;
+
     for (const data of group.historyData) {
       const wrapperDestIndex = posHandler.getPosIndex(data.target);
 
