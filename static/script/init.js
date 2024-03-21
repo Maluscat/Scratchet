@@ -55,7 +55,7 @@ const controls3D = new Controls3D(null, null, {
 });
 const ui = new UIHandler();
 
-/** @type { WebSocket } */
+/** @type { ClientSocketBase } */
 let sock;
 
 /** @type { ScratchetGlobal } */
@@ -74,7 +74,7 @@ Promise.all([
 
   joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
 
-  sock = new WebSocket(`ws://${location.host}${location.pathname}socket`);
+  sock = new ClientSocketBase(`ws://${location.host}${location.pathname}socket`);
   sock.addEventListener('open', controller.socketOpen.bind(controller))
   sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
 
@@ -89,19 +89,4 @@ function getCanvasAnimDurationRemove() {
 }
 function getCanvasAnimDurationInOut() {
   return ui.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.INOUT;
-}
-
-
-// ---- Generic helper functions ----
-function sendMessage(event, value, roomCode) {
-  const dataObj = {
-    evt: event
-  };
-  if (roomCode != null) {
-    dataObj.room = roomCode;
-  }
-  if (value != null) {
-    dataObj.val = value;
-  }
-  sock.send(JSON.stringify(dataObj));
 }

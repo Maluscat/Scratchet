@@ -106,17 +106,21 @@ class Controller {
 
   clearDrawing() {
     this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.ownUser);
-    sendMessage('clearUser', null, this.activeRoom.roomCode);
+    sock.sendEvent('clearUser', { room: this.activeRoom.roomCode });
   }
 
   // -> Room overlay
   leaveCurrentRoom() {
-    sendMessage('leave', null, this.activeRoom.roomCode);
+    sock.sendEvent('leave', { room: this.activeRoom.roomCode });
     this.removeRoom(this.activeRoom);
   }
 
   requestNewRoom() {
-    sendMessage('newRoom', { username: this.globalUsername });
+    sock.sendEvent('newRoom', {
+      val: {
+        username: this.globalUsername
+      }
+    });
   }
 
   joinRoomFromInput(roomInputValue) {
@@ -129,7 +133,7 @@ class Controller {
   }
   joinRoom(roomCode) {
     if (!this.rooms.has(roomCode)) {
-      sendMessage('joinRoom', {
+      sock.sendEvent('joinRoom', {
         roomCode: roomCode,
         username: this.globalUsername
       });
@@ -216,7 +220,7 @@ class Controller {
       localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
       if (!isInitial && this.activeRoom != null) {
         this.activeRoom.ownUser.setName(username);
-        sendMessage('changeName', username, this.activeRoom.roomCode);
+        sock.sendEvent('changeName', { val: username, room: this.activeRoom.roomCode });
       }
     }
   }
@@ -229,7 +233,7 @@ class Controller {
   setCurrentRoomName(newRoomName) {
     if (newRoomName !== this.activeRoom.roomName) {
       this.activeRoom.changeRoomName(newRoomName);
-      sendMessage('changeRoomName', newRoomName, this.activeRoom.roomCode);
+      sock.sendEvent('changeRoomName', { val: newRoomName, room: this.activeRoom.roomCode })
     }
   }
 
@@ -403,7 +407,7 @@ class Controller {
       initValue.username = this.globalUsername;
     }
 
-    sendMessage('connectInit', initValue);
+    sock.sendEvent('connectInit', { val: initValue });
   }
 
   async socketReceiveMessage(e) {
