@@ -19,6 +19,7 @@ interface ReceivedEventInterfaceStructure {
 }
 
 
+const users = new WeakMap();
 export const roomHandler = new SocketRoomHandler();
 
 // NOTE values with `passOn` MUST have a required room - This is not validated
@@ -89,17 +90,17 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
 router
   .get('/socket', (ctx: Context) => {
     const sock: WebSocket = ctx.upgrade();
-    let socketUser: SocketUser;
 
     sock.addEventListener('open', () => {
-      socketUser = new SocketUser(sock);
+      users.set(sock, new SocketUser(sock));
     });
 
     sock.addEventListener('close', () => {
-      destroyUser(socketUser);
+      destroySocketUser(sock);
     });
 
     sock.addEventListener('message', (e: MessageEvent) => {
+      const socketUser = users.get(sock);
       try {
         socketUser.rate.increment();
         if (socketUser.rate.isLimited) {
@@ -209,7 +210,10 @@ function removeUserFromRoom(socketUser: SocketUser, socketRoom: SocketRoom) {
   socketRoom.sendJSONToUsers(socketUser, 'leave');
 }
 
-function destroyUser(socketUser: SocketUser) {
+function destroySocketUser(socket: WebSocket) {
+  const socketUser = users.get(socket);
+  users.delete(socket);
+
   // This could for example fail if the Socket was closed before sending the initial message
   if (socketUser.isActive) {
     for (const socketRoom of socketUser.getRooms()) {
@@ -217,5 +221,4 @@ function destroyUser(socketUser: SocketUser) {
       socketRoom.sendJSONToUsers(socketUser, 'disconnect');
     }
   }
-  // TODO Garbage collect the user properly
 }
