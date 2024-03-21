@@ -1,11 +1,9 @@
-import type { SocketRoom, ConnectionData, MessageData } from 'SocketRoom';
+import type { SocketRoom } from 'SocketRoom';
+import type { SocketUser } from 'SocketUser';
 import type { Context } from 'oak';
 
 import { app, router } from 'router';
-import { SocketUser } from 'SocketUser';
-import { SocketRoomHandler } from 'SocketRoomHandler';
-import { ScratchetError } from 'ScratchetError';
-import * as Global from 'Global';
+import { Controller } from 'Controller';
 
 
 interface ReceivedEventInterfaceStructure {
@@ -18,18 +16,14 @@ interface ReceivedEventInterfaceStructure {
   }
 }
 
-
-const users = new WeakMap();
-export const roomHandler = new SocketRoomHandler();
-
 // NOTE values with `passOn` MUST have a required room - This is not validated
-const receivedEventsInterface: ReceivedEventInterfaceStructure = {
+export const receivedEventsInterface: ReceivedEventInterfaceStructure = {
   connectInit: {
     required: {
       val: 'object'
     },
     fn: (socketUser, val) => {
-      initializeUserConnection(socketUser, val!);
+      controller.initializeUserConnection(socketUser, val!);
     }
   },
   joinRoom: {
@@ -37,7 +31,7 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       val: 'object'
     },
     fn: (socketUser, val) => {
-      userJoinRoomFromRoomCode(socketUser, val!);
+      controller.userJoinRoomFromRoomCode(socketUser, val!);
     }
   },
   newRoom: {
@@ -45,7 +39,7 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       val: 'object'
     },
     fn: (socketUser, val) => {
-      addNewRoom(socketUser, val!);
+      controller.addNewRoom(socketUser, val!);
     }
   },
   leave: {
@@ -53,7 +47,7 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
       room: 'number'
     },
     fn: (socketUser, val, socketRoom) => {
-      removeUserFromRoom(socketUser, socketRoom!);
+      controller.removeUserFromRoom(socketUser, socketRoom!);
     },
     passOn: true
   },
@@ -97,90 +91,3 @@ router
   });
 
 await app.listen({ port: 8002 });
-
-
-// ---- Message event handling ----
-function handleReceivedEvent(socketUser: SocketUser, data: MessageData) {
-  if (!data) {
-    throw new ScratchetError(`Couldn't parse socket event: No data supplied`);
-  }
-
-  if (!Object.hasOwn(receivedEventsInterface, data.evt)) {
-    throw new ScratchetError(`Unrecognized event: ${JSON.stringify(data)}`);
-  }
-  const eventInterface = receivedEventsInterface[data.evt];
-
-  // Check if all required fields are present and are of their required types
-  for (const [requiredField, requiredType] of Object.entries(eventInterface.required)) {
-    if (!Object.hasOwn(data, requiredField)) {
-      throw new ScratchetError(`Event omitted required field '${requiredField}': ${JSON.stringify(data)}`);
-    }
-    if (typeof data[requiredField] !== requiredType) {
-      throw new ScratchetError(`Event field '${requiredField}' is not of type '${requiredType}': ${JSON.stringify(data)}`);
-    }
-  }
-
-  let socketRoom: SocketRoom;
-  if ('room' in data) {
-    socketRoom = roomHandler.getRoomWithUserExistanceCheck(socketUser, data.room);
-  }
-
-  if ('fn' in eventInterface) {
-    eventInterface.fn!(socketUser, data.val, socketRoom);
-  }
-
-  // NOTE: objects are excluded here, val may only be a string right now
-  if (eventInterface.passOn && typeof data.val !== 'object' && socketRoom != null) {
-    socketRoom.sendJSONToUsers(socketUser, data.evt, data.val);
-  }
-}
-
-// ---- Message event response ----
-function initializeUserConnection(socketUser: SocketUser, properties: ConnectionData) {
-  // NOTE `properties` is guaranteed to be an object, but it could have no properties
-  const username = properties.username;
-  const roomCode = properties.roomCode;
-
-  const user = socketUser.init();
-  const room = roomHandler.getRoomOrCreateNewRoom(user, username, roomCode);
-
-  room.addUser(user, username);
-}
-
-function userJoinRoomFromRoomCode(socketUser: SocketUser, properties: ConnectionData) {
-  const username = properties.username;
-  const roomCode = properties.roomCode;
-
-  if (socketUser.isActive && roomHandler.hasRoom(roomCode)) {
-    const socketRoom = roomHandler.getRoom(roomCode!);
-    socketRoom.addUser(socketUser, username);
-  }
-}
-
-function addNewRoom(socketUser: SocketUser, properties: ConnectionData) {
-  const username = properties.username;
-
-  // TODO Prevent "leaking" empty SocketRooms (Never even create empty rooms)
-  const room = roomHandler.createNewRoom(socketUser, username);
-  room.addUser(socketUser, username);
-}
-
-// ---- Room handling ----
-function removeUserFromRoom(socketUser: SocketUser, socketRoom: SocketRoom) {
-  // NOTE: The user is NOT deleted, but is kept with 0 rooms
-  socketRoom.removeUser(socketUser);
-  socketRoom.sendJSONToUsers(socketUser, 'leave');
-}
-
-function destroySocketUser(socket: WebSocket) {
-  const socketUser = users.get(socket);
-  users.delete(socket);
-
-  // This could for example fail if the Socket was closed before sending the initial message
-  if (socketUser.isActive) {
-    for (const socketRoom of socketUser.getRooms()) {
-      socketRoom.removeUser(socketUser);
-      socketRoom.sendJSONToUsers(socketUser, 'disconnect');
-    }
-  }
-}

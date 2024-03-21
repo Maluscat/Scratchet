@@ -89,6 +89,44 @@ export class Controller {
   }
 
 
+  // ---- Message event response ----
+  initializeUserConnection(socketUser: SocketUser, properties: ConnectionData) {
+    // NOTE `properties` is guaranteed to be an object, but it could have no properties
+    const username = properties.username;
+    const roomCode = properties.roomCode;
+
+    const user = socketUser.init();
+    const room = this.roomHandler.getRoomOrCreateNewRoom(user, username, roomCode);
+
+    room.addUser(user, username);
+  }
+
+  userJoinRoomFromRoomCode(socketUser: SocketUser, properties: ConnectionData) {
+    const username = properties.username;
+    const roomCode = properties.roomCode;
+
+    if (socketUser.isActive && this.roomHandler.hasRoom(roomCode)) {
+      const socketRoom = this.roomHandler.getRoom(roomCode!);
+      socketRoom.addUser(socketUser, username);
+    }
+  }
+
+  // ---- Room handling ----
+  addNewRoom(socketUser: SocketUser, properties: ConnectionData) {
+    const username = properties.username;
+
+    // TODO Prevent "leaking" empty SocketRooms (Never even create empty rooms)
+    const room = this.roomHandler.createNewRoom(socketUser, username);
+    room.addUser(socketUser, username);
+  }
+
+  removeUserFromRoom(socketUser: SocketUser, socketRoom: SocketRoom) {
+    // NOTE: The user is NOT deleted, but is kept with 0 rooms
+    socketRoom.removeUser(socketUser);
+    socketRoom.sendJSONToUsers(socketUser, 'leave');
+  }
+
+
   // ---- User handling ----
   createUser(socket: WebSocket) {
     this.users.set(socket, new SocketUser(socket));
