@@ -2,8 +2,8 @@ import type { SocketID, RoomCode, RoomName, Username } from 'SocketUser';
 
 import { SocketUser } from 'SocketUser';
 import { ScratchetError } from 'ScratchetError';
-import { roomHandler } from 'main';
 import { validateRoomName } from 'Validator';
+import { controller } from 'main';
 
 export interface ConnectionData {
   roomCode?: RoomCode;
@@ -60,7 +60,7 @@ export class SocketRoom {
     this.#sockets.delete(socketUser);
     if (this.#sockets.size === 0) {
       // Delete self
-      roomHandler.deleteRoom(this.roomCode);
+      controller.roomHandler.deleteRoom(this.roomCode);
       socketUser.removeFromRoom(this);
     }
   } 
