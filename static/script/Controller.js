@@ -134,8 +134,10 @@ class Controller {
   joinRoom(roomCode) {
     if (!this.rooms.has(roomCode)) {
       sock.sendEvent('joinRoom', {
-        roomCode: roomCode,
-        username: this.globalUsername
+        val: {
+          roomCode: roomCode,
+          username: this.globalUsername
+        }
       });
     }
   }
