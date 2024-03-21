@@ -123,7 +123,6 @@ export class Controller {
   removeUserFromRoom(socketUser: SocketUser, socketRoom: SocketRoom) {
     // NOTE: The user is NOT deleted, but is kept with 0 rooms
     socketRoom.removeUser(socketUser);
-    socketRoom.sendJSONToUsers(socketUser, 'leave');
   }
 
 
