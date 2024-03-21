@@ -87,51 +87,13 @@ const receivedEventsInterface: ReceivedEventInterfaceStructure = {
 };
 
 
+export const controller = new Controller();
+
+
 router
   .get('/socket', (ctx: Context) => {
     const sock: WebSocket = ctx.upgrade();
-
-    sock.addEventListener('open', () => {
-      users.set(sock, new SocketUser(sock));
-    });
-
-    sock.addEventListener('close', () => {
-      destroySocketUser(sock);
-    });
-
-    sock.addEventListener('message', (e: MessageEvent) => {
-      const socketUser = users.get(sock);
-      try {
-        socketUser.rate.increment();
-        if (socketUser.rate.isLimited) {
-          throw new ScratchetError(`Rate limitation reached: ${socketUser.rate.getCount()}`);
-        }
-
-        if (e.data instanceof ArrayBuffer) {
-          const dataArr = new Int16Array(e.data);
-          const roomCode = dataArr[0];
-          const socketRoom = roomHandler.getRoomWithUserExistanceCheck(socketUser, roomCode);
-          const newBuffer = socketUser.prependIDToBuffer(dataArr);
-
-          if (dataArr[1] === Global.MODE.BULK_INIT) {
-            socketRoom.sendBulkInitData(socketUser, newBuffer);
-          } else {
-            // Pass data on
-            socketRoom.sendAnyDataToUsers(socketUser, newBuffer);
-          }
-        } else if (typeof e.data === 'string') {
-          handleReceivedEvent(socketUser, JSON.parse(e.data));
-        } else {
-          throw new ScratchetError(`Received an unknown socket response: ${JSON.stringify(e.data)}`);
-        }
-      } catch (e) {
-        if (e instanceof ScratchetError) {
-          console.warn(`Warning (${e.date.toLocaleString()})! ${socketUser}: ` + e.message);
-        } else {
-          throw e;
-        }
-      }
-    });
+    controller.registerSocket(sock);
   });
 
 await app.listen({ port: 8002 });
