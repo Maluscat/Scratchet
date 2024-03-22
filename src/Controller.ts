@@ -8,14 +8,14 @@ import * as Global from 'Global';
 
 
 export class Controller {
-  roomHandler = new SocketRoomHandler();
-  users = new WeakMap();
+  readonly roomHandler = new SocketRoomHandler();
+  readonly users = new WeakMap<ServerSocketBase, SocketUser>();
 
   registerSocket(socket: WebSocket) {
     socket.addEventListener('open', this.createUser.bind(this, socket));
     socket.addEventListener('close', this.destroyUser.bind(this, socket));
     socket.addEventListener('message', (e: MessageEvent) => {
-      this.receiveMessage(this.users.get(socket), e);
+      this.receiveMessage(this.users.get(socket)!, e);
     });
   }
 
@@ -132,7 +132,11 @@ export class Controller {
   }
 
   destroyUser(socket: WebSocket) {
-    const socketUser = this.users.get(socket);
+    if (!this.users.has(socket)) {
+      throw new ScratchetError("Tried to destroy a user that doesn't exist.");
+    }
+
+    const socketUser = this.users.get(socket)!;
     this.users.delete(socket);
 
     // This could for example fail if the Socket was closed before sending the initial message
