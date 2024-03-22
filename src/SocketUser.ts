@@ -12,18 +12,18 @@ export type Username = string;
 export class SocketUser {
   static socketIDCounter: SocketID = 0;
 
-  readonly sock: WebSocket;
   readonly id: SocketID;
-  readonly defaultName: Username;
+  readonly #sock: WebSocket;
+  readonly #defaultName: Username;
   rate: SocketRateHandler; 
   isActive = false;
 
   #rooms: Map<SocketRoom, Username>;
 
   constructor(sock: WebSocket) {
-    this.sock = sock;
+    this.#sock = sock;
     this.id = SocketUser.socketIDCounter++;
-    this.defaultName = SocketUser.createDefaultName(this.id);
+    this.#defaultName = SocketUser.createDefaultName(this.id);
     this.rate = new SocketRateHandler();
     this.#rooms = new Map();
   }
@@ -56,11 +56,11 @@ export class SocketUser {
 
   // ---- WebSocket handling ----
   send(data: string | ArrayBuffer) {
-    if (this.sock.readyState === 1) {
+    if (this.#sock.readyState === 1) {
       if (!this.isActive) {
         throw new ScratchetError(`Tried to send while inactive (data: ${data})`);
       }
-      this.sock.send(data);
+      this.#sock.send(data);
     }
   }
 
@@ -73,7 +73,7 @@ export class SocketUser {
         roomCode: socketRoom.roomCode,
         roomName: socketRoom.roomName,
         username: this.getNameForRoom(socketRoom),
-        defaultName: this.defaultName,
+        defaultName: this.#defaultName,
         peers: this.getTransmittablePeerArray(socketRoom)
       }
     });
@@ -93,7 +93,7 @@ export class SocketUser {
     if (validateUsername(username)) {
       return username!;
     }
-    return this.defaultName;
+    return this.#defaultName;
   }
 
   getTransmittablePeerArray(socketRoom: SocketRoom) {
