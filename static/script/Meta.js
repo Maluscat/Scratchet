@@ -1,7 +1,29 @@
 // ---- Constants ----
-// Length of additional metadata when received from the server
+/**
+ * Time window in which a BULK_INIT may be sent from peers
+ * after a user has joined.
+ */
+export const MAX_INIT_TRANSMISSION_TIME = 30 * 1000;
+/** Interval in milliseconds how often the payload is sent to the server. */
+export const SEND_INTERVAL = 40;
+/** The first byte of a (pending) server payload that demoninates its mode. */
+export const MODE = /** @type const */ ({
+  BULK_INIT: -1,
+  ERASE: -2,
+  UNDO: -3,
+  REDO: -4,
+  HISTORY_MARKER: -5,
+  BULK_INIT_BRUSH: -10,
+  BULK_INIT_ERASE: -11,
+  BULK_INIT_HISTORY_MARKER: -12,
+});
+
+/** Additional metadata length that the server adds when sending it. */
 export const EXTRA_SERVER_LEN = 2;
-// Metadata length of a payload of the specified mode, excluding the extra server metadata
+/**
+ * Metadata length of a payload of the specified mode,
+ * excluding the extra server metadata.
+ */
 export const LEN = /** @type const */ ({
   BRUSH: 2,
   ERASE: 2
