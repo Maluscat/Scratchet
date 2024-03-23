@@ -1,7 +1,5 @@
 class ClientSocketBase extends WebSocket {
-  static CUSTOM_EVENTS = ['_timeout'];
-
-  #customEventList = {};
+  static pingPayload = Uint8Array.of(0);
 
   #pingIntervalHasChanged = false;
   #pingIntervalID;
@@ -30,22 +28,13 @@ class ClientSocketBase extends WebSocket {
     }
   }
 
-  /**
-   * Payload that is sent as a ping.
-   * @default Int16Array[0]
-   * @type { ArrayBufferLike }
-   */
-  pingPayload;
-
   constructor(url, {
-    pingInterval = 0,
-    pingPayload = Int16Array.of(0)
+    pingInterval = 0
   }) {
     super(url);
     this.sendPing = this.sendPing.bind(this);
 
     this.pingInterval = pingInterval;
-    this.pingPayload = pingPayload;
     this.#restartPingInterval();
   }
 
@@ -57,7 +46,7 @@ class ClientSocketBase extends WebSocket {
     super.send(message);
   }
   sendPing() {
-    this.send(this.pingPayload);
+    this.send(ClientSocketBase.pingPayload);
     if (this.#pingIntervalHasChanged) {
       this.#restartPingInterval();
     }
