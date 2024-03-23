@@ -1,6 +1,7 @@
 'use strict';
 /** @typedef { import('./shared/Global.mjs') } ScratchetGlobal */
 /** @typedef { import('./shared/Validator.mjs') } Validator */
+/** @typedef { import('./shared/SocketBase.mjs') } SocketBase */
 
 const canvasContainer = document.getElementById('canvas-container');
 
@@ -62,15 +63,19 @@ let sock;
 var Global;
 /** @type { Validator } */
 var Validator;
+/** @type { SocketBase } */
+var SocketBase;
 
 
 // ---- Wait for modules ----
 Promise.all([
   import('./shared/Global.mjs'),
   import('./shared/Validator.mjs'),
-]).then(([ MetaModule, ValidatorModule ]) => {
+  import('./shared/SocketBase.mjs'),
+]).then(([ MetaModule, ValidatorModule, SocketBaseModule ]) => {
   Global = MetaModule;
   Validator = ValidatorModule;
+  SocketBase = SocketBaseModule;
 
   joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
 
