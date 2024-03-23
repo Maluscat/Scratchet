@@ -1,5 +1,7 @@
-class ClientSocketBase extends WebSocket {
+class ClientSocketBase {
   static pingPayload = Uint8Array.of(0);
+
+  socket;
 
   #pingIntervalHasChanged = false;
   #pingIntervalID;
@@ -28,22 +30,22 @@ class ClientSocketBase extends WebSocket {
     }
   }
 
-  constructor(url, {
+  constructor(socket, {
     pingInterval = 0
   }) {
-    super(url);
     this.sendPing = this.sendPing.bind(this);
 
+    this.socket = socket;
     this.pingInterval = pingInterval;
     this.#restartPingInterval();
   }
 
+  send(message) {
+    this.socket.send(message);
+  }
   sendEvent(eventType, data = {}) {
     data.evt = eventType;
     this.send(JSON.stringify(data));
-  }
-  send(message) {
-    super.send(message);
   }
   sendPing() {
     this.send(ClientSocketBase.pingPayload);

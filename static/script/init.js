@@ -74,7 +74,8 @@ Promise.all([
 
   joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
 
-  sock = new ClientSocketBase(`ws://${location.host}${location.pathname}socket`, {
+  const socket = new WebSocket(`ws://${location.host}${location.pathname}socket`);
+  sock = new ClientSocketBase(socket, {
     pingInterval: 4000
   });
   sock.addEventListener('open', controller.socketOpen.bind(controller))
