@@ -111,40 +111,17 @@
 
     <div id="notification-overlay" class="overlay top overlay-text"></div>
 
+    <script type="importmap">
+      {
+        "imports": {
+          "~/": "./script/"
+        }
+      }
+    </script>
     <script src="/library/utility-wheel/script/UtilityWheel.js"></script>
     <script src="/library/slider89/slider89.js"></script>
     <script src="/library/controls3d/script/State3D.js"></script>
     <script src="/library/controls3d/script/Controls3D.js"></script>
-
-    <script src="/script/tool/ScratchetTool.js"></script>
-    <script src="/script/tool/Brush.js"></script>
-    <script src="/script/tool/Eraser.js"></script>
-
-    <script src="/script/CanvasSendHandler.js"></script>
-    <script src="/script/buffer/SendBuffer.js"></script>
-    <script src="/script/buffer/UndoRedoBufferBase.js"></script>
-    <script src="/script/buffer/BrushBuffer.js"></script>
-    <script src="/script/buffer/EraseBuffer.js"></script>
-    <script src="/script/buffer/UndoBuffer.js"></script>
-    <script src="/script/buffer/RedoBuffer.js"></script>
-
-    <script src="/script/history/HistoryHandler.js"></script>
-    <script src="/script/history/BrushGroup.js"></script>
-    <script src="/script/history/EraserGroup.js"></script>
-
-    <script src="/script/Meta.js"></script>
-
-    <script src="/script/ClientSocketBase.js"></script>
-    <script src="/script/UIActions.js"></script>
-    <script src="/script/UIHandler.js"></script>
-    <script src="/script/Controller.js"></script>
-    <script src="/script/PositionDataHandler.js"></script>
-    <script src="/script/CanvasView.js"></script>
-    <script src="/script/CanvasViewTransform.js"></script>
-    <script src="/script/RoomController.js"></script>
-    <script src="/script/Room.js"></script>
-    <script src="/script/User.js"></script>
-    <script src="/script/UserBulkInit.js"></script>
-    <script src="/script/init.js"></script>
+    <script src="/script/init.js" type="module"></script>
   </body>
 </html>
