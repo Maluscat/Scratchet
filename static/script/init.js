@@ -79,8 +79,8 @@ Promise.all([
   sock = new ClientSocketBase(socket, {
     pingInterval: 4000
   });
-  sock.addEventListener('open', controller.socketOpen.bind(controller))
-  sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
+  sock.socket.addEventListener('open', controller.socketOpen.bind(controller))
+  sock.socket.addEventListener('message', controller.socketReceiveMessage.bind(controller));
 
   controller.init();
 });
