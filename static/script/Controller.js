@@ -1,5 +1,19 @@
-'use strict';
-class Controller {
+import * as Meta from '~/Meta.js';
+import * as Global from '~/shared/Global.mjs';
+import * as Validator from '~/shared/Validator.mjs';
+import {
+  LOCALSTORAGE_USERNAME_KEY,
+  roomList,
+  usernameInput,
+  roomNameInput,
+  copyRoomLinkContent,
+  copyRoomLinkOverlay,
+  joinRoomOverlayInput,
+} from '~/constants/misc.js';
+import { Room } from '~/Room.js';
+import { sock, ui } from '~/init.js';
+
+export class Controller {
   globalUsername;
   defaultUsername;
 

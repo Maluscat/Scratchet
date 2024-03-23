@@ -1,4 +1,10 @@
-'use strict';
+import * as Global from '~/shared/Global.mjs';
+import { BULK_INIT_SEPARATOR_LEN } from '~/constants/misc.js';
+import { PositionDataHandler } from '~/PositionDataHandler.js';
+import { BrushGroup } from '~/history/BrushGroup.js';
+import { EraserGroup } from '~/history/EraserGroup.js';
+import { User } from '~/User.js';
+
 /**
  * The bulk init buffer is built like this:
  * 0 | -1             # Initial bulk init flag
@@ -14,7 +20,7 @@
  * For example:
  * [ -1, -10, ...PosData, -11, ...PosData, -1, ...PosData, -12, -11, ...PosData, -1 ]
  */
-class UserBulkInit extends User {
+export class UserBulkInit extends User {
   #redoCount = 0;
 
   #eraserData = new Map();

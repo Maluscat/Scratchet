@@ -1,4 +1,6 @@
-class UndoRedoBufferBase extends SendBuffer {
+import { SendBuffer } from '~/buffer/SendBuffer.js';
+
+export class UndoRedoBufferBase extends SendBuffer {
   constructor(mode, ...args) {
     super(...args);
     this.buffer = [ mode ];

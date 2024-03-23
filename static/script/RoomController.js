@@ -1,5 +1,16 @@
-'use strict';
-class RoomController {
+import * as Meta from '~/Meta.js';
+import { PositionDataHandler } from '~/PositionDataHandler.js';
+import { CanvasSendHandler } from '~/CanvasSendHandler.js';
+import { CanvasViewTransform } from '~/CanvasViewTransform.js';
+import { UserBulkInit } from '~/UserBulkInit.js';
+import { Brush } from '~/tool/Brush.js';
+import { Eraser } from '~/tool/Eraser.js';
+import { ui, controls3D } from '~/init.js';
+
+/** @typedef { import('~/User.js').User } User */
+/** @typedef { import('~/tool/ScratchetTool.js').ScratchetTool } ScratchetTool */
+
+export class RoomController {
   /** @type UserBulkInit */
   ownUser;
 

@@ -1,5 +1,10 @@
-'use strict';
-class HistoryHandler {
+import { BrushGroup } from '~/history/BrushGroup.js';
+import { EraserGroup } from '~/history/EraserGroup.js';
+
+/** @typedef { import('~/User.js').User } User */
+/** @typedef { import('~/history/EraserGroup.js').EraserHistoryData } EraserHistoryData */
+
+export class HistoryHandler {
   /** @type { Array<BrushGroup | EraserGroup> } */
   history = [];
   historyIndex = 0;

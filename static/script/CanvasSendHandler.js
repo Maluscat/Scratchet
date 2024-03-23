@@ -1,5 +1,13 @@
-'use strict';
-class CanvasSendHandler {
+import * as Global from '~/shared/Global.mjs';
+import { sock } from '~/init.js';
+import { BrushBuffer } from '~/buffer/BrushBuffer.js';
+import { EraseBuffer } from '~/buffer/EraseBuffer.js';
+import { UndoBuffer } from '~/buffer/UndoBuffer.js';
+import { RedoBuffer } from '~/buffer/RedoBuffer.js';
+
+/** @typedef { import('~/buffer/SendBuffer.js').SendBuffer } SendBuffer */
+
+export class CanvasSendHandler {
   activeIntervals = new Set();
 
   /** @type { SendBuffer | null } */

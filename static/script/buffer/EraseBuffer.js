@@ -1,4 +1,7 @@
-class EraseBuffer extends SendBuffer {
+import * as Global from '~/shared/Global.mjs';
+import { SendBuffer } from '~/buffer/SendBuffer.js';
+
+export class EraseBuffer extends SendBuffer {
   #nextWidth;
 
   constructor(...args) {

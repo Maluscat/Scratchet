@@ -9,7 +9,7 @@
  * @prop { Array<Array> } target The target PosWrapper that holds the erased/initial PosData.
  */
 
-class EraserGroup {
+export class EraserGroup {
   /** @type { EraserHistoryData[] } */
   historyData;
 

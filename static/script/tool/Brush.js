@@ -1,5 +1,7 @@
-'use strict';
-class Brush extends ScratchetTool {
+import * as Meta from '~/Meta.js';
+import { ScratchetTool } from '~/tool/ScratchetTool.js';
+
+export class Brush extends ScratchetTool {
   #sliders = {};
 
 

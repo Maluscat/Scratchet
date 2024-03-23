@@ -1,4 +1,15 @@
-'use strict';
+import { CanvasViewTransform } from '~/CanvasViewTransform.js';
+import { UIActions } from '~/UIActions.js';
+import { controller } from '~/init.js';
+import {
+  HIT_BORDER_DURATION,
+  OVERLAY_INPUT_INVALID_DURATION,
+  userListButton,
+  roomListButton,
+  canvasContainer,
+  joinRoomOverlayInput,
+} from '~/constants/misc.js';
+
 const CANVAS_ANIM_DURATION = /** @type const */ ({
   REMOVE: 260,
   INOUT: 600
@@ -37,7 +48,7 @@ const hitBorderTimeouts = {
 };
 
 
-class UIHandler {
+export class UIHandler {
   #prefersReducedMotionQuery;
 
   scaleSlider;

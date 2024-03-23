@@ -1,5 +1,7 @@
-'use strict';
-class CanvasViewTransform extends CanvasView {
+import { CanvasView } from '~/CanvasView.js';
+import { ui } from '~/init.js';
+
+export class CanvasViewTransform extends CanvasView {
   static MAX_SCALE = CanvasViewTransform.scaleInterpolateFnInverse(20); // 2000 %
   minScale = 0;
 

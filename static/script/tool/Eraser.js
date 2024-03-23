@@ -1,5 +1,6 @@
-'use strict';
-class Eraser extends ScratchetTool {
+import { ScratchetTool } from '~/tool/ScratchetTool.js';
+
+export class Eraser extends ScratchetTool {
   #sliders = {};
 
 

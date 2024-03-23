@@ -1,5 +1,10 @@
-'use strict';
-class User {
+import * as Meta from '~/Meta.js';
+import * as Global from '~/shared/Global.mjs';
+import { controller } from '~/init.js';
+import { PositionDataHandler } from '~/PositionDataHandler.js';
+import { HistoryHandler } from '~/history/HistoryHandler.js';
+
+export class User {
   posCache = new Array();
 
   /** @type { string } */

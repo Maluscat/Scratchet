@@ -1,8 +1,11 @@
-/**
- * @typedef { [ number, number ] } Position
- */
+import * as Meta from '~/Meta.js';
+import { CanvasViewTransform } from '~/CanvasViewTransform.js';
+import { PositionDataHandler } from '~/PositionDataHandler.js';
 
-class CanvasView {
+/** @typedef { import('~/User.js').User } User */
+/** @typedef { [ number, number ] } Position */
+
+export class CanvasView {
   static WIDTH = 8191;
   static HEIGHT = 8191;
 

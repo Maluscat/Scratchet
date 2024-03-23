@@ -1,3 +1,5 @@
+/** @typedef { import('~/User.js').User } User */
+
 /**
  * NOTE: This extends an imaginary interface that ensures that the properties
  * `posWrapper` and `target` stay the same over all group history data interfaces.
@@ -6,7 +8,7 @@
  * @prop { Array } target The target wrapper for the data.
  */
 
-class BrushGroup {
+export class BrushGroup {
   historyData;
 
   /**

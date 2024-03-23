@@ -1,5 +1,7 @@
-'use strict';
-class UIActions {
+import { canvasContainer } from '~/constants/misc.js';
+import { ui } from '~/init.js';
+
+export class UIActions {
   actions = {
     leaveRoom: {
       prompt: {

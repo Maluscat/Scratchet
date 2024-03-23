@@ -1,4 +1,6 @@
-class SendBuffer {
+import * as Meta from '~/Meta.js';
+
+export class SendBuffer {
   /**
    * A buffer collecting data, ready to be sent to the server.
    * @type { number[] }

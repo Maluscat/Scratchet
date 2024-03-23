@@ -1,5 +1,19 @@
-'use strict';
-class Room extends RoomController {
+import {
+  CURRENT_USER_ID,
+  canvasContainer,
+  roomNameInput,
+  usernameInput,
+  userListWrapper
+} from '~/constants/misc.js';
+import { RoomController } from '~/RoomController.js';
+import { UserBulkInit } from '~/UserBulkInit.js';
+import { Brush } from '~/tool/Brush';
+import { Eraser } from '~/tool/Eraser';
+import { ui, controls3D } from '~/init.js';
+
+/** @typedef { import('~/User.js').User } User */
+
+export class Room extends RoomController {
   static canvasZIndex = 1;
 
   nameHandler;

@@ -1,4 +1,4 @@
-class ClientSocketBase {
+export class ClientSocketBase {
   static pingPayload = Uint8Array.of(0);
 
   socket;

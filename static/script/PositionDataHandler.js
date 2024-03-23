@@ -1,5 +1,7 @@
-'use strict';
-class PositionDataHandler {
+import * as Meta from '~/Meta.js';
+import * as Global from '~/shared/Global.mjs';
+
+export class PositionDataHandler {
   /**
    * Contains the posDataWrappers to draw in sequential order.
    */

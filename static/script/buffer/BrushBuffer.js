@@ -1,4 +1,7 @@
-class BrushBuffer extends SendBuffer {
+import * as Meta from '~/Meta.js';
+import { SendBuffer } from '~/buffer/SendBuffer.js';
+
+export class BrushBuffer extends SendBuffer {
   /**
    * A buffer collecting the same drawn positions as {@link buffer}
    * but which is added to the client pos buffer on send.

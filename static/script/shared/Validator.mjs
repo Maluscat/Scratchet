@@ -1,4 +1,3 @@
-'use strict';
 // ---- Constants ----
 export const MAX_USERNAME_LENGTH = 20;
 // The additional 7 characters is the length of "'s room"
