@@ -1,3 +1,10 @@
+import * as Validator from '~/shared/Validator.mjs';
+import * as Global from '~/shared/Global.mjs';
+import { joinRoomOverlayInput } from '~/constants/misc.js';
+import { UIHandler } from '~/UIHandler.js';
+import { Controller } from '~/Controller.js';
+import { ClientSocketBase } from '~/ClientSocketBase.js';
+
 /*
  * data/socketData: bulk data received via socket
  * posData: self-contained metadata & position packet: [...metadata, pos1X, pos1Y, pos2X, pos2Y, ...]
@@ -5,8 +12,9 @@
  * metadata: currently: [hue, width, lastPosX, lastPosY]
  */
 
-const controller = new Controller();
-const controls3D = new Controls3D(null, null, {
+export const controller = new Controller();
+export const ui = new UIHandler();
+export const controls3D = new Controls3D(null, null, {
   mod: {
     tran: 1,
   },
@@ -22,37 +30,15 @@ const controls3D = new Controls3D(null, null, {
     }
   }
 });
-const ui = new UIHandler();
 
-/** @type { ClientSocketBase } */
-let sock;
-
-/** @type { ScratchetGlobal } */
-var Global;
-/** @type { Validator } */
-var Validator;
-/** @type { SocketBase } */
-var SocketBase;
-
-
-// ---- Wait for modules ----
-Promise.all([
-  import('./shared/Global.mjs'),
-  import('./shared/Validator.mjs'),
-  import('./shared/SocketBase.mjs'),
-]).then(([ MetaModule, ValidatorModule, SocketBaseModule ]) => {
-  Global = MetaModule;
-  Validator = ValidatorModule;
-  SocketBase = SocketBaseModule;
-
-  joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
-
-  const socket = new WebSocket(`ws://${location.host}${location.pathname}socket`);
-  sock = new ClientSocketBase(socket, {
-    pingInterval: 4000
-  });
-  sock.socket.addEventListener('open', controller.socketOpen.bind(controller))
-  sock.socket.addEventListener('message', controller.socketReceiveMessage.bind(controller));
-
-  controller.init();
+const socket = new WebSocket(`ws://${location.host}${location.pathname}socket`);
+export const sock = new ClientSocketBase(socket, {
+  pingInterval: 4000
 });
+
+
+sock.socket.addEventListener('open', controller.socketOpen.bind(controller))
+sock.socket.addEventListener('message', controller.socketReceiveMessage.bind(controller));
+
+joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
+controller.init();
