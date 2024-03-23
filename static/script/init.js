@@ -1,31 +1,3 @@
-'use strict';
-/** @typedef { import('./shared/Global.mjs') } ScratchetGlobal */
-/** @typedef { import('./shared/Validator.mjs') } Validator */
-/** @typedef { import('./shared/SocketBase.mjs') } SocketBase */
-
-const canvasContainer = document.getElementById('canvas-container');
-
-const usernameInput = document.getElementById('username-input');
-const userListButton = document.getElementById('user-list-button');
-const userListWrapper = document.getElementById('user-list-wrapper');
-
-const roomNameInput = document.getElementById('roomcode-input');
-const roomListButton = document.getElementById('room-list-button');
-const roomList = document.getElementById('room-list');
-
-const joinRoomOverlayInput =
-  /** @type {HTMLInputElement} */ (document.getElementById('join-room-overlay-input'));
-const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
-const copyRoomLinkContent = document.getElementById('copy-room-link-content');
-
-const OVERLAY_INPUT_INVALID_DURATION = 365;
-const HIT_BORDER_DURATION = 200;
-
-const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
-const CURRENT_USER_ID = -1;
-
-const BULK_INIT_SEPARATOR_LEN = 2;
-
 /*
  * data/socketData: bulk data received via socket
  * posData: self-contained metadata & position packet: [...metadata, pos1X, pos1Y, pos2X, pos2Y, ...]
