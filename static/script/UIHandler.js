@@ -1,4 +1,9 @@
 'use strict';
+const CANVAS_ANIM_DURATION = /** @type const */ ({
+  REMOVE: 260,
+  INOUT: 600
+});
+
 const notificationTemplate = (function() {
   const node = document.createElement('div');
   node.classList.add('notification');
@@ -219,7 +224,7 @@ class UIHandler {
     canvasContainer.classList.add('block-inout-animation');
     setTimeout(() => {
       canvasContainer.classList.remove('block-inout-animation');
-    }, getCanvasAnimDurationInOut());
+    }, this.getCanvasAnimDurationInOut());
   }
 
   // ---- Indicators ----
@@ -292,5 +297,13 @@ class UIHandler {
         notification.remove();
       }, 200);
     }, 1600);
+  }
+
+  // ---- Animation timing getters ----
+  getCanvasAnimDurationRemove() {
+    return this.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.REMOVE;
+  }
+  getCanvasAnimDurationInOut() {
+    return this.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.INOUT;
   }
 }

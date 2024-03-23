@@ -20,10 +20,6 @@ const copyRoomLinkContent = document.getElementById('copy-room-link-content');
 
 const OVERLAY_INPUT_INVALID_DURATION = 365;
 const HIT_BORDER_DURATION = 200;
-const CANVAS_ANIM_DURATION = /** @type const */ ({
-  REMOVE: 260,
-  INOUT: 600
-});
 
 const LOCALSTORAGE_USERNAME_KEY = 'Scratchet_username';
 const CURRENT_USER_ID = -1;
@@ -88,13 +84,3 @@ Promise.all([
 
   controller.init();
 });
-
-
-
-// ---- Animation timing getters ----
-function getCanvasAnimDurationRemove() {
-  return ui.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.REMOVE;
-}
-function getCanvasAnimDurationInOut() {
-  return ui.prefersReducedMotion ? 0 : CANVAS_ANIM_DURATION.INOUT;
-}

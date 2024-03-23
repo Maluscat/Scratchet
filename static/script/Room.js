@@ -188,7 +188,7 @@ class Room extends RoomController {
       setTimeout(() => {
         this.view.canvas.remove();
         resolve();
-      }, getCanvasAnimDurationRemove());
+      }, ui.getCanvasAnimDurationRemove());
     });
   }
 
