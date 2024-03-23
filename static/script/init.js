@@ -42,3 +42,7 @@ sock.socket.addEventListener('message', controller.socketReceiveMessage.bind(con
 
 joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
 controller.init();
+
+window.controller = controller;
+window.controls3D = controls3D;
+window.ui = ui;
