@@ -32,7 +32,7 @@ export class Controller {
         const socketRoom = this.roomHandler.getRoomWithUserExistanceCheck(socketUser, roomCode);
         const newBuffer = socketUser.prependIDToBuffer(dataArr);
 
-        if (dataArr[1] === Global.MODE.BULK_INIT) {
+        if (dataArr[1] === Meta.MODE.BULK_INIT) {
           socketRoom.sendBulkInitData(socketUser, newBuffer);
         } else {
           // Pass data on
