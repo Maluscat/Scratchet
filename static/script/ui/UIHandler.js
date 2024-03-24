@@ -1,5 +1,5 @@
 import { CanvasViewTransform } from '~/CanvasViewTransform.js';
-import { UIActions } from '~/UIActions.js';
+import { UIActions } from '~/ui/UIActions.js';
 import { controller } from '~/init.js';
 import {
   HIT_BORDER_DURATION,

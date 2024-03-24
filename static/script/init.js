@@ -1,6 +1,6 @@
 import * as Validator from '~/shared/Validator.mjs';
 import { joinRoomOverlayInput } from '~/constants/misc.js';
-import { UIHandler } from '~/UIHandler.js';
+import { UIHandler } from '~/ui/UIHandler.js';
 import { Controller } from '~/Controller.js';
 import { ClientSocketBase } from '~/socket/ClientSocketBase.js';
 
