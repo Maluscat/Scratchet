@@ -57,6 +57,9 @@ export class Controller {
       Validator.MAX_ROOM_NAME_LENGTH,
       Validator.validateRoomName);
 
+    const validatorRegexStr = Validator.JOINROOM_VALIDATE_REGEX.toString();
+    joinRoomOverlayInput.pattern = validatorRegexStr.slice(1, validatorRegexStr.lastIndexOf('/'));
+
     // Set the join room input to the same width as the copy room link overlay, with a dummy value
     copyRoomLinkContent.textContent = Room.createRoomCodeLink('0000');
     copyRoomLinkOverlay.classList.add('active');

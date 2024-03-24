@@ -1,5 +1,3 @@
-import * as Validator from '~/constants/Validator.js';
-import { joinRoomOverlayInput } from '~/constants/misc.js';
 import { UIHandler } from '~/ui/UIHandler.js';
 import { Controller } from '~/Controller.js';
 import { ClientSocketBase } from '~/socket/ClientSocketBase.js';
@@ -39,7 +37,6 @@ export const sock = new ClientSocketBase(socket, {
 sock.socket.addEventListener('open', controller.socketOpen.bind(controller))
 sock.socket.addEventListener('message', controller.socketReceiveMessage.bind(controller));
 
-joinRoomOverlayInput.pattern = Validator.JOINROOM_VALIDATE_REGEX.toString().slice(1, -1);
 controller.init();
 
 window.controller = controller;
