@@ -1,6 +1,6 @@
 import * as Meta from '~/constants/meta.js';
+import { CanvasSendHandler } from '~/buffer/CanvasSendHandler.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
-import { CanvasSendHandler } from '~/CanvasSendHandler.js';
 import { CanvasViewTransform } from '~/CanvasViewTransform.js';
 import { UserBulkInit } from '~/UserBulkInit.js';
 import { Brush } from '~/tool/Brush.js';
