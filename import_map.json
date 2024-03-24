@@ -1,7 +1,7 @@
 {
   "imports": {
     "Meta": "./static/script/constants/meta.js",
-    "Validator": "./static/script/shared/Validator.mjs",
+    "Validator": "./static/script/constants/Validator.js",
 
     "main": "./main.ts",
     "router": "./src/router.ts",

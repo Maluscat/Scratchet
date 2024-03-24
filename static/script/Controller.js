@@ -1,5 +1,5 @@
 import * as Meta from '~/constants/meta.js';
-import * as Validator from '~/shared/Validator.mjs';
+import * as Validator from '~/constants/Validator.js';
 import {
   LOCALSTORAGE_USERNAME_KEY,
   roomList,

@@ -1,4 +1,4 @@
-import * as Validator from '~/shared/Validator.mjs';
+import * as Validator from '~/constants/Validator.js';
 import { joinRoomOverlayInput } from '~/constants/misc.js';
 import { UIHandler } from '~/ui/UIHandler.js';
 import { Controller } from '~/Controller.js';
