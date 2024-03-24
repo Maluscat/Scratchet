@@ -1,4 +1,4 @@
-import * as Global from '~/shared/Global.mjs';
+import * as Meta from '~/constants/meta.js';
 import { SendBuffer } from '~/buffer/SendBuffer.js';
 
 export class EraseBuffer extends SendBuffer {
@@ -6,7 +6,7 @@ export class EraseBuffer extends SendBuffer {
 
   constructor(...args) {
     super(...args);
-    this.buffer = [ Global.MODE.ERASE ];
+    this.buffer = [ Meta.MODE.ERASE ];
   }
 
   reset() {

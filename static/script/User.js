@@ -1,5 +1,4 @@
-import * as Meta from '~/Meta.js';
-import * as Global from '~/shared/Global.mjs';
+import * as Meta from '~/constants/meta.js';
 import { controller } from '~/init.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 import { HistoryHandler } from '~/history/HistoryHandler.js';
@@ -42,7 +41,7 @@ export class User {
     this.activeTimeout = setTimeout(() => {
       this.listNode.style.removeProperty('color');
       this.activeTimeout = null;
-    }, Global.SEND_INTERVAL * 1.5);
+    }, Meta.SEND_INTERVAL * 1.5);
   }
 
 

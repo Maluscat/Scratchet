@@ -1,4 +1,4 @@
-import * as Meta from '~/Meta.js';
+import * as Meta from '~/constants/meta.js';
 import { ScratchetTool } from '~/tool/ScratchetTool.js';
 
 export class Brush extends ScratchetTool {

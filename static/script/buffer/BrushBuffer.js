@@ -1,4 +1,4 @@
-import * as Meta from '~/Meta.js';
+import * as Meta from '~/constants/meta.js';
 import { SendBuffer } from '~/buffer/SendBuffer.js';
 
 export class BrushBuffer extends SendBuffer {

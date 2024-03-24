@@ -1,5 +1,4 @@
-import * as Meta from '~/Meta.js';
-import * as Global from '~/shared/Global.mjs';
+import * as Meta from '~/constants/meta.js';
 
 export class PositionDataHandler {
   /**
@@ -19,7 +18,7 @@ export class PositionDataHandler {
   constructor() {
     setTimeout(() => {
       delete this.initIndexes;
-    }, Global.MAX_INIT_TRANSMISSION_TIME);
+    }, Meta.MAX_INIT_TRANSMISSION_TIME);
   }
 
 

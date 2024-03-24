@@ -1,5 +1,4 @@
-import * as Meta from '~/Meta.js';
-import * as Global from '~/shared/Global.mjs';
+import * as Meta from '~/constants/meta.js';
 import * as Validator from '~/shared/Validator.mjs';
 import {
   LOCALSTORAGE_USERNAME_KEY,
@@ -330,19 +329,19 @@ export class Controller {
     const targetUser = targetRoom.getUser(userID);
 
     switch (mode) {
-      case Global.MODE.BULK_INIT:
+      case Meta.MODE.BULK_INIT:
         targetRoom.handleBulkInitData(data, targetUser);
         break;
-      case Global.MODE.ERASE:
+      case Meta.MODE.ERASE:
         targetRoom.handleEraseData(data, targetUser);
         break;
-      case Global.MODE.UNDO:
+      case Meta.MODE.UNDO:
         targetRoom.undo(targetUser, data[1]);
         break;
-      case Global.MODE.REDO:
+      case Meta.MODE.REDO:
         targetRoom.redo(targetUser, data[1]);
         break;
-      case Global.MODE.HISTORY_MARKER:
+      case Meta.MODE.HISTORY_MARKER:
         targetRoom.addHistoryGroup(targetUser);
         break;
       default:

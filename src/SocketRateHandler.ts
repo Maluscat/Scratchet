@@ -1,4 +1,4 @@
-import { SEND_INTERVAL } from 'Global';
+import { SEND_INTERVAL } from 'Meta';
 
 // This is just an estimated good upper limit
 const UPPER_RATE_LIMIT_PER_SECOND = Math.floor((1000 / SEND_INTERVAL) * 2);

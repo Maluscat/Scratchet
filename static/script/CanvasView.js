@@ -1,4 +1,4 @@
-import * as Meta from '~/Meta.js';
+import * as Meta from '~/constants/meta.js';
 import { CanvasViewTransform } from '~/CanvasViewTransform.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 

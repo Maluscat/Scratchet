@@ -1,8 +1,8 @@
-import * as Global from '~/shared/Global.mjs';
+import * as Meta from '~/constants/meta.js';
 import { UndoRedoBufferBase } from '~/buffer/UndoRedoBufferBase.js';
 
 export class UndoBuffer extends UndoRedoBufferBase {
   constructor(...args) {
-    super(Global.MODE.UNDO, ...args);
+    super(Meta.MODE.UNDO, ...args);
   }
 }

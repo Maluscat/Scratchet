@@ -1,6 +1,6 @@
 {
   "imports": {
-    "Global": "./static/script/shared/Global.mjs",
+    "Meta": "./static/script/constants/meta.js",
     "Validator": "./static/script/shared/Validator.mjs",
 
     "main": "./main.ts",

@@ -4,7 +4,7 @@ import { receivedEventsInterface } from 'main';
 import { SocketUser } from 'SocketUser';
 import { ScratchetError } from 'ScratchetError';
 import { SocketRoomHandler } from 'SocketRoomHandler';
-import * as Global from 'Global';
+import * as Meta from 'Meta';
 
 
 export class Controller {

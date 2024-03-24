@@ -1,4 +1,4 @@
-import * as Global from '~/shared/Global.mjs';
+import * as Meta from '~/constants/meta.js';
 import { BULK_INIT_SEPARATOR_LEN } from '~/constants/misc.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 import { BrushGroup } from '~/history/BrushGroup.js';
@@ -54,10 +54,10 @@ export class UserBulkInit extends User {
     const [ wrapperDestIndex, posData ] = this.#getPosInfo(data, startIndex, i);
 
     switch (mode) {
-      case Global.MODE.BULK_INIT_BRUSH:
+      case Meta.MODE.BULK_INIT_BRUSH:
         this.addPosDataToBuffer(posData, wrapperDestIndex);
         break;
-      case Global.MODE.BULK_INIT_ERASE:
+      case Meta.MODE.BULK_INIT_ERASE:
         this.#addEraseData(wrapperDestIndex, posData);
         break;
     }
@@ -68,10 +68,10 @@ export class UserBulkInit extends User {
     }
 
     switch (mode) {
-      case Global.MODE.BULK_INIT_HISTORY_MARKER:
+      case Meta.MODE.BULK_INIT_HISTORY_MARKER:
         this.#isRedo = true;
         break;
-      case Global.MODE.BULK_INIT_ERASE:
+      case Meta.MODE.BULK_INIT_ERASE:
         this.#handleEraseGroup();
         break;
     }
@@ -108,20 +108,20 @@ export class UserBulkInit extends User {
   // ---- Build the bulk init data ----
   static getSendableBuffer(user, posHandler) {
     const buffer = [
-      Global.MODE.BULK_INIT,
-      Global.MODE.BULK_INIT // Will be overridden
+      Meta.MODE.BULK_INIT,
+      Meta.MODE.BULK_INIT // Will be overridden
     ];
 
     user.historyHandler.history.forEach((group, i) => {
       if (i === user.historyHandler.historyIndex) {
-        buffer[buffer.length - 1] = Global.MODE.BULK_INIT_HISTORY_MARKER;
-        buffer.push(Global.MODE.BULK_INIT); // Will be overridden
+        buffer[buffer.length - 1] = Meta.MODE.BULK_INIT_HISTORY_MARKER;
+        buffer.push(Meta.MODE.BULK_INIT); // Will be overridden
       }
 
       if (group instanceof BrushGroup) {
-        this.addPosWrapperToBuffer(posHandler, buffer, group, Global.MODE.BULK_INIT_BRUSH);
+        this.addPosWrapperToBuffer(posHandler, buffer, group, Meta.MODE.BULK_INIT_BRUSH);
       } else if (group instanceof EraserGroup) {
-        this.addPosWrapperToBuffer(posHandler, buffer, group, Global.MODE.BULK_INIT_ERASE);
+        this.addPosWrapperToBuffer(posHandler, buffer, group, Meta.MODE.BULK_INIT_ERASE);
       }
     });
 
@@ -134,13 +134,13 @@ export class UserBulkInit extends User {
       const wrapperDestIndex = posHandler.getPosIndex(data.target);
 
       if (data.posWrapper.length === 0) {
-        buffer.push(wrapperDestIndex, Global.MODE.BULK_INIT);
+        buffer.push(wrapperDestIndex, Meta.MODE.BULK_INIT);
       } else {
         PositionDataHandler.iteratePosWrapper(data.posWrapper, ({ posData }) => {
           buffer.push(
             wrapperDestIndex,
             ...posData,
-            Global.MODE.BULK_INIT
+            Meta.MODE.BULK_INIT
           );
         });
       }

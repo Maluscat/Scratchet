@@ -1,4 +1,4 @@
-import * as Global from '~/shared/Global.mjs';
+import * as Meta from '~/constants/meta.js';
 import { sock } from '~/init.js';
 import { BrushBuffer } from '~/buffer/BrushBuffer.js';
 import { EraseBuffer } from '~/buffer/EraseBuffer.js';
@@ -40,7 +40,7 @@ export class CanvasSendHandler {
   // ---- Timers ----
   activateTimers() {
     this.activeIntervals.add(
-      setInterval(this.send, Global.SEND_INTERVAL));
+      setInterval(this.send, Meta.SEND_INTERVAL));
   }
   clearTimers() {
     for (const intervalID of this.activeIntervals) {
@@ -76,12 +76,12 @@ export class CanvasSendHandler {
   }
 
   /**
-   * Send a history marker ({@link Global.MODE.HISTORY_MARKER}).
+   * Send a history marker ({@link Meta.MODE.HISTORY_MARKER}).
    * This has its own function because it doesn't make sense
    * to create a dedicated buffer for it.
    */
   sendHistoryMarker() {
-    this.sendData([ Global.MODE.HISTORY_MARKER ]);
+    this.sendData([ Meta.MODE.HISTORY_MARKER ]);
   }
 
   /**
