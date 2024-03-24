@@ -5,7 +5,7 @@ import {
   usernameInput,
   userListWrapper
 } from '~/constants/misc.js';
-import { RoomController } from '~/RoomController.js';
+import { RoomController } from '~/room/RoomController.js';
 import { UserBulkInit } from '~/user/UserBulkInit.js';
 import { Brush } from '~/tool/Brush.js';
 import { Eraser } from '~/tool/Eraser.js';

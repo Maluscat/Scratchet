@@ -9,7 +9,7 @@ import {
   copyRoomLinkOverlay,
   joinRoomOverlayInput,
 } from '~/constants/misc.js';
-import { Room } from '~/Room.js';
+import { Room } from '~/room/Room.js';
 import { sock, ui } from '~/init.js';
 
 export class Controller {
