@@ -3,7 +3,7 @@ export const MAX_USERNAME_LENGTH = 20;
 // The additional 7 characters is the length of "'s room"
 export const MAX_ROOM_NAME_LENGTH = MAX_USERNAME_LENGTH + 7;
 
-export const JOINROOM_VALIDATE_REGEX = /^(?:(?:https?:\/\/)?\w+(?:\.\w+)*(?::\d{1;5})?(?:\/\w*?)*#)?(\d{4})$/;
+export const JOINROOM_VALIDATE_REGEX = /^(?:(?:https?:\/\/)?\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w*?)*#)?(\d{4})$/iu;
 
 // ---- Functions ----
 export function validateAndReturnRoomCode(roomCode) {
