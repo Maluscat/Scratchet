@@ -6,12 +6,12 @@ import {
   userListWrapper
 } from '~/constants/misc.js';
 import { RoomController } from '~/RoomController.js';
-import { UserBulkInit } from '~/UserBulkInit.js';
+import { UserBulkInit } from '~/user/UserBulkInit.js';
 import { Brush } from '~/tool/Brush.js';
 import { Eraser } from '~/tool/Eraser.js';
 import { ui, controls3D } from '~/init.js';
 
-/** @typedef { import('~/User.js').User } User */
+/** @typedef { import('~/user/User.js').User } User */
 
 export class Room extends RoomController {
   static canvasZIndex = 1;

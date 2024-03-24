@@ -1,4 +1,4 @@
-/** @typedef { import('~/User.js').User } User */
+/** @typedef { import('~/user/User.js').User } User */
 
 /**
  * NOTE: This extends an imaginary interface that ensures that the properties

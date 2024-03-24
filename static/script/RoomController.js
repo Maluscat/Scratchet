@@ -2,12 +2,12 @@ import * as Meta from '~/constants/meta.js';
 import { CanvasSendHandler } from '~/buffer/CanvasSendHandler.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 import { CanvasViewTransform } from '~/CanvasViewTransform.js';
-import { UserBulkInit } from '~/UserBulkInit.js';
+import { UserBulkInit } from '~/user/UserBulkInit.js';
 import { Brush } from '~/tool/Brush.js';
 import { Eraser } from '~/tool/Eraser.js';
 import { ui, controls3D } from '~/init.js';
 
-/** @typedef { import('~/User.js').User } User */
+/** @typedef { import('~/user/User.js').User } User */
 /** @typedef { import('~/tool/ScratchetTool.js').ScratchetTool } ScratchetTool */
 
 export class RoomController {

@@ -2,7 +2,7 @@ import * as Meta from '~/constants/meta.js';
 import { CanvasViewTransform } from '~/CanvasViewTransform.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 
-/** @typedef { import('~/User.js').User } User */
+/** @typedef { import('~/user/User.js').User } User */
 /** @typedef { [ number, number ] } Position */
 
 export class CanvasView {

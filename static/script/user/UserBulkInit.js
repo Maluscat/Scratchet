@@ -3,7 +3,7 @@ import { BULK_INIT_SEPARATOR_LEN } from '~/constants/misc.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 import { BrushGroup } from '~/history/BrushGroup.js';
 import { EraserGroup } from '~/history/EraserGroup.js';
-import { User } from '~/User.js';
+import { User } from '~/user/User.js';
 
 /**
  * The bulk init buffer is built like this:
