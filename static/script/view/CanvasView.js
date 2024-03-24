@@ -1,5 +1,5 @@
 import * as Meta from '~/constants/meta.js';
-import { CanvasViewTransform } from '~/CanvasViewTransform.js';
+import { CanvasViewTransform } from '~/view/CanvasViewTransform.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 
 /** @typedef { import('~/user/User.js').User } User */

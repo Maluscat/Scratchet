@@ -1,7 +1,7 @@
 import * as Meta from '~/constants/meta.js';
 import { CanvasSendHandler } from '~/buffer/CanvasSendHandler.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
-import { CanvasViewTransform } from '~/CanvasViewTransform.js';
+import { CanvasViewTransform } from '~/view/CanvasViewTransform.js';
 import { UserBulkInit } from '~/user/UserBulkInit.js';
 import { Brush } from '~/tool/Brush.js';
 import { Eraser } from '~/tool/Eraser.js';

@@ -1,4 +1,4 @@
-import { CanvasView } from '~/CanvasView.js';
+import { CanvasView } from '~/view/CanvasView.js';
 import { ui } from '~/init.js';
 
 export class CanvasViewTransform extends CanvasView {

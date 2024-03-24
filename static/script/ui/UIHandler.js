@@ -1,4 +1,4 @@
-import { CanvasViewTransform } from '~/CanvasViewTransform.js';
+import { CanvasViewTransform } from '~/view/CanvasViewTransform.js';
 import { UIActions } from '~/ui/UIActions.js';
 import { controller } from '~/init.js';
 import {
