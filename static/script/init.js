@@ -2,7 +2,7 @@ import * as Validator from '~/shared/Validator.mjs';
 import { joinRoomOverlayInput } from '~/constants/misc.js';
 import { UIHandler } from '~/UIHandler.js';
 import { Controller } from '~/Controller.js';
-import { ClientSocketBase } from '~/ClientSocketBase.js';
+import { ClientSocketBase } from '~/socket/ClientSocketBase.js';
 
 /*
  * data/socketData: bulk data received via socket
