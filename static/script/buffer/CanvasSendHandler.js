@@ -1,5 +1,5 @@
 import * as Meta from '~/constants/meta.js';
-import { sock } from '~/init.js';
+import { controller } from '~/init.js';
 import { BrushBuffer } from '~/buffer/BrushBuffer.js';
 import { EraseBuffer } from '~/buffer/EraseBuffer.js';
 import { UndoBuffer } from '~/buffer/UndoBuffer.js';
@@ -93,6 +93,6 @@ export class CanvasSendHandler {
     const finalData = new Int16Array(data.length + 1);
     finalData.set(data, 1);
     finalData[0] = this.roomCode;
-    sock.send(finalData.buffer);
+    controller.sock.send(finalData.buffer);
   }
 }

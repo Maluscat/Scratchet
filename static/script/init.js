@@ -9,7 +9,13 @@ import { ClientSocketBase } from '~/socket/ClientSocketBase.js';
  * metadata: currently: [hue, width, lastPosX, lastPosY]
  */
 
-export const controller = new Controller();
+
+const socket = new WebSocket(`ws://${location.host}${location.pathname}socket`);
+const sock = new ClientSocketBase(socket, {
+  pingInterval: 4000
+});
+
+export const controller = new Controller(sock);
 export const ui = new UIHandler();
 export const controls3D = new Controls3D(null, null, {
   mod: {
@@ -28,16 +34,6 @@ export const controls3D = new Controls3D(null, null, {
   }
 });
 
-const socket = new WebSocket(`ws://${location.host}${location.pathname}socket`);
-export const sock = new ClientSocketBase(socket, {
-  pingInterval: 4000
-});
-
-
-sock.addEventListener('open', controller.socketOpen.bind(controller))
-sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
-sock.addEventListener('_timeout', controller.socketTimeout.bind(controller))
-sock.addEventListener('_reconnect', controller.socketReconnect.bind(controller))
 
 controller.init();
 

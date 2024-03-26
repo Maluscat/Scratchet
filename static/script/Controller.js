@@ -10,11 +10,15 @@ import {
   joinRoomOverlayInput,
 } from '~/constants/misc.js';
 import { Room } from '~/room/Room.js';
-import { sock, ui } from '~/init.js';
+import { ui } from '~/init.js';
+
+/** @typedef { import('~/socket/ClientSocketBase.js').ClientSocketBase } ClientSocketBase */
 
 export class Controller {
   globalUsername;
   defaultUsername;
+
+  sock;
 
   /** @type { Map<number, Room> } */
   rooms = new Map();
@@ -22,7 +26,8 @@ export class Controller {
   /** @type { Room } */
   activeRoom;
 
-  constructor() {
+  /** @param { ClientSocketBase } sock */
+  constructor(sock) {
     // Binding functions to themselves to be able to remove them from events
     this.pointerUp = this.pointerUp.bind(this);
     this.mouseWheel = this.mouseWheel.bind(this);
@@ -38,10 +43,21 @@ export class Controller {
     this.leaveCurrentRoom = this.leaveCurrentRoom.bind(this);
     this.toolButtonClick = this.toolButtonClick.bind(this);
 
+    this.socketOpen = this.socketOpen.bind(this);
+    this.socketReceiveMessage = this.socketReceiveMessage.bind(this);
+    this.socketTimeout = this.socketTimeout.bind(this);
+    this.socketReconnect = this.socketReconnect.bind(this);
+
+    this.sock = sock;
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
       this.globalUsername = persistentUsername;
     }
+
+    sock.addEventListener('open', this.socketOpen);
+    sock.addEventListener('message', this.socketReceiveMessage);
+    sock.addEventListener('_timeout', this.socketTimeout);
+    sock.addEventListener('_reconnect', this.socketReconnect);
   }
 
   init() {
@@ -122,17 +138,17 @@ export class Controller {
 
   clearDrawing() {
     this.activeRoom.clearUserBufferAndRedraw(this.activeRoom.ownUser);
-    sock.sendEvent('clearUser', { room: this.activeRoom.roomCode });
+    this.sock.sendEvent('clearUser', { room: this.activeRoom.roomCode });
   }
 
   // -> Room overlay
   leaveCurrentRoom() {
-    sock.sendEvent('leave', { room: this.activeRoom.roomCode });
+    this.sock.sendEvent('leave', { room: this.activeRoom.roomCode });
     this.removeRoom(this.activeRoom);
   }
 
   requestNewRoom() {
-    sock.sendEvent('newRoom', {
+    this.sock.sendEvent('newRoom', {
       val: {
         username: this.globalUsername
       }
@@ -149,7 +165,7 @@ export class Controller {
   }
   joinRoom(roomCode) {
     if (!this.rooms.has(roomCode)) {
-      sock.sendEvent('joinRoom', {
+      this.sock.sendEvent('joinRoom', {
         val: {
           roomCode: roomCode,
           username: this.globalUsername
@@ -238,7 +254,7 @@ export class Controller {
       localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
       if (!isInitial && this.activeRoom != null) {
         this.activeRoom.ownUser.setName(username);
-        sock.sendEvent('changeName', { val: username, room: this.activeRoom.roomCode });
+        this.sock.sendEvent('changeName', { val: username, room: this.activeRoom.roomCode });
       }
     }
   }
@@ -251,7 +267,7 @@ export class Controller {
   setCurrentRoomName(newRoomName) {
     if (newRoomName !== this.activeRoom.roomName) {
       this.activeRoom.changeRoomName(newRoomName);
-      sock.sendEvent('changeRoomName', { val: newRoomName, room: this.activeRoom.roomCode })
+      this.sock.sendEvent('changeRoomName', { val: newRoomName, room: this.activeRoom.roomCode })
     }
   }
 
@@ -425,7 +441,7 @@ export class Controller {
       initValue.username = this.globalUsername;
     }
 
-    sock.sendEvent('connectInit', { val: initValue });
+    this.sock.sendEvent('connectInit', { val: initValue });
   }
 
   socketTimeout() {
