@@ -428,6 +428,13 @@ export class Controller {
     sock.sendEvent('connectInit', { val: initValue });
   }
 
+  socketTimeout() {
+    ui.dispatchNotification('Lost connection...');
+  }
+  socketReconnect() {
+    ui.dispatchNotification('Reconnected!');
+  }
+
   async socketReceiveMessage(e) {
     if (e.data instanceof Blob) {
       // Scratchet ArrayBuffer: [playerID, metadata?, ...positions]

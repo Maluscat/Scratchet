@@ -36,6 +36,8 @@ export const sock = new ClientSocketBase(socket, {
 
 sock.addEventListener('open', controller.socketOpen.bind(controller))
 sock.addEventListener('message', controller.socketReceiveMessage.bind(controller));
+sock.addEventListener('_timeout', controller.socketTimeout.bind(controller))
+sock.addEventListener('_reconnect', controller.socketReconnect.bind(controller))
 
 controller.init();
 
