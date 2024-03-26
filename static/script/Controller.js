@@ -388,7 +388,7 @@ export class Controller {
 
     ui.dispatchNotification(`${username} has left the room`);
   }
-  userJoin(userID, roomCode, username) {
+  userConnect(userID, roomCode, username) {
     const room = this.rooms.get(roomCode);
     room.addUser(userID, username);
 
@@ -467,8 +467,8 @@ export class Controller {
           this.userLeave(data.usr, data.room);
           break;
         }
-        case 'join': {
-          this.userJoin(data.usr, data.room, data.val);
+        case 'connect': {
+          this.userConnect(data.usr, data.room, data.val);
           break;
         }
         case 'clearUser': {

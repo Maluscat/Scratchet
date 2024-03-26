@@ -105,7 +105,7 @@ export class SocketRoom {
     const username = socketUser.getNameForRoom(this);
 
     this.addUserToBulkInitQueue(socketUser);
-    this.sendJSONToUsers(socketUser, 'join', username);
+    this.sendJSONToUsers(socketUser, 'connect', username);
   }
 
   sendJSONToUsers(callingUser: SocketUser, event: string, value?: string) {
