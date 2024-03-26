@@ -18,11 +18,20 @@ export class Controller {
       this.receiveMessage(this.users.get(sock)!, e);
     });
     sock.addEventListener('_timeout', () => {
-
+      this.handleTimeout(this.users.get(sock)!);
     });
     sock.addEventListener('_reconnect', () => {
-
+      this.handleReconnect(this.users.get(sock)!);
     });
+  }
+
+  handleTimeout(socketUser: SocketUser) {
+    socketUser.broadcastJSONToAllPeers('timeout');
+  }
+  handleReconnect(socketUser: SocketUser) {
+    for (const room of socketUser.getRooms()) {
+      room.dispatchUserConnect(socketUser);
+    }
   }
 
   receiveMessage(socketUser: SocketUser, e: MessageEvent) {

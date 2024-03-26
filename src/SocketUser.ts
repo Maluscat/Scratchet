@@ -1,4 +1,4 @@
-import type { SocketRoom } from 'SocketRoom';
+import type { SocketRoom, MessageData } from 'SocketRoom';
 
 import { SocketRateHandler } from 'SocketRateHandler';
 import { ScratchetError } from 'ScratchetError';
@@ -54,7 +54,31 @@ export class SocketUser {
     this.#rooms.set(socketRoom, newUsername);
   }
 
+  getPeers() {
+    const peers = new Set<SocketUser>();
+    for (const rooms of this.getRooms()) {
+      for (const user of rooms.getUsers()) {
+        peers.add(user);
+      }
+    }
+    return peers;
+  }
+
   // ---- WebSocket handling ----
+  broadcastJSONToAllPeers(event: string, value?: string) {
+    const dataObj: MessageData = {
+      evt: event,
+      usr: this.id
+    };
+    if (value != null) {
+      dataObj.val = value;
+    }
+    const data = JSON.stringify(dataObj);
+    for (const user of this.getPeers()) {
+      user.send(data);
+    }
+  }
+
   send(data: string | ArrayBuffer) {
     if (this.#sock.readyState === 1) {
       if (!this.isActive) {
