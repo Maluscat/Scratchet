@@ -45,7 +45,7 @@ export class SocketRoom {
       this.#sockets.add(socketUser);
 
       socketUser.addToRoom(this, username);
-      this.dispatchUserConnect();
+      this.dispatchUserConnect(socketUser);
 
       socketUser.sendInitialJoinData(this);
     }
