@@ -2,8 +2,9 @@ import type { SocketRoom } from 'SocketRoom';
 import type { SocketUser } from 'SocketUser';
 import type { Context } from 'oak';
 
-import { app, router } from 'router';
+import { ServerSocketBase } from 'ServerSocketBase';
 import { Controller } from 'Controller';
+import { app, router } from 'router';
 
 
 interface ReceivedEventInterfaceStructure {
@@ -86,8 +87,8 @@ export const controller = new Controller();
 
 router
   .get('/socket', (ctx: Context) => {
-    const sock: WebSocket = ctx.upgrade();
-    controller.registerSocket(sock);
+    const socket = new ServerSocketBase(ctx.upgrade());
+    controller.registerSocket(socket);
   });
 
 await app.listen({ port: 8002 });
