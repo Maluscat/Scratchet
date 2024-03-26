@@ -1,11 +1,14 @@
-export class ClientSocketBase {
-  static pingPayload = Uint8Array.of(0);
+import { SocketBase } from '~/socket/SocketBase.js';
 
-  socket;
-
+export class ClientSocketBase extends SocketBase {
   #pingIntervalHasChanged = false;
   #pingIntervalID;
   #pingInterval;
+  /**
+   * Amount of time in milliseconds that is waited for a ping response.
+   * If no response comes within this window, a `timeout` event will be invoked.
+   */
+  pingTimeout;
 
   /**
    * Interval in milliseconds in which to send a ping.
@@ -31,11 +34,13 @@ export class ClientSocketBase {
   }
 
   constructor(socket, {
-    pingInterval = 0
+    pingInterval = 0,
+    pingTimeout = 3000
   }) {
+    super(socket);
     this.sendPing = this.sendPing.bind(this);
 
-    this.socket = socket;
+    this.pingTimeout = pingTimeout;
     this.pingInterval = pingInterval;
     this.#restartPingInterval();
   }
@@ -48,10 +53,15 @@ export class ClientSocketBase {
     this.send(JSON.stringify(data));
   }
   sendPing() {
-    this.send(ClientSocketBase.pingPayload);
+    super.sendPing();
     if (this.#pingIntervalHasChanged) {
       this.#restartPingInterval();
     }
+  }
+
+  _handleReceivedPing() {
+    super._handleReceivedPing();
+    this._addPingTimeout(this.pingTimeout);
   }
 
   // ---- Helper functions ----
