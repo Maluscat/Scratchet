@@ -48,10 +48,13 @@ export class SocketBase {
   }
 
   _addPingTimeout(duration) {
+    this._clearPingTimeout();
+    this.#awaitPingTimeoutID = setTimeout(this._missedPing, duration);
+  }
+  _clearPingTimeout() {
     if (this.#awaitPingTimeoutID != null) {
       clearTimeout(this.#awaitPingTimeoutID);
     }
-    this.#awaitPingTimeoutID = setTimeout(this._missedPing, duration);
   }
 
   sendPing() {

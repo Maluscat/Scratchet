@@ -57,11 +57,12 @@ export class ClientSocketBase extends SocketBase {
     if (this.#pingIntervalHasChanged) {
       this.#restartPingInterval();
     }
+    this._addPingTimeout(this.pingTimeout);
   }
 
   _handleReceivedPing() {
     super._handleReceivedPing();
-    this._addPingTimeout(this.pingTimeout);
+    this._clearPingTimeout();
   }
 
   // ---- Helper functions ----
