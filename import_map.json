@@ -2,12 +2,14 @@
   "imports": {
     "Meta": "./static/script/constants/meta.js",
     "Validator": "./static/script/constants/Validator.js",
+    "SocketBase": "./static/script/socket/SocketBase.js",
 
     "main": "./main.ts",
     "router": "./src/router.ts",
     "SocketRoom": "./src/SocketRoom.ts",
     "SocketUser": "./src/SocketUser.ts",
     "Controller": "./src/Controller.ts",
+    "ServerSocketBase": "./src/ServerSocketBase.ts",
     "SocketRoomHandler": "./src/SocketRoomHandler.ts",
     "SocketRateHandler": "./src/SocketRateHandler.ts",
     "ScratchetError": "./src/ScratchetError.ts",
