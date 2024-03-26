@@ -3,19 +3,25 @@ import { receivedEventsInterface } from 'main';
 
 import { SocketUser } from 'SocketUser';
 import { ScratchetError } from 'ScratchetError';
+import { ServerSocketBase } from 'ServerSocketBase';
 import { SocketRoomHandler } from 'SocketRoomHandler';
 import * as Meta from 'Meta';
-
 
 export class Controller {
   readonly roomHandler = new SocketRoomHandler();
   readonly users = new WeakMap<ServerSocketBase, SocketUser>();
 
-  registerSocket(socket: WebSocket) {
-    socket.addEventListener('open', this.createUser.bind(this, socket));
-    socket.addEventListener('close', this.destroyUser.bind(this, socket));
-    socket.addEventListener('message', (e: MessageEvent) => {
-      this.receiveMessage(this.users.get(socket)!, e);
+  registerSocket(sock: ServerSocketBase) {
+    sock.addEventListener('open', this.createUser.bind(this, sock));
+    sock.addEventListener('close', this.destroyUser.bind(this, sock));
+    sock.addEventListener('message', (e: MessageEvent) => {
+      this.receiveMessage(this.users.get(sock)!, e);
+    });
+    sock.addEventListener('_timeout', () => {
+
+    });
+    sock.addEventListener('_reconnect', () => {
+
     });
   }
 
@@ -127,17 +133,17 @@ export class Controller {
 
 
   // ---- User handling ----
-  createUser(socket: WebSocket) {
-    this.users.set(socket, new SocketUser(socket));
+  createUser(sock: ServerSocketBase) {
+    this.users.set(sock, new SocketUser(sock.socket));
   }
 
-  destroyUser(socket: WebSocket) {
-    if (!this.users.has(socket)) {
+  destroyUser(sock: ServerSocketBase) {
+    if (!this.users.has(sock)) {
       throw new ScratchetError("Tried to destroy a user that doesn't exist.");
     }
 
-    const socketUser = this.users.get(socket)!;
-    this.users.delete(socket);
+    const socketUser = this.users.get(sock)!;
+    this.users.delete(sock);
 
     // This could for example fail if the Socket was closed before sending the initial message
     if (socketUser.isActive) {
