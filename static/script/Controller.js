@@ -445,10 +445,13 @@ export class Controller {
   }
 
   socketTimeout() {
-    ui.dispatchNotification('Lost connection...');
+    if (!this.sock.isTimedOut) {
+      ui.dispatchNotification('⚡ Connection lost ⚡', 'timeout');
+    }
   }
   socketReconnect() {
-    ui.dispatchNotification('Reconnected!');
+    ui.clearNotification('timeout');
+    ui.dispatchNotification('🔗 Reconnected 🔗');
   }
 
   async socketReceiveMessage(e) {

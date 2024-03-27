@@ -5,8 +5,7 @@ export class SocketBase {
   #awaitPingTimeoutID = null;
   #eventList = {};
 
-  // Is this even a word?
-  isTimeouted;
+  isTimedOut;
   socket;
 
   constructor(socket) {
@@ -36,13 +35,13 @@ export class SocketBase {
   }
 
   _missedPing() {
-    this.isTimeouted = true;
     this.invokeEvent('_timeout');
+    this.isTimedOut = true;
   }
 
   _handleReceivedPing() {
-    if (this.isTimeouted) {
-      this.isTimeouted = false;
+    if (this.isTimedOut) {
+      this.isTimedOut = false;
       this.invokeEvent('_reconnect');
     }
   }
