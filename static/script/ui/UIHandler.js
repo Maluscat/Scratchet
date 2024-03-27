@@ -50,6 +50,7 @@ const hitBorderTimeouts = {
 
 export class UIHandler {
   #prefersReducedMotionQuery;
+  #stickyNotifications = {};
 
   scaleSlider;
   actions;
@@ -298,16 +299,31 @@ export class UIHandler {
   }
 
   // ---- Notifications ----
-  dispatchNotification(content) {
+  dispatchNotification(content, stickyLabel) {
     const notification = notificationTemplate.cloneNode(true);
     notification.textContent = content;
     notificationWrapper.appendChild(notification);
-    setTimeout(() => {
-      notification.classList.add('remove');
+    if (!stickyLabel) {
       setTimeout(() => {
-        notification.remove();
-      }, 200);
-    }, 1600);
+        this.#startNotificationRemoval(notification);
+      }, 2000);
+    } else {
+      this.#stickyNotifications[stickyLabel] = notification;
+    }
+    return notification;
+  }
+  clearNotification(label) {
+    if (label in this.#stickyNotifications) {
+      const notification = this.#stickyNotifications[label];
+      this.#startNotificationRemoval(notification);
+      delete this.#stickyNotifications[label];
+    }
+  }
+  #startNotificationRemoval(notification) {
+    notification.classList.add('remove');
+    setTimeout(() => {
+      notification.remove();
+    }, 200);
   }
 
   // ---- Animation timing getters ----
