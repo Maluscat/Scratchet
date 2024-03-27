@@ -29,9 +29,7 @@ export class Controller {
     socketUser.broadcastJSONToAllPeers('timeout');
   }
   handleReconnect(socketUser: SocketUser) {
-    for (const room of socketUser.getRooms()) {
-      room.dispatchUserConnect(socketUser);
-    }
+    socketUser.broadcastJSONToAllPeers('reconnect');
   }
 
   receiveMessage(socketUser: SocketUser, e: MessageEvent) {
