@@ -23,6 +23,7 @@ export class ScratchetSocketBase extends ClientSocketBase {
     } else {
       ui.dispatchNotification('⚡ The connection was closed ⚡', 'closed');
     }
+    this.#startNotificationLoop();
   }
 
   _socketConnected() {
@@ -34,6 +35,7 @@ export class ScratchetSocketBase extends ClientSocketBase {
 
   stopReconnectionAttempt() {
     super.stopReconnectionAttempt();
+    this.#clearNotificationLoop();
   }
 
   // ---- Scratchet methods ----
@@ -45,5 +47,25 @@ export class ScratchetSocketBase extends ClientSocketBase {
   socketReconnect() {
     ui.clearNotification('timeout');
     ui.dispatchNotification('🔗 Reconnected 🔗');
+  }
+
+
+  // ---- Helper functions ----
+  #startNotificationLoop() {
+    if (this.#notificationIntervalID == null) {
+      const notif = ui.dispatchNotification('Trying to reconnect...', 'try-reconnect');
+      let dots = 0;
+      this.#notificationIntervalID = setInterval(() => {
+        dots = (++dots % 4);
+        notif.textContent = 'Trying to reconnect' + '.'.repeat(dots);
+      }, 1000);
+    }
+  }
+  #clearNotificationLoop() {
+    ui.clearNotification('try-reconnect');
+    if (this.#notificationIntervalID != null) {
+      clearTimeout(this.#notificationIntervalID);
+      this.#notificationIntervalID = null;
+    }
   }
 }
