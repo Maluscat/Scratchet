@@ -1,6 +1,6 @@
 import { UIHandler } from '~/ui/UIHandler.js';
 import { Controller } from '~/Controller.js';
-import { ClientSocketBase } from '~/socket/ClientSocketBase.js';
+import { ScratchetSocketBase } from '~/socket/ScratchetSocketBase.js';
 
 /*
  * data/socketData: bulk data received via socket
@@ -10,9 +10,9 @@ import { ClientSocketBase } from '~/socket/ClientSocketBase.js';
  */
 
 
-const socket = new WebSocket(`ws://${location.host}${location.pathname}socket`);
-const sock = new ClientSocketBase(socket, {
-  pingInterval: 4000
+const sock = new ScratchetSocketBase(`ws://${location.host}${location.pathname}socket`, {
+  maxReconnectTimeoutDuration: 4000,
+  pingInterval: 6000,
 });
 
 export const controller = new Controller(sock);
