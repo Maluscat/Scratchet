@@ -1,4 +1,4 @@
-import { SocketBase } from '~/socket/SocketBase.js';
+import { SocketBase } from './SocketBase.js';
 
 export class ClientSocketBase extends SocketBase {
   #pingIntervalHasChanged = false;
@@ -9,6 +9,13 @@ export class ClientSocketBase extends SocketBase {
    * If no response comes within this window, a `timeout` event will be invoked.
    */
   pingTimeout;
+
+  #reconnectTimeoutID = null;
+  #reconnectTimeoutDuration = 250;
+
+  maxReconnectTimeoutDuration;
+  minReconnectTimeoutDuration;
+  socketURL;
 
   /**
    * Interval in milliseconds in which to send a ping.
@@ -28,21 +35,30 @@ export class ClientSocketBase extends SocketBase {
       this.#pingIntervalHasChanged = true;
       this.#pingInterval = val;
       if (currentVal === 0) {
-        this.#restartPingInterval();
+        this.#startPingInterval();
       }
     }
   }
 
-  constructor(socket, {
+  constructor(url, {
     pingInterval = 0,
-    pingTimeout = 3000
+    pingTimeout = 3000,
+    maxReconnectTimeoutDuration = 10000,
+    minReconnectTimeoutDuration = 250,
   }) {
-    super(socket);
+    super(null);
+    this._socketClosed = this._socketClosed.bind(this);
+    this._socketConnected = this._socketConnected.bind(this);
     this.sendPing = this.sendPing.bind(this);
 
+    this.socketURL = url;
     this.pingTimeout = pingTimeout;
     this.pingInterval = pingInterval;
-    this.#restartPingInterval();
+    this.maxReconnectTimeoutDuration = maxReconnectTimeoutDuration;
+    this.minReconnectTimeoutDuration = minReconnectTimeoutDuration;
+
+    this.addEventListener('open', this._socketConnected);
+    this.addEventListener('close', this._socketClosed);
   }
 
   send(message) {
@@ -65,14 +81,54 @@ export class ClientSocketBase extends SocketBase {
     this._clearPingTimeout();
   }
 
+  // ---- Connection handling ----
+  initializeConnection() {
+    this.socket = new WebSocket(this.socketURL);
+    this._addEventsAgain();
+  }
+
+  _socketClosed(e) {
+    this.#trySocketReconnect();
+    this.stopPingImmediately();
+  }
+  _socketConnected() {
+    this.stopReconnectionAttempt();
+    this.#startPingInterval();
+    this.isTimedOut = false;
+  }
+
+  stopReconnectionAttempt() {
+    this.#reconnectTimeoutDuration = this.minReconnectTimeoutDuration;
+    if (this.#reconnectTimeoutID != null) {
+      clearTimeout(this.#reconnectTimeoutID);
+      this.#reconnectTimeoutID = null;
+    }
+  }
+  #trySocketReconnect() {
+    this.#reconnectTimeoutID = setTimeout(() => {
+      this.initializeConnection();
+      this.#reconnectTimeoutDuration =
+        Math.min(this.maxReconnectTimeoutDuration, this.#reconnectTimeoutDuration * 2);
+    }, this.#reconnectTimeoutDuration);
+  }
+
+
   // ---- Helper functions ----
-  #restartPingInterval() {
+  stopPingImmediately() {
     if (this.#pingIntervalID != null) {
       clearTimeout(this.#pingIntervalID);
+      this.#pingIntervalID = null;
     }
+    this.#pingIntervalHasChanged = false;
+  }
+  #startPingInterval() {
     if (this.#pingInterval > 0) {
       this.#pingIntervalID = setInterval(this.sendPing, this.#pingInterval);
     }
-    this.#pingIntervalHasChanged = false;
+  }
+
+  #restartPingInterval() {
+    this.stopPingImmediately();
+    this.#startPingInterval();
   }
 }
