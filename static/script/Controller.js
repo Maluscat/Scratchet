@@ -45,22 +45,19 @@ export class Controller {
 
     this.socketOpen = this.socketOpen.bind(this);
     this.socketReceiveMessage = this.socketReceiveMessage.bind(this);
-    this.socketTimeout = this.socketTimeout.bind(this);
-    this.socketReconnect = this.socketReconnect.bind(this);
 
     this.sock = sock;
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
       this.globalUsername = persistentUsername;
     }
-
-    sock.addEventListener('open', this.socketOpen);
-    sock.addEventListener('message', this.socketReceiveMessage);
-    sock.addEventListener('_timeout', this.socketTimeout);
-    sock.addEventListener('_reconnect', this.socketReconnect);
   }
 
   init() {
+    this.sock.initializeConnection();
+    this.sock.addEventListener('open', this.socketOpen);
+    this.sock.addEventListener('message', this.socketReceiveMessage);
+
     ui.registerInputHandler(
       usernameInput,
       this.changeOwnUsername.bind(this),
@@ -442,16 +439,6 @@ export class Controller {
     }
 
     this.sock.sendEvent('connectInit', { val: initValue });
-  }
-
-  socketTimeout() {
-    if (!this.sock.isTimedOut) {
-      ui.dispatchNotification('⚡ Connection lost ⚡', 'timeout');
-    }
-  }
-  socketReconnect() {
-    ui.clearNotification('timeout');
-    ui.dispatchNotification('🔗 Reconnected 🔗');
   }
 
   async socketReceiveMessage(e) {
