@@ -1,18 +1,18 @@
 export class SocketBase {
   static pingPayload = Uint8Array.of(0).buffer;
 
-  /** @type { number | null } */
   #awaitPingTimeoutID = null;
+  /** @type { Record<string, Set<Function>> } */
   #eventList = {};
 
   isTimedOut;
   socket;
 
   constructor(socket) {
-    this.socket = socket;
-
     this._messageIntercept = this._messageIntercept.bind(this);
     this._missedPing = this._missedPing.bind(this);
+
+    this.socket = socket;
   }
 
   // ---- Ping handling ----
@@ -53,6 +53,7 @@ export class SocketBase {
   _clearPingTimeout() {
     if (this.#awaitPingTimeoutID != null) {
       clearTimeout(this.#awaitPingTimeoutID);
+      this.#awaitPingTimeoutID = null;
     }
   }
 
@@ -79,26 +80,36 @@ export class SocketBase {
 
   _addEvent(type, callback) {
     if (!type.startsWith('_')) {
-      this.socket.addEventListener(...arguments);
-    } else {
-      if (!(type in this.#eventList)) {
-        this.#eventList[type] = [];
-      }
-      this.#eventList[type].push(callback);
+      this.socket?.addEventListener(...arguments);
     }
+    if (!(type in this.#eventList)) {
+      this.#eventList[type] = new Set();
+    }
+    this.#eventList[type].add(callback);
   }
   _removeEvent(type, callback) {
     if (!type.startsWith('_')) {
-      this.socket.removeEventListener(...arguments);
-    } else {
-      const callbacks = this.#eventList[type];
-      callbacks?.splice(callbacks.indexOf(callback), 1);
+      this.socket?.removeEventListener(...arguments);
+    }
+    const callbacks = this.#eventList[type];
+    callbacks?.delete(callback);
+  }
+
+  _addEventsAgain() {
+    for (const [ type, callbacks ] of Object.entries(this.#eventList)) {
+      if (!type.startsWith('_')) {
+        callbacks.forEach(callback => {
+          this.socket.addEventListener(type, callback);
+        });
+      }
     }
   }
 
   invokeEvent(type, ...args) {
-    this.#eventList[type]?.forEach(callback => {
-      callback(...args);
-    });
+    if (type.startsWith('_')) {
+      this.#eventList[type]?.forEach(callback => {
+        callback(...args);
+      });
+    }
   }
 }
