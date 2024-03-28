@@ -12,7 +12,7 @@ export class ServerSocketBase extends SocketBase {
     const currentTime = new Date().getTime();
     this.#lastPingTimestamp = currentTime;
 
-    if (!this.isTimeouted) {
+    if (!this.isTimedOut) {
       const timeElapsed = new Date().setTime(currentTime - this.#lastPingTimestamp);
       this.#setMedianInterval(timeElapsed);
     }
