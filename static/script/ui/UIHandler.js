@@ -300,15 +300,17 @@ export class UIHandler {
 
   // ---- Notifications ----
   dispatchNotification(content, stickyLabel) {
+    if (stickyLabel && stickyLabel in this.#stickyNotifications) return;
+
     const notification = notificationTemplate.cloneNode(true);
     notification.textContent = content;
     notificationWrapper.appendChild(notification);
-    if (!stickyLabel) {
+    if (stickyLabel) {
+      this.#stickyNotifications[stickyLabel] = notification;
+    } else {
       setTimeout(() => {
         this.#startNotificationRemoval(notification);
       }, 2000);
-    } else {
-      this.#stickyNotifications[stickyLabel] = notification;
     }
     return notification;
   }
