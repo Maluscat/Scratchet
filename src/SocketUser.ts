@@ -12,6 +12,7 @@ export type RoomName = string;
 export type Username = string;
 
 export class SocketUser {
+  static DEACTIVATION_TIMEOUT = 1000 * 120;
   static socketIDCounter: SocketID = 0;
 
   readonly ip: string;
@@ -21,6 +22,7 @@ export class SocketUser {
   rate: SocketRateHandler; 
   isActive = false;
 
+  #deactivationTimeoutID: null | number = null;
   #rooms: Map<SocketRoom, Username>;
 
   constructor(sock: ServerSocketBase, request: Request) {
@@ -32,6 +34,33 @@ export class SocketUser {
     this.#rooms = new Map();
   }
   
+  // ---- Activation ----
+  deactivate(callback: (user: SocketUser) => void) {
+    this.#deactivationTimeoutID = setTimeout(() => {
+      callback(this);
+    }, SocketUser.DEACTIVATION_TIMEOUT);
+    this.isActive = false;
+  }
+  activate() {
+    this.isActive = true;
+    if (this.#deactivationTimeoutID != null) {
+      clearTimeout(this.#deactivationTimeoutID);
+      this.#deactivationTimeoutID = null;
+    }
+  }
+
+  /**
+   * Merge a given user into this one,
+   * regardless of any conditions (e.g. whether their origins match).
+   *
+   * @privateRemarks
+   * When introducing new properties, keep an eye on their
+   * mergability and expand this method if necessary.
+   */
+  merge(sourceUser: SocketUser) {
+    this.rate.increment(sourceUser.rate.getCount());
+  }
+
   /**
    * Validate whether it is safe to assume that a given request is of the
    * same origin as the one the user was created at.

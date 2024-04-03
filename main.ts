@@ -13,6 +13,8 @@ interface ReceivedEventInterfaceStructure {
       [key: string]: string;
     };
     fn?: (socketUser: SocketUser, val?: any, socketRoom?: SocketRoom) => void;
+    /** Bypasses check whether the user is active. */
+    init?: boolean,
     passOn?: boolean;
   }
 }
@@ -25,7 +27,8 @@ export const receivedEventsInterface: ReceivedEventInterfaceStructure = {
     },
     fn: (socketUser, val) => {
       controller.initializeUserConnection(socketUser, val!);
-    }
+    },
+    init: true,
   },
   joinRoom: {
     required: {
@@ -88,7 +91,7 @@ export const controller = new Controller();
 router
   .get('/socket', (ctx: Context) => {
     const socket = new ServerSocketBase(ctx.upgrade());
-    controller.registerSocket(socket);
+    controller.registerSocket(socket, ctx.request);
   });
 
 await app.listen({ port: 8002 });

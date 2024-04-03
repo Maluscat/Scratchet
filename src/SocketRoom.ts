@@ -6,6 +6,7 @@ import { validateRoomName } from 'Validator';
 import { controller } from 'main';
 
 export interface ConnectionData {
+  existingUser?: number;
   roomCode?: RoomCode;
   username?: Username;
 }

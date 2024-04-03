@@ -1,4 +1,5 @@
 import type { SocketRoom, ConnectionData, MessageData } from 'SocketRoom';
+import type { Request } from 'oak';
 import { receivedEventsInterface } from 'main';
 
 import { SocketUser } from 'SocketUser';
@@ -9,11 +10,17 @@ import * as Meta from 'Meta';
 
 export class Controller {
   readonly roomHandler = new SocketRoomHandler();
+  readonly usersByID = new Map<number, SocketUser>();
   readonly users = new WeakMap<ServerSocketBase, SocketUser>();
 
-  registerSocket(sock: ServerSocketBase) {
-    sock.addEventListener('open', this.createUser.bind(this, sock));
-    sock.addEventListener('close', this.destroyUser.bind(this, sock));
+  constructor() {
+    this.destroyUser = this.destroyUser.bind(this);
+  }
+
+  registerSocket(sock: ServerSocketBase, request: Request) {
+    // We create a new user up front. It might not actually be needed.
+    sock.addEventListener('open', this.createUser.bind(this, sock, request));
+    sock.addEventListener('close', this.socketClose.bind(this, sock));
     sock.addEventListener('message', (e: MessageEvent) => {
       this.receiveMessage(this.users.get(sock)!, e);
     });
@@ -23,6 +30,10 @@ export class Controller {
     sock.addEventListener('_reconnect', () => {
       this.handleReconnect(this.users.get(sock)!);
     });
+  }
+
+  socketClose(sock: ServerSocketBase) {
+    this.users.get(sock)?.deactivate(this.destroyUser);
   }
 
   handleTimeout(socketUser: SocketUser) {
@@ -115,11 +126,17 @@ export class Controller {
     // NOTE `properties` is guaranteed to be an object, but it could have no properties
     const username = properties.username;
     const roomCode = properties.roomCode;
+    const existingUserID = properties.existingUser;
 
-    const user = socketUser.init();
-    const room = this.roomHandler.getRoomOrCreateNewRoom(user, username, roomCode);
+    if (existingUserID != null) {
+      socketUser = this.mergeUsersFromSameOrigin(existingUserID, socketUser);
+      socketUser.broadcastJSONToAllPeers('reconnect');
+    }
 
-    room.addUser(user, username);
+    socketUser.activate();
+    const room = this.roomHandler.getRoomOrCreateNewRoom(socketUser, username, roomCode);
+
+    room.addUser(socketUser, username);
   }
 
   userJoinRoomFromRoomCode(socketUser: SocketUser, properties: ConnectionData) {
@@ -152,20 +169,30 @@ export class Controller {
     this.users.set(sock, new SocketUser(sock, req));
   }
 
-  destroyUser(sock: ServerSocketBase) {
-    if (!this.users.has(sock)) {
+  destroyUser(user: SocketUser) {
+    if (!this.users.has(user.sock)) {
       throw new ScratchetError("Tried to destroy a user that doesn't exist.");
     }
 
-    const socketUser = this.users.get(sock)!;
-    this.users.delete(sock);
+    this.usersByID.delete(user.id);
+    this.users.delete(user.sock);
 
     // This could for example fail if the Socket was closed before sending the initial message
-    if (socketUser.isActive) {
-      for (const socketRoom of socketUser.getRooms()) {
-        socketRoom.removeUser(socketUser);
-        socketRoom.sendJSONToUsers(socketUser, 'disconnect');
+    if (user.isActive) {
+      for (const socketRoom of user.getRooms()) {
+        socketRoom.removeUser(user);
+        socketRoom.sendJSONToUsers(user, 'disconnect');
       }
     }
+  }
+
+  mergeUsersFromSameOrigin(existingUserID: number, targetUser: SocketUser) {
+    const existingUser = this.usersByID.get(existingUserID);
+    if (existingUser?.validateOriginEquality(targetUser)) {
+      this.destroyUser(targetUser);
+      existingUser.merge(targetUser);
+      return existingUser;
+    }
+    return targetUser;
   }
 }
