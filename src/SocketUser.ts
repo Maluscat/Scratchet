@@ -1,4 +1,5 @@
 import type { SocketRoom, MessageData } from 'SocketRoom';
+import type { Request } from 'oak';
 
 import { SocketRateHandler } from 'SocketRateHandler';
 import { ServerSocketBase } from 'ServerSocketBase';
@@ -13,6 +14,7 @@ export type Username = string;
 export class SocketUser {
   static socketIDCounter: SocketID = 0;
 
+  readonly ip: string;
   readonly id: SocketID;
   readonly sock: ServerSocketBase;
   readonly #defaultName: Username;
@@ -21,17 +23,25 @@ export class SocketUser {
 
   #rooms: Map<SocketRoom, Username>;
 
-  constructor(sock: ServerSocketBase) {
+  constructor(sock: ServerSocketBase, request: Request) {
     this.sock = sock;
     this.id = SocketUser.socketIDCounter++;
+    this.ip = request.ip;
     this.#defaultName = SocketUser.createDefaultName(this.id);
     this.rate = new SocketRateHandler();
     this.#rooms = new Map();
   }
   
-  init() {
-    this.isActive = true;
-    return this;
+  /**
+   * Validate whether it is safe to assume that a given request is of the
+   * same origin as the one the user was created at.
+   *
+   * For now, checking only the IP will suffice. The user can still switch
+   * users within the local NAT but hey, go ahead and hack the app to switch
+   * your cheetah drawings with your brother I guess.
+   */
+  validateOriginEquality(user: SocketUser) {
+    return user.ip === this.ip;
   }
 
   // ---- Room handling ----
