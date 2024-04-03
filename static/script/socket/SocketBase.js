@@ -5,7 +5,7 @@ export class SocketBase {
   /** @type { Record<string, Set<Function>> } */
   #eventList = {};
 
-  isTimedOut;
+  isTimedOut = false;
   socket;
 
   constructor(socket) {

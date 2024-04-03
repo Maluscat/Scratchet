@@ -7,20 +7,21 @@ export class ServerSocketBase extends SocketBase {
   medianPingInterval = 0;
 
   _handleReceivedPing() {
-    this.sendPing();
-
     const currentTime = new Date().getTime();
-    this.#lastPingTimestamp = currentTime;
 
-    if (!this.isTimedOut) {
+    if (this.isTimedOut) {
+      this.#resetTimings();
+    } else {
       const timeElapsed = new Date().setTime(currentTime - this.#lastPingTimestamp);
-      this.#setMedianInterval(timeElapsed);
+      this.#setTimings(timeElapsed);
     }
-    this._addPingTimeout(this.medianPingInterval * 1.2);
+
+    this.#lastPingTimestamp = currentTime;
+    this.sendPing();
     super._handleReceivedPing();
   }
 
-  #setMedianInterval(timeElapsed: number) {
+  #setTimings(timeElapsed: number) {
     if (this.#pingSetup <= 1) {
       if (this.#pingSetup === 1) {
         this.medianPingInterval = timeElapsed;
@@ -28,6 +29,11 @@ export class ServerSocketBase extends SocketBase {
       this.#pingSetup++;
     } else {
       this.medianPingInterval = (this.medianPingInterval * 4 + timeElapsed * 1) / 5;
+      this._addPingTimeout(this.medianPingInterval * 1.2);
     }
+  }
+
+  #resetTimings() {
+    this.#pingSetup = 0;
   }
 }
