@@ -40,6 +40,10 @@ export class Controller {
       }
 
       if (e.data instanceof ArrayBuffer) {
+        if (!socketUser.isActive) {
+          throw new ScratchetError(`${socketUser} tried to send a buffer while inactive.`);
+        }
+
         const dataArr = new Int16Array(e.data);
         const roomCode = dataArr[0];
         const socketRoom = this.roomHandler.getRoomWithUserExistanceCheck(socketUser, roomCode);
@@ -75,6 +79,10 @@ export class Controller {
       throw new ScratchetError(`Unrecognized event: ${JSON.stringify(data)}`);
     }
     const eventInterface = receivedEventsInterface[data.evt];
+
+    if (!eventInterface.init && !socketUser.isActive) {
+      throw new ScratchetError(`${socketUser} tried to send '${data.evt}' event while inactive.`);
+    }
 
     // Check if all required fields are present and are of their required types
     for (const [requiredField, requiredType] of Object.entries(eventInterface.required)) {
