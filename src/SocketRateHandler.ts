@@ -28,8 +28,8 @@ export class SocketRateHandler {
     setInterval(this.#bulkDecrement.bind(this), LIMIT_INTERVAL);
   }
 
-  increment() {
-    this.#rateCounter++;
+  increment(amount = 1) {
+    this.#rateCounter += amount;
   }
 
   getCount() {
