@@ -47,6 +47,9 @@ export class Controller {
     this.socketReceiveMessage = this.socketReceiveMessage.bind(this);
 
     this.sock = sock;
+    this.sock.addEventListener('open', this.socketOpen);
+    this.sock.addEventListener('message', this.socketReceiveMessage);
+
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
       this.globalUsername = persistentUsername;
@@ -55,8 +58,6 @@ export class Controller {
 
   init() {
     this.sock.initializeConnection();
-    this.sock.addEventListener('open', this.socketOpen);
-    this.sock.addEventListener('message', this.socketReceiveMessage);
 
     ui.registerInputHandler(
       usernameInput,

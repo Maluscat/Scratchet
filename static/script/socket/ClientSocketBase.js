@@ -44,7 +44,7 @@ export class ClientSocketBase extends SocketBase {
     pingInterval = 0,
     pingTimeout = 3000,
     maxReconnectTimeoutDuration = 10000,
-    minReconnectTimeoutDuration = 250,
+    minReconnectTimeoutDuration = 750,
   }) {
     super(null);
     this._socketClosed = this._socketClosed.bind(this);
