@@ -1,6 +1,7 @@
 import type { SocketRoom, MessageData } from 'SocketRoom';
 
 import { SocketRateHandler } from 'SocketRateHandler';
+import { ServerSocketBase } from 'ServerSocketBase';
 import { ScratchetError } from 'ScratchetError';
 import { validateUsername } from 'Validator';
 
@@ -13,15 +14,15 @@ export class SocketUser {
   static socketIDCounter: SocketID = 0;
 
   readonly id: SocketID;
-  readonly #sock: WebSocket;
+  readonly sock: ServerSocketBase;
   readonly #defaultName: Username;
   rate: SocketRateHandler; 
   isActive = false;
 
   #rooms: Map<SocketRoom, Username>;
 
-  constructor(sock: WebSocket) {
-    this.#sock = sock;
+  constructor(sock: ServerSocketBase) {
+    this.sock = sock;
     this.id = SocketUser.socketIDCounter++;
     this.#defaultName = SocketUser.createDefaultName(this.id);
     this.rate = new SocketRateHandler();
@@ -80,11 +81,11 @@ export class SocketUser {
   }
 
   send(data: string | ArrayBuffer) {
-    if (this.#sock.readyState === 1) {
+    if (this.sock.socket.readyState === 1) {
       if (!this.isActive) {
         throw new ScratchetError(`Tried to send while inactive (data: ${data})`);
       }
-      this.#sock.send(data);
+      this.sock.socket.send(data);
     }
   }
 

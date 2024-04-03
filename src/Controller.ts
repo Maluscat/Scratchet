@@ -141,7 +141,7 @@ export class Controller {
 
   // ---- User handling ----
   createUser(sock: ServerSocketBase) {
-    this.users.set(sock, new SocketUser(sock.socket));
+    this.users.set(sock, new SocketUser(sock));
   }
 
   destroyUser(sock: ServerSocketBase) {
