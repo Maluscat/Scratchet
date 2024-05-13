@@ -12,7 +12,7 @@ import {
 import { Room } from '~/room/Room.js';
 import { ui } from '~/init.js';
 
-/** @typedef { import('~/socket/ClientSocketBase.js').ClientSocketBase } ClientSocketBase */
+/** @typedef { import('@lib/socket-handler/script/ClientSocketBase.js').ClientSocketBase } ClientSocketBase */
 
 export class Controller {
   globalUsername;

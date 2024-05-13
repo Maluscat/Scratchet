@@ -1,4 +1,4 @@
-import { ClientSocketBase } from './ClientSocketBase.js';
+import { ClientSocketBase } from '@lib/socket-handler/script/ClientSocketBase.js';
 import { controller, ui } from '~/init.js';
 
 export class ScratchetSocketBase extends ClientSocketBase {
