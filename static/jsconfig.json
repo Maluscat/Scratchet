@@ -5,7 +5,8 @@
     "lib": [ "esnext", "dom", "dom.iterable" ],
     "checkJs": true,
     "paths": {
-      "~/*": [ "./script/*" ]
+      "~/*": [ "./script/*" ],
+      "@lib/*": [ "./library/*" ]
     }
   }
   "include": [
