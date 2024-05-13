@@ -8,3 +8,6 @@
 [submodule "utility-wheel"]
 	path = static/library/utility-wheel
 	url = https://gitlab.com/Hallo89/utility-wheel.git
+[submodule "static/library/socket-handler"]
+	path = static/library/socket-handler
+	url = https://gitlab.com/Maluscat/socket-handler.git
