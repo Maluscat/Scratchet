@@ -12,7 +12,6 @@ import { ScratchetSocketBase } from '~/socket/ScratchetSocketBase.js';
 
 const sock = new ScratchetSocketBase(`ws://${location.host}${location.pathname}socket`, {
   maxReconnectTimeoutDuration: 4000,
-  pingInterval: 6000,
 });
 
 export const controller = new Controller(sock);
