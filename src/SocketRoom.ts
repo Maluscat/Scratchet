@@ -46,7 +46,11 @@ export class SocketRoom {
       this.#sockets.add(socketUser);
 
       socketUser.addToRoom(this, username);
-      this.dispatchUserConnect(socketUser);
+      // This is done to enfore correct validation (which happens in addToRoom)
+      username = socketUser.getNameForRoom(this);
+
+      this.addUserToBulkInitQueue(socketUser);
+      this.sendJSONToUsers(socketUser, 'connect', username);
 
       socketUser.sendInitialJoinData(this);
     }
@@ -101,14 +105,6 @@ export class SocketRoom {
   }
 
   // ---- Socket functions ----
-  dispatchUserConnect(socketUser: SocketUser) {
-    // This is done to enfore correct validation (which happens in addToRoom)
-    const username = socketUser.getNameForRoom(this);
-
-    this.addUserToBulkInitQueue(socketUser);
-    this.sendJSONToUsers(socketUser, 'connect', username);
-  }
-
   sendJSONToUsers(callingUser: SocketUser, event: string, value?: string) {
     const dataObj: MessageData = {
       evt: event,

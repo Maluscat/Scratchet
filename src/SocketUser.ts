@@ -5,6 +5,7 @@ import { SocketRateHandler } from 'SocketRateHandler';
 import { ServerSocketBase } from 'ServerSocketBase';
 import { ScratchetError } from 'ScratchetError';
 import { validateUsername } from 'Validator';
+import { USER_DEACTIVATION_TIMEOUT } from 'Meta';
 
 export type SocketID = number;
 export type RoomCode = number;
@@ -12,7 +13,6 @@ export type RoomName = string;
 export type Username = string;
 
 export class SocketUser {
-  static DEACTIVATION_TIMEOUT = 1000 * 120;
   static socketIDCounter: SocketID = 0;
 
   readonly ip: string;
@@ -38,7 +38,7 @@ export class SocketUser {
   deactivate(callback: (user: SocketUser) => void) {
     this.#deactivationTimeoutID = setTimeout(() => {
       callback(this);
-    }, SocketUser.DEACTIVATION_TIMEOUT);
+    }, SocketUser.USER_DEACTIVATION_TIMEOUT);
     this.isActive = false;
   }
   activate() {
@@ -98,7 +98,9 @@ export class SocketUser {
     const peers = new Set<SocketUser>();
     for (const rooms of this.getRooms()) {
       for (const user of rooms.getUsers()) {
-        peers.add(user);
+        if (user !== this) {
+          peers.add(user);
+        }
       }
     }
     return peers;
