@@ -5,6 +5,7 @@ import {
   usernameInput,
   userListWrapper
 } from '~/constants/misc.js';
+import { USER_DEACTIVATION_TIMEOUT } from '~/constants/meta.js';
 import { RoomController } from '~/room/RoomController.js';
 import { UserBulkInit } from '~/user/UserBulkInit.js';
 import { Brush } from '~/tool/Brush.js';
@@ -25,6 +26,8 @@ export class Room extends RoomController {
   /** @type string */
   roomName;
 
+  /** @type { WeakMap<UserBulkInit, number> } */
+  timedOutUsers = new WeakMap();
   /** @type { Map<number, UserBulkInit> } */
   users = new Map();
   userListNode;
@@ -51,6 +54,20 @@ export class Room extends RoomController {
     }
 
     this.changeRoomName(roomName);
+  }
+
+  handleUserTimeout(userID) {
+    const user = this.getUser(userID);
+    const timeoutID = setTimeout(() => {
+      this.removeUser(userID);
+    }, USER_DEACTIVATION_TIMEOUT);
+    this.timedOutUsers.set(user, timeoutID);
+  }
+  handleUserReconnect(userID) {
+    const user = this.getUser(userID);
+    const timeoutID = this.timedOutUsers.get(user);
+    clearTimeout(timeoutID);
+    this.timedOutUsers.delete(user);
   }
 
   // ---- Tool handling ----
@@ -91,7 +108,7 @@ export class Room extends RoomController {
   // ---- User handling ----
   /**
    * @param { number } userID
-   * @return { User }
+   * @return { UserBulkInit }
    */
   getUser(userID) {
     return this.users.get(userID);

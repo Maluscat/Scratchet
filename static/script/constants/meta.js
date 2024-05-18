@@ -1,5 +1,11 @@
 // ---- Constants ----
 /**
+ * Amount of time after which a disconnected/timed out user
+ * will be viewed as disconnected for good.
+ */
+export const USER_DEACTIVATION_TIMEOUT = 1000 * 120;
+
+/**
  * Time window in which a BULK_INIT may be sent from peers
  * after a user has joined.
  */

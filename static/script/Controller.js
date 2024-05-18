@@ -308,6 +308,12 @@ export class Controller {
     this.updateRoomIndicator();
   }
 
+  /** @param { number } userID */
+  getRoomsOfUser(userID) {
+    return Array.from(this.rooms.values())
+      .filter(room => room.hasUser(userID));
+ }
+
   switchActiveRoom(room) {
     if (this.activeRoom) {
       this.activeRoom.unfocus();
@@ -370,10 +376,8 @@ export class Controller {
   // NOTE: Received data is considered validated
   userDisconnect(userID) {
     const activeUsername = this.activeRoom.hasUser(userID) && this.activeRoom.getUser(userID).name;
-    for (const room of this.rooms.values()) {
-      if (room.hasUser(userID)) {
-        room.removeUser(userID);
-      }
+    for (const room of this.getRoomsOfUser(userID)) {
+      room.handleUserTimeout(room.getUser(userID));
     }
     if (activeUsername) {
       ui.dispatchNotification(`${activeUsername} has disconnected`);
@@ -391,6 +395,18 @@ export class Controller {
     room.addUser(userID, username);
 
     ui.dispatchNotification(`${username} has entered the room`);
+  }
+  userTimeout(userID) {
+    for (const room of this.getRoomsOfUser(userID)) {
+      room.handleUserTimeout(room.getUser(userID));
+    }
+    ui.dispatchNotification(this.activeRoom.getUser(userID).name + ' has timed out');
+  }
+  userReconnect(userID) {
+    for (const room of this.getRoomsOfUser(userID)) {
+      room.handleUserReconnect(room.getUser(userID));
+    }
+    ui.dispatchNotification(this.activeRoom.getUser(userID).name + ' has reconnected');
   }
   userClearData(userID, roomCode) {
     const user = this.rooms.get(roomCode).getUser(userID);
@@ -424,6 +440,7 @@ export class Controller {
       this.activate();
     }
   }
+
 
   // ---- Socket events ----
   socketOpen() {
@@ -460,6 +477,14 @@ export class Controller {
         }
         case 'connect': {
           this.userConnect(data.usr, data.room, data.val);
+          break;
+        }
+        case 'timeout': {
+          this.userTimeout(data.usr);
+          break;
+        }
+        case 'reconnect': {
+          this.userReconnect(data.usr);
           break;
         }
         case 'clearUser': {
