@@ -281,12 +281,15 @@ export class Controller {
     newRoom.roomListNode.addEventListener('click', this.roomListNodeClick.bind(this, newRoom));
     roomList.appendChild(newRoom.roomListNode);
 
+    this.sock.addEventListener('_receivedPing', newRoom.handleReceivedPing);
+
     this.rooms.set(roomCode, newRoom);
     this.updateRoomIndicator();
     if (activate) {
       this.switchActiveRoom(newRoom);
     }
   }
+  /** @param {Room} room */
   async removeRoom(room) {
     this.rooms.delete(room.roomCode);
 
@@ -298,6 +301,8 @@ export class Controller {
     } else {
       this.deactivate();
     }
+
+    this.sock.removeEventListener('_sentPing', room.handleReceivedPing);
 
     ui.blockCanvasInOutAnimation();
     await room.removeSelf();

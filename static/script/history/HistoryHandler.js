@@ -14,6 +14,16 @@ export class HistoryHandler {
 
   /** @type { EraserHistoryData[] } */
   #eraseHistoryStack = [];
+  /**
+   * Counts the amount of times a ping has been invoked
+   * while the current group was being constructed.
+   *
+   * This can be interpreted as the connection having been safely
+   * online for this many pings within this group
+   * (which represents a time frame on a linear time scale).
+   * @see {@link markIntact}
+   */
+  intactCounter = 0;
 
   /** @param { User } user Reference to the bound user. */
   constructor(user) {
@@ -52,13 +62,18 @@ export class HistoryHandler {
   }
   #addBrushGroup() {
     if (this.#brushStartingLen < this.#user.posCache.length) {
-      this.#addToHistory(new BrushGroup(this.#user.posCache, this.#brushStartingLen, this.#user.posCache.length));
+      const group = new BrushGroup(
+        this.#user.posCache,
+        this.#brushStartingLen,
+        this.#user.posCache.length,
+        this.intactCounter);
+      this.#addToHistory(group);
       this.#updateBrushLen();
     }
   }
   #addEraserGroup() {
     if (this.#eraseHistoryStack.length > 0) {
-      this.#addToHistory(new EraserGroup(this.#eraseHistoryStack));
+      this.#addToHistory(new EraserGroup(this.#eraseHistoryStack, this.intactCounter));
       this.#eraseHistoryStack = [];
     }
   }
@@ -91,10 +106,20 @@ export class HistoryHandler {
     this.#updateBrushLen();
   }
 
+  /**
+   * Increment intact counter of the currently built group,
+   * which the group will adopt once it is added to the history.
+   * @see {@link #intactCounter}
+   */
+  markIntact() {
+    this.intactCounter++;
+  }
+
   #addToHistory(group) {
     this.clear();
     this.history.push(group);
     this.historyIndex++;
+    this.intactCounter = 0;
   }
 
   // ---- Helper functions ----

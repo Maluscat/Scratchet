@@ -18,8 +18,8 @@ export class BrushGroup extends HistoryGroup {
    * @param { number } startIndex Inclusive.
    * @param { number } endIndex Exclusive.
    */
-  constructor(buffer, startIndex, endIndex) {
-    super();
+  constructor(buffer, startIndex, endIndex, intactCount) {
+    super(intactCount);
     this.historyData = BrushGroup.#buildHistoryData(buffer, startIndex, endIndex);
   }
 

@@ -34,6 +34,7 @@ export class Room extends RoomController {
 
   constructor(roomCode, roomName, globalUsername, peers) {
     super(Room.createCanvas(), roomCode, globalUsername);
+    this.handleReceivedPing = this.handleReceivedPing.bind(this);
 
     // Set active tool by current active class
     for (const tool of Object.values(this.tools)) {
@@ -68,6 +69,14 @@ export class Room extends RoomController {
     const timeoutID = this.timedOutUsers.get(user);
     clearTimeout(timeoutID);
     this.timedOutUsers.delete(user);
+  }
+
+  handleReceivedPing() {
+    for (const user of this.users.values()) {
+      if (!this.timedOutUsers.has(user)) {
+        user.historyHandler.markIntact();
+      }
+    }
   }
 
   // ---- Tool handling ----

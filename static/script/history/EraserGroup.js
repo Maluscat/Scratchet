@@ -16,8 +16,8 @@ export class EraserGroup extends HistoryGroup {
   historyData;
 
   /** @param { EraserHistoryData[] } data */
-  constructor(data) {
-    super();
+  constructor(data, intactCount) {
+    super(intactCount);
     this.historyData = EraserGroup.#buildHistoryData(data);
   }
 
