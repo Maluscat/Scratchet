@@ -1,3 +1,5 @@
+import { HistoryGroup } from './HistoryGroup.js';
+
 /**
  * NOTE: This extends an imaginary interface that ensures that the properties
  * `posWrapper` and `target` stay the same over all group history data interfaces.
@@ -9,12 +11,13 @@
  * @prop { Array<Array> } target The target PosWrapper that holds the erased/initial PosData.
  */
 
-export class EraserGroup {
+export class EraserGroup extends HistoryGroup {
   /** @type { EraserHistoryData[] } */
   historyData;
 
   /** @param { EraserHistoryData[] } data */
   constructor(data) {
+    super();
     this.historyData = EraserGroup.#buildHistoryData(data);
   }
 

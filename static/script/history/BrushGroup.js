@@ -1,3 +1,5 @@
+import { HistoryGroup } from './HistoryGroup.js';
+
 /** @typedef { import('~/user/User.js').User } User */
 
 /**
@@ -8,7 +10,7 @@
  * @prop { Array } target The target wrapper for the data.
  */
 
-export class BrushGroup {
+export class BrushGroup extends HistoryGroup {
   historyData;
 
   /**
@@ -17,6 +19,7 @@ export class BrushGroup {
    * @param { number } endIndex Exclusive.
    */
   constructor(buffer, startIndex, endIndex) {
+    super();
     this.historyData = BrushGroup.#buildHistoryData(buffer, startIndex, endIndex);
   }
 
