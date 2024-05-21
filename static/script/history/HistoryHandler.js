@@ -62,11 +62,9 @@ export class HistoryHandler {
   }
   #addBrushGroup() {
     if (this.#brushStartingLen < this.#user.posCache.length) {
-      const group = new BrushGroup(
-        this.#user.posCache,
-        this.#brushStartingLen,
-        this.#user.posCache.length,
-        this.intactCounter);
+      const buffer = this.#user.posCache.slice(this.#brushStartingLen);
+      const group = new BrushGroup(buffer, this.intactCounter);
+
       this.#addToHistory(group);
       this.#updateBrushLen();
     }

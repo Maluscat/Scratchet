@@ -15,12 +15,11 @@ export class BrushGroup extends HistoryGroup {
 
   /**
    * @param { Array } buffer
-   * @param { number } startIndex Inclusive.
-   * @param { number } endIndex Exclusive.
+   * @param { number } intactCount
    */
-  constructor(buffer, startIndex, endIndex, intactCount) {
+  constructor(buffer, intactCount) {
     super(intactCount);
-    this.historyData = BrushGroup.#buildHistoryData(buffer, startIndex, endIndex);
+    this.historyData = BrushGroup.#buildHistoryData(buffer);
   }
 
   undo() {
@@ -42,11 +41,10 @@ export class BrushGroup extends HistoryGroup {
   }
 
   // ---- Static helpers ----
-  static #buildHistoryData(buffer, startIndex, endIndex) {
+  static #buildHistoryData(buffer) {
     /** @type { BrushHistoryData[] } */
     const redoData = [];
-    for (let i = startIndex; i < endIndex; i++) {
-      const posWrapper = buffer[i];
+    for (const posWrapper of buffer) {
       const info = /** @type BrushHistoryData */ ({
         posWrapper: Array.from(posWrapper),
         target: posWrapper
