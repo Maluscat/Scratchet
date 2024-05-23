@@ -49,6 +49,7 @@ export class User {
   addToBuffer(posWrapper, initIndex) {
     this.posCache.push(posWrapper);
     this.posHandler.addToBuffer(posWrapper, initIndex);
+    this.historyHandler.currentBrush.addData(posWrapper);
   }
   deleteFromBuffer(posWrapper) {
     this.posCache.splice(this.posCache.indexOf(posWrapper), 1);
@@ -147,7 +148,7 @@ export class User {
       }
 
       if (hasErased) {
-        this.historyHandler.addEraseData(posDataWrapper, initialWrapper);
+        this.historyHandler.currentEraser.addData(posDataWrapper, initialWrapper);
       }
     });
 

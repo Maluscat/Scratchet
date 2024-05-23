@@ -10,10 +10,9 @@ export class HistoryHandler {
   historyIndex = 0;
 
   #user;
-  #brushStartingLen;
 
-  /** @type { EraserHistoryData[] } */
-  #eraseHistoryStack = [];
+  currentBrush;
+  currentEraser;
   /**
    * Counts the amount of times a ping has been invoked
    * while the current group was being constructed.
@@ -28,7 +27,8 @@ export class HistoryHandler {
   /** @param { User } user Reference to the bound user. */
   constructor(user) {
     this.#user = user;
-    this.#updateBrushLen();
+    this.currentEraser = new EraserGroup();
+    this.currentBrush = new BrushGroup();
   }
 
   // ---- Undo/Redo ----
@@ -41,7 +41,6 @@ export class HistoryHandler {
         this.historyIndex--;
       }
     }
-    this.#updateBrushLen();
   }
   redo(count) {
     this.addGroup();
@@ -52,35 +51,30 @@ export class HistoryHandler {
         this.historyIndex++;
       }
     }
-    this.#updateBrushLen();
   }
 
   // ---- Group handling ----
   addGroup() {
-    this.#addBrushGroup();
-    this.#addEraserGroup();
+    if (this.#addGenericGroup(this.currentBrush)) {
+      this.currentBrush = new BrushGroup();
+    }
+    if (this.#addGenericGroup(this.currentEraser)) {
+      this.currentEraser = new EraserGroup();
+    }
   }
-  #addBrushGroup() {
-    if (this.#brushStartingLen < this.#user.posCache.length) {
-      const buffer = this.#user.posCache.slice(this.#brushStartingLen);
-      const group = new BrushGroup(buffer, this.intactCounter);
-
+  #addGenericGroup(group) {
+    if (group.historyData.length > 0) {
+      group.close(this.intactCounter);
       this.#addToHistory(group);
-      this.#updateBrushLen();
+      return true;
     }
-  }
-  #addEraserGroup() {
-    if (this.#eraseHistoryStack.length > 0) {
-      this.#addToHistory(new EraserGroup(this.#eraseHistoryStack, this.intactCounter));
-      this.#eraseHistoryStack = [];
-    }
+    return false;
   }
 
   // ---- History handling ----
   /** Empty the whole history. */
   empty() {
     this.addGroup();
-    this.#updateBrushLen();
     this.historyIndex = 0;
     this.history = [];
   }
@@ -101,7 +95,6 @@ export class HistoryHandler {
         group.cleanup(this.#user);
       }
     }
-    this.#updateBrushLen();
   }
 
   /**
@@ -118,34 +111,5 @@ export class HistoryHandler {
     this.history.push(group);
     this.historyIndex++;
     this.intactCounter = 0;
-  }
-
-  // ---- Helper functions ----
-  #updateBrushLen() {
-    this.#brushStartingLen = this.#user.posCache.length;
-  }
-
-  /**
-   * Add an eraser undo entry to the eraser history stack
-   * without checking whether a compatible entry already exists.
-   * @param { Int16Array[][] } targetWrapper See {@link EraserHistoryData.target}
-   * @param { Int16Array[][] } initialWrapper See {@link EraserHistoryData.initialWrapper}
-   */
-  addEraseDataUnchecked(targetWrapper, initialWrapper) {
-    this.#eraseHistoryStack.push(/** @type EraserHistoryData */ ({
-      initialWrapper,
-      posWrapper: null,
-      target: targetWrapper
-    }));
-  }
-  /**
-   * Add an eraser undo entry to the eraser history stack.
-   * @param { Int16Array[][] } targetWrapper See {@link EraserHistoryData.target}
-   * @param { Int16Array[][] } initialWrapper See {@link EraserHistoryData.initialWrapper}
-   */
-  addEraseData(targetWrapper, initialWrapper) {
-    if (!this.#eraseHistoryStack.some(data => data.target === targetWrapper)) {
-      this.addEraseDataUnchecked(targetWrapper, initialWrapper);
-    }
   }
 }

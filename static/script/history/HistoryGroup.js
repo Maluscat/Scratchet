@@ -8,14 +8,8 @@ export class HistoryGroup {
   /**
    * Specifies the amount of pings that have been dispatched
    * while this group was being constructed.
-   * @readonly
    */
-  intactCount;
-
-  /** @param { number } intactCount */
-  constructor(intactCount) {
-    this.intactCount = intactCount;
-  }
+  intactCount = 0;
 
   undo() {
     throw new Error('You have to implement this method!');
@@ -26,5 +20,10 @@ export class HistoryGroup {
   /** @param {User} user */
   cleanup(user) {
     throw new Error('You have to implement this method!');
+  }
+
+  /** @param { number } intactCount */
+  close(intactCount) {
+    this.intactCount = intactCount;
   }
 }

@@ -11,16 +11,7 @@ import { HistoryGroup } from './HistoryGroup.js';
  */
 
 export class BrushGroup extends HistoryGroup {
-  historyData;
-
-  /**
-   * @param { Array } buffer
-   * @param { number } intactCount
-   */
-  constructor(buffer, intactCount) {
-    super(intactCount);
-    this.historyData = BrushGroup.#buildHistoryData(buffer);
-  }
+  historyData = [];
 
   undo() {
     for (const data of this.historyData) {
@@ -40,17 +31,13 @@ export class BrushGroup extends HistoryGroup {
     }
   }
 
-  // ---- Static helpers ----
-  static #buildHistoryData(buffer) {
-    /** @type { BrushHistoryData[] } */
-    const redoData = [];
-    for (const posWrapper of buffer) {
+  addData(...posWrappers) {
+    for (const posWrapper of posWrappers) {
       const info = /** @type BrushHistoryData */ ({
         posWrapper: Array.from(posWrapper),
         target: posWrapper
       });
-      redoData.push(info);
+      this.historyData.push(info);
     }
-    return redoData;
   }
 }

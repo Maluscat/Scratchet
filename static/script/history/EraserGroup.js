@@ -13,13 +13,8 @@ import { HistoryGroup } from './HistoryGroup.js';
 
 export class EraserGroup extends HistoryGroup {
   /** @type { EraserHistoryData[] } */
-  historyData;
+  historyData = [];
 
-  /** @param { EraserHistoryData[] } data */
-  constructor(data, intactCount) {
-    super(intactCount);
-    this.historyData = EraserGroup.#buildHistoryData(data);
-  }
 
   undo() {
     for (const info of this.historyData) {
@@ -32,13 +27,37 @@ export class EraserGroup extends HistoryGroup {
     }
   }
 
-  cleanup = this.undo;
+  /**
+   * Add an eraser undo entry to the eraser history stack
+   * if no wrapper with the specified target already exists.
+   * @param { Int16Array[][] } targetWrapper See {@link EraserHistoryData.target}
+   * @param { Int16Array[][] } initialWrapper See {@link EraserHistoryData.initialWrapper}
+   */
+  addData(targetWrapper, initialWrapper) {
+    if (!this.historyData.some(data => data.target === targetWrapper)) {
+      this.addDataUnchecked(targetWrapper, initialWrapper);
+    }
+  }
+  /**
+   * Add an eraser undo entry to the eraser history stack
+   * without any additional condition.
+   * @param { Int16Array[][] } targetWrapper See {@link EraserHistoryData.target}
+   * @param { Int16Array[][] } initialWrapper See {@link EraserHistoryData.initialWrapper}
+   */
+  addDataUnchecked(targetWrapper, initialWrapper) {
+    this.historyData.push(/** @type EraserHistoryData */ ({
+      initialWrapper,
+      posWrapper: null,
+      target: targetWrapper
+    }));
+  }
 
-  /** @param { EraserHistoryData[] } undoOutline */
-  static #buildHistoryData(undoOutline) {
-    for (const info of undoOutline) {
+  close(intactCount) {
+    super.close(intactCount);
+    for (const info of this.historyData) {
       info.posWrapper = [ ...info.target ];
     }
-    return undoOutline;
   }
+
+  cleanup = this.undo;
 }

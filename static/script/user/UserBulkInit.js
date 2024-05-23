@@ -80,7 +80,7 @@ export class UserBulkInit extends User {
   #handleEraseGroup(data) {
     for (const [ wrapperDestIndex, posWrapper ] of this.#eraserData) {
       const target = this.posHandler.getBufferFromInitIndex(wrapperDestIndex);
-      this.historyHandler.addEraseDataUnchecked(target, Array.from(target));
+      this.historyHandler.currentEraser.addDataUnchecked(target, Array.from(target));
       target.splice(0, target.length, ...posWrapper);
     }
 
