@@ -3,11 +3,14 @@ import { Application, Router } from 'oak';
 import Nunjucks from 'nunjucks';
  
 const STATIC_DIR = denoPath.join(Deno.cwd(), 'static/');
+const IS_TESTING = Deno.args.includes('--test');
 
 // IN CASE OF 'INTERNAL SERVER ERROR': --allow-read IS MISSING
 export const app = new Application();
 export const router = new Router();
 const njkEnv = new Nunjucks.configure(Deno.cwd());
+
+const njkRenderArgs = IS_TESTING ? { testingMode: true } : undefined;
 
 
 // ---- Oak boilerplate stuff ----
@@ -18,7 +21,7 @@ app.use(async (ctx, next) => {
   await next();
   if (ctx.request.url.pathname === '/') {
     ctx.response.status = 200;
-    ctx.response.body = njkEnv.render('views/index.njk');
+    ctx.response.body = njkEnv.render('views/index.njk', njkRenderArgs);
   }
 });
 
