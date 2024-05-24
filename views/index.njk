@@ -76,6 +76,12 @@
           {% include 'views/component/svg/arrow-right-lined.svg' %}
         </button>
       </div>
+
+      {% if testingMode -%}
+        <button id="invoke-mocha-button" class="button persistent" type="button" title="Open Mocha test panel">
+          🧪
+        </button>
+      {%- endif %}
     </div>
 
     <div id="info-overlay" class="overlay bottom right"></div>
@@ -124,5 +130,21 @@
     <script src="/library/controls3d/script/State3D.js"></script>
     <script src="/library/controls3d/script/Controls3D.js"></script>
     <script src="/script/init.js" type="module"></script>
+    {% if testingMode -%}
+      <div id="mocha" class="overlay panel self-centered has-pointer-events"></div>
+      <link rel="stylesheet" href="/test/lib/mocha-v10-4-0.min.css">
+      <link rel="stylesheet" href="/test/init.css">
+      <script src="/test/lib/mocha-v10-4-0.min.js"></script>
+      <script src="/test/init.js"></script>
+      <script src="/test/main.js" type="module"></script>
+      <script>
+        window.addEventListener('load', () => {
+          mocha.checkLeaks();
+          mocha.run();
+
+          Mocha.process.removeListener("uncaughtException");
+        });
+      </script>
+    {%- endif %}
   </body>
 </html>
