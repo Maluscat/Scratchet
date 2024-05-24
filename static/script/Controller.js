@@ -382,7 +382,7 @@ export class Controller {
   userDisconnect(userID) {
     const activeUsername = this.activeRoom.hasUser(userID) && this.activeRoom.getUser(userID).name;
     for (const room of this.getRoomsOfUser(userID)) {
-      room.handleUserTimeout(room.getUser(userID));
+      room.handleUserTimeout(userID);
     }
     if (activeUsername) {
       ui.dispatchNotification(`${activeUsername} has disconnected`);
@@ -403,13 +403,13 @@ export class Controller {
   }
   userTimeout(userID) {
     for (const room of this.getRoomsOfUser(userID)) {
-      room.handleUserTimeout(room.getUser(userID));
+      room.handleUserTimeout(userID);
     }
     ui.dispatchNotification(this.activeRoom.getUser(userID).name + ' has timed out');
   }
   userReconnect(userID) {
     for (const room of this.getRoomsOfUser(userID)) {
-      room.handleUserReconnect(room.getUser(userID));
+      room.handleUserReconnect(userID);
     }
     ui.dispatchNotification(this.activeRoom.getUser(userID).name + ' has reconnected');
   }
