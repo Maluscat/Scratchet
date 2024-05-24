@@ -1,0 +1,27 @@
+body {
+  height: auto;
+  min-height: 100vh;
+}
+
+#mocha {
+  height: 70vh;
+  width: 75vw;
+  &:not(.active) {
+    display: none;
+  }
+}
+
+#mocha .test pre.error,
+#mocha .test.fail pre {
+  color: #fff7f7;
+  font-size: .8em;
+}
+#mocha-stats {
+  color: hsl(269, 15%, 85%);
+}
+#mocha-stats canvas {
+  border-radius: 100px;
+}
+#mocha-stats em {
+  color: white;
+}
