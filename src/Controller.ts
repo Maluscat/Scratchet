@@ -25,10 +25,9 @@ export class Controller {
       this.receiveMessage(this.users.get(sock)!, e);
     });
     sock.addEventListener('_timeout', () => {
-      this.handleTimeout(this.users.get(sock)!);
-    });
-    sock.addEventListener('_reconnect', () => {
-      this.handleReconnect(this.users.get(sock)!);
+      if (this.users.has(sock)) {
+        this.handleTimeout(this.users.get(sock));
+      }
     });
   }
 
@@ -38,9 +37,16 @@ export class Controller {
 
   handleTimeout(socketUser: SocketUser) {
     socketUser.broadcastJSONToAllPeers('timeout');
+    socketUser.deactivate();
   }
   handleReconnect(socketUser: SocketUser) {
-    socketUser.broadcastJSONToAllPeers('reconnect');
+    if (!socketUser.isActive) {
+      socketUser.activate();
+      for (const room of socketUser.getRooms()) {
+        room.addUserToBulkInitQueue(socketUser);
+      }
+      socketUser.broadcastJSONToAllPeers('reconnect');
+    }
   }
 
   receiveMessage(socketUser: SocketUser, e: MessageEvent) {
@@ -166,7 +172,9 @@ export class Controller {
 
   // ---- User handling ----
   createUser(sock: ServerSocketBase, req: Request) {
-    this.users.set(sock, new SocketUser(sock, req));
+    const user = new SocketUser(sock, req);
+    this.users.set(sock, user);
+    this.usersByID.set(user.id, user);
   }
 
   destroyUser(user: SocketUser) {
@@ -178,21 +186,27 @@ export class Controller {
     this.users.delete(user.sock);
 
     // This could for example fail if the Socket was closed before sending the initial message
-    if (user.isActive) {
-      for (const socketRoom of user.getRooms()) {
-        socketRoom.removeUser(user);
-        socketRoom.sendJSONToUsers(user, 'disconnect');
-      }
+    for (const socketRoom of user.getRooms()) {
+      socketRoom.removeUser(user);
+      socketRoom.sendJSONToUsers(user, 'disconnect');
     }
   }
 
   mergeUsersFromSameOrigin(existingUserID: number, targetUser: SocketUser) {
     const existingUser = this.usersByID.get(existingUserID);
     if (existingUser?.validateOriginEquality(targetUser)) {
-      this.destroyUser(targetUser);
       existingUser.merge(targetUser);
+      this.destroyUser(targetUser);
+      this.changeUserSocket(existingUser, targetUser.sock);
+      this.handleReconnect(existingUser);
       return existingUser;
     }
     return targetUser;
+  }
+
+  changeUserSocket(socketUser: SocketUser, newSocket: ServerSocketBase) {
+    socketUser.sock.removeAllEvents();
+    socketUser.sock = newSocket;
+    this.users.set(newSocket, socketUser);
   }
 }

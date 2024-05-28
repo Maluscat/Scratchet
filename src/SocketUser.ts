@@ -17,8 +17,8 @@ export class SocketUser {
 
   readonly ip: string;
   readonly id: SocketID;
-  readonly sock: ServerSocketBase;
-  readonly #defaultName: Username;
+  #defaultName: Username;
+  sock: ServerSocketBase;
   rate: SocketRateHandler; 
   isActive = false;
 
@@ -35,10 +35,12 @@ export class SocketUser {
   }
   
   // ---- Activation ----
-  deactivate(callback: (user: SocketUser) => void) {
-    this.#deactivationTimeoutID = setTimeout(() => {
-      callback(this);
-    }, SocketUser.USER_DEACTIVATION_TIMEOUT);
+  deactivate(callback?: (user: SocketUser) => void) {
+    if (callback) {
+      this.#deactivationTimeoutID = setTimeout(() => {
+        callback(this);
+      }, USER_DEACTIVATION_TIMEOUT);
+    }
     this.isActive = false;
   }
   activate() {
@@ -59,6 +61,7 @@ export class SocketUser {
    */
   merge(sourceUser: SocketUser) {
     this.rate.increment(sourceUser.rate.getCount());
+    this.#defaultName = sourceUser.#defaultName;
   }
 
   /**
@@ -67,7 +70,7 @@ export class SocketUser {
    *
    * For now, checking only the IP will suffice. The user can still switch
    * users within the local NAT but hey, go ahead and hack the app to switch
-   * your cheetah drawings with your brother I guess.
+   * your cheetah drawings with your brother's I guess.
    */
   validateOriginEquality(user: SocketUser) {
     return user.ip === this.ip;
