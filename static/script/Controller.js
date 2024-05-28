@@ -19,6 +19,8 @@ export class Controller {
   defaultUsername;
 
   sock;
+  /** @type number */
+  userID;
 
   /** @type { Map<number, Room> } */
   rooms = new Map();
@@ -388,7 +390,7 @@ export class Controller {
       ui.dispatchNotification(`${activeUsername} has disconnected`);
     }
   }
-  // TODO utilize the room name: "{user} has left/entered (current?) room {room name}"
+  // TODO This notifies all rooms of any user.
   userLeave(userID, roomCode) {
     const room = this.rooms.get(roomCode);
     const username = room.removeUser(userID).name;
@@ -405,6 +407,7 @@ export class Controller {
     for (const room of this.getRoomsOfUser(userID)) {
       room.handleUserTimeout(userID);
     }
+    // TODO The user may not be in the active room.
     ui.dispatchNotification(this.activeRoom.getUser(userID).name + ' has timed out');
   }
   userReconnect(userID) {
@@ -436,7 +439,8 @@ export class Controller {
   ownUserGetJoinData(value) {
     const isDeactivated = !this.activeRoom;
 
-    // For async reasons, the real user ID is solely used for the username
+    // For async reasons, the real user ID is only used for the username and syncing
+    this.userID = value.userID;
     this.defaultUsername = value.defaultName;
     this.setOwnUsername(value.username, true);
     this.addNewRoom(value.roomCode, value.roomName, value.peers, true);
@@ -459,6 +463,9 @@ export class Controller {
     }
     if (this.globalUsername) {
       initValue.username = this.globalUsername;
+    }
+    if (this.userID != null) {
+      initValue.existingUser = this.userID;
     }
 
     this.sock.sendEvent('connectInit', { val: initValue });
