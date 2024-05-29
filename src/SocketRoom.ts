@@ -33,7 +33,9 @@ export class SocketRoom {
    * bulk init data from a user.
    * Form: Map<RecentlyJoinedUser, Set<UserWhichHasSentDataToJoinedUser>>
    */
-  userBulkInitQueue: Map<SocketUser, WeakSet<SocketUser>> = new Map();
+  #userBulkInitQueue: Map<SocketUser, WeakSet<SocketUser>> = new Map();
+  /** Saves the autoremoval timeouts of the bulk init queue. */
+  #bulkInitTimeouts: WeakMap<SocketUser, number> = new WeakMap;
 
   constructor(roomCode: RoomCode, roomName: Username) {
     this.roomCode = roomCode;
@@ -72,15 +74,20 @@ export class SocketRoom {
   // ---- Init Queue & initial data ----
   addUserToBulkInitQueue(socketUser: SocketUser) {
     if (this.getUsers().size > 0) {
-      this.userBulkInitQueue.set(socketUser, new WeakSet([socketUser]));
+      if (this.#userBulkInitQueue.has(socketUser)) {
+        clearTimeout(this.#bulkInitTimeouts.get(socketUser));
+      }
+      this.#userBulkInitQueue.set(socketUser, new WeakSet([socketUser]));
 
-      setTimeout(() => {
+      const timeoutID = setTimeout(() => {
         this.removeUserFromBulkInitQueue(socketUser);
       }, SocketRoom.INIT_QUEUE_TIMEOUT);
+      this.#bulkInitTimeouts.set(socketUser, timeoutID);
     }
   }
   removeUserFromBulkInitQueue(socketUser: SocketUser) {
-    this.userBulkInitQueue.delete(socketUser);
+    this.#userBulkInitQueue.delete(socketUser);
+    this.#bulkInitTimeouts.delete(socketUser);
   }
 
   /**
@@ -94,7 +101,7 @@ export class SocketRoom {
    * @param {ArrayBuffer} newBuffer The buffer to send, with the socketUser ID prepended.
    */
   sendBulkInitData(socketUser: SocketUser, newBuffer: ArrayBuffer) {
-    for (const [ servedUser, handledUsers ] of this.userBulkInitQueue) {
+    for (const [ servedUser, handledUsers ] of this.#userBulkInitQueue) {
       if (!handledUsers.has(socketUser)) {
         servedUser.send(newBuffer);
         handledUsers.add(socketUser);
