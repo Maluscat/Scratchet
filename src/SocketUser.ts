@@ -125,10 +125,7 @@ export class SocketUser {
   }
 
   send(data: string | ArrayBuffer) {
-    if (this.sock.socket.readyState === 1) {
-      if (!this.isActive) {
-        throw new ScratchetError(`Tried to send while inactive (data: ${data})`);
-      }
+    if (this.sock.socket.readyState === 1 && this.isActive) {
       this.sock.socket.send(data);
     }
   }
