@@ -26,7 +26,7 @@ export class Controller {
     });
     sock.addEventListener('_timeout', () => {
       if (this.users.has(sock)) {
-        this.handleTimeout(this.users.get(sock));
+        this.handleTimeout(this.users.get(sock)!);
       }
     });
   }
@@ -42,9 +42,6 @@ export class Controller {
   handleReconnect(socketUser: SocketUser) {
     if (!socketUser.isActive) {
       socketUser.activate();
-      for (const room of socketUser.getRooms()) {
-        room.addUserToBulkInitQueue(socketUser);
-      }
       socketUser.broadcastJSONToAllPeers('reconnect');
     }
   }
@@ -128,21 +125,32 @@ export class Controller {
 
 
   // ---- Message event response ----
-  initializeUserConnection(socketUser: SocketUser, properties: ConnectionData) {
+  /**
+   * Initialize a user connection from the data passed with the
+   * 'connectInit' event.
+   *
+   * If `existingUserID` is defined, merge the users under certain
+   * conditions, effectively adding it back into its previous rooms
+   * plus the potential given room ID.
+   *
+   * @see {@link mergeUsersFromSameOrigin}
+   */
+  initializeUserConnection(uncheckedSocketUser: SocketUser, properties: ConnectionData) {
     // NOTE `properties` is guaranteed to be an object, but it could have no properties
     const username = properties.username;
     const roomCode = properties.roomCode;
     const existingUserID = properties.existingUser;
 
-    if (existingUserID != null) {
-      socketUser = this.mergeUsersFromSameOrigin(existingUserID, socketUser);
-      socketUser.broadcastJSONToAllPeers('reconnect');
+    let room;
+    const socketUser = this.mergeUsersFromSameOrigin(existingUserID, uncheckedSocketUser);
+    if (socketUser === uncheckedSocketUser || roomCode != null) {
+      room = this.roomHandler.getRoomOrCreateNewRoom(socketUser, username, roomCode);
     }
 
     socketUser.activate();
-    const room = this.roomHandler.getRoomOrCreateNewRoom(socketUser, username, roomCode);
-
-    room.addUser(socketUser, username);
+    if (room) {
+      room.addUser(socketUser, username);
+    }
   }
 
   userJoinRoomFromRoomCode(socketUser: SocketUser, properties: ConnectionData) {
@@ -192,14 +200,26 @@ export class Controller {
     }
   }
 
-  mergeUsersFromSameOrigin(existingUserID: number, targetUser: SocketUser) {
-    const existingUser = this.usersByID.get(existingUserID);
-    if (existingUser?.validateOriginEquality(targetUser)) {
-      existingUser.merge(targetUser);
-      this.destroyUser(targetUser);
-      this.changeUserSocket(existingUser, targetUser.sock);
-      this.handleReconnect(existingUser);
-      return existingUser;
+  /**
+   * Merge a given user into a user defined by its ID, returning the merged
+   * user if all conditions are met (see below), or the given user otherwise.
+   *
+   * The users are only merged if the given userID exists and differs
+   * from the target user, is inactive and both are of the same origin.
+   */
+  mergeUsersFromSameOrigin(existingUserID: number | undefined, targetUser: SocketUser) {
+    if (existingUserID != null
+      && existingUserID !== targetUser.id
+      && this.usersByID.has(existingUserID)
+    ) {
+      const existingUser = this.usersByID.get(existingUserID)!;
+      if (!existingUser.isActive && existingUser.validateOriginEquality(targetUser)) {
+        existingUser.merge(targetUser);
+        this.destroyUser(targetUser);
+        this.changeUserSocket(existingUser, targetUser.sock);
+        this.handleReconnect(existingUser);
+        return existingUser;
+      }
     }
     return targetUser;
   }
