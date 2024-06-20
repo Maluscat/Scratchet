@@ -6,11 +6,12 @@ import { HistoryGroup } from './HistoryGroup.js';
  * NOTE: This extends an imaginary interface that ensures that the properties
  * `posWrapper` and `target` stay the same over all group history data interfaces.
  * @typedef { object } BrushHistoryData
- * @prop { number[][] } posWrapper The PosWrapper containing all points.
+ * @prop { Int16Array[] } posWrapper The PosWrapper containing all points.
  * @prop { Array } target The target wrapper for the data.
  */
 
 export class BrushGroup extends HistoryGroup {
+  /** @type { BrushHistoryData[] } */
   historyData = [];
 
   undo() {
@@ -31,11 +32,11 @@ export class BrushGroup extends HistoryGroup {
     }
   }
 
-  addData(...posWrappers) {
-    for (const posWrapper of posWrappers) {
+  addData(...posDataWrappers) {
+    for (const posDataWrapper of posDataWrappers) {
       const info = /** @type BrushHistoryData */ ({
-        posWrapper: Array.from(posWrapper),
-        target: posWrapper
+        posWrapper: Array.from(posDataWrapper),
+        target: posDataWrapper
       });
       this.historyData.push(info);
     }

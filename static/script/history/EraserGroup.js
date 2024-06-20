@@ -52,10 +52,13 @@ export class EraserGroup extends HistoryGroup {
     }));
   }
 
+  /** The eraser group can only be closed once. */
   close(intactCount) {
-    super.close(intactCount);
-    for (const info of this.historyData) {
-      info.posWrapper = [ ...info.target ];
+    if (this.intactCount == null) {
+      super.close(intactCount);
+      for (const info of this.historyData) {
+        info.posWrapper = [ ...info.target ];
+      }
     }
   }
 
