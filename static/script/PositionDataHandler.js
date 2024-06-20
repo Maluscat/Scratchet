@@ -127,6 +127,23 @@ export class PositionDataHandler {
     return distance <= 0;
   }
 
+  /**
+   * Test whether the two supplied PosDatas are exactly equal.
+   *
+   * Both PosDatas are compared from back to front to make
+   * the process a tiny bit faster.
+   * @param { Int16Array } posData0
+   * @param { Int16Array } posData1
+   * @returns { boolean }
+   */
+  static posDataIsEqual(posData0, posData1) {
+    if (posData0.length !== posData1.length) return false;
+    for (let i = posData0.length - 1; i >= 0; i--) {
+      if (posData0[i] !== posData1[i]) return false;
+    }
+    return true;
+  }
+
   // ---- Static iterator -----
   /**
    * @typedef { Object } recursePosWrapperYield
