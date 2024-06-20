@@ -1,14 +1,18 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
     "lib": [ "esnext", "dom", "dom.iterable" ],
     "checkJs": true,
+    "strict": true,
+    "noImplicitAny": false,
     "paths": {
       "~/*": [ "./script/*" ],
       "@lib/*": [ "./library/*" ]
     }
-  }
+  },
   "include": [
     "./script/**/*",
     "./library/**/*",
