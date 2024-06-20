@@ -169,9 +169,9 @@ export class RoomController {
     user.handleBulkInit(data);
     this.view.update();
   }
-  sendBulkInitBuffer() {
+  sendBulkInitBuffer(historyStartIndex = 0) {
     if (this.ownUser.posCache.length > 0) {
-      const buffer = UserBulkInit.getSendableBuffer(this.ownUser, this.posHandler);
+      const buffer = UserBulkInit.getSendableBuffer(this.ownUser, this.posHandler, historyStartIndex);
       this.sendHandler.sendData(buffer);
     }
   }

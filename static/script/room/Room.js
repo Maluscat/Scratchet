@@ -1,9 +1,10 @@
 import {
+  INTACT_TIMEOUT_PING_COUNT,
   CURRENT_USER_ID,
   canvasContainer,
   roomNameInput,
   usernameInput,
-  userListWrapper
+  userListWrapper,
 } from '~/constants/misc.js';
 import { USER_DEACTIVATION_TIMEOUT } from '~/constants/meta.js';
 import { RoomController } from '~/room/RoomController.js';
@@ -66,9 +67,15 @@ export class Room extends RoomController {
   }
   handleUserReconnect(userID) {
     const user = this.getUser(userID);
-    const timeoutID = this.timedOutUsers.get(user);
-    clearTimeout(timeoutID);
+    clearTimeout(this.timedOutUsers.get(user));
     this.timedOutUsers.delete(user);
+
+    if (this.ownUser.historyHandler.intactCounter <= INTACT_TIMEOUT_PING_COUNT) {
+      const groupIndex = this.ownUser.historyHandler.getLastIntactGroupIndex(INTACT_TIMEOUT_PING_COUNT + 1);
+      if (groupIndex != null) {
+        this.sendBulkInitBuffer(groupIndex);
+      }
+    }
   }
 
   handleReceivedPing() {
