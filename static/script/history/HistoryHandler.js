@@ -27,44 +27,42 @@ export class HistoryHandler {
   /** @param { User } user Reference to the bound user. */
   constructor(user) {
     this.#user = user;
-    this.currentEraser = new EraserGroup();
     this.currentBrush = new BrushGroup();
+    this.currentEraser = new EraserGroup();
   }
 
   // ---- Undo/Redo ----
   undo(count) {
-    this.addGroup();
     for (let i = 0; i < count; i++) {
       if (this.historyIndex > 0) {
         const group = this.history[this.historyIndex - 1];
         group.undo();
+        this.intactCounter += group.intactCount;
         this.historyIndex--;
       }
     }
   }
   redo(count) {
-    this.addGroup();
     for (let i = 0; i < count; i++) {
       if (this.historyIndex < this.history.length) {
         const group = this.history[this.historyIndex];
         group.redo();
+        this.intactCounter -= group.intactCount;
         this.historyIndex++;
       }
     }
   }
 
   // ---- Group handling ----
-  addGroup() {
-    if (this.#addGenericGroup(this.currentBrush)) {
-      this.currentBrush = new BrushGroup();
-    }
-    if (this.#addGenericGroup(this.currentEraser)) {
-      this.currentEraser = new EraserGroup();
-    }
+  addGroup(intactCount) {
+    this.#addGenericGroup(this.currentBrush, intactCount);
+    this.#addGenericGroup(this.currentEraser, intactCount);
+    this.currentBrush = new BrushGroup();
+    this.currentEraser = new EraserGroup();
   }
-  #addGenericGroup(group) {
+  #addGenericGroup(group, intactCount = this.intactCounter) {
     if (group.historyData.length > 0) {
-      group.close(this.intactCounter);
+      group.close(intactCount);
       this.#addToHistory(group);
       return true;
     }
@@ -91,7 +89,6 @@ export class HistoryHandler {
       const discardedGroups = this.history.splice(this.historyIndex, Infinity);
       for (let i = discardedGroups.length - 1; i >= 0; i--) {
         const group = discardedGroups[i];
-        // TODO Common group interface
         group.cleanup(this.#user);
       }
     }

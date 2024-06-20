@@ -152,11 +152,13 @@ export class RoomController {
 
   /** @param { User } user */
   undo(user, count) {
+    user.historyHandler.addGroup();
     user.historyHandler.undo(count);
     this.view.update();
   }
   /** @param { User } user */
   redo(user, count) {
+    user.historyHandler.addGroup();
     user.historyHandler.redo(count);
     this.view.update();
   }
