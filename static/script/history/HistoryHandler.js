@@ -103,6 +103,31 @@ export class HistoryHandler {
     this.intactCounter++;
   }
 
+  /**
+   * Get the last group's index which has at least the specified
+   * total intact offset, starting at the most recent group.
+   *
+   * Returns 0 if the history is too small
+   * as to reflect the specified intact offset.
+   *
+   * Returns false if the history is empty.
+   *
+   * @param { number } intactOffset How many intact counts need to be iterated.
+   * @return { number | false } The relevant history group's index
+   *                            or false if the history is empty.
+   */
+  getLastIntactGroupIndex(intactOffset) {
+    let intactCount = this.intactCounter;
+    for (let i = this.history.length - 1; i >= 0; i--) {
+      const group = this.history[i];
+      intactCount += group.intactCount;
+      if (intactCount >= intactOffset || i === 0) {
+        return this.history.indexOf(group);
+      }
+    }
+    return false
+  }
+
   #addToHistory(group) {
     this.clear();
     this.history.push(group);
