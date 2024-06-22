@@ -351,7 +351,7 @@ export class Controller {
     const roomCode = data[1];
     data = data.subarray(2);
 
-    const targetRoom = this.rooms.get(roomCode);
+    const targetRoom = /** @type Room */ (this.rooms.get(roomCode));
     // TODO Perhaps integrate this check & error into `getUser` directly
     if (!targetRoom.hasUser(userID)) {
       throw new Error(`@ parseSocketData: User #${userID} does not exist`);
@@ -382,39 +382,34 @@ export class Controller {
   // ---- Socket message events ----
   // NOTE: Received data is considered validated
   userDisconnect(userID) {
-    const activeUsername = this.activeRoom.hasUser(userID) && this.activeRoom.getUser(userID).name;
     for (const room of this.getRoomsOfUser(userID)) {
       room.handleUserTimeout(userID);
     }
-    if (activeUsername) {
-      ui.dispatchNotification(`${activeUsername} has disconnected`);
-    }
+    this.dispatchNotifInActiveRoom(userID, user => `${user.name} has disconnected`);
   }
-  // TODO This notifies all rooms of any user.
   userLeave(userID, roomCode) {
     const room = this.rooms.get(roomCode);
-    const username = room.removeUser(userID).name;
+    room.removeUser(userID);
 
-    ui.dispatchNotification(`${username} has left the room`);
+    this.dispatchNotifInActiveRoom(userID, user => `${user.name} has left the room`);
   }
   userConnect(userID, roomCode, username) {
     const room = this.rooms.get(roomCode);
     room.addUser(userID, username);
 
-    ui.dispatchNotification(`${username} has entered the room`);
+    this.dispatchNotifInActiveRoom(userID, user => `${user.name} has entered the room`);
   }
   userTimeout(userID) {
     for (const room of this.getRoomsOfUser(userID)) {
       room.handleUserTimeout(userID);
     }
-    // TODO The user may not be in the active room.
-    ui.dispatchNotification(this.activeRoom.getUser(userID).name + ' has timed out');
+    this.dispatchNotifInActiveRoom(userID, user => `${user.name} has timed out`);
   }
   userReconnect(userID) {
     for (const room of this.getRoomsOfUser(userID)) {
       room.handleUserReconnect(userID);
     }
-    ui.dispatchNotification(this.activeRoom.getUser(userID).name + ' has reconnected');
+    this.dispatchNotifInActiveRoom(userID, user => `${user.name} has reconnected`);
   }
   userClearData(userID, roomCode) {
     const user = this.rooms.get(roomCode).getUser(userID);
@@ -426,14 +421,16 @@ export class Controller {
     const prevUsername = user.name;
     user.setName(newUsername);
 
-    ui.dispatchNotification(`User: ${prevUsername} --> ${newUsername}`);
+    this.dispatchNotifInActiveRoom(userID, _ => `User: ${prevUsername} --> ${newUsername}`);
   }
   userChangeRoomName(roomCode, newRoomName) {
     const room = this.rooms.get(roomCode);
     const prevRoomName = room.roomName;
     room.changeRoomName(newRoomName);
 
-    ui.dispatchNotification(`Room: ${prevRoomName} --> ${newRoomName}`);
+    if (room === this.activeRoom) {
+      ui.dispatchNotification(`Room: ${prevRoomName} --> ${newRoomName}`);
+    }
   }
 
   ownUserGetJoinData(value) {
@@ -516,6 +513,20 @@ export class Controller {
           break;
         }
       }
+    }
+  }
+
+  // ---- Notification helpers ----
+  /**
+   * Dispatches a UI notification only if the specified userID
+   * is in the currently active room.
+   * @param { number } userID
+   * @param { (user: UserBulkInit) => string } messageCallback
+   */
+  dispatchNotifInActiveRoom(userID, messageCallback) {
+    if (this.activeRoom.hasUser(userID)) {
+      const user = this.activeRoom.getUser(userID);
+      ui.dispatchNotification(messageCallback(user));
     }
   }
 
