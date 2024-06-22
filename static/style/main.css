@@ -37,6 +37,9 @@ canvas,
 #canvas-container {
   transition: filter 0.05s ease-in-out;
 }
+body.inactive #canvas-container {
+  cursor: not-allowed;
+}
 body.active-utility-wheel #canvas-container {
   filter: blur(14px);
 }
@@ -168,6 +171,9 @@ canvas.remove {
     filter: blur(12px);
     visibility: visible;
   }
+}
+body.inactive canvas {
+  pointer-events: none;
 }
 button,
 input {

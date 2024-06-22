@@ -46,11 +46,15 @@ export class Controller {
     this.toolButtonClick = this.toolButtonClick.bind(this);
 
     this.socketOpen = this.socketOpen.bind(this);
+    this.socketTimeout = this.socketTimeout.bind(this);
+    this.socketReconnect = this.socketReconnect.bind(this);
     this.socketReceiveMessage = this.socketReceiveMessage.bind(this);
 
     this.sock = sock;
     this.sock.addEventListener('open', this.socketOpen);
     this.sock.addEventListener('message', this.socketReceiveMessage);
+    this.sock.addEventListener('_timeout', this.socketTimeout);
+    this.sock.addEventListener('_reconnect', this.socketReconnect);
 
     const persistentUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
     if (persistentUsername) {
@@ -88,6 +92,11 @@ export class Controller {
   }
 
   activate() {
+    if (this.activeRoom) {
+      this.activeRoom.setRoomNameInput();
+      this.activeRoom.updateUserIndicator();
+    }
+
     ui.activateUI();
 
     window.addEventListener('pointerup', this.pointerUp);
@@ -102,7 +111,6 @@ export class Controller {
 
     ui.deactivateUI();
 
-    this.activeRoom = null;
     roomNameInput.textContent = '';
     ui.setUserIndicator(0);
   }
@@ -301,6 +309,7 @@ export class Controller {
       firstRoom = this.rooms.values().next().value;
       firstRoom.displayCanvas();
     } else {
+      this.activeRoom = null;
       this.deactivate();
     }
 
@@ -449,6 +458,13 @@ export class Controller {
 
 
   // ---- Socket events ----
+  socketReconnect() {
+    this.activate();
+  }
+  socketTimeout() {
+    this.deactivate();
+  }
+
   socketOpen() {
     console.info('connected!');
 

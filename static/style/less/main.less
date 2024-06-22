@@ -37,6 +37,9 @@ canvas, #canvas-container {
 
 #canvas-container {
   transition: filter .05s ease-in-out;
+  body.inactive & {
+    cursor: not-allowed;
+  }
   body.active-utility-wheel & {
     filter: @utilWheel-background-blur;
   }
@@ -81,6 +84,10 @@ canvas {
       animation: canvasRemove @canvas-anim-duration-remove ease !important;
     }
     .canvasKeyframes.remove();
+  }
+
+  body.inactive & {
+    pointer-events: none;
   }
 }
 
