@@ -8,8 +8,9 @@ export class User {
 
   /** @type { string } */
   name;
-  /** @type { number } */
-  inactivePingCount;
+
+  inactivePingCount = 0;
+  active = true;
 
   listNode;
   #indicatorTimeout;
@@ -26,6 +27,7 @@ export class User {
     this.posHandler = posHandler;
     this.listNode = this.createUserListNode(username, isOwnUser);
     this.historyHandler = new HistoryHandler(this);
+    this.activate();
   }
 
 
@@ -44,6 +46,14 @@ export class User {
       this.listNode.style.removeProperty('color');
       this.#indicatorTimeout = null;
     }, Meta.SEND_INTERVAL * 1.5);
+  }
+
+  deactivate() {
+    this.active = false;
+  }
+  activate() {
+    this.active = true;
+    this.inactivePingCount = 0;
   }
 
 

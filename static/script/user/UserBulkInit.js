@@ -1,5 +1,5 @@
 import * as Meta from '~/constants/meta.js';
-import { BULK_INIT_SEPARATOR_LEN, INTACT_TIMEOUT_PING_COUNT } from '~/constants/misc.js';
+import { BULK_INIT_SEPARATOR_LEN, MAX_PERCEIVED_TIMEOUT_PINGS } from '~/constants/misc.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 import { BrushGroup } from '~/history/BrushGroup.js';
 import { EraserGroup } from '~/history/EraserGroup.js';
@@ -153,10 +153,13 @@ export class UserBulkInit extends User {
    * Cut everything off the history from the first index
    * at which a history's group is equal to the given group,
    * searching from most to least recent.
+   *
+   * Only so much groups are searched that reflect the maximum time it could
+   * have taken for a timeout to be perceived ({@link MAX_PERCEIVED_TIMEOUT_PINGS}).
    * @param { EraserGroup | BrushGroup } group
    */
   #dropInitialOverlappingHistory(group) {
-    const lowestIndex = this.historyHandler.getLastIntactGroupIndex(INTACT_TIMEOUT_PING_COUNT);
+    const lowestIndex = this.historyHandler.getLastIntactGroupIndex(MAX_PERCEIVED_TIMEOUT_PINGS + 1);
     if (lowestIndex !== false) {
       let equalIndex;
       for (let i = this.historyHandler.history.length - 1; i >= lowestIndex; i--) {
@@ -174,7 +177,6 @@ export class UserBulkInit extends User {
   }
 
   // ---- Bulk init data builder ----
-  // TODO Save how long the user has been inactive – send as much history, plus the INTACT_COUNT.
   /**
    * Get a bulk init buffer of the given history range for the specified user.
    * @param { UserBulkInit } user

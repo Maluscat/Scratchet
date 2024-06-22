@@ -1,5 +1,5 @@
 import {
-  INTACT_TIMEOUT_PING_COUNT,
+  MAX_PERCEIVED_TIMEOUT_PINGS,
   CURRENT_USER_ID,
   canvasContainer,
   roomNameInput,
@@ -27,8 +27,8 @@ export class Room extends RoomController {
   /** @type string */
   roomName;
 
-  /** @type { WeakMap<UserBulkInit, number> } */
-  timedOutUsers = new WeakMap();
+  // /** @type { WeakMap<UserBulkInit, number> } */
+  // timedOutUsers = new Map();
   /** @type { Map<number, UserBulkInit> } */
   users = new Map();
   userListNode;
@@ -60,19 +60,18 @@ export class Room extends RoomController {
 
   handleUserTimeout(userID) {
     const user = this.getUser(userID);
-    const timeoutID = window.setTimeout(() => {
-      this.removeUser(userID);
-    }, USER_DEACTIVATION_TIMEOUT);
-    this.timedOutUsers.set(user, timeoutID);
+    user.deactivate();
   }
   handleUserReconnect(userID) {
     const user = this.getUser(userID);
-    clearTimeout(this.timedOutUsers.get(user));
-    this.timedOutUsers.delete(user);
+    const inactiveCount = MAX_PERCEIVED_TIMEOUT_PINGS + user.inactivePingCount;
+    user.activate();
 
-    if (this.ownUser.historyHandler.intactCounter <= INTACT_TIMEOUT_PING_COUNT) {
-      const groupIndex = this.ownUser.historyHandler.getLastIntactGroupIndex(INTACT_TIMEOUT_PING_COUNT + 1);
-      if (groupIndex != null) {
+    // If the (running) intact counter exceeds the timed out time,
+    // no group has been added in the time.
+    if (this.ownUser.historyHandler.intactCounter <= inactiveCount) {
+      const groupIndex = this.ownUser.historyHandler.getLastIntactGroupIndex(inactiveCount);
+      if (groupIndex != false) {
         this.sendBulkInitBuffer(groupIndex);
       }
     }
@@ -80,8 +79,10 @@ export class Room extends RoomController {
 
   handleReceivedPing() {
     for (const user of this.users.values()) {
-      if (!this.timedOutUsers.has(user)) {
+      if (user.active) {
         user.historyHandler.markIntact();
+      } else {
+        user.inactivePingCount++;
       }
     }
   }

@@ -15,7 +15,7 @@ export const copyRoomLinkContent = /**@type HTMLDivElement*/ (document.getElemen
 
 // ---- Misc export constants ----
 /** How many ping windows are required at max for a timeout to be perceived. */
-export const INTACT_TIMEOUT_PING_COUNT = 3;
+export const MAX_PERCEIVED_TIMEOUT_PINGS = 3;
 
 export const OVERLAY_INPUT_INVALID_DURATION = 365;
 export const HIT_BORDER_DURATION = 200;

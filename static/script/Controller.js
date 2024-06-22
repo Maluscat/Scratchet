@@ -304,7 +304,7 @@ export class Controller {
       this.deactivate();
     }
 
-    this.sock.removeEventListener('_sentPing', room.handleReceivedPing);
+    this.sock.removeEventListener('_receivedPing', room.handleReceivedPing);
 
     ui.blockCanvasInOutAnimation();
     await room.removeSelf();
