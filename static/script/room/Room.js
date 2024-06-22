@@ -60,7 +60,7 @@ export class Room extends RoomController {
 
   handleUserTimeout(userID) {
     const user = this.getUser(userID);
-    const timeoutID = setTimeout(() => {
+    const timeoutID = window.setTimeout(() => {
       this.removeUser(userID);
     }, USER_DEACTIVATION_TIMEOUT);
     this.timedOutUsers.set(user, timeoutID);

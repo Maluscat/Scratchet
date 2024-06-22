@@ -1,20 +1,22 @@
 // ---- Elements ----
-export const canvasContainer = document.getElementById('canvas-container');
+export const canvasContainer = /**@type HTMLCanvasElement*/ (document.getElementById('canvas-container'));
 
-export const usernameInput = document.getElementById('username-input');
-export const userListButton = document.getElementById('user-list-button');
-export const userListWrapper = document.getElementById('user-list-wrapper');
+export const usernameInput = /**@type HTMLInputElement*/ (document.getElementById('username-input'));
+export const userListButton = /**@type HTMLButtonElement*/ (document.getElementById('user-list-button'));
+export const userListWrapper = /**@type HTMLDivElement*/ (document.getElementById('user-list-wrapper'));
 
-export const roomNameInput = document.getElementById('roomcode-input');
-export const roomListButton = document.getElementById('room-list-button');
-export const roomList = document.getElementById('room-list');
+export const roomNameInput = /**@type HTMLInputElement*/ (document.getElementById('roomcode-input'));
+export const roomListButton = /**@type HTMLButtonElement*/ (document.getElementById('room-list-button'));
+export const roomList = /**@type HTMLUListElement*/ (document.getElementById('room-list'));
 
-export const joinRoomOverlayInput =
-  /** @type HTMLInputElement */ (document.getElementById('join-room-overlay-input'));
-export const copyRoomLinkOverlay = document.getElementById('copy-room-link-overlay');
-export const copyRoomLinkContent = document.getElementById('copy-room-link-content');
+export const joinRoomOverlayInput = /**@type HTMLInputElement*/ (document.getElementById('join-room-overlay-input'));
+export const copyRoomLinkOverlay = /**@type HTMLDivElement*/ (document.getElementById('copy-room-link-overlay'));
+export const copyRoomLinkContent = /**@type HTMLDivElement*/ (document.getElementById('copy-room-link-content'));
 
 // ---- Misc export constants ----
+/** How many ping windows are required at max for a timeout to be perceived. */
+export const INTACT_TIMEOUT_PING_COUNT = 3;
+
 export const OVERLAY_INPUT_INVALID_DURATION = 365;
 export const HIT_BORDER_DURATION = 200;
 

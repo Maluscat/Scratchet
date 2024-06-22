@@ -8,9 +8,11 @@ export class User {
 
   /** @type { string } */
   name;
+  /** @type { number } */
+  inactivePingCount;
 
   listNode;
-  activeTimeout;
+  #indicatorTimeout;
 
   historyHandler;
   posHandler;
@@ -35,12 +37,12 @@ export class User {
   setColorIndicator(hue) {
     this.listNode.style.color = Meta.makeHSLString(hue);
 
-    if (this.activeTimeout != null) {
-      clearTimeout(this.activeTimeout);
+    if (this.#indicatorTimeout != null) {
+      clearTimeout(this.#indicatorTimeout);
     }
-    this.activeTimeout = setTimeout(() => {
+    this.#indicatorTimeout = setTimeout(() => {
       this.listNode.style.removeProperty('color');
-      this.activeTimeout = null;
+      this.#indicatorTimeout = null;
     }, Meta.SEND_INTERVAL * 1.5);
   }
 
