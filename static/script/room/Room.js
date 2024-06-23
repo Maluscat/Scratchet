@@ -27,10 +27,11 @@ export class Room extends RoomController {
   /** @type string */
   roomName;
 
-  // /** @type { WeakMap<UserBulkInit, number> } */
-  // timedOutUsers = new Map();
   /** @type { Map<number, UserBulkInit> } */
   users = new Map();
+  /** @type { Map<number, UserBulkInit> } */
+  #disconnectedUsers = new Map();
+
   userListNode;
 
   constructor(roomCode, roomName, globalUsername, peers) {
@@ -142,10 +143,30 @@ export class Room extends RoomController {
     const user = new UserBulkInit(username, this.posHandler);
     this.#addUserObject(userID, user);
   }
+  /**
+   * Remove a user from the room. This happens in two stages:
+   * 1. Disconnect a user: Remove all traces but do not destroy it
+   *    yet (see {@link disconnectUser}).
+   * 2. When a user is already disconnected, destroy it via {@link destroyUser}.
+   * @param { number } userID
+   */
   removeUser(userID) {
-    if (!this.hasUser(userID)) {
-      throw new Error(`@ removeUser: User #${userID} does not exist`);
+    if (!this.hasUser(userID) && !this.#disconnectedUsers.has(userID)) {
+      throw new Error(`@ removeUser: User #${userID} does not exist.`);
     }
+    if (this.hasUser(userID)) {
+      this.#disconnectUser(userID);
+    } else {
+      this.#destroyUser(userID);
+    }
+  }
+  /**
+   * Disconnect a user, removing all visible traces but not
+   * destroying them completely so that they can reconnect.
+   * Instead, they are moved into {@link #disconnectedUsers}.
+   * @param { number } userID Is assumed to exist.
+   */
+  #disconnectUser(userID) {
     const user = this.getUser(userID);
     this.users.delete(userID);
 
@@ -153,8 +174,13 @@ export class Room extends RoomController {
 
     this.userListNode.removeChild(user.listNode);
     this.updateUserIndicator();
-
-    return user;
+  }
+  /**
+   * Destroy a user, removing every trace of them.
+   * @param { number } userID Is assumed to exist.
+   */
+  #destroyUser(userID) {
+    this.#disconnectedUsers.delete(userID);
   }
 
   /**

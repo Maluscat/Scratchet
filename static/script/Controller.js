@@ -391,16 +391,17 @@ export class Controller {
   // ---- Socket message events ----
   // NOTE: Received data is considered validated
   userDisconnect(userID) {
-    for (const room of this.getRoomsOfUser(userID)) {
-      room.handleUserTimeout(userID);
-    }
     this.dispatchNotifInActiveRoom(userID, user => `${user.name} has disconnected`);
+
+    for (const room of this.getRoomsOfUser(userID)) {
+      room.removeUser(userID);
+    }
   }
   userLeave(userID, roomCode) {
+    this.dispatchNotifInActiveRoom(userID, user => `${user.name} has left the room`);
+
     const room = this.rooms.get(roomCode);
     room.removeUser(userID);
-
-    this.dispatchNotifInActiveRoom(userID, user => `${user.name} has left the room`);
   }
   userConnect(userID, roomCode, username) {
     const room = this.rooms.get(roomCode);
