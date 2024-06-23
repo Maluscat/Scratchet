@@ -1,15 +1,10 @@
 // ---- Constants ----
 /**
- * Amount of time after which a disconnected/timed out user
- * will be viewed as disconnected for good.
+ * Amount of time a disconnected/timed out user
+ * can still reconnect and restore its points.
  */
-export const USER_DEACTIVATION_TIMEOUT = 1000 * 120;
+export const USER_DEACTIVATION_TIMEOUT = 1000 * 60 * 5;
 
-/**
- * Time window in which a BULK_INIT may be sent from peers
- * after a user has joined.
- */
-export const MAX_INIT_TRANSMISSION_TIME = 30 * 1000;
 /** Interval in milliseconds how often the payload is sent to the server. */
 export const SEND_INTERVAL = 40;
 /** The first byte of a (pending) server payload that demoninates its mode. */
