@@ -10,7 +10,7 @@ export class User {
   name;
 
   inactivePingCount = 0;
-  active = true;
+  isActive = true;
 
   listNode;
   #indicatorTimeout;
@@ -49,11 +49,15 @@ export class User {
   }
 
   deactivate() {
-    this.active = false;
+    this.isActive = false;
+    this.listNode.classList.add('inactive');
+    this.listNode.title = 'Inactive';
   }
   activate() {
-    this.active = true;
+    this.isActive = true;
     this.inactivePingCount = 0;
+    this.listNode.classList.remove('inactive');
+    this.listNode.removeAttribute('title');
   }
 
 

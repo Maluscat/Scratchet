@@ -79,7 +79,7 @@ export class Room extends RoomController {
 
   handleReceivedPing() {
     for (const user of this.users.values()) {
-      if (user.active) {
+      if (user.isActive) {
         user.historyHandler.markIntact();
       } else {
         user.inactivePingCount++;
@@ -104,17 +104,17 @@ export class Room extends RoomController {
     switch (this.activeTool.constructor) {
       case Brush: {
         if (e.shiftKey) {
-          /** @type { Brush } */ (this.activeTool).hue += direction * 24;
+          /** @type Brush */ (this.activeTool).hue += direction * 24;
         } else if (!e.ctrlKey) {
-          /** @type { Brush } */ (this.activeTool).width += direction * 7;
+          /** @type Brush */ (this.activeTool).width += direction * 7;
         }
         break;
       }
       case Eraser: {
         if (e.shiftKey) {
-          /** @type { Eraser } */ (this.activeTool).width += direction * 21;
+          /** @type Eraser */ (this.activeTool).width += direction * 21;
         } else if (!e.ctrlKey) {
-          /** @type { Eraser } */ (this.activeTool).width += direction * 7;
+          /** @type Eraser */ (this.activeTool).width += direction * 7;
         }
         break;
       }

@@ -544,6 +544,9 @@ body.active-utility-wheel #draw-indicator {
 #user-list-wrapper .item.current::after {
   content: '(You)';
 }
+#user-list-wrapper .item.inactive {
+  opacity: 0.5;
+}
 #room-list .item.current::after {
   content: '(Current)';
 }
