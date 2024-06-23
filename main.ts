@@ -91,7 +91,7 @@ export const controller = new Controller();
 router
   .get('/socket', (ctx: Context) => {
     const socket = new ServerSocketBase(ctx.upgrade(), {
-      pingInterval: 6000,
+      pingInterval: 3500,
     });
     controller.registerSocket(socket, ctx.request);
   });
