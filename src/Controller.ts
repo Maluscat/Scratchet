@@ -31,18 +31,32 @@ export class Controller {
     });
   }
 
+  // After two disconnects, the user is disconnected for good.
+  // Before that, it is held in memory for the event of a reconnect.
   socketClose(sock: ServerSocketBase) {
-    this.users.get(sock)?.deactivate(this.destroyUser);
+    const user = this.users.get(sock)!;
+    user.broadcastJSONToAllPeers('disconnect');
+    user.deactivate(() => {
+      this.destroyUser(user);
+      user.broadcastJSONToAllPeers('disconnect');
+    });
   }
 
-  handleTimeout(socketUser: SocketUser) {
-    socketUser.broadcastJSONToAllPeers('timeout');
-    socketUser.deactivate();
+  handleTimeout(user: SocketUser) {
+    if (user.isActive) {
+      user.broadcastJSONToAllPeers('timeout');
+      user.deactivate(() => {
+        user.sock.socket.close();
+      });
+    }
   }
-  handleReconnect(socketUser: SocketUser) {
-    if (!socketUser.isActive) {
-      socketUser.activate();
-      socketUser.broadcastJSONToAllPeers('reconnect');
+  handleReconnect(user: SocketUser) {
+    if (!user.isActive) {
+      user.activate();
+      for (const room of user.getRooms()) {
+        room.addUserToBulkInitQueue(user);
+      }
+      user.broadcastJSONToAllPeers('reconnect');
     }
   }
 
@@ -187,7 +201,7 @@ export class Controller {
 
   destroyUser(user: SocketUser) {
     if (!this.users.has(user.sock)) {
-      throw new ScratchetError("Tried to destroy a user that doesn't exist.");
+      throw new ScratchetError(`Tried to destroy a user that doesn't exist:\n${user}`);
     }
 
     this.usersByID.delete(user.id);
@@ -196,7 +210,6 @@ export class Controller {
     // This could for example fail if the Socket was closed before sending the initial message
     for (const socketRoom of user.getRooms()) {
       socketRoom.removeUser(user);
-      socketRoom.sendJSONToUsers(user, 'disconnect');
     }
   }
 
@@ -226,6 +239,7 @@ export class Controller {
 
   changeUserSocket(socketUser: SocketUser, newSocket: ServerSocketBase) {
     socketUser.sock.removeAllEvents();
+    socketUser.sock.stopPingImmediately();
     socketUser.sock = newSocket;
     this.users.set(newSocket, socketUser);
   }
