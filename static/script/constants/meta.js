@@ -1,9 +1,14 @@
 // ---- Constants ----
 /**
- * Amount of time a disconnected/timed out user
- * can still reconnect and restore its points.
+ * Amount of milliseconds a disconnected user can still
+ * reconnect and restore its points in.
  */
 export const USER_DEACTIVATION_TIMEOUT = 1000 * 60 * 5;
+/**
+ * Amount of milliseconds after which a timed out user will be viewed
+ * as disconnected. {@link USER_DEACTIVATION_TIMEOUT} still applies.
+ */
+export const TIMED_OUT_USER_DISCONNECT_TIMEOUT = 1000 * 60;
 
 /** Interval in milliseconds how often the payload is sent to the server. */
 export const SEND_INTERVAL = 40;

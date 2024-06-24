@@ -3,9 +3,7 @@ import type { Request } from 'oak';
 
 import { SocketRateHandler } from 'SocketRateHandler';
 import { ServerSocketBase } from 'ServerSocketBase';
-import { ScratchetError } from 'ScratchetError';
 import { validateUsername } from 'Validator';
-import { USER_DEACTIVATION_TIMEOUT } from 'Meta';
 
 export type SocketID = number;
 export type RoomCode = number;
@@ -36,9 +34,9 @@ export class SocketUser {
   }
   
   // ---- Activation ----
-  deactivate(timeoutCallback: () => void) {
+  deactivate(timeoutCallback: () => void, duration: number) {
     this.isActive = false;
-    this.#deactivationTimeoutID = setTimeout(timeoutCallback, USER_DEACTIVATION_TIMEOUT);
+    this.#deactivationTimeoutID = setTimeout(timeoutCallback, duration);
   }
   activate() {
     if (this.#deactivationTimeoutID != null) {

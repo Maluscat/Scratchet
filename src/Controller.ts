@@ -39,7 +39,7 @@ export class Controller {
     user.deactivate(() => {
       this.destroyUser(user);
       user.broadcastJSONToAllPeers('disconnect');
-    });
+    }, Meta.USER_DEACTIVATION_TIMEOUT);
   }
 
   handleTimeout(user: SocketUser) {
@@ -47,11 +47,12 @@ export class Controller {
       user.broadcastJSONToAllPeers('timeout');
       user.deactivate(() => {
         user.sock.socket.close();
-      });
+      }, Meta.TIMED_OUT_USER_DISCONNECT_TIMEOUT);
     }
   }
   handleReconnect(user: SocketUser) {
-    if (!user.isActive) {
+    // TODO Handle a proper reconnect
+    if (!user.isActive && user.sock.socket.readyState !== 1) {
       user.activate();
       for (const room of user.getRooms()) {
         room.addUserToBulkInitQueue(user);
