@@ -40,11 +40,10 @@ export class SocketUser {
     this.#deactivationTimeoutID = setTimeout(timeoutCallback, USER_DEACTIVATION_TIMEOUT);
   }
   activate() {
-    if (this.#deactivationTimeoutID == null) {
-      throw new ScratchetError(`Tried to reactivate a user that was not inactive:\n${this}`);
+    if (this.#deactivationTimeoutID != null) {
+      clearTimeout(this.#deactivationTimeoutID);
+      this.#deactivationTimeoutID = null;
     }
-    clearTimeout(this.#deactivationTimeoutID);
-    this.#deactivationTimeoutID = null;
     this.isActive = true;
   }
 
