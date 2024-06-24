@@ -22,6 +22,7 @@ export class SocketUser {
   rate: SocketRateHandler; 
   isActive = false;
 
+  #hasSentInitialData = false;
   #deactivationTimeoutID: null | number = null;
   #rooms: Map<SocketRoom, Username>;
 
@@ -129,7 +130,7 @@ export class SocketUser {
   sendInitialJoinData(socketRoom: SocketRoom) {
     // NOTE: `defaultName` is sent on every new join request redundantly
     // for simplicity purposes
-    const data = JSON.stringify({
+    const data = {
       evt: 'joinData',
       val: {
         userID: this.id,
@@ -139,8 +140,12 @@ export class SocketUser {
         defaultName: this.#defaultName,
         peers: this.getTransmittablePeerArray(socketRoom)
       }
-    });
-    this.send(data);
+    };
+    if (!this.#hasSentInitialData) {
+      data.val.initial = true;
+      this.#hasSentInitialData = true;
+    }
+    this.send(JSON.stringify(data));
   }
 
   // ---- ArrayBuffer handling ----

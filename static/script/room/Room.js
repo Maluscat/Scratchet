@@ -249,20 +249,22 @@ export class Room extends RoomController {
   }
 
   async removeSelf() {
-    await this.removeCanvas();
+    ui.blockCanvasInOutAnimation();
+    await this.waitForRemoveAnimation();
+    this.removeSelfWithoutAnimation();
+  }
+  removeSelfWithoutAnimation() {
+    this.view.canvas.remove();
     this.unfocus();
     this.roomListNode.remove();
     this.userListNode.remove();
   }
 
   // ---- Room UI helpers ----
-  removeCanvas() {
+  waitForRemoveAnimation() {
     return new Promise(resolve => {
       this.view.canvas.classList.add('remove');
-      setTimeout(() => {
-        this.view.canvas.remove();
-        resolve();
-      }, ui.getCanvasAnimDurationRemove());
+      setTimeout(resolve, ui.getCanvasAnimDurationRemove());
     });
   }
 

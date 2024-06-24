@@ -299,11 +299,11 @@ export class Controller {
       this.switchActiveRoom(newRoom);
     }
   }
-  /** @param {Room} room */
+  /** @param { Room } room */
   async removeRoom(room) {
-    this.rooms.delete(room.roomCode);
+    this.#deleteRoom(room);
 
-    /** @type {Room} */
+    /** @type Room */
     let firstRoom;
     if (this.rooms.size > 0) {
       firstRoom = this.rooms.values().next().value;
@@ -313,15 +313,28 @@ export class Controller {
       this.deactivate();
     }
 
-    this.sock.removeEventListener('_receivedPing', room.handleReceivedPing);
-
-    ui.blockCanvasInOutAnimation();
     await room.removeSelf();
 
     if (firstRoom) {
       this.switchActiveRoom(firstRoom);
     }
     this.updateRoomIndicator();
+  }
+  /**
+   * Remove all rooms without any animations and without cleanup.
+   * The active room is not cleared and the controller is not deactivated.
+   */
+  removeAllRoomsImmediatelyDirty() {
+    for (const room of this.rooms.values()) {
+      this.#deleteRoom(room);
+      room.removeSelfWithoutAnimation();
+    }
+    this.updateRoomIndicator();
+  }
+  /** @param { Room } room */
+  #deleteRoom(room) {
+    this.rooms.delete(room.roomCode);
+    this.sock.removeEventListener('_receivedPing', room.handleReceivedPing);
   }
 
   /** @param { number } userID */
@@ -445,6 +458,10 @@ export class Controller {
 
   ownUserGetJoinData(value) {
     const isDeactivated = !this.activeRoom;
+
+    if (!isDeactivated && value.initial) {
+      this.removeAllRoomsImmediatelyDirty();
+    }
 
     // For async reasons, the real user ID is only used for the username and syncing
     this.userID = value.userID;
