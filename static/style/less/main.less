@@ -97,6 +97,7 @@ button, input {
   font-size: 1em;
   color: inherit;
   padding: 0;
+  margin: 0;
   border: none;
 }
 button {
@@ -161,6 +162,7 @@ input:invalid {
     align-self: center;
   }
 
+  .label,
   .button,
   .hover-overlay,
   .overlay-input:focus,
@@ -173,6 +175,7 @@ input:invalid {
     padding: @overlay-padding;
     transition: transform .075s ease;
   }
+  .label,
   .button,
   .overlay-input,
   .sl89-thumb,
@@ -505,10 +508,23 @@ body > .utility-wheel {
 
 #tool-config-bar {
   min-height: @config-bar-height;
-  .sl89-track {
+  .sl89-track, .label {
     height: @config-bar-height;
     box-sizing: border-box;
+  }
+  .sl89-track {
     width: 12em;
+  }
+  .label {
+    display: flex;
+    align-items: center;
+    font-size: .975rem;
+    padding: @overlay-padding (@overlay-padding * 3.5);
+    gap: (@overlay-gap * .75);
+    input {
+      // appearance: none;
+      margin: 0;
+    }
   }
 }
 
