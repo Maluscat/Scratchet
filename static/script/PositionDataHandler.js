@@ -126,6 +126,19 @@ export class PositionDataHandler {
       - (width1 / 2);
     return distance <= 0;
   }
+  /**
+   * Test whether the whole supplied PosData overlaps with the
+   * supplied point with the specified radius.
+   * @returns { boolean }
+   */
+  static posDataOverlaps(posData, posX, posY, width = 1) {
+    for (let i = Meta.LEN.BRUSH; i < posData.length; i += 2) {
+      if (PositionDataHandler.positionsOverlap(posData[i], posData[i + 1], posX, posY, width, posData[1])) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * Test whether the two supplied PosDatas are exactly equal.
