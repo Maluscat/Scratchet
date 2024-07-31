@@ -1,26 +1,42 @@
 export class ScratchetTool {
+  /** @type { ScratchetTool | null } */
+  static activeTool = null;
+
   static toolbar = document.getElementById('toolbar');
   static configBarWrapper = document.getElementById('tool-config-bar');
+  static indicatorContainer = document.getElementById('indicator-container');
 
   buttonNode;
   configBarContent = [];
+  indicator;
+  name;
 
   constructor(toolName) {
     if (!toolName) {
-      throw new Error('No tool name has been passed!');
+      throw new Error("Tool name has not been passed!");
     }
-
-    this.buttonNode = document.querySelector(`[data-tool="${toolName}"]`);
+    this.name = toolName;
+    this.indicator = /**@type HTMLDivElement*/ (document.getElementById('indicator-' + toolName));
+    this.buttonNode = /**@type HTMLButtonElement*/ (document.querySelector(`[data-tool="${toolName}"]`));
   }
 
 
   // ---- Activation handling ----
   activate() {
+    ScratchetTool.activeTool = this;
     ScratchetTool.toolbar.querySelector('.active').classList.remove('active');
     this.buttonNode.classList.add('active');
+    this.#activateIndicator();
     this.#populateConfigBar();
   }
 
+  #activateIndicator() {
+    const activeIndicator = ScratchetTool.indicatorContainer.querySelector('.active');
+    if (activeIndicator && activeIndicator !== this.indicator) {
+      activeIndicator.classList.remove('active');
+    }
+    this.indicator.classList.add('active');
+  }
 
   // ---- config bar ----
   #populateConfigBar() {

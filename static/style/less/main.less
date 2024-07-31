@@ -336,25 +336,66 @@ body > .utility-wheel {
   }
 }
 
-#draw-indicator {
-  @draw-indicator-border-size: 2px;
-  transform:
-    translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2))
-    scale(calc(var(--scale) * 100%));
-  width: var(--strokeWidth);
-  height: var(--strokeWidth);
-  position: absolute;
-  left: 0;
-  top: 0;
-  border-radius: 1000px;
-  outline: calc(@draw-indicator-border-size / var(--scale)) solid @draw-indicator-color;
+#indicator-container {
   pointer-events: none;
-  &.erase {
-    background-color: @draw-indicator-color;
+  > * {
+    transform:
+      translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2))
+      scale(calc(var(--scale) * 100%));
+    width: var(--strokeWidth);
+    height: var(--strokeWidth);
+    position: absolute;
+    left: 0;
+    top: 0;
+    &:not(.active) {
+      display: none;
+    }
   }
+
   body.inactive &,
   body.active-utility-wheel & {
     display: none;
+  }
+}
+
+#indicator-brush, #indicator-eraser {
+  @draw-indicator-border-size: 2px;
+  border-radius: 1000px;
+  outline: calc(@draw-indicator-border-size / var(--scale)) solid @draw-indicator-color;
+}
+#indicator-eraser {
+  &.erasing {
+    background-color: @draw-indicator-color;
+  }
+}
+#indicator-picker {
+  @picker-indicator-dims: 2px;
+  .crosshair {
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      box-sizing: border-box;
+      background-color: @draw-indicator-color;
+    }
+    &::before {
+      height: 100%;
+      width: @picker-indicator-dims;
+      left: calc(50% - (@picker-indicator-dims / 2));
+    }
+    &::after {
+      width: 100%;
+      height: @picker-indicator-dims;
+      top: calc(50% - (@picker-indicator-dims / 2));
+    }
+  }
+  .color-indicator {
+    width: 4em;
+    height: 4em;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-radius: 1000px;
+    outline: 1px solid @draw-indicator-color;
   }
 }
 

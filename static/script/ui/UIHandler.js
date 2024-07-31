@@ -34,7 +34,6 @@ const promptNode = (function() {
 
 const infoOverlay = document.getElementById('info-overlay');
 const notificationWrapper = document.getElementById('notification-overlay');
-const drawIndicator = document.getElementById('draw-indicator');
 const hitBorder = document.getElementById('hit-border');
 
 const nonPersistentButtons = Array.from(document.querySelectorAll('button:not(.persistent)'));

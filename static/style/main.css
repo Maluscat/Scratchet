@@ -402,18 +402,31 @@ body > .utility-wheel .uw-section-content .wrapper > svg {
 body > .utility-wheel .uw-section-content.uw-bottom .wrapper > svg {
   order: -1;
 }
-#draw-indicator {
+#indicator-container {
+  pointer-events: none;
+}
+#indicator-container > * {
   transform: translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2)) scale(calc(var(--scale) * 100%));
   width: var(--strokeWidth);
   height: var(--strokeWidth);
   position: absolute;
   left: 0;
   top: 0;
+}
+#indicator-container > *:not(.active) {
+  display: none;
+}
+body.inactive #indicator-container,
+body.active-utility-wheel #indicator-container {
+  display: none;
+}
+#indicator-brush,
+#indicator-eraser {
   border-radius: 1000px;
   outline: calc(2px / var(--scale)) solid hsl(0, 0%, 90%);
   pointer-events: none;
 }
-#draw-indicator.erase {
+#indicator-eraser.erasing {
   background-color: hsl(0, 0%, 90%);
 }
 body.inactive #draw-indicator,
