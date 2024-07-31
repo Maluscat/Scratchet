@@ -28,4 +28,11 @@ export class Eraser extends ScratchetTool {
     this.#sliders.width.value = this.#sliders.width.value;
     ScratchetTool.setCSSStrokeWidth(this.#sliders.width);
   }
+
+  activateErasing() {
+    this.indicator.classList.add('erasing');
+  }
+  clearErasing() {
+    this.indicator.classList.remove('erasing');
+  }
 }

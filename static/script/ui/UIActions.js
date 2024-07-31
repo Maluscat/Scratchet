@@ -99,7 +99,7 @@ export class UIActions {
     document.body.classList.remove('active-utility-wheel');
   }
   utilWheelUp(e) {
-    ui.moveDrawIndicator(e.x, e.y);
+    ui.moveIndicator(e.x, e.y);
   }
 
   /**

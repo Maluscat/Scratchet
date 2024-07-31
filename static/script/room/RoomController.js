@@ -79,7 +79,7 @@ export class RoomController {
           break;
         }
         case Eraser: {
-          ui.toggleDrawIndicatorEraseMode();
+          this.tools.eraser.activateErasing();
           break;
         }
       }
@@ -94,7 +94,7 @@ export class RoomController {
     if (controls3D.touchIsActive) return;
 
     this.view.setCurrentMousePos(e.clientX, e.clientY);
-    ui.moveDrawIndicator(e.clientX, e.clientY);
+    ui.moveIndicator(e.clientX, e.clientY);
 
     if (this.isDrawing) {
       const [posX, posY] = this.view.getPosWithTransform(e.clientX, e.clientY);
@@ -127,7 +127,7 @@ export class RoomController {
       this.view.update();
       this.isDrawing = false;
       this.hasErased = false;
-      ui.toggleDrawIndicatorEraseMode(true);
+      this.tools.eraser.clearErasing();
     }
   }
 

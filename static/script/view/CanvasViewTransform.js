@@ -54,7 +54,7 @@ export class CanvasViewTransform extends CanvasView {
     this.#limitStateTran();
 
     this.ctx.setTransform(this.getScaleX(), 0, 0, this.getScaleY(), this.state.tran.x, this.state.tran.y);
-    ui.resizeDrawIndicator(this.getScaleX());
+    ui.resizeIndicator(this.getScaleX());
 
     this.#scaleByDevicePixelRatio();
 

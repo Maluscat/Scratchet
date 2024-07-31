@@ -247,18 +247,11 @@ export class UIHandler {
   }
 
   // ---- Draw indicator ----
-  toggleDrawIndicatorEraseMode(reset) {
-    if (reset) {
-      drawIndicator.classList.remove('erase');
-    } else {
-      drawIndicator.classList.add('erase');
-    }
-  }
-  moveDrawIndicator(posX, posY) {
+  moveIndicator(posX, posY) {
     document.documentElement.style.setProperty('--mouseX', posX + 'px');
     document.documentElement.style.setProperty('--mouseY', posY + 'px');
   }
-  resizeDrawIndicator(scale) {
+  resizeIndicator(scale) {
     document.documentElement.style.setProperty('--scale', scale);
   }
 
