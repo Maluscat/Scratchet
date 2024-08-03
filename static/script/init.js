@@ -1,6 +1,7 @@
 import { UIHandler } from '~/ui/UIHandler.js';
 import { Controller } from '~/Controller.js';
 import { ScratchetSocketBase } from '~/socket/ScratchetSocketBase.js';
+import { PositionDataHandler } from '~/PositionDataHandler.js';
 
 /*
  * data/socketData: bulk data received via socket
@@ -39,3 +40,4 @@ controller.init();
 window.controller = controller;
 window.controls3D = controls3D;
 window.ui = ui;
+window.PositionDataHandler = PositionDataHandler;
