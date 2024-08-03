@@ -70,3 +70,34 @@ export function makeHSLString(hue, hasReducedAlpha) {
     return `hsl(${hue}, 75%, 70%)`;
   }
 }
+
+/** Adapted from https://stackoverflow.com/a/32423075/23408487 */
+/**
+ * @param { number } r
+ * @param { number } g
+ * @param { number } b
+ * @return number
+ */
+export function getHueFromRGB(r, g, b) {
+  let hue = 0;
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b);
+
+  if (max === min) return 0;
+
+  if (max === r) {
+    hue = 0 + (g - b) / (max - min);
+  } else if (max === g) {
+    hue = 2 + (b - r) / (max - min);
+  } else if (max === b) {
+    hue = 4 + (r - g) / (max - min);
+  }
+
+  hue *= 60;
+  hue %= 360;
+  if (hue < 0){
+    hue += 360;
+  }
+
+  return Math.round(hue);
+}
