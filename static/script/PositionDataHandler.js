@@ -133,6 +133,40 @@ export class PositionDataHandler {
   static positionsOverlap(pos0X, pos0Y, pos1X, pos1Y, diameter0, diameter1) {
     return this.getPositionsDistance(...arguments) <= 0;
   }
+  /**
+   * Return the PosData within the supplied buffer containing the closest
+   * overlap with the supplied position.
+   *
+   * Returns false if the supplied buffer was empty.
+   *
+   * @privateRemarks
+   * This will abort searching once a direct overlap has been found
+   *
+   * @param { Int16Array[][] } buffer The buffer to search.
+   * @param { number } posX The position X to match against.
+   * @param { number } posY The position Y to match against.
+   * @param { number } diameter The diameter of the supplied positions. Defaults to 1.
+   * @return { false | Int16Array } The closest found point or false if the buffer was empty.
+   */
+  static getClostestOverlappingPosData(buffer, posX, posY, diameter = 1) {
+    /** @type { false | Int16Array } */
+    let closestPosData = false;
+    let closestDistance = Infinity;
+    PositionDataHandler.iteratePosWrapper(buffer, ({ posData }) => {
+      for (let i = Meta.LEN.BRUSH; i < posData.length; i += 2) {
+        const distance = this.getPositionsDistance(posData[i], posData[i + 1], posX, posY, diameter, posData[1])
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestPosData = posData;
+          if (distance <= 0) {
+            return true;
+          }
+          break;
+        }
+      }
+    });
+    return closestPosData;
+  }
 
   /**
    * Test whether the two supplied PosDatas are exactly equal.
