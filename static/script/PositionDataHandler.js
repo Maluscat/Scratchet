@@ -177,6 +177,7 @@ export class PositionDataHandler {
   }
   /**
    * Recursively iterate over one PosWrapper, yielding only its PosData.
+   * Return `true` within the callback to break the loop.
    * @param { number[] } posWrapper
    * @param { (yield: recursePosWrapperYield) => void } callback
    */
@@ -197,12 +198,14 @@ export class PositionDataHandler {
 
         wrapperStack.push(posData[i]);
 
-        this.#iteratePosWrapperHelper(wrapperStack, callback, i);
+        if (this.#iteratePosWrapperHelper(wrapperStack, callback, i) === true) {
+          return true;
+        }
 
         wrapperStack.pop();
       }
     } else {
-      callback({ posData, wrapperStack, index });
+      return callback({ posData, wrapperStack, index });
     }
   }
 }
