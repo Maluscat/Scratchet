@@ -10,6 +10,8 @@
   --mouseY: -100%;
   --scale: 100%;
   --strokeWidth: 25px;
+  --picker-size: var(--strokeWidth);
+  --picker-color: transparent;
 }
 
 body {
@@ -372,7 +374,7 @@ body > .utility-wheel {
   }
 }
 #indicator-picker {
-  @picker-indicator-dims: 2px;
+  @picker-indicator-dims: 1px;
   .crosshair {
     &::before, &::after {
       content: '';
@@ -391,9 +393,11 @@ body > .utility-wheel {
       top: calc(50% - (@picker-indicator-dims / 2));
     }
   }
-  .color-indicator {
-    width: 4em;
-    height: 4em;
+  .value-indicator {
+    width: var(--picker-size);
+    height: var(--picker-size);
+    background-color: var(--picker-color);
+    transform: translate(var(--picker-size), calc(-1 * var(--picker-size)));
     position: absolute;
     bottom: 0;
     left: 0;
