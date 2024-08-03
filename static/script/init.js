@@ -11,7 +11,8 @@ import { PositionDataHandler } from '~/PositionDataHandler.js';
  */
 
 
-const sock = new ScratchetSocketBase(`ws://${location.host}${location.pathname}socket`, {
+const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}${location.pathname}socket`;
+const sock = new ScratchetSocketBase(url, {
   maxReconnectTimeoutDuration: 4000,
 });
 
