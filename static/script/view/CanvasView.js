@@ -201,9 +201,30 @@ export class CanvasView {
 
 
   // ---- Misc helper functions ----
+  /**
+   * Get the canvas' hue at the specified position or false if there is none.
+   *
+   * This needs the pure mouse positions WITHOUT transformations applied!
+   * @param { number } posX
+   * @param { number } posY
+   * @return { number | false }
+   */
+  getHueAtPosition(posX, posY) {
+    const color = this.ctx.getImageData(posX, posY, 1, 1).data;
+    if (color[3] === 0) {
+      return false;
+    }
+    return Meta.getHueFromRGB(color[0], color[1], color[2]);
+  }
+
+  /** @param { number } width */
   setLineWidth(width) {
     this.ctx.lineWidth = width;
   }
+  /**
+   * @param { number } hue
+   * @param { boolean } [hasReducedAlpha]
+   */
   setStrokeStyle(hue, hasReducedAlpha) {
     this.ctx.strokeStyle = Meta.makeHSLString(hue, hasReducedAlpha);
   }
