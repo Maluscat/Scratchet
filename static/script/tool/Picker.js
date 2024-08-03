@@ -1,5 +1,6 @@
 import * as Meta from '~/constants/meta.js';
-import { ScratchetTool } from '~/tool/ScratchetTool.js';
+import { ScratchetTool } from './ScratchetTool.js';
+import { MAX_BRUSH_SIZE } from './Brush.js';
 
 export class Picker extends ScratchetTool {
   hasPicked = false;
@@ -16,7 +17,7 @@ export class Picker extends ScratchetTool {
   }
   set hue(hue) {
     this.#hue = hue;
-    const style = hue === null ? 'transparent' : Meta.makeHSLString(hue);
+    const style = hue === null ? 'var(--canvas-color)' : Meta.makeHSLString(hue);
     document.documentElement.style.setProperty('--picker-color', style);
   }
   get size() {
@@ -24,7 +25,8 @@ export class Picker extends ScratchetTool {
   }
   set size(size) {
     this.#size = size;
-    const style = size === null ? 'var(--strokeWidth)' : `${size}px`;
+    size ??= 25;
+    const style = (size * .35 + (MAX_BRUSH_SIZE * .4) - (MAX_BRUSH_SIZE * .4) * .35) + 'px';
     document.documentElement.style.setProperty('--picker-size', style);
   }
 
@@ -39,6 +41,10 @@ export class Picker extends ScratchetTool {
 
     this.configBarContent.push(hueLabel);
     this.configBarContent.push(sizeLabel);
+
+    // Initialization
+    this.size = null;
+    this.hue = null;
   }
 
   activate() {

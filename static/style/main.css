@@ -13,8 +13,9 @@ body > .utility-wheel {
   --mouseY: -100%;
   --scale: 100%;
   --strokeWidth: 25px;
-  --picker-size: var(--strokeWidth);
-  --picker-color: transparent;
+  --picker-size: 25px;
+  --picker-color: var(--canvas-color);
+  --canvas-color: hsl(0, 0%, 8%);
 }
 body {
   display: flex;
@@ -26,7 +27,7 @@ body {
   color: hsl(0, 0%, 95%);
 }
 body.initial-load {
-  background-color: hsl(0, 0%, 8%);
+  background-color: var(--canvas-color);
 }
 body > *:not(#canvas-container) {
   z-index: 100000010;
@@ -47,7 +48,7 @@ body.active-utility-wheel #canvas-container {
 }
 canvas {
   position: absolute;
-  background-color: hsl(0, 0%, 8%);
+  background-color: var(--canvas-color);
   outline: 6px solid hsl(0, 0%, 18.5%);
   border-radius: 0;
 }
@@ -300,7 +301,7 @@ body.inactive .overlay .sl89-track {
 }
 .overlay-input,
 .utility-wheel .uw-section-content {
-  text-shadow: 1px 0 hsl(0, 0%, 8%), -1px 0 hsl(0, 0%, 8%), 0 1px hsl(0, 0%, 8%), 0 -1px hsl(0, 0%, 8%), 1px 1px hsl(0, 0%, 8%), -1px 1px hsl(0, 0%, 8%), 1px -1px hsl(0, 0%, 8%), -1px -1px hsl(0, 0%, 8%), 1.25px 0 hsl(0, 0%, 8%), -1.25px 0 hsl(0, 0%, 8%), 0 1.25px hsl(0, 0%, 8%), 0 -1.25px hsl(0, 0%, 8%), 1.25px 1.25px hsl(0, 0%, 8%), -1.25px 1.25px hsl(0, 0%, 8%), 1.25px -1.25px hsl(0, 0%, 8%), -1.25px -1.25px hsl(0, 0%, 8%), 1.5px 0 hsl(0, 0%, 8%), -1.5px 0 hsl(0, 0%, 8%), 0 1.5px hsl(0, 0%, 8%), 0 -1.5px hsl(0, 0%, 8%), 1.5px 1.5px hsl(0, 0%, 8%), -1.5px 1.5px hsl(0, 0%, 8%), 1.5px -1.5px hsl(0, 0%, 8%), -1.5px -1.5px hsl(0, 0%, 8%), 1.75px 0 hsl(0, 0%, 8%), -1.75px 0 hsl(0, 0%, 8%), 0 1.75px hsl(0, 0%, 8%), 0 -1.75px hsl(0, 0%, 8%), 1.75px 1.75px hsl(0, 0%, 8%), -1.75px 1.75px hsl(0, 0%, 8%), 1.75px -1.75px hsl(0, 0%, 8%), -1.75px -1.75px hsl(0, 0%, 8%), 2px 0 hsl(0, 0%, 8%), -2px 0 hsl(0, 0%, 8%), 0 2px hsl(0, 0%, 8%), 0 -2px hsl(0, 0%, 8%), 2px 2px hsl(0, 0%, 8%), -2px 2px hsl(0, 0%, 8%), 2px -2px hsl(0, 0%, 8%), -2px -2px hsl(0, 0%, 8%);
+  text-shadow: 1px 0 var(--canvas-color), -1px 0 var(--canvas-color), 0 1px var(--canvas-color), 0 -1px var(--canvas-color), 1px 1px var(--canvas-color), -1px 1px var(--canvas-color), 1px -1px var(--canvas-color), -1px -1px var(--canvas-color), 1.25px 0 var(--canvas-color), -1.25px 0 var(--canvas-color), 0 1.25px var(--canvas-color), 0 -1.25px var(--canvas-color), 1.25px 1.25px var(--canvas-color), -1.25px 1.25px var(--canvas-color), 1.25px -1.25px var(--canvas-color), -1.25px -1.25px var(--canvas-color), 1.5px 0 var(--canvas-color), -1.5px 0 var(--canvas-color), 0 1.5px var(--canvas-color), 0 -1.5px var(--canvas-color), 1.5px 1.5px var(--canvas-color), -1.5px 1.5px var(--canvas-color), 1.5px -1.5px var(--canvas-color), -1.5px -1.5px var(--canvas-color), 1.75px 0 var(--canvas-color), -1.75px 0 var(--canvas-color), 0 1.75px var(--canvas-color), 0 -1.75px var(--canvas-color), 1.75px 1.75px var(--canvas-color), -1.75px 1.75px var(--canvas-color), 1.75px -1.75px var(--canvas-color), -1.75px -1.75px var(--canvas-color), 2px 0 var(--canvas-color), -2px 0 var(--canvas-color), 0 2px var(--canvas-color), 0 -2px var(--canvas-color), 2px 2px var(--canvas-color), -2px 2px var(--canvas-color), 2px -2px var(--canvas-color), -2px -2px var(--canvas-color);
 }
 .overlay-input {
   z-index: 100000000 !important;
@@ -411,9 +412,6 @@ body > .utility-wheel .uw-section-content.uw-bottom .wrapper > svg {
   pointer-events: none;
 }
 #indicator-container > * {
-  transform: translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2)) scale(calc(var(--scale) * 100%));
-  width: var(--strokeWidth);
-  height: var(--strokeWidth);
   position: absolute;
   left: 0;
   top: 0;
@@ -427,11 +425,19 @@ body.active-utility-wheel #indicator-container {
 }
 #indicator-brush,
 #indicator-eraser {
+  transform: translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2)) scale(calc(var(--scale) * 100%));
+  width: var(--strokeWidth);
+  height: var(--strokeWidth);
   border-radius: 1000px;
   outline: calc(2px / var(--scale)) solid hsl(0, 0%, 90%);
 }
 #indicator-eraser.erasing {
   background-color: hsl(0, 0%, 90%);
+}
+#indicator-picker {
+  transform: translate(calc(var(--mouseX) - 25px / 2), calc(var(--mouseY) - 25px / 2));
+  width: 25px;
+  height: 25px;
 }
 #indicator-picker .crosshair::before,
 #indicator-picker .crosshair::after {
@@ -454,12 +460,13 @@ body.active-utility-wheel #indicator-container {
   width: var(--picker-size);
   height: var(--picker-size);
   background-color: var(--picker-color);
-  transform: translate(var(--picker-size), calc(-1 * var(--picker-size)));
+  transform: translate(calc(-50% + 25px / 2), calc(50% - 25px / 2)) translate(1.75em, -1.75em);
   position: absolute;
   bottom: 0;
   left: 0;
   border-radius: 1000px;
-  outline: 1px solid hsl(0, 0%, 90%);
+  border: 2px solid hsl(0, 0%, 90%);
+  outline: 2px solid var(--canvas-color);
 }
 #hit-border {
   pointer-events: none;
@@ -576,7 +583,7 @@ body.active-utility-wheel #indicator-container {
   margin: 0;
 }
 .hue-slider .slider-hue-indicator {
-  border: 4px solid hsl(0, 0%, 8%);
+  border: 4px solid var(--canvas-color);
   height: 100%;
 }
 .hue-slider .sl89-track {

@@ -1,6 +1,8 @@
 import * as Meta from '~/constants/meta.js';
 import { ScratchetTool } from '~/tool/ScratchetTool.js';
 
+export const MAX_BRUSH_SIZE = 80;
+
 export class Brush extends ScratchetTool {
   #sliders = {};
 
@@ -25,7 +27,7 @@ export class Brush extends ScratchetTool {
     const widthWrapper = ScratchetTool.createSliderWrapper('width-slider');
     const hueWrapper = ScratchetTool.createSliderWrapper('hue-slider');
 
-    this.#sliders.width = ScratchetTool.createWidthSlider(widthWrapper, 80);
+    this.#sliders.width = ScratchetTool.createWidthSlider(widthWrapper, MAX_BRUSH_SIZE);
     this.#sliders.hue = new Slider89(hueWrapper, {
       range: [0, 360],
       precision: 0,

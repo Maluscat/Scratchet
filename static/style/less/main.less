@@ -9,9 +9,10 @@
   --mouseX: -100%;
   --mouseY: -100%;
   --scale: 100%;
-  --strokeWidth: 25px;
-  --picker-size: var(--strokeWidth);
-  --picker-color: transparent;
+  --strokeWidth: @initial-stroke-width;
+  --picker-size: @initial-stroke-width;
+  --picker-color: var(--canvas-color);
+  --canvas-color: @canvas-color;
 }
 
 body {
@@ -25,7 +26,7 @@ body {
   color: @main-color;
   // This is to prevent a gray flash before the first room has been loaded
   &.initial-load {
-    background-color: @canvas-color;
+    background-color: var(--canvas-color);
   }
   > *:not(#canvas-container) {
     z-index: (@high-z-index + 10);
@@ -49,7 +50,7 @@ canvas, #canvas-container {
 
 canvas {
   position: absolute;
-  background-color: @canvas-color;
+  background-color: var(--canvas-color);
   outline: 6px solid @background-color;
   border-radius: 0;
   &:not(.inactive):not(.remove):not(:only-child) {
@@ -221,7 +222,7 @@ input:invalid {
 
 .overlay-input,
 .utility-wheel .uw-section-content {
-  .surroundingTextShadow(@canvas-color, 1px, 2px, .25px);
+  .surroundingTextShadow(var(--canvas-color), 1px, 2px, .25px);
 }
 .overlay-input {
   @extra-padding: .4rem;
@@ -344,11 +345,6 @@ body > .utility-wheel {
 #indicator-container {
   pointer-events: none;
   > * {
-    transform:
-      translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2))
-      scale(calc(var(--scale) * 100%));
-    width: var(--strokeWidth);
-    height: var(--strokeWidth);
     position: absolute;
     left: 0;
     top: 0;
@@ -365,6 +361,11 @@ body > .utility-wheel {
 
 #indicator-brush, #indicator-eraser {
   @draw-indicator-border-size: 2px;
+  transform:
+    translate(calc(var(--mouseX) - var(--strokeWidth) / 2), calc(var(--mouseY) - var(--strokeWidth) / 2))
+    scale(calc(var(--scale) * 100%));
+  width: var(--strokeWidth);
+  height: var(--strokeWidth);
   border-radius: 1000px;
   outline: calc(@draw-indicator-border-size / var(--scale)) solid @draw-indicator-color;
 }
@@ -375,6 +376,10 @@ body > .utility-wheel {
 }
 #indicator-picker {
   @picker-indicator-dims: 1px;
+  transform:
+    translate(calc(var(--mouseX) - @initial-stroke-width / 2), calc(var(--mouseY) - @initial-stroke-width / 2));
+  width: @initial-stroke-width;
+  height: @initial-stroke-width;
   .crosshair {
     &::before, &::after {
       content: '';
@@ -397,12 +402,16 @@ body > .utility-wheel {
     width: var(--picker-size);
     height: var(--picker-size);
     background-color: var(--picker-color);
-    transform: translate(var(--picker-size), calc(-1 * var(--picker-size)));
+    transform:
+      translate(calc(-50% + @initial-stroke-width / 2), calc(50% - @initial-stroke-width / 2))
+      translate(1.75em, -1.75em);
+      // translate(calc(1.25em + var(--picker-size) * .25), calc(-1.25em + var(--picker-size) * -.25));
     position: absolute;
     bottom: 0;
     left: 0;
     border-radius: 1000px;
-    outline: 1px solid @draw-indicator-color;
+    border: 2px solid @draw-indicator-color;
+    outline: 2px solid var(--canvas-color);
   }
 }
 
@@ -534,7 +543,7 @@ body > .utility-wheel {
 
 .hue-slider {
   .slider-hue-indicator {
-    border: 4px solid @canvas-color;
+    border: 4px solid var(--canvas-color);
     height: 100%;
   }
   .sl89-track {
