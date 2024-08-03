@@ -214,7 +214,7 @@ export class CanvasView {
     if (color[3] === 0) {
       return false;
     }
-    return Meta.getHueFromRGB(color[0], color[1], color[2]);
+    return Math.round(Meta.getHueFromRGB(color[0], color[1], color[2]));
   }
 
   /** @param { number } width */

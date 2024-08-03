@@ -146,22 +146,38 @@ export class PositionDataHandler {
    * @param { number } posX The position X to match against.
    * @param { number } posY The position Y to match against.
    * @param { number } diameter The diameter of the supplied positions. Defaults to 1.
+   * @param { number | false } matchingHue If a found PosData's hue does not match
+   *                                       with this given hue, the search will continue.
    * @return { false | Int16Array } The closest found point or false if the buffer was empty.
    */
-  static getClostestOverlappingPosData(buffer, posX, posY, diameter = 1) {
+  static getClostestOverlappingPosData(buffer, posX, posY, diameter = 1, matchingHue = false) {
     /** @type { false | Int16Array } */
     let closestPosData = false;
     let closestDistance = Infinity;
+
+    // Only doing a boolean check because filtering the array would be too slow
+    let hasHue = false;
+    if (matchingHue !== false) {
+      PositionDataHandler.iteratePosWrapper(buffer, ({ posData }) => {
+        if (Meta.getClientHue(posData) === matchingHue) {
+          hasHue = true;
+          return true;
+        }
+      });
+    }
+
     PositionDataHandler.iteratePosWrapper(buffer, ({ posData }) => {
-      for (let i = Meta.LEN.BRUSH; i < posData.length; i += 2) {
-        const distance = this.getPositionsDistance(posData[i], posData[i + 1], posX, posY, diameter, posData[1])
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestPosData = posData;
-          if (distance <= 0) {
-            return true;
+      if (!hasHue || Meta.getClientHue(posData) === matchingHue) {
+        for (let i = Meta.LEN.BRUSH; i < posData.length; i += 2) {
+          const distance = this.getPositionsDistance(posData[i], posData[i + 1], posX, posY, diameter, Meta.getClientWidth(posData));
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestPosData = posData;
+            if (distance <= 0) {
+              return true;
+            }
+            break;
           }
-          break;
         }
       }
     });

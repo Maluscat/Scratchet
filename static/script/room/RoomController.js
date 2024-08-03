@@ -112,7 +112,7 @@ export class RoomController {
             this.tools.picker.hue = hue;
             if (this.tools.picker.sizeToggle.checked) {
               this.tools.picker.size = PositionDataHandler.getClostestOverlappingPosData(
-                this.posHandler.buffer, posX, posY)[1];
+                this.posHandler.buffer, posX, posY, 1, hue)[1];
             }
           } else {
             this.tools.picker.resetValues();
