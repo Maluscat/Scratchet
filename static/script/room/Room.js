@@ -41,7 +41,7 @@ export class Room extends RoomController {
     // Set active tool by current active class
     for (const tool of Object.values(this.tools)) {
       if (tool.buttonNode.classList.contains('active')) {
-        this.#setActiveTool(tool);
+        this.setActiveTool(tool);
       }
     }
 
@@ -89,18 +89,6 @@ export class Room extends RoomController {
   }
 
   // ---- Tool handling ----
-  activateTool(toolName) {
-    const tool = this.tools[toolName];
-    if (this.activeTool !== tool) {
-      this.#setActiveTool(tool);
-    }
-  }
-
-  #setActiveTool(tool) {
-    this.activeTool = tool;
-    this.activeTool.activate();
-  }
-
   scrollAction(e, direction) {
     switch (this.activeTool.constructor) {
       case Brush: {

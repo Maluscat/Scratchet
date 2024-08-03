@@ -45,17 +45,19 @@ export class ScratchetTool {
 
 
   // ---- Static helpers ----
+  /** @return { [ HTMLLabelElement, HTMLInputElement ] } */
   static createToggle(className, label) {
     const inputNode = document.createElement('input');
     const labelNode = document.createElement('label');
 
     inputNode.type = 'checkbox';
+    inputNode.value = label;
     inputNode.classList.add(className);
     labelNode.classList.add('label');
 
     labelNode.appendChild(inputNode);
     labelNode.appendChild(document.createTextNode(label));
-    return labelNode;
+    return [ labelNode, inputNode ];
   }
 
   static createSliderWrapper(className) {

@@ -5,6 +5,7 @@ import { CanvasViewTransform } from '~/view/CanvasViewTransform.js';
 import { UserBulkInit } from '~/user/UserBulkInit.js';
 import { Brush } from '~/tool/Brush.js';
 import { Eraser } from '~/tool/Eraser.js';
+import { Picker } from '~/tool/Picker.js';
 import { ui, controls3D } from '~/init.js';
 
 /** @typedef { import('~/user/User.js').User } User */
@@ -49,6 +50,7 @@ export class RoomController {
           this.sendHandler.brush.updateHue(val);
         }),
       eraser: new Eraser(val => this.sendHandler.erase.updateWidth(val)),
+      picker: new Picker()
     };
 
     canvas.addEventListener('pointerdown', this.canvasDown.bind(this));
@@ -74,6 +76,10 @@ export class RoomController {
 
       // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
       switch (this.activeTool.constructor) {
+        case Picker: {
+          this.tools.picker.resolveToggleState();
+          break;
+        }
         case Brush: {
           this.sendHandler.brush.reset();
           break;
@@ -100,6 +106,19 @@ export class RoomController {
       const [posX, posY] = this.view.getPosWithTransform(e.clientX, e.clientY);
 
       switch (this.activeTool.constructor) {
+        case Picker: {
+          const hue = this.view.getHueAtPosition(e.clientX, e.clientY);
+          if (hue !== false) {
+            this.tools.picker.hue = hue;
+            if (this.tools.picker.sizeToggle.checked) {
+              this.tools.picker.size = PositionDataHandler.getClostestOverlappingPosData(
+                this.posHandler.buffer, posX, posY)[1];
+            }
+          } else {
+            this.tools.picker.resetValues();
+          }
+          break;
+        }
         case Brush: {
           this.sendHandler.addData('brush', posX, posY);
           this.view.update();
@@ -127,7 +146,41 @@ export class RoomController {
       this.view.update();
       this.isDrawing = false;
       this.hasErased = false;
+      if (this.activeTool === this.tools.picker) {
+        this.setBrushHue(this.tools.picker.hue);
+        this.setBrushSize(this.tools.picker.size);
+        this.setActiveTool(this.tools.brush);
+      }
+      // TODO common mousedown/mouseup event
       this.tools.eraser.clearErasing();
+      this.tools.picker.resetValues();
+    }
+  }
+
+  // ---- Tool handling ----
+  activateTool(toolName) {
+    const tool = this.tools[toolName];
+    if (this.activeTool !== tool) {
+      this.setActiveTool(tool);
+    }
+  }
+  setActiveTool(tool) {
+    this.activeTool = tool;
+    this.activeTool.activate();
+  }
+
+  /** @param { null | number } hue */
+  setBrushHue(hue) {
+    if (hue != null) {
+      this.tools.brush.hue = hue;
+      this.view.setStrokeStyle(hue);
+    }
+  }
+  /** @param { null | number } size */
+  setBrushSize(size) {
+    if (size != null) {
+      this.tools.brush.width = size;
+      this.view.setLineWidth(size);
     }
   }
 
