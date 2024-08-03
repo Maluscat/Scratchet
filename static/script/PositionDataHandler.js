@@ -114,30 +114,24 @@ export class PositionDataHandler {
   }
 
   /**
-   * Test whether one point of a centain size overlaps with another.
-   * It doesn't matter which size belongs to which point.
-   * @returns { boolean }
+   * Get the distance between the two points at the specified diameters.
+   * It doesn't matter which diameter belongs to which point.
+   * @returns { number }
    */
-  static positionsOverlap(pos0X, pos0Y, pos1X, pos1Y, width0, width1) {
-    const distance = Math.sqrt(
+  static getPositionsDistance(pos0X, pos0Y, pos1X, pos1Y, diameter0, diameter1) {
+    return Math.sqrt(
           Math.pow(pos1X - pos0X, 2)
         + Math.pow(pos1Y - pos0Y, 2))
-      - (width0 / 2)
-      - (width1 / 2);
-    return distance <= 0;
+      - (diameter0 / 2)
+      - (diameter1 / 2);
   }
   /**
-   * Test whether the whole supplied PosData overlaps with the
-   * supplied point with the specified radius.
+   * Test whether one point of a centain size overlaps with another.
+   * It doesn't matter which diameter belongs to which point.
    * @returns { boolean }
    */
-  static posDataOverlaps(posData, posX, posY, width = 1) {
-    for (let i = Meta.LEN.BRUSH; i < posData.length; i += 2) {
-      if (PositionDataHandler.positionsOverlap(posData[i], posData[i + 1], posX, posY, width, posData[1])) {
-        return true;
-      }
-    }
-    return false;
+  static positionsOverlap(pos0X, pos0Y, pos1X, pos1Y, diameter0, diameter1) {
+    return this.getPositionsDistance(...arguments) <= 0;
   }
 
   /**
