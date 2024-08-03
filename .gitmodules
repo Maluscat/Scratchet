@@ -1,13 +1,13 @@
 [submodule "controls3d"]
 	path = static/library/controls3d
-	url = https://gitlab.com/Hallo89/controls3d.git
+	url = https://gitlab.com/Maluscat/controls3d.git
 [submodule "slider89"]
 	path = static/library/slider89
-	url = https://github.com/Hallo89/Slider89.git
+	url = https://github.com/Maluscat/Slider89.git
 	branch = project-rewrite
 [submodule "utility-wheel"]
 	path = static/library/utility-wheel
-	url = https://gitlab.com/Hallo89/utility-wheel.git
+	url = https://gitlab.com/Maluscat/utility-wheel.git
 [submodule "static/library/socket-handler"]
 	path = static/library/socket-handler
 	url = https://gitlab.com/Maluscat/socket-handler.git
