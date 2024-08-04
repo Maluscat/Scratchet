@@ -74,18 +74,11 @@ export class RoomController {
     if (e.button === 0) {
       this.isDrawing = true;
 
+      this.activeTool.start();
       // Roughly equivalent to `this.activeTool instanceof ...`, but switch-able
       switch (this.activeTool.constructor) {
-        case Picker: {
-          this.tools.picker.resolveToggleState();
-          break;
-        }
         case Brush: {
           this.sendHandler.brush.reset();
-          break;
-        }
-        case Eraser: {
-          this.tools.eraser.activateErasing();
           break;
         }
       }
@@ -146,14 +139,13 @@ export class RoomController {
       this.view.update();
       this.isDrawing = false;
       this.hasErased = false;
-      if (this.activeTool === this.tools.picker) {
+      const activeTool = this.activeTool;
+      if (activeTool === this.tools.picker) {
         this.setBrushHue(this.tools.picker.hue);
         this.setBrushSize(this.tools.picker.size);
         this.setActiveTool(this.tools.brush);
       }
-      // TODO common mousedown/mouseup event
-      this.tools.eraser.clearErasing();
-      this.tools.picker.resetValues();
+      activeTool.end();
     }
   }
 

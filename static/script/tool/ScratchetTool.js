@@ -38,6 +38,10 @@ export class ScratchetTool {
     this.indicator.classList.add('active');
   }
 
+  // ---- Events (abstract) ----
+  start() {}
+  end() {}
+
   // ---- config bar ----
   #populateConfigBar() {
     ScratchetTool.configBarWrapper.replaceChildren(...this.configBarContent);

@@ -43,8 +43,7 @@ export class Picker extends ScratchetTool {
     this.configBarContent.push(sizeLabel);
 
     // Initialization
-    this.size = null;
-    this.hue = null;
+    this.resetValues();
   }
 
   activate() {
@@ -52,12 +51,21 @@ export class Picker extends ScratchetTool {
     this.hasPicked = false;
   }
 
+  start() {
+    super.start();
+    this.#resolveToggleState();
+  }
+  end() {
+    super.end();
+    this.resetValues();
+  }
+
   resetValues() {
     this.hue = null;
     this.size = null;
   }
 
-  resolveToggleState() {
+  #resolveToggleState() {
     if (!this.sizeToggle.checked && !this.hueToggle.checked) {
       this.hueToggle.checked = true;
     }
