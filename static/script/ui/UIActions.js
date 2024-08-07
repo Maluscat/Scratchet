@@ -1,3 +1,4 @@
+import { UtilityWheel } from '@lib/utility-wheel/script/UtilityWheel.js';
 import { canvasContainer } from '~/constants/misc.js';
 import { ui } from '~/init.js';
 
