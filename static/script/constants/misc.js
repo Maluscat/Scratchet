@@ -15,6 +15,7 @@ export const copyRoomLinkContent = /**@type HTMLDivElement*/ (document.getElemen
 
 export const settingsButton = /**@type HTMLButtonElement*/ (document.getElementById('settings-button'));
 export const settingsPanel = /**@type HTMLDivElement*/ (document.getElementById('settings-panel'));
+export const settingsActionList = /**@type HTMLDivElement*/ (document.querySelector('#settings-panel .actions-container'));
 
 // ---- Misc export constants ----
 /** How many ping windows are required at max for a timeout to be perceived. */

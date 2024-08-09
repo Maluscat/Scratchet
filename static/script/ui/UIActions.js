@@ -1,9 +1,30 @@
 import { UtilityWheel } from '@lib/utility-wheel/script/UtilityWheel.js';
-import { canvasContainer } from '~/constants/misc.js';
+import { UtilityWheelUIConfig } from '@lib/utility-wheel/script/UtilityWheelUIConfig.js';
+
+import { canvasContainer, settingsActionList, settingsPanel } from '~/constants/misc.js';
 import { ui } from '~/init.js';
 
+/**
+ * @typedef { import('@lib/utility-wheel/script/UtilityWheel.js').SectionCallback } SectionCallback
+ * @typedef { import('@lib/utility-wheel/script/UtilityWheel.js').SectionSide } SectionSide
+ */
+
+const utilWheelElement = /**@type HTMLElement*/ (document.querySelector('body > .utility-wheel'))
+const utilWheelConfig = /**@type HTMLElement*/ (settingsPanel.querySelector('.utility-wheel-container'));
+
+/**
+ * @typedef Action
+ * @prop { { caption: string } } prompt
+ * @prop { string } [shortTitle]
+ * @prop { HTMLElement } button
+ * @prop { Function } fn
+ * @prop { SectionCallback } callback
+ * @prop { HTMLElement } element
+ */
+
 export class UIActions {
-  actions = {
+  // @ts-ignore
+  actions = /**@type { Record<string, Action> }*/({
     leaveRoom: {
       prompt: {
         caption: 'Leave the current room?'
@@ -37,38 +58,51 @@ export class UIActions {
       shortTitle: 'Redo',
       button: document.getElementById('redo-button')
     }
-  };
+  });
 
+  /** @type UtilityWheelUIConfig */
   utilityWheel;
 
   constructor(callbacks) {
-    // Add tools to actions
+    // -- Add tools to actions --
     for (const toolButton of document.querySelectorAll('#toolbar > .button')) {
       const toolName = toolButton.dataset.tool;
       const title = 'Tool: ' + toolName.charAt(0).toUpperCase() + toolName.slice(1);
 
       this.actions[toolName] = {
         shortTitle: title,
-        button: toolButton,
+        button: /**@type HTMLElement*/ (toolButton),
         fn: () => callbacks._tools(toolName)
       };
     }
 
-    // Add event callbacks
-    for (const [ actionName, callback ] of Object.entries(callbacks)) {
+    // -- Expand actions with callbacks and element --
+    for (const [ actionName, action ] of Object.entries(this.actions)) {
       if (!actionName.startsWith('_')) {
-        this.actions[actionName].fn = callback;
+        if (!action.fn) {
+          this.actions[actionName].fn = callbacks[actionName];
+        }
+        this.actions[actionName].callback = this.callAction.bind(this, actionName);
+        this.actions[actionName].element = UIActions.getActionElement(action);
       }
     }
 
-    // Add event listeners to buttons
+    // -- Build and insert action list into settings --
+    for (const { element } of Object.values(this.actions)) {
+      settingsActionList.appendChild(element);
+    }
+
+    // -- Add event listeners to buttons --
     for (const [ actionName, action ] of Object.entries(this.actions)) {
       action.button.addEventListener('click', this.callAction.bind(this, actionName));
       action.button.addEventListener('dblclick', this.callAction.bind(this, actionName));
     }
 
-    this.utilityWheel = new UtilityWheel(document.querySelector('body > .utility-wheel'), {
-      target: canvasContainer
+    // -- Initialize UtilityWheel --
+    this.utilityWheel = new UtilityWheelUIConfig(utilWheelElement, {
+      target: canvasContainer,
+      actionList: Object.values(this.actions),
+      configContainer: utilWheelConfig,
     });
 
     this.utilityWheel.addEvent('invoke', this.utilWheelInvoke);
@@ -109,22 +143,20 @@ export class UIActions {
    */
   setUtilityWheelAction(side, actionName) {
     const action = this.actions[actionName];
-    const sectionElement = this.createUtilityWheelSectionElement(side, action);
-    this.utilityWheel.setSection(side, sectionElement, this.callAction.bind(this, actionName));
+    this.utilityWheel.setSection(side, action.element.cloneNode(true), action.callback);
   }
 
-  /**
-   * @param { SectionSide } side
-   * @param { Object } action
-   */
-  createUtilityWheelSectionElement(side, action) {
+  /** @param { Object } action */
+  static getActionElement(action) {
     const title = action.shortTitle || action.button.title;
 
     const wrapper = document.createElement('div');
-    const tooltip = document.createTextNode(title);
+    const tooltip = document.createElement('span');
+    tooltip.classList.add('text');
+    tooltip.textContent = title;
     const icon = action.button.querySelector('svg').cloneNode(true);
 
-    wrapper.classList.add('wrapper');
+    wrapper.classList.add('action-wrapper');
     wrapper.appendChild(tooltip);
     wrapper.appendChild(icon);
 
