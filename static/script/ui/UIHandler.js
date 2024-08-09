@@ -6,6 +6,8 @@ import {
   OVERLAY_INPUT_INVALID_DURATION,
   userListButton,
   roomListButton,
+  settingsButton,
+  settingsPanel,
   canvasContainer,
   joinRoomOverlayInput,
 } from '~/constants/misc.js';
@@ -32,7 +34,6 @@ const promptNode = (function() {
   }
 }());
 
-const infoOverlay = document.getElementById('info-overlay');
 const notificationWrapper = document.getElementById('notification-overlay');
 const hitBorder = document.getElementById('hit-border');
 
@@ -72,7 +73,7 @@ export class UIHandler {
       _tools: controller.toolButtonClick
     });
 
-    this.scaleSlider = new Slider89(infoOverlay, {
+    this.scaleSlider = new Slider89(document.getElementById('scale-slider'), {
       range: [ 0, CanvasViewTransform.MAX_SCALE ],
       _percent: '100%',
       events: {
@@ -92,7 +93,7 @@ export class UIHandler {
         </indicatorWrapper>
         <:track>
       `
-    });
+    }, true);
     this.scaleSlider.node.slider.id = 'scale-slider';
     this.scaleSlider.node.indicatorButton
       .addEventListener('click', controller.scaleCanvasAtCenter.bind(controller, 0));
@@ -105,11 +106,17 @@ export class UIHandler {
 
     promptNode.cancelButton.addEventListener('click', this.removePrompt.bind(this));
     promptNode.wrapper.addEventListener('contextmenu', this.preventPromptContext.bind(this));
+
+    settingsButton.addEventListener('click', this.toggleSettingsPanel.bind(this));
   }
 
   // ---- Misc events ----
   toggleHoverOverlay(e) {
     e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
+  }
+
+  toggleSettingsPanel() {
+    settingsPanel.classList.toggle('active');
   }
 
   // ---- Input helpers ----

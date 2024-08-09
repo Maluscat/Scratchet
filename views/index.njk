@@ -24,7 +24,11 @@
 
     {% include 'static/library/utility-wheel/html/snippet.html' %}
 
-    <div id="prompt-wrapper" class="panel overlay self-centered has-pointer-events">
+    <div id="settings-panel" class="full-size panel overlay self-centered has-pointer-events inactive">
+      <h2>Settings</h2>
+    </div>
+
+    <div id="prompt-wrapper" class="panel overlay self-centered has-pointer-events inactive">
       <span class="header"></span>
       <div class="buttons">
         <button class="button cancel" type="button">Cancel</button>
@@ -91,7 +95,12 @@
       {%- endif %}
     </div>
 
-    <div id="info-overlay" class="overlay bottom right"></div>
+    <div id="info-overlay" class="overlay bottom right button-group">
+      <button id="settings-button" class="button persistent" type="button" title="Open the settings panel">
+        {% include 'views/component/svg/gear-2.svg' %}
+      </button>
+      <div id="scale-slider"></div>
+    </div>
 
     <div id="utility-overlay" class="overlay bottom left button-group">
       <div id="toolbar" class="panel no-border has-pointer-events">

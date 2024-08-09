@@ -13,6 +13,9 @@ export const joinRoomOverlayInput = /**@type HTMLInputElement*/ (document.getEle
 export const copyRoomLinkOverlay = /**@type HTMLDivElement*/ (document.getElementById('copy-room-link-overlay'));
 export const copyRoomLinkContent = /**@type HTMLDivElement*/ (document.getElementById('copy-room-link-content'));
 
+export const settingsButton = /**@type HTMLButtonElement*/ (document.getElementById('settings-button'));
+export const settingsPanel = /**@type HTMLDivElement*/ (document.getElementById('settings-panel'));
+
 // ---- Misc export constants ----
 /** How many ping windows are required at max for a timeout to be perceived. */
 export const MAX_PERCEIVED_TIMEOUT_PINGS = 3;
