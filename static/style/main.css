@@ -282,6 +282,9 @@ body.inactive .overlay .sl89-track {
   background-color: hsl(0, 0%, 12%) !important;
   color: hsl(0, 0%, 85%) !important;
 }
+.overlay.inactive:not(.active) {
+  display: none;
+}
 .panel {
   border: 4px solid hsl(0, 0%, 8%);
   display: inline-flex;
@@ -298,6 +301,10 @@ body.inactive .overlay .sl89-track {
 }
 .panel .button:active {
   background-color: hsl(0, 0%, 28.5%) !important;
+}
+.panel.full-size {
+  height: 70vh;
+  width: 75vw;
 }
 .overlay-input,
 .utility-wheel .uw-section-content {
@@ -515,9 +522,6 @@ body.active-utility-wheel #indicator-container {
     opacity: 0;
     transform: translateY(-0.5em);
   }
-}
-#prompt-wrapper:not(.active) {
-  display: none;
 }
 #prompt-wrapper .header {
   font-size: 1.15rem;

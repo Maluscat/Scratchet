@@ -205,6 +205,9 @@ input:invalid {
       color: @main-color--inactive !important;
     }
   }
+  &.inactive:not(.active) {
+    display: none;
+  }
 }
 
 .panel {
@@ -217,6 +220,10 @@ input:invalid {
   .button {
     .buttonStyle(@panel-btn-bg);
     background-color: @panel-btn-bg;
+  }
+  &.full-size {
+    height: 70vh;
+    width: 75vw;
   }
 }
 
@@ -471,9 +478,6 @@ body > .utility-wheel {
 }
 
 #prompt-wrapper {
-  &:not(.active) {
-    display: none;
-  }
   .header {
     font-size: 1.15rem;
     padding: 1em 1.5em;

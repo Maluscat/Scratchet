@@ -1,11 +1,3 @@
-#mocha {
-  height: 70vh;
-  width: 75vw;
-  &:not(.active) {
-    display: none;
-  }
-}
-
 #mocha .test pre.error,
 #mocha .test.fail pre {
   color: #fff7f7;
