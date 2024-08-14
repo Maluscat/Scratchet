@@ -78,7 +78,7 @@ export class UIHandler {
       _percent: '100%',
       events: {
         // TODO change this to the 'update' event once it is shipped in Slider89
-        'move': [(slider) => {
+        'update': [(slider) => {
           controller.scaleCanvasAtCenter(slider.value);
         }],
         'change:value': [(slider) => {
