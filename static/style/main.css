@@ -402,18 +402,20 @@ body > .utility-wheel .uw-section-content {
   width: 19.65em;
   height: 19.65em;
 }
-body > .utility-wheel .uw-section-content .wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+body > .utility-wheel .uw-section-content .action-wrapper {
   gap: 1rem;
 }
-body > .utility-wheel .uw-section-content .wrapper > svg {
+body > .utility-wheel .uw-section-content .action-wrapper > svg {
   width: 2.35em;
   height: 2.35em;
 }
-body > .utility-wheel .uw-section-content.uw-bottom .wrapper > svg {
+.utility-wheel .uw-section-content.uw-bottom .wrapper > svg {
   order: -1;
+}
+.action-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 #indicator-container {
   pointer-events: none;
@@ -496,6 +498,67 @@ body.active-utility-wheel #indicator-container {
 }
 #hit-border.hit-bottom {
   border-bottom: 2px solid hsl(0, 0%, 90%);
+}
+#settings-panel {
+  --utilWheel-center-size: 4.5em;
+  --utilWheel-wheel-size: 18em;
+  --utilWheel-gradient-stop: 14em;
+  --utilWheel-section-color: hsl(0, 0%, 18%);
+}
+#settings-panel .settings-utility-wheel {
+  display: flex;
+}
+#settings-panel .settings-utility-wheel > * {
+  padding: 0.75em 1.5em;
+}
+#settings-panel .utility-wheel-container {
+  flex: 1;
+  overflow: hidden;
+  border-right: 2px solid hsl(0, 0%, 31%);
+}
+#settings-panel .uw-configuration-wheel {
+  font-size: 0.925em;
+  width: 100%;
+  display: block;
+  position: relative;
+  top: 50%;
+  left: 50%;
+}
+#settings-panel .uw-configuration-wheel .uw-section-content {
+  height: 16em;
+  width: 16em;
+}
+#settings-panel .actions-container {
+  user-select: none;
+  width: max-content;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 0.875em;
+  gap: 2em 0;
+}
+#settings-panel .action-wrapper {
+  cursor: grab;
+  gap: 0.4rem;
+}
+#settings-panel .action-wrapper:hover {
+  transform: scale(1.06);
+}
+#settings-panel .action-wrapper.uw-dragging {
+  transform: scale(0.97);
+  color: hsl(0, 0%, 62%);
+}
+#settings-panel .action-wrapper > svg {
+  order: -1;
+  width: 2em;
+  height: 2em;
+}
+#settings-panel .action-wrapper,
+#settings-panel .uw-section-content.uw-dragover .action-wrapper {
+  transition: transform 0.085s ease, color 0.1s ease-in-out;
+}
+#settings-panel .uw-section-content.uw-dragover .action-wrapper {
+  transform: scale(0.925);
+  color: hsl(0, 0%, 62%);
 }
 #notification-overlay {
   display: flex;
