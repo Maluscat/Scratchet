@@ -37,4 +37,17 @@ export class Eraser extends ScratchetTool {
     super.end();
     this.indicator.classList.remove('erasing');
   }
+
+  /**
+   * @param { WheelEvent } e
+   * @param { -1 | 1 } direction
+   */
+  scroll(e, direction) {
+    super.scroll();
+    if (e.shiftKey) {
+      this.width += direction * 21;
+    } else if (!e.ctrlKey) {
+      this.width += direction * 7;
+    }
+  }
 }

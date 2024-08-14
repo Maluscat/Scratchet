@@ -32,7 +32,6 @@ export class Controller {
   constructor(sock) {
     // Binding functions to themselves to be able to remove them from events
     this.pointerUp = this.pointerUp.bind(this);
-    this.mouseWheel = this.mouseWheel.bind(this);
     this.windowResized = this.windowResized.bind(this);
     this.handleURLHashChange = this.handleURLHashChange.bind(this);
     this.scaleCanvasAtCenter = this.scaleCanvasAtCenter.bind(this);
@@ -100,13 +99,11 @@ export class Controller {
     ui.activateUI();
 
     window.addEventListener('pointerup', this.pointerUp);
-    window.addEventListener('wheel', this.mouseWheel, { passive: false });
     window.addEventListener('resize', this.windowResized);
   }
 
   deactivate() {
     window.removeEventListener('pointerup', this.pointerUp);
-    window.removeEventListener('wheel', this.mouseWheel);
     window.removeEventListener('resize', this.windowResized);
 
     ui.deactivateUI();
@@ -131,13 +128,6 @@ export class Controller {
     this.activeRoom.view.setTransformWithNewState({
       scale: { x: scaleAmount, y: scaleAmount }
     }, null, true);
-  }
-
-  mouseWheel(e) {
-    if (e.deltaY !== 0) {
-      const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
-      this.activeRoom.scrollAction(e, direction);
-    }
   }
 
   toolButtonClick(toolName) {

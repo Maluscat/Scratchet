@@ -55,6 +55,7 @@ export class RoomController {
 
     canvas.addEventListener('pointerdown', this.canvasDown.bind(this));
     canvas.addEventListener('pointermove', this.canvasDraw.bind(this));
+    canvas.addEventListener('wheel', this.canvasScroll.bind(this), { passive: false });
 
     this.sendHandler.brush.updateHue(this.tools.brush.hue);
     this.sendHandler.brush.updateWidth(this.tools.brush.width);
@@ -146,6 +147,14 @@ export class RoomController {
         this.setActiveTool(this.tools.brush);
       }
       activeTool.end();
+    }
+  }
+
+  /** @param { WheelEvent } e */
+  canvasScroll(e) {
+    if (e.deltaY !== 0) {
+      const direction = -1 * (e.deltaY / Math.abs(e.deltaY)); // either 1 or -1
+      this.activeTool.scroll(e, direction);
     }
   }
 

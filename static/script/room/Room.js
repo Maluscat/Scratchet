@@ -88,28 +88,6 @@ export class Room extends RoomController {
     }
   }
 
-  // ---- Tool handling ----
-  scrollAction(e, direction) {
-    switch (this.activeTool.constructor) {
-      case Brush: {
-        if (e.shiftKey) {
-          /** @type Brush */ (this.activeTool).hue += direction * 24;
-        } else if (!e.ctrlKey) {
-          /** @type Brush */ (this.activeTool).width += direction * 7;
-        }
-        break;
-      }
-      case Eraser: {
-        if (e.shiftKey) {
-          /** @type Eraser */ (this.activeTool).width += direction * 21;
-        } else if (!e.ctrlKey) {
-          /** @type Eraser */ (this.activeTool).width += direction * 7;
-        }
-        break;
-      }
-    }
-  }
-
 
   // ---- User handling ----
   /**

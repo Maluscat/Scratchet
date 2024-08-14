@@ -41,6 +41,7 @@ export class ScratchetTool {
   // ---- Events (abstract) ----
   start() {}
   end() {}
+  scroll(e, direction) {}
 
   // ---- config bar ----
   #populateConfigBar() {

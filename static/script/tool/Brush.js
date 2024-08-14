@@ -57,4 +57,17 @@ export class Brush extends ScratchetTool {
     this.#sliders.hue.value = this.#sliders.hue.value;
     ScratchetTool.setCSSStrokeWidth(this.#sliders.width);
   }
+
+  /**
+   * @param { WheelEvent } e
+   * @param { -1 | 1 } direction
+   */
+  scroll(e, direction) {
+    super.scroll();
+    if (e.shiftKey) {
+      this.hue += direction * 24;
+    } else if (!e.ctrlKey) {
+      this.width += direction * 7;
+    }
+  }
 }
