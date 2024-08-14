@@ -303,8 +303,13 @@ body.inactive .overlay .sl89-track {
   background-color: hsl(0, 0%, 28.5%) !important;
 }
 .panel.full-size {
+  display: block;
   height: 70vh;
   width: 75vw;
+  font-size: 0.92rem;
+  padding: 0 1.5em;
+  background-color: hsla(0, 0%, 16%, 0.875);
+  overflow: auto;
 }
 .overlay-input,
 .utility-wheel .uw-section-content {
@@ -501,15 +506,18 @@ body.active-utility-wheel #indicator-container {
 }
 #settings-panel {
   --utilWheel-center-size: 4.5em;
-  --utilWheel-wheel-size: 18em;
-  --utilWheel-gradient-stop: 14em;
+  --utilWheel-wheel-size: 17em;
+  --utilWheel-gradient-stop: 14.25em;
   --utilWheel-section-color: hsl(0, 0%, 18%);
 }
 #settings-panel .settings-utility-wheel {
+  font-size: 1rem;
   display: flex;
+  margin: auto;
+  max-width: 57.5em;
 }
 #settings-panel .settings-utility-wheel > * {
-  padding: 0.75em 1.5em;
+  padding: 0.75em 1em;
 }
 #settings-panel .utility-wheel-container {
   flex: 1;
@@ -529,6 +537,7 @@ body.active-utility-wheel #indicator-container {
   width: 16em;
 }
 #settings-panel .actions-container {
+  padding-left: 3em;
   user-select: none;
   width: max-content;
   display: grid;
@@ -545,7 +554,7 @@ body.active-utility-wheel #indicator-container {
 }
 #settings-panel .action-wrapper.uw-dragging {
   transform: scale(0.97);
-  color: hsl(0, 0%, 62%);
+  opacity: 0.575;
 }
 #settings-panel .action-wrapper > svg {
   order: -1;
@@ -557,8 +566,8 @@ body.active-utility-wheel #indicator-container {
   transition: transform 0.085s ease, color 0.1s ease-in-out;
 }
 #settings-panel .uw-section-content.uw-dragover .action-wrapper {
-  transform: scale(0.925);
-  color: hsl(0, 0%, 62%);
+  transform: scale(0.92);
+  opacity: 0.575;
 }
 #notification-overlay {
   display: flex;

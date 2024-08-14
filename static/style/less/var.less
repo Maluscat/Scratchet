@@ -43,6 +43,7 @@
 
 @panel-bg-base: lighten(@canvas-color, 8%);
 @panel-bg: fade(@panel-bg-base, 67.5%);
+@panel-fullsize-bg: fade(@panel-bg-base, 87.5%);
 @panel-btn-bg: lighten(@panel-bg-base, 9.5%);
 
 // -- Prompt --
@@ -61,7 +62,7 @@ body > .utility-wheel {
   --utilWheel-section-color: hsl(0, 0%, 21%);
 }
 @utilWheel-background-blur: blur(14px);
-@utilWheel-dragover-color: hsl(0, 0%, 62%);
+@utilWheel-dragover-opacity: .575;
 
 @utilWheel-content-gap: 1rem;
 @utilWheel-content-size: 19.65em;
