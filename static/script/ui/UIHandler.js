@@ -74,7 +74,7 @@ export class UIHandler {
     });
 
     this.scaleSlider = new Slider89(document.getElementById('scale-slider'), {
-      range: [ 0, CanvasViewTransform.MAX_SCALE ],
+      range: [ 1, CanvasViewTransform.MAX_SCALE ],
       _percent: '100%',
       events: {
         // TODO change this to the 'update' event once it is shipped in Slider89
@@ -96,7 +96,7 @@ export class UIHandler {
     }, true);
     this.scaleSlider.node.slider.id = 'scale-slider';
     this.scaleSlider.node.indicatorButton
-      .addEventListener('click', controller.scaleCanvasAtCenter.bind(controller, 0));
+      .addEventListener('click', controller.scaleCanvasAtCenter.bind(controller, 1));
 
     userListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));
     roomListButton.addEventListener('click', this.toggleHoverOverlay.bind(this));

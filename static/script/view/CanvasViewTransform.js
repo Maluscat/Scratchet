@@ -175,9 +175,9 @@ export class CanvasViewTransform extends CanvasView {
 
   // ---- Static math helpers ---
   static scaleInterpolateFn(x) {
-    return Math.pow(Math.E, 1.05 * x);
+    return Math.pow(Math.E, 1.05 * (x - 1));
   }
   static scaleInterpolateFnInverse(x) {
-    return Math.log(x) / 1.05;
+    return Math.log(x) / 1.05 + 1;
   }
 }
