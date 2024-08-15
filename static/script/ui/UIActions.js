@@ -111,7 +111,7 @@ export class UIActions {
 
     this.setUtilityWheelAction('top', 'copyRoomLink');
     this.setUtilityWheelAction('left', 'brush');
-    this.setUtilityWheelAction('bottom', 'clear');
+    this.setUtilityWheelAction('bottom', 'picker');
     this.setUtilityWheelAction('right', 'eraser');
   }
 
