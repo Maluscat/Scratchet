@@ -6,8 +6,8 @@ import { PositionDataHandler } from '~/PositionDataHandler.js';
 /** @typedef { [ number, number ] } Position */
 
 export class CanvasView {
-  static WIDTH = 8191;
-  static HEIGHT = 8191;
+  static WIDTH = 32767;
+  static HEIGHT = 32767;
 
   static BEZIER_CONTROL_MOD = .35;
 
