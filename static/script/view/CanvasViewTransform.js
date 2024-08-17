@@ -1,5 +1,5 @@
 import { CanvasView } from '~/view/CanvasView.js';
-import { ui } from '~/init.js';
+import { controls3D, ui } from '~/init.js';
 
 export class CanvasViewTransform extends CanvasView {
   static MAX_SCALE = CanvasViewTransform.scaleInterpolateFnInverse(20); // 2000 %
@@ -9,23 +9,14 @@ export class CanvasViewTransform extends CanvasView {
 
   state;
 
-  /** @param { HTMLCanvasElement } canvas */
-  constructor(canvas, ...superArgs) {
-    super(canvas, ...superArgs);
+  constructor(...superArgs) {
+    super(...superArgs);
 
-    // TODO this probably needs to be integrated into setTransform
     this.setDimensions();
 
     this.state = new State3D(this.setTransform.bind(this), {
-      scale: {
-        x: 0,
-        y: 0
-      },
       // Start at the view center
-      tran: {
-        x: -((CanvasView.WIDTH + 1) / 2 - this.canvas.width / 2),
-        y: -((CanvasView.HEIGHT + 1) / 2 - this.canvas.height / 2)
-      }
+      tran: this.#getCanvasCenter()
     });
   }
 
@@ -52,11 +43,10 @@ export class CanvasViewTransform extends CanvasView {
 
     this.#translateViewTowardCursor(transformOrigin);
     this.#limitStateTran();
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
 
-    this.ctx.setTransform(this.getScaleX(), 0, 0, this.getScaleY(), this.state.tran.x, this.state.tran.y);
+    this.ctx.setTransform(this.getScaleX() * dpr, 0, 0, this.getScaleY() * dpr, this.state.tran.x * dpr, this.state.tran.y * dpr);
     ui.resizeIndicator(this.getScaleX());
-
-    this.#scaleByDevicePixelRatio();
 
     this.update();
 
@@ -98,32 +88,32 @@ export class CanvasViewTransform extends CanvasView {
 
   // ---- Helper functions ----
   #getScaleDelta() {
-    const currentTransform = this.ctx.getTransform();
     const dpr = CanvasViewTransform.getDevicePixelRatio();
-
+    const currentTransform = this.ctx.getTransform();
     const DELTA_PRECISION = 1000000;
     // These should always be equivalent, but computed separately in case of discrepancies
     return [
       Math.round((dpr * this.getScaleX() - currentTransform.a) * DELTA_PRECISION) / DELTA_PRECISION,
-      Math.round((dpr * this.getScaleY() - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION
+      Math.round((dpr * this.getScaleX() - currentTransform.d) * DELTA_PRECISION) / DELTA_PRECISION
     ];
+  }
+  #getCanvasCenter() {
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
+    return {
+      x: -((CanvasView.WIDTH + 1) / 2 - this.canvas.width / 2) / dpr,
+      y: -((CanvasView.HEIGHT + 1) / 2 - this.canvas.height / 2) / dpr,
+    };
   }
 
   // ---- Transformation functions ----
-  #scaleByDevicePixelRatio() {
-    const dpr = CanvasViewTransform.getDevicePixelRatio();
-    this.ctx.scale(dpr, dpr);
-  }
-
-  /**
-   * Zoom towards the mouse position.
-   */
+  /** Zoom towards the mouse position. */
   #translateViewTowardCursor(mousePos) {
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
     const [deltaScaleX, deltaScaleY] = this.#getScaleDelta();
     const [posX, posY] = this.getPosWithTransformFloat(mousePos[0], mousePos[1]);
 
-    this.state.tran.x -= deltaScaleX * posX;
-    this.state.tran.y -= deltaScaleY * posY;
+    this.state.tran.x -= deltaScaleX * posX / dpr;
+    this.state.tran.y -= deltaScaleY * posY / dpr;
   }
 
   #limitStateScale() {
@@ -141,8 +131,9 @@ export class CanvasViewTransform extends CanvasView {
   }
 
   #limitStateTran() {
-    const viewStopX = (CanvasView.WIDTH * this.getScaleX()) - this.canvas.width;
-    const viewStopY = (CanvasView.HEIGHT * this.getScaleY()) - this.canvas.height;
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
+    const viewStopX = ((CanvasView.WIDTH * this.getScaleX()) - this.canvas.width) / dpr;
+    const viewStopY = ((CanvasView.HEIGHT * this.getScaleY()) - this.canvas.height) / dpr;
 
     if (this.state.tran.x > 0) {
       this.state.tran.x = 0;
