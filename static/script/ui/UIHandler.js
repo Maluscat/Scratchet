@@ -75,7 +75,7 @@ export class UIHandler {
 
     this.scaleSlider = new Slider89(document.getElementById('scale-slider'), {
       // The lower bound will be overriden with a more sensible number in CanvasViewTransform.
-      range: [ 0, CanvasViewTransform.scaleInterpolateFnInverse(CanvasViewTransform.MAX_SCALE) ],
+      range: [ 0, 2 ],
       _percent: '100%',
       events: {
         'update': [(slider) => {

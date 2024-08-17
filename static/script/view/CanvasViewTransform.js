@@ -2,17 +2,16 @@ import { CanvasView } from '~/view/CanvasView.js';
 import { controls3D, ui } from '~/init.js';
 
 export class CanvasViewTransform extends CanvasView {
-  /** Maximum LINEAR scale the view can assume. */
-  static MAX_SCALE = document.documentElement.clientWidth > 1080
-    ? 20
-    : document.documentElement.clientWidth > 650
-      ? 15
-      : 7.5;
+  /**
+   * Maximum LINEAR scale the view can assume.
+   * Is computed and set in {@link setDimensions}.
+   */
+  maxScale = -1;
   /**
    * Minimum LINEAR scale the view can assume.
    * Is computed and set in {@link setDimensions}.
    */
-  minScale = 0;
+  minScale = -1;
 
   currentMousePos = [0, 0];
 
@@ -80,11 +79,19 @@ export class CanvasViewTransform extends CanvasView {
     this.canvas.height = this.canvas.clientHeight * dpr;
     this.canvas.width = this.canvas.clientWidth * dpr;
 
+    this.maxScale = document.documentElement.clientWidth > 1080
+      ? 20
+      : document.documentElement.clientWidth > 650
+        ? 15
+        : 7.5;
     this.minScale = Math.max(
       this.canvas.clientWidth / CanvasView.WIDTH,
       this.canvas.clientHeight / CanvasView.HEIGHT);
 
-    ui.scaleSlider.range[0] = CanvasViewTransform.scaleInterpolateFnInverse(this.minScale);
+    ui.scaleSlider.range = [
+      CanvasViewTransform.scaleInterpolateFnInverse(this.minScale),
+      CanvasViewTransform.scaleInterpolateFnInverse(this.maxScale),
+    ];
 
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
@@ -132,12 +139,12 @@ export class CanvasViewTransform extends CanvasView {
   }
 
   #limitStateScale() {
-    const minScale = controls3D.touchIsActive
-      ? this.minScale
-      : CanvasViewTransform.scaleInterpolateFnInverse(this.minScale);
-    const maxScale = controls3D.touchIsActive
-      ? CanvasViewTransform.MAX_SCALE
-      : CanvasViewTransform.scaleInterpolateFnInverse(CanvasViewTransform.MAX_SCALE);
+    let minScale = this.minScale;
+    let maxScale = this.maxScale;
+    if (!controls3D.touchIsActive) {
+      minScale = CanvasViewTransform.scaleInterpolateFnInverse(minScale);
+      maxScale = CanvasViewTransform.scaleInterpolateFnInverse(maxScale);
+    }
 
     if (this.state.scale.x < minScale) {
       this.state.scale.x = minScale;
