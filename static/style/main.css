@@ -16,10 +16,17 @@ body > .utility-wheel {
   --picker-size: 25px;
   --picker-color: var(--canvas-color);
   --canvas-color: hsl(0, 0%, 8%);
+  --overlay-margin: 0.85rem;
 }
 @media (max-width: 1080px) {
-  html {
+  :root {
+    --overlay-margin: 0.7rem;
     font-size: calc(0.55vw + 0.15vh + 10.08px);
+  }
+}
+@media (max-width: 650px) {
+  :root {
+    --overlay-margin: 0.525rem;
   }
 }
 body {
@@ -236,16 +243,16 @@ input:invalid {
   pointer-events: none;
 }
 .overlay.bottom {
-  bottom: 0.85rem;
+  bottom: var(--overlay-margin);
 }
 .overlay.left {
-  left: 0.85rem;
+  left: var(--overlay-margin);
 }
 .overlay.top {
-  top: 0.85rem;
+  top: var(--overlay-margin);
 }
 .overlay.right {
-  right: 0.85rem;
+  right: var(--overlay-margin);
 }
 .overlay.self-centered {
   align-self: center;

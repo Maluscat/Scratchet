@@ -13,11 +13,14 @@
   --picker-size: @initial-stroke-width;
   --picker-color: var(--canvas-color);
   --canvas-color: @canvas-color;
-}
+  --overlay-margin: .85rem;
 
-html {
   @media (max-width: 1080px) {
+    --overlay-margin: .7rem;
     font-size: calc(0.55vw + 0.15vh + 10.08px);
+  }
+  @media (max-width: 650px) {
+    --overlay-margin: .525rem;
   }
 }
 
@@ -155,16 +158,16 @@ input:invalid {
   position: absolute;
   pointer-events: none;
   &.bottom {
-    bottom: @overlay-margin;
+    bottom: var(--overlay-margin);
   }
   &.left {
-    left: @overlay-margin;
+    left: var(--overlay-margin);
   }
   &.top {
-    top: @overlay-margin;
+    top: var(--overlay-margin);
   }
   &.right {
-    right: @overlay-margin;
+    right: var(--overlay-margin);
   }
 
   &.self-centered {
