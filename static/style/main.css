@@ -17,6 +17,11 @@ body > .utility-wheel {
   --picker-color: var(--canvas-color);
   --canvas-color: hsl(0, 0%, 8%);
 }
+@media (max-width: 1080px) {
+  html {
+    font-size: calc(0.55vw + 0.15vh + 10.08px);
+  }
+}
 body {
   display: flex;
   justify-content: center;
@@ -657,6 +662,16 @@ body.active-utility-wheel #indicator-container {
 }
 #tool-config-bar .label input {
   margin: 0;
+}
+@media (max-width: 600px) {
+  #tool-config-bar[data-tool="brush"] {
+    flex-direction: column;
+  }
+}
+@media (max-width: 380px) {
+  #tool-config-bar .sl89-track {
+    width: 10em;
+  }
 }
 .hue-slider .slider-hue-indicator {
   border: 4px solid var(--canvas-color);

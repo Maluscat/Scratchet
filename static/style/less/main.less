@@ -15,6 +15,12 @@
   --canvas-color: @canvas-color;
 }
 
+html {
+  @media (max-width: 1080px) {
+    font-size: calc(0.55vw + 0.15vh + 10.08px);
+  }
+}
+
 body {
   // For centering the notifications
   display: flex;
@@ -622,6 +628,17 @@ body > .utility-wheel {
     input {
       // appearance: none;
       margin: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    &[data-tool="brush"] {
+      flex-direction: column;
+    }
+  }
+  @media (max-width: 380px) {
+    .sl89-track {
+      width: 10em;
     }
   }
 }
