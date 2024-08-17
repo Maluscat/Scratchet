@@ -65,9 +65,9 @@ export function createPosDataWrapper(posData) {
 
 export function makeHSLString(hue, hasReducedAlpha) {
   if (hasReducedAlpha) {
-    return `hsla(${hue}, 75%, 70%, .1)`;
+    return `hsla(${hue}, 75%, 67.5%, .1)`;
   } else {
-    return `hsl(${hue}, 75%, 70%)`;
+    return `hsl(${hue}, 75%, 67.5%)`;
   }
 }
 
