@@ -1,6 +1,7 @@
 import { UIHandler } from '~/ui/UIHandler.js';
 import { Controller } from '~/Controller.js';
 import { ScratchetSocketBase } from '~/socket/ScratchetSocketBase.js';
+import { CanvasViewTransform } from '~/view/CanvasViewTransform.js';
 import { PositionDataHandler } from '~/PositionDataHandler.js';
 
 /*
@@ -41,3 +42,4 @@ window.controller = controller;
 window.controls3D = controls3D;
 window.ui = ui;
 window.PositionDataHandler = PositionDataHandler;
+window.CanvasViewTransform = CanvasViewTransform;
