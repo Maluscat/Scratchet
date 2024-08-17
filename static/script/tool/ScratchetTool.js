@@ -2,9 +2,9 @@ export class ScratchetTool {
   /** @type { ScratchetTool | null } */
   static activeTool = null;
 
-  static toolbar = document.getElementById('toolbar');
-  static configBarWrapper = document.getElementById('tool-config-bar');
-  static indicatorContainer = document.getElementById('indicator-container');
+  static toolbar = /**@type HTMLElement*/ (document.getElementById('toolbar'));
+  static configBarWrapper = /**@type HTMLElement*/ (document.getElementById('tool-config-bar'));
+  static indicatorContainer = /**@type HTMLElement*/ (document.getElementById('indicator-container'));
 
   buttonNode;
   configBarContent = [];
@@ -45,6 +45,7 @@ export class ScratchetTool {
 
   // ---- config bar ----
   #populateConfigBar() {
+    ScratchetTool.configBarWrapper.dataset.tool = this.name;
     ScratchetTool.configBarWrapper.replaceChildren(...this.configBarContent);
   }
 
