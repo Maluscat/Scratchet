@@ -16,17 +16,20 @@ body > .utility-wheel {
   --picker-size: 25px;
   --picker-color: var(--canvas-color);
   --canvas-color: hsl(0, 0%, 8%);
-  --overlay-margin: 0.85rem;
+  --overlay-margin: 0.8rem;
+  --overlay-gap: 0.45rem;
 }
 @media (max-width: 1080px) {
   :root {
-    --overlay-margin: 0.7rem;
-    font-size: calc(0.55vw + 0.15vh + 10.08px);
+    --overlay-margin: 0.575rem;
+    --overlay-gap: 0.425rem;
+    font-size: calc(0.51vw + 0.25vh + 9.71px);
   }
 }
 @media (max-width: 650px) {
   :root {
-    --overlay-margin: 0.525rem;
+    --overlay-margin: 0.35rem;
+    --overlay-gap: 0.325rem;
   }
 }
 body {
@@ -215,7 +218,7 @@ input:invalid {
 }
 .button-group,
 .horizontal {
-  gap: 0.45rem;
+  gap: var(--overlay-gap);
 }
 .button-group {
   display: inline-flex;
@@ -665,7 +668,7 @@ body.active-utility-wheel #indicator-container {
   align-items: center;
   font-size: 0.975rem;
   padding: 0.2rem 0.7rem;
-  gap: 0.3375rem;
+  gap: calc(var(--overlay-gap) * 0.75);
 }
 #tool-config-bar .label input {
   margin: 0;
@@ -755,7 +758,7 @@ body.active-utility-wheel #indicator-container {
   height: 100%;
 }
 #scale-slider .scale-button {
-  padding: 0.185em 0.5em;
+  padding: 0.18em 0.5em;
   font-size: 0.775rem;
 }
 #scale-slider .sl89-track {

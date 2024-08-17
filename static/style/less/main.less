@@ -13,14 +13,17 @@
   --picker-size: @initial-stroke-width;
   --picker-color: var(--canvas-color);
   --canvas-color: @canvas-color;
-  --overlay-margin: .85rem;
+  --overlay-margin: .8rem;
+  --overlay-gap: @overlay-gap;
 
   @media (max-width: 1080px) {
-    --overlay-margin: .7rem;
-    font-size: calc(0.55vw + 0.15vh + 10.08px);
+    --overlay-margin: .575rem;
+    --overlay-gap: .425rem;
+    font-size: calc(0.51vw + 0.25vh + 9.71px);
   }
   @media (max-width: 650px) {
-    --overlay-margin: .525rem;
+    --overlay-margin: .35rem;
+    --overlay-gap: .325rem;
   }
 }
 
@@ -125,7 +128,7 @@ input:invalid {
 // ---- Positioning ----
 .button-group,
 .horizontal {
-  gap: @overlay-gap;
+  gap: var(--overlay-gap);
 }
 
 .button-group {
@@ -627,7 +630,7 @@ body > .utility-wheel {
     align-items: center;
     font-size: .975rem;
     padding: @overlay-padding (@overlay-padding * 3.5);
-    gap: (@overlay-gap * .75);
+    gap: calc(var(--overlay-gap) * .75);
     input {
       // appearance: none;
       margin: 0;
@@ -745,7 +748,7 @@ body > .utility-wheel {
     height: 100%;
   }
   .scale-button {
-    padding: .185em .5em;
+    padding: .18em .5em;
     font-size: .775rem;
   }
   .sl89-track {
