@@ -74,10 +74,10 @@ export class UIHandler {
     });
 
     this.scaleSlider = new Slider89(document.getElementById('scale-slider'), {
-      range: [ 1, CanvasViewTransform.MAX_SCALE ],
+      // The lower bound will be overriden with a more sensible number in CanvasViewTransform.
+      range: [ 0, CanvasViewTransform.scaleInterpolateFnInverse(CanvasViewTransform.MAX_SCALE) ],
       _percent: '100%',
       events: {
-        // TODO change this to the 'update' event once it is shipped in Slider89
         'update': [(slider) => {
           controller.scaleCanvasAtCenter(slider.value);
         }],

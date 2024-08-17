@@ -2,14 +2,14 @@ import { CanvasView } from '~/view/CanvasView.js';
 import { controls3D, ui } from '~/init.js';
 
 export class CanvasViewTransform extends CanvasView {
-  /** Maximum exponential scale the view can assume. */
+  /** Maximum LINEAR scale the view can assume. */
   static MAX_SCALE = document.documentElement.clientWidth > 1080
-    ? CanvasViewTransform.scaleInterpolateFnInverse(20)
+    ? 20
     : document.documentElement.clientWidth > 650
-      ? CanvasViewTransform.scaleInterpolateFnInverse(15)
-      : CanvasViewTransform.scaleInterpolateFnInverse(7.5);
+      ? 15
+      : 7.5;
   /**
-   * Minimum exponential scale the view can assume.
+   * Minimum LINEAR scale the view can assume.
    * Is computed and set in {@link setDimensions}.
    */
   minScale = 0;
@@ -30,17 +30,20 @@ export class CanvasViewTransform extends CanvasView {
   }
 
   getScaleX() {
-    return CanvasViewTransform.scaleInterpolateFn(this.state.scale.x);
+    return controls3D.touchIsActive
+      ? this.state.scale.x
+      : CanvasViewTransform.scaleInterpolateFn(this.state.scale.x);
   }
   getScaleY() {
-    return CanvasViewTransform.scaleInterpolateFn(this.state.scale.y);
+    return controls3D.touchIsActive
+      ? this.state.scale.y
+      : CanvasViewTransform.scaleInterpolateFn(this.state.scale.y);
   }
 
   // NOTE Remember to apply the device pixel ratio when working with deltas and positions
-  /**
-   * @param { Controls3DDrawInfo } [drawInfo]
-   */
+  /** @param { Controls3DDrawInfo } [drawInfo] */
   setTransform(drawInfo, useCenterOrigin = false) {
+    const dpr = CanvasViewTransform.getDevicePixelRatio();
     const transformOrigin = (drawInfo?.touches)
       ? Controls3D.getTouchesMidpoint(...drawInfo.touches)
       : (useCenterOrigin
@@ -52,9 +55,11 @@ export class CanvasViewTransform extends CanvasView {
 
     this.#translateViewTowardCursor(transformOrigin);
     this.#limitStateTran();
-    const dpr = CanvasViewTransform.getDevicePixelRatio();
 
-    this.ctx.setTransform(this.getScaleX() * dpr, 0, 0, this.getScaleY() * dpr, this.state.tran.x * dpr, this.state.tran.y * dpr);
+    this.ctx.setTransform(
+      this.getScaleX() * dpr, 0, 0, this.getScaleY() * dpr,
+      this.state.tran.x * dpr, this.state.tran.y * dpr);
+
     ui.resizeIndicator(this.getScaleX());
 
     this.update();
@@ -75,19 +80,20 @@ export class CanvasViewTransform extends CanvasView {
     this.canvas.height = this.canvas.clientHeight * dpr;
     this.canvas.width = this.canvas.clientWidth * dpr;
 
-    this.minScale = CanvasViewTransform.scaleInterpolateFnInverse(
-      Math.max(
-        this.canvas.width / CanvasView.WIDTH,
-        this.canvas.height / CanvasView.HEIGHT));
+    this.minScale = Math.max(
+      this.canvas.clientWidth / CanvasView.WIDTH,
+      this.canvas.clientHeight / CanvasView.HEIGHT);
 
-    ui.scaleSlider.range[0] = this.minScale;
+    ui.scaleSlider.range[0] = CanvasViewTransform.scaleInterpolateFnInverse(this.minScale);
 
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
   }
 
   updateScaleSlider() {
-    ui.scaleSlider.value = this.state.scale.x;
+    ui.scaleSlider.value = controls3D.touchIsActive
+      ? CanvasViewTransform.scaleInterpolateFnInverse(this.state.scale.x)
+      : this.state.scale.x;
   }
 
   setCurrentMousePos(posX, posY) {
@@ -126,23 +132,30 @@ export class CanvasViewTransform extends CanvasView {
   }
 
   #limitStateScale() {
-    if (this.state.scale.x < this.minScale) {
-      this.state.scale.x = this.minScale;
-    } else if (this.state.scale.x > CanvasViewTransform.MAX_SCALE) {
-      this.state.scale.x = CanvasViewTransform.MAX_SCALE;
+    const minScale = controls3D.touchIsActive
+      ? this.minScale
+      : CanvasViewTransform.scaleInterpolateFnInverse(this.minScale);
+    const maxScale = controls3D.touchIsActive
+      ? CanvasViewTransform.MAX_SCALE
+      : CanvasViewTransform.scaleInterpolateFnInverse(CanvasViewTransform.MAX_SCALE);
+
+    if (this.state.scale.x < minScale) {
+      this.state.scale.x = minScale;
+    } else if (this.state.scale.x > maxScale) {
+      this.state.scale.x = maxScale;
     }
 
-    if (this.state.scale.y < this.minScale) {
-      this.state.scale.y = this.minScale;
-    } else if (this.state.scale.y > CanvasViewTransform.MAX_SCALE) {
-      this.state.scale.y = CanvasViewTransform.MAX_SCALE;
+    if (this.state.scale.y < minScale) {
+      this.state.scale.y = minScale;
+    } else if (this.state.scale.y > maxScale) {
+      this.state.scale.y = maxScale;
     }
   }
 
   #limitStateTran() {
     const dpr = CanvasViewTransform.getDevicePixelRatio();
-    const viewStopX = ((CanvasView.WIDTH * this.getScaleX()) - this.canvas.width) / dpr;
-    const viewStopY = ((CanvasView.HEIGHT * this.getScaleY()) - this.canvas.height) / dpr;
+    const viewStopX = ((CanvasView.WIDTH * dpr * this.getScaleX()) - this.canvas.width) / dpr;
+    const viewStopY = ((CanvasView.HEIGHT * dpr * this.getScaleY()) - this.canvas.height) / dpr;
 
     if (this.state.tran.x > 0) {
       this.state.tran.x = 0;

@@ -26,7 +26,7 @@ export class CanvasView {
     this.#additionalData = additionalData;
     this.#posHandler = posHandler;
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
+    this.ctx = /**@type CanvasRenderingContext2D*/ (canvas.getContext('2d'));
   }
 
   /** @param { User } [userHighlight] */
