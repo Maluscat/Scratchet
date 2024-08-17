@@ -26,7 +26,6 @@ export const controls3D = new Controls3D(null, null, {
     tran: 1,
     rot: null
   },
-  dontInvertTranY: true,
   keyModifier: {
     scale: {
       x: [ ['ctrlKey'] ],

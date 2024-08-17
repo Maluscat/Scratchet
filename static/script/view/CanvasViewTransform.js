@@ -33,7 +33,7 @@ export class CanvasViewTransform extends CanvasView {
    */
   setTransform(drawInfo, useCenterOrigin = false) {
     const transformOrigin = (drawInfo?.touches)
-      ? Controls3D.computeTouchesMidpoint(...drawInfo.touches)
+      ? Controls3D.getTouchesMidpoint(...drawInfo.touches)
       : (useCenterOrigin
         ? CanvasViewTransform.getViewportCenter()
         : this.currentMousePos);
