@@ -2,7 +2,16 @@ import { CanvasView } from '~/view/CanvasView.js';
 import { controls3D, ui } from '~/init.js';
 
 export class CanvasViewTransform extends CanvasView {
-  static MAX_SCALE = CanvasViewTransform.scaleInterpolateFnInverse(20); // 2000 %
+  /** Maximum exponential scale the view can assume. */
+  static MAX_SCALE = document.documentElement.clientWidth > 1080
+    ? CanvasViewTransform.scaleInterpolateFnInverse(20)
+    : document.documentElement.clientWidth > 650
+      ? CanvasViewTransform.scaleInterpolateFnInverse(15)
+      : CanvasViewTransform.scaleInterpolateFnInverse(7.5);
+  /**
+   * Minimum exponential scale the view can assume.
+   * Is computed and set in {@link setDimensions}.
+   */
   minScale = 0;
 
   currentMousePos = [0, 0];
