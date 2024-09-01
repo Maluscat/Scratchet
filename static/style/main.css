@@ -561,28 +561,15 @@ body.active-utility-wheel #indicator-container {
   gap: 2em 0;
 }
 #settings-panel .action-wrapper {
-  cursor: grab;
   gap: 0.4rem;
 }
 #settings-panel .action-wrapper:hover {
   transform: scale(1.06);
 }
-#settings-panel .action-wrapper.uw-dragging {
-  transform: scale(0.97);
-  opacity: 0.575;
-}
 #settings-panel .action-wrapper > svg {
   order: -1;
   width: 2em;
   height: 2em;
-}
-#settings-panel .action-wrapper,
-#settings-panel .uw-section-content.uw-dragover .action-wrapper {
-  transition: transform 0.085s ease, color 0.1s ease-in-out;
-}
-#settings-panel .uw-section-content.uw-dragover .action-wrapper {
-  transform: scale(0.92);
-  opacity: 0.575;
 }
 #notification-overlay {
   display: flex;

@@ -512,31 +512,15 @@ body > .utility-wheel {
     gap: 2em 0;
   }
   .action-wrapper {
-    cursor: grab;
     gap: .4rem;
     &:hover {
       transform: scale(1.06);
-    }
-    &.uw-dragging {
-      transform: scale(.97);
-      opacity: @utilWheel-dragover-opacity;
     }
     > svg {
       order: -1;
       width: 2em;
       height: 2em;
     }
-  }
-  &, .uw-section-content.uw-dragover {
-    .action-wrapper {
-      transition:
-        transform .085s ease,
-        color .1s ease-in-out;
-    }
-  }
-  .uw-section-content.uw-dragover .action-wrapper {
-    transform: scale(.92);
-    opacity: @utilWheel-dragover-opacity;
   }
 }
 

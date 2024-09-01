@@ -9,7 +9,7 @@ import { ui } from '~/init.js';
  * @typedef { import('@lib/utility-wheel/script/UtilityWheel.js').SectionSide } SectionSide
  */
 
-const utilWheelElement = /**@type HTMLElement*/ (document.querySelector('body > .utility-wheel'))
+const utilWheelTarget = /**@type HTMLElement*/ (document.getElementById('utility-wheel-target'));
 const utilWheelConfig = /**@type HTMLElement*/ (settingsPanel.querySelector('.utility-wheel-container'));
 
 /**
@@ -99,10 +99,11 @@ export class UIActions {
     }
 
     // -- Initialize UtilityWheel --
-    this.utilityWheel = new UtilityWheelUIConfig(utilWheelElement, {
-      target: canvasContainer,
+    this.utilityWheel = new UtilityWheelUIConfig(utilWheelTarget, {
+      eventTarget: canvasContainer,
       actionList: Object.values(this.actions),
       configContainer: utilWheelConfig,
+      replace: true,
     });
 
     this.utilityWheel.addEvent('invoke', this.utilWheelInvoke);
