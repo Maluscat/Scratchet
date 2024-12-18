@@ -70,6 +70,13 @@ export class SocketRoom {
   getUsers() {
     return this.#sockets;
   }
+  *getActiveUsers() {
+    for (const sock of this.getUsers()) {
+      if (sock.isActive) {
+        yield sock;
+      }
+    }
+  }
 
   // ---- Init Queue & initial data ----
   addUserToBulkInitQueue(socketUser: SocketUser) {

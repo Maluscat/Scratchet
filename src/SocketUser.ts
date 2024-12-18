@@ -92,16 +92,14 @@ export class SocketUser {
     this.#rooms.set(socketRoom, newUsername);
   }
 
-  getPeers() {
-    const peers = new Set<SocketUser>();
+  *getPeers() {
     for (const rooms of this.getRooms()) {
       for (const user of rooms.getUsers()) {
         if (user !== this) {
-          peers.add(user);
+          yield user;
         }
       }
     }
-    return peers;
   }
 
   // ---- WebSocket handling ----
@@ -164,7 +162,7 @@ export class SocketUser {
 
   getTransmittablePeerArray(socketRoom: SocketRoom) {
     const peerArr = new Array();
-    for (const socketUser of socketRoom.getUsers()) {
+    for (const socketUser of socketRoom.getActiveUsers()) {
       if (socketUser !== this) {
         const username = socketUser.getNameForRoom(socketRoom);
         peerArr.push([ socketUser.id, username ]);
