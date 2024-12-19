@@ -322,7 +322,7 @@ body.inactive .overlay .sl89-track {
   height: 70vh;
   width: 75vw;
   font-size: 0.92rem;
-  padding: 0 1.5em;
+  padding: 0 min(1.5em, calc(0.5em + 1.55vmin));
   background-color: hsla(0, 0%, 16%, 0.875);
   overflow: auto;
 }
@@ -532,11 +532,12 @@ body.active-utility-wheel #indicator-container {
   max-width: 57.5em;
 }
 #settings-panel .settings-utility-wheel > * {
-  padding: 0.75em 1em;
+  padding: 0.75em 0;
 }
 #settings-panel .utility-wheel-container {
   flex: 1;
   overflow: hidden;
+  padding-right: min(1em, 1vw);
   border-right: 2px solid hsl(0, 0%, 31%);
 }
 #settings-panel .uw-configuration-wheel {
@@ -552,7 +553,7 @@ body.active-utility-wheel #indicator-container {
   width: 16em;
 }
 #settings-panel .actions-container {
-  padding-left: 3em;
+  padding-left: min(3em, 2.5vw);
   user-select: none;
   width: max-content;
   display: grid;

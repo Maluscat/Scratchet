@@ -238,7 +238,7 @@ input:invalid {
     height: 70vh;
     width: 75vw;
     font-size: .92rem;
-    padding: 0 1.5em;
+    padding: 0 min(1.5em, calc(.5em + 1.55vmin));
     background-color: @panel-fullsize-bg;
     overflow: auto;
   }
@@ -482,12 +482,13 @@ body > .utility-wheel {
     margin: auto;
     max-width: 57.5em;
     > * {
-      padding: .75em 1em;
+      padding: .75em 0;
     }
   }
   .utility-wheel-container {
     flex: 1;
     overflow: hidden;
+    padding-right: min(1em, 1vw);
     border-right: 2px solid @slider-thumb-color;
   }
   .uw-configuration-wheel {
@@ -503,7 +504,7 @@ body > .utility-wheel {
     }
   }
   .actions-container {
-    padding-left: 3em;
+    padding-left: min(3em, 2.5vw);
     user-select: none;
     width: max-content;
     display: grid;
