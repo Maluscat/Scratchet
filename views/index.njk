@@ -24,14 +24,31 @@
 
     <div id="utility-wheel-target"></div>
 
-    <div id="settings-panel" class="full-size panel overlay self-centered has-pointer-events inactive">
-      <h2>Settings</h2>
-      <h3>Utility Wheel</h3>
-      <p>Reassign the utility wheel by dragging new actions onto it.</p>
-      <div class="settings-utility-wheel">
-        <div class="utility-wheel-container"></div>
-        <div class="actions-container">
-          
+    <div id="settings-panel" class="overlay full-size self-centered has-pointer-events inactive">
+      <div class="tab-container">
+        <ul>
+          <li>
+            <button class="panel grow-panel" type="button" title="Switch to settings panel">
+              {% include 'views/component/svg/gear-2.svg' %}
+              <h2>Settings</h2>
+            </button>
+          </li>
+          <li>
+            <button class="panel grow-panel" type="button" title="Switch to about panel">
+              {% include 'views/component/svg/info-6.svg' %}
+              <h2>About</h2>
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div class="content-panel panel grow-panel">
+        <h3>Utility Wheel</h3>
+        <p>Reassign the utility wheel by dragging new actions onto it.</p>
+        <div class="settings-utility-wheel">
+          <div class="utility-wheel-container"></div>
+          <div class="actions-container">
+            
+          </div>
         </div>
       </div>
     </div>
@@ -157,7 +174,7 @@
     <script src="/library/controls3d/script/Controls3D.js"></script>
     <script src="/script/init.js" type="module"></script>
     {% if testingMode -%}
-      <div id="mocha" class="full-size panel overlay self-centered has-pointer-events inactive"></div>
+      <div id="mocha" class="full-size grow-panel panel overlay self-centered has-pointer-events inactive"></div>
       <link rel="stylesheet" href="/test/lib/mocha-v10-4-0.min.css">
       <link rel="stylesheet" href="/test/init.css">
       <script src="/test/lib/mocha-v10-4-0.min.js"></script>

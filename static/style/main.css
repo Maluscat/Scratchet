@@ -197,6 +197,7 @@ button,
 input {
   display: block;
   font-family: inherit;
+  background-color: transparent;
   font-size: 1em;
   color: inherit;
   padding: 0;
@@ -260,6 +261,13 @@ input:invalid {
 .overlay.self-centered {
   align-self: center;
 }
+.overlay.full-size {
+  display: flex;
+  flex-direction: column;
+  height: 70vh !important;
+  width: 75vw !important;
+  font-size: 0.92rem;
+}
 .overlay .label,
 .overlay .button,
 .overlay .hover-overlay,
@@ -317,11 +325,10 @@ body.inactive .overlay .sl89-track {
 .panel .button:active {
   background-color: hsl(0, 0%, 28.5%) !important;
 }
-.panel.full-size {
+.panel.grow-panel {
+  flex: 1;
   display: block;
-  height: 70vh;
-  width: 75vw;
-  font-size: 0.92rem;
+  width: 100%;
   padding: 0 min(1.5em, calc(0.5em + 1.55vmin));
   background-color: hsla(0, 0%, 16%, 0.875);
   overflow: auto;
@@ -402,6 +409,28 @@ body.inactive .overlay .sl89-track {
 }
 .button-wrapper .hover-overlay > ul .item:hover {
   font-weight: bold;
+}
+.tab-container > ul {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  list-style-type: none;
+}
+.tab-container > ul > li {
+  flex: 1;
+}
+.tab-container svg {
+  margin-right: 1ch;
+}
+.tab-container h2 {
+  margin: 0.7em 0;
+}
+.tab-container button {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 .sl89-thumb {
   background-color: hsl(0, 0%, 31%);

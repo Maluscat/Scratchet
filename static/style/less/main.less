@@ -109,6 +109,7 @@ canvas {
 button, input {
   display: block;
   font-family: inherit;
+  background-color: transparent;
   font-size: 1em;
   color: inherit;
   padding: 0;
@@ -177,6 +178,14 @@ input:invalid {
     align-self: center;
   }
 
+  &.full-size {
+    display: flex;
+    flex-direction: column;
+    height: 70vh !important;
+    width: 75vw !important;
+    font-size: .92rem;
+  }
+
   .label,
   .button,
   .hover-overlay,
@@ -233,11 +242,10 @@ input:invalid {
     .buttonStyle(@panel-btn-bg);
     background-color: @panel-btn-bg;
   }
-  &.full-size {
+  &.grow-panel {
+    flex: 1;
     display: block;
-    height: 70vh;
-    width: 75vw;
-    font-size: .92rem;
+    width: 100%;
     padding: 0 min(1.5em, calc(.5em + 1.55vmin));
     background-color: @panel-fullsize-bg;
     overflow: auto;
@@ -329,6 +337,32 @@ input:invalid {
         }
       }
     }
+  }
+}
+
+.tab-container {
+  > ul {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    list-style-type: none;
+    > li {
+      flex: 1;
+    }
+  }
+  svg {
+    margin-right: 1ch;
+  }
+  h2 {
+    margin: .7em 0;
+  }
+  button {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
   }
 }
 
