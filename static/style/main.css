@@ -193,6 +193,13 @@ canvas.remove {
 body.inactive canvas {
   pointer-events: none;
 }
+a {
+  border-radius: 2px;
+  color: inherit;
+}
+a:hover {
+  background-color: hsla(0, 0%, 95%, 0.1);
+}
 button,
 input {
   display: block;
