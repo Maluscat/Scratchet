@@ -108,9 +108,28 @@ export class UIHandler {
     promptNode.wrapper.addEventListener('contextmenu', this.preventPromptContext.bind(this));
 
     settingsButton.addEventListener('click', this.toggleSettingsPanel.bind(this));
+
+    // -- Tab handling --
+    for (const tab of document.querySelectorAll('[data-tab]')) {
+      tab.addEventListener('click', this.handleTab.bind(this, tab));
+      if (tab.dataset.defaultTab) {
+        this.handleTab(tab);
+      }
+    }
   }
 
   // ---- Misc events ----
+  handleTab(tabElement) {
+    const panelName = tabElement.dataset.tab;
+    const panel = /**@type HTMLElement*/ (document.querySelector(`[data-panel=${panelName}]`));
+    for (const sibling of panel.parentElement.children) {
+      if (sibling !== panel) {
+        sibling.style.display = 'none';
+      }
+    }
+    panel.style.removeProperty('display');
+  }
+
   toggleHoverOverlay(e) {
     e.currentTarget.parentNode.querySelector('.hover-overlay').classList.toggle('active');
   }

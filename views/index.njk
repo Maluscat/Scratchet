@@ -28,13 +28,13 @@
       <div class="tab-container">
         <ul>
           <li>
-            <button class="panel grow-panel" type="button" title="Switch to settings panel">
+            <button class="panel grow-panel" data-tab="settings" data-default-tab type="button" title="Switch to settings panel">
               {% include 'views/component/svg/gear-2.svg' %}
               <h2>Settings</h2>
             </button>
           </li>
           <li>
-            <button class="panel grow-panel" type="button" title="Switch to about panel">
+            <button class="panel grow-panel" data-tab="about" type="button" title="Switch to about panel">
               {% include 'views/component/svg/info-6.svg' %}
               <h2>About</h2>
             </button>
@@ -42,13 +42,21 @@
         </ul>
       </div>
       <div class="content-panel panel grow-panel">
-        <h3>Utility Wheel</h3>
-        <p>Reassign the utility wheel by dragging new actions onto it.</p>
-        <div class="settings-utility-wheel">
-          <div class="utility-wheel-container"></div>
-          <div class="actions-container">
-            
+        <div data-panel="settings">
+          <h3>Utility Wheel</h3>
+          <p>Reassign the utility wheel by dragging new actions onto it.</p>
+          <div class="settings-utility-wheel">
+            <div class="utility-wheel-container"></div>
+            <div class="actions-container">
+              
+            </div>
           </div>
+        </div>
+        <div data-panel="about">
+          <h3>Credits</h3>
+          <p>Great credits</p>
+          <h3>License</h3>
+          <p>Great license</p>
         </div>
       </div>
     </div>
