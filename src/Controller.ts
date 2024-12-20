@@ -29,6 +29,11 @@ export class Controller {
         this.handleTimeout(this.users.get(sock)!);
       }
     });
+    sock.addEventListener('_reconnect', () => {
+      if (this.users.has(sock)) {
+        this.handleReconnect(this.users.get(sock)!);
+      }
+    });
   }
 
   // After two disconnects, the user is disconnected for good.
@@ -51,8 +56,7 @@ export class Controller {
     }
   }
   handleReconnect(user: SocketUser) {
-    // TODO Handle a proper reconnect
-    if (!user.isActive && user.sock.socket.readyState !== 1) {
+    if (!user.isActive) {
       user.activate();
       for (const room of user.getRooms()) {
         room.addUserToBulkInitQueue(user);
@@ -69,11 +73,11 @@ export class Controller {
       }
 
       if (e.data instanceof ArrayBuffer) {
+        const dataArr = new Int16Array(e.data);
         if (!socketUser.isActive) {
-          throw new ScratchetError(`${socketUser} tried to send a buffer while inactive.`);
+          throw new ScratchetError(`Tried to send a buffer while inactive`);
         }
 
-        const dataArr = new Int16Array(e.data);
         const roomCode = dataArr[0];
         const socketRoom = this.roomHandler.getRoomWithUserExistanceCheck(socketUser, roomCode);
         const newBuffer = socketUser.prependIDToBuffer(dataArr);
