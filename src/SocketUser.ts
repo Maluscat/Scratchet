@@ -36,14 +36,22 @@ export class SocketUser {
   // ---- Activation ----
   deactivate(timeoutCallback: () => void, duration: number) {
     this.isActive = false;
+    this.#clearDeactivationTimeout();
     this.#deactivationTimeoutID = setTimeout(timeoutCallback, duration);
   }
   activate() {
-    if (this.#deactivationTimeoutID != null) {
-      clearTimeout(this.#deactivationTimeoutID);
-      this.#deactivationTimeoutID = null;
-    }
+    this.#clearDeactivationTimeout();
     this.isActive = true;
+  }
+  removeSelf() {
+    this.isActive = false;
+    this.#clearDeactivationTimeout();
+
+    // This could for example fail if the Socket was closed before sending the initial message
+    // NOTE Is this old comment still relevant? ^
+    for (const socketRoom of this.getRooms()) {
+      socketRoom.removeUser(this);
+    }
   }
 
   /**
@@ -169,6 +177,13 @@ export class SocketUser {
       }
     }
     return peerArr;
+  }
+
+  #clearDeactivationTimeout() {
+    if (this.#deactivationTimeoutID != null) {
+      clearTimeout(this.#deactivationTimeoutID);
+      this.#deactivationTimeoutID = null;
+    }
   }
 
   toString() {

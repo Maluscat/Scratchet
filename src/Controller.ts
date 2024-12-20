@@ -201,16 +201,10 @@ export class Controller {
   }
 
   destroyUser(user: SocketUser) {
-    if (!this.users.has(user.sock)) {
-      throw new ScratchetError(`Tried to destroy a user that doesn't exist:\n${user}`);
-    }
-
-    this.usersByID.delete(user.id);
-    this.users.delete(user.sock);
-
-    // This could for example fail if the Socket was closed before sending the initial message
-    for (const socketRoom of user.getRooms()) {
-      socketRoom.removeUser(user);
+    if (this.users.has(user.sock)) {
+      this.usersByID.delete(user.id);
+      this.users.delete(user.sock);
+      user.removeSelf();
     }
   }
 
