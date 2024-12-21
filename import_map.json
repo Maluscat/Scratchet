@@ -2,8 +2,7 @@
   "imports": {
     "Meta": "./static/script/constants/meta.js",
     "Validator": "./static/script/constants/Validator.js",
-    "SocketBase": "./static/script/socket/SocketBase.js",
-    "ServerSocketBase": "./static/library/socket-handler/script/ServerSocketBase.ts",
+    "ServerSocketBase": "./static/library/socket-base/script/ServerSocketBase.ts",
 
     "main": "./main.ts",
     "router": "./src/router.ts",
