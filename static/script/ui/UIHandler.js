@@ -112,7 +112,7 @@ export class UIHandler {
     // -- Tab handling --
     for (const tab of document.querySelectorAll('[data-tab]')) {
       tab.addEventListener('click', this.handleTab.bind(this, tab));
-      if (tab.dataset.defaultTab) {
+      if (tab.dataset.defaultTab != null) {
         this.handleTab(tab);
       }
     }
