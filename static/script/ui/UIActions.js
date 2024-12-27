@@ -83,7 +83,7 @@ export class UIActions {
           this.actions[actionName].fn = callbacks[actionName];
         }
         this.actions[actionName].callback = this.callAction.bind(this, actionName);
-        this.actions[actionName].element = UIActions.getActionElement(action);
+        this.actions[actionName].element = UIActions.getActionElement(actionName, action);
       }
     }
 
@@ -109,11 +109,12 @@ export class UIActions {
     this.utilityWheel.addEvent('invoke', this.utilWheelInvoke);
     this.utilityWheel.addEvent('hide', this.utilWheelHide);
     this.utilityWheel.addEvent('pointerUp', this.utilWheelUp);
+    this.utilityWheel.addEvent('drop', this.utilWheelUserReassign);
 
-    this.setUtilityWheelAction('top', 'copyRoomLink');
-    this.setUtilityWheelAction('left', 'brush');
-    this.setUtilityWheelAction('bottom', 'picker');
-    this.setUtilityWheelAction('right', 'eraser');
+    this.setUtilityWheelAction('top', 'copyRoomLink', true);
+    this.setUtilityWheelAction('left', 'brush', true);
+    this.setUtilityWheelAction('bottom', 'picker', true);
+    this.setUtilityWheelAction('right', 'eraser', true);
   }
 
   // ---- Action handling ----
@@ -128,6 +129,9 @@ export class UIActions {
   }
 
   // ---- Utility wheel handling ----
+  utilWheelUserReassign({ sectionSide, actionElem }) {
+    localStorage.setItem(`Scratchet_UtilWheel_${sectionSide}`, actionElem.dataset.actionName);
+  }
   utilWheelInvoke() {
     document.body.classList.add('active-utility-wheel');
   }
@@ -142,13 +146,27 @@ export class UIActions {
    * @param { SectionSide } side
    * @param { string } actionName
    */
-  setUtilityWheelAction(side, actionName) {
+  setUtilityWheelAction(side, actionName, preferLocalStorage = false) {
+    if (preferLocalStorage) {
+      const key = `Scratchet_UtilWheel_${side}`;
+      const item = localStorage.getItem(key);
+      if (item) {
+        if (!(item in this.actions)) {
+          localStorage.removeItem(key);
+        } else {
+          actionName = item;
+        }
+      }
+    }
     const action = this.actions[actionName];
     this.utilityWheel.setSection(side, action.element.cloneNode(true), action.callback);
   }
 
-  /** @param { Object } action */
-  static getActionElement(action) {
+  /**
+   * @param { string } name
+   * @param { Object } action
+   */
+  static getActionElement(name, action) {
     const title = action.shortTitle || action.button.title;
 
     const wrapper = document.createElement('div');
@@ -157,6 +175,7 @@ export class UIActions {
     tooltip.textContent = title;
     const icon = action.button.querySelector('svg').cloneNode(true);
 
+    wrapper.dataset.actionName = name;
     wrapper.classList.add('action-wrapper');
     wrapper.appendChild(tooltip);
     wrapper.appendChild(icon);
