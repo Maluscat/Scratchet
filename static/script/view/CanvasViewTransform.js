@@ -1,5 +1,10 @@
+import { State3D } from '@lib/controls3d/script/State3D.js';
+import { Controls3D } from '@lib/controls3d/script/Controls3D.js';
 import { CanvasView } from '~/view/CanvasView.js';
 import { controls3D, ui } from '~/init.js';
+
+/** @typedef { import('@lib/controls3d/script/Controls3D').DrawData } DrawData */
+/** @typedef { import('@lib/controls3d/script/State3D').Transform } Transform */
 
 export class CanvasViewTransform extends CanvasView {
   /**
@@ -19,10 +24,11 @@ export class CanvasViewTransform extends CanvasView {
 
   constructor(...superArgs) {
     super(...superArgs);
+    this.setTransform = this.setTransform.bind(this);
 
     this.setDimensions();
 
-    this.state = new State3D(this.setTransform.bind(this), {
+    this.state = new State3D({
       // Start at the view center
       tran: this.#getCanvasCenter()
     });
@@ -40,11 +46,11 @@ export class CanvasViewTransform extends CanvasView {
   }
 
   // NOTE Remember to apply the device pixel ratio when working with deltas and positions
-  /** @param { Controls3DDrawInfo } [drawInfo] */
-  setTransform(drawInfo, useCenterOrigin = false) {
+  /** @param { DrawData } [drawData] */
+  setTransform(drawData, useCenterOrigin = false) {
     const dpr = CanvasViewTransform.getDevicePixelRatio();
-    const transformOrigin = (drawInfo?.touches)
-      ? Controls3D.getTouchesMidpoint(...drawInfo.touches)
+    const transformOrigin = (drawData?.touches)
+      ? Controls3D.getTouchesMidpoint(...drawData.touches)
       : (useCenterOrigin
         ? CanvasViewTransform.getViewportCenter()
         : this.currentMousePos);
@@ -68,9 +74,9 @@ export class CanvasViewTransform extends CanvasView {
     }
   }
 
-  /** @param { DeepPartial<State> } newState */
+  /** @param { Transform } newState */
   setTransformWithNewState(newState, ...args) {
-    this.state.assignNewState(newState);
+    this.state.assignNewTransform(newState);
     this.setTransform(...args);
   }
 
@@ -195,9 +201,9 @@ export class CanvasViewTransform extends CanvasView {
 
   // ---- Static math helpers ---
   static scaleInterpolateFn(x) {
-    return Math.pow(Math.E, 1.05 * (x - 1));
+    return Math.pow(Math.E, 1.06 * (x - 1));
   }
   static scaleInterpolateFnInverse(x) {
-    return Math.log(x) / 1.05 + 1;
+    return Math.log(x) / 1.06 + 1;
   }
 }

@@ -188,7 +188,8 @@ export class Room extends RoomController {
 
   focus() {
     controls3D.changeState(this.view.state);
-    controls3D.changeEventTarget(this.view.canvas);
+    controls3D.changeTarget(this.view.canvas);
+    controls3D.changeCallback(this.view.setTransform);
 
     this.displayCanvas();
     this.roomListNode.classList.add('current');

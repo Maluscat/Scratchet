@@ -1,3 +1,5 @@
+import { Controls3D } from '@lib/controls3d/script/Controls3D.js';
+import { State3D } from '@lib/controls3d/script/State3D.js';
 import { UIHandler } from '~/ui/UIHandler.js';
 import { Controller } from '~/Controller.js';
 import { ScratchetSocketBase } from '~/socket/ScratchetSocketBase.js';
@@ -19,7 +21,7 @@ const sock = new ScratchetSocketBase(url, {
 
 export const controller = new Controller(sock);
 export const ui = new UIHandler();
-export const controls3D = new Controls3D(null, null, {
+export const controls3D = new Controls3D(undefined, {
   mod: {
     tran: 1,
   },
@@ -40,6 +42,7 @@ controller.init();
 
 window.controller = controller;
 window.controls3D = controls3D;
+window.State3D = State3D;
 window.ui = ui;
 window.PositionDataHandler = PositionDataHandler;
 window.CanvasViewTransform = CanvasViewTransform;
