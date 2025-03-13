@@ -39,10 +39,10 @@ export class Brush extends ScratchetTool {
     });
 
     if (onWidthChange) {
-      this.#sliders.width.addEvent('change:value', s => onWidthChange(s.value));
+      this.#sliders.width.addEvent('change:value', ({ value }) => onWidthChange(value));
     }
     if (onHueChange) {
-      this.#sliders.hue.addEvent('change:value', s => onHueChange(s.value));
+      this.#sliders.hue.addEvent('change:value', ({ value }) => onHueChange(value));
     }
 
 

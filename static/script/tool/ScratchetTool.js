@@ -90,7 +90,7 @@ export class ScratchetTool {
     });
   }
 
-  static setCSSStrokeWidth(slider) {
-    document.documentElement.style.setProperty('--strokeWidth', slider.value + 'px');
+  static setCSSStrokeWidth({ value }) {
+    document.documentElement.style.setProperty('--strokeWidth', value + 'px');
   }
 }

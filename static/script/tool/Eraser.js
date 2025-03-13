@@ -17,7 +17,7 @@ export class Eraser extends ScratchetTool {
     const widthWrapper = ScratchetTool.createSliderWrapper('width-slider');
     this.#sliders.width = ScratchetTool.createWidthSlider(widthWrapper, 300);
     if (onWidthChange) {
-      this.#sliders.width.addEvent('change:value', s => onWidthChange(s.value));
+      this.#sliders.width.addEvent('change:value', ({ value }) => onWidthChange(value));
     }
 
     this.configBarContent.push(widthWrapper);

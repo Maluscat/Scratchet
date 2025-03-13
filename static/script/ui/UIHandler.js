@@ -78,10 +78,10 @@ export class UIHandler {
       range: [ 0, 2 ],
       _percent: '100%',
       events: {
-        'update': [(slider) => {
+        'update': [({ slider }) => {
           controller.scaleCanvasAtCenter(slider.value);
         }],
-        'change:value': [(slider) => {
+        'change:value': [({ slider }) => {
           slider._percent =
             Math.round(CanvasViewTransform.scaleInterpolateFn(slider.value) * 100) + '%';
         }]
